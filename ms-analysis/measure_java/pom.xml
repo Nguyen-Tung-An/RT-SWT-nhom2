@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Template Maven cho đo Branch Coverage (JaCoCo) + Mutation Score (PIT) - vai trò MS, Nhóm 2.
+     Mỗi hàm Java được bọc trong class Example { ... } tại src/main/java/Example.java,
+     test JUnit5 tại src/test/java/ExampleTest.java. Chạy local (cần JDK 17 + Maven). -->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>nhom2.swt301</groupId>
+  <artifactId>unit-test-measure</artifactId>
+  <version>1.0</version>
+  <packaging>jar</packaging>
+
+  <properties>
+    <maven.compiler.release>17</maven.compiler.release>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <version>5.10.2</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <!-- Chạy JUnit5; testFailureIgnore=true để build không dừng khi test fail -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.2.5</version>
+        <configuration><testFailureIgnore>true</testFailureIgnore></configuration>
+      </plugin>
+
+      <!-- JaCoCo: Branch Coverage -->
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>0.8.12</version>
+        <executions>
+          <execution><id>prep</id><goals><goal>prepare-agent</goal></goals></execution>
+          <execution><id>rep</id><phase>test</phase><goals><goal>report</goal></goals></execution>
+        </executions>
+      </plugin>
+
+      <!-- PIT: Mutation Score -->
+      <plugin>
+        <groupId>org.pitest</groupId>
+        <artifactId>pitest-maven</artifactId>
+        <version>1.15.8</version>
+        <dependencies>
+          <dependency>
+            <groupId>org.pitest</groupId>
+            <artifactId>pitest-junit5-plugin</artifactId>
+            <version>1.2.1</version>
+          </dependency>
+        </dependencies>
+        <configuration>
+          <targetClasses><param>Example</param></targetClasses>
+          <targetTests><param>ExampleTest</param></targetTests>
+          <outputFormats><param>XML</param></outputFormats>
+          <timeoutConstant>8000</timeoutConstant>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
