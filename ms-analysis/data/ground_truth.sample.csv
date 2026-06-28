@@ -1,0 +1,89 @@
+function_id,reference_code,iaa_checked,notes
+py_000,"def f0(x):
+    if x > 8:
+        return x - 8
+    elif x < -8:
+        return x + 8
+    return 0",0,
+py_001,"def f1(x):
+    if x > 10:
+        return x - 10
+    elif x < -10:
+        return x + 10
+    return 0",0,
+py_002,"def f2(x):
+    if x > 9:
+        return x - 9
+    elif x < -9:
+        return x + 9
+    return 0",0,
+py_003,"def f3(x):
+    if x > 10:
+        return x - 10
+    elif x < -10:
+        return x + 10
+    return 0",0,
+py_004,"def f4(x):
+    if x > 9:
+        return x - 9
+    elif x < -9:
+        return x + 9
+    return 0",0,
+py_005,"def f5(x):
+    if x > 9:
+        return x - 9
+    elif x < -9:
+        return x + 9
+    return 0",0,
+py_006,"def f6(x):
+    if x > 7:
+        return x - 7
+    elif x < -7:
+        return x + 7
+    return 0",0,
+py_007,"def f7(x):
+    if x > 6:
+        return x - 6
+    elif x < -6:
+        return x + 6
+    return 0",0,
+ja_000,"public static int f0(int x) {
+    if (x > 8) return x - 8;
+    else if (x < -8) return x + 8;
+    return 0;
+}",0,
+ja_001,"public static int f1(int x) {
+    if (x > 6) return x - 6;
+    else if (x < -6) return x + 6;
+    return 0;
+}",0,
+ja_002,"public static int f2(int x) {
+    if (x > 9) return x - 9;
+    else if (x < -9) return x + 9;
+    return 0;
+}",0,
+ja_003,"public static int f3(int x) {
+    if (x > 5) return x - 5;
+    else if (x < -5) return x + 5;
+    return 0;
+}",0,
+ja_004,"public static int f4(int x) {
+    if (x > 7) return x - 7;
+    else if (x < -7) return x + 7;
+    return 0;
+}",0,
+ja_005,"public static int f5(int x) {
+    if (x > 7) return x - 7;
+    else if (x < -7) return x + 7;
+    return 0;
+}",0,
+ja_006,"public static int f6(int x) {
+    if (x > 6) return x - 6;
+    else if (x < -6) return x + 6;
+    return 0;
+}",0,
+ja_007,"public static int f7(int x) {
+    if (x > 9) return x - 9;
+    else if (x < -9) return x + 9;
+    return 0;
+}",0,
