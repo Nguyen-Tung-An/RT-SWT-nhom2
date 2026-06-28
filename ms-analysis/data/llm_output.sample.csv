@@ -1,0 +1,25 @@
+function_id,language,cc,strategy,model,system_fingerprint,status,n_chars,cost_usd,generated_test
+py_000,python,8,one_shot,gpt-4o-mini-2024-07-18,fp_sample,OK,120,0.0001,"def test_pos(): assert f0(8+5) == 5
+def test_neg(): assert f0(-8-3) == -3
+def test_zero(): assert f0(0) == 0"
+py_001,python,10,one_shot,gpt-4o-mini-2024-07-18,fp_sample,OK,120,0.0001,"def test_pos(): assert f1(10+5) == 5
+def test_neg(): assert f1(-10-3) == -3
+def test_zero(): assert f1(0) == 0"
+py_002,python,9,one_shot,gpt-4o-mini-2024-07-18,fp_sample,OK,120,0.0001,"def test_pos(): assert f2(9+5) == 5
+def test_neg(): assert f2(-9-3) == -3
+def test_zero(): assert f2(0) == 0"
+py_003,python,10,one_shot,gpt-4o-mini-2024-07-18,fp_sample,OK,120,0.0001,"def test_pos(): assert f3(10+5) == 5
+def test_neg(): assert f3(-10-3) == -3
+def test_zero(): assert f3(0) == 0"
+py_004,python,9,one_shot,gpt-4o-mini-2024-07-18,fp_sample,OK,120,0.0001,"def test_pos(): assert f4(9+5) == 5
+def test_neg(): assert f4(-9-3) == -3
+def test_zero(): assert f4(0) == 0"
+py_005,python,9,one_shot,gpt-4o-mini-2024-07-18,fp_sample,OK,120,0.0001,"def test_pos(): assert f5(9+5) == 5
+def test_neg(): assert f5(-9-3) == -3
+def test_zero(): assert f5(0) == 0"
+py_006,python,7,one_shot,gpt-4o-mini-2024-07-18,fp_sample,OK,120,0.0001,"def test_pos(): assert f6(7+5) == 5
+def test_neg(): assert f6(-7-3) == -3
+def test_zero(): assert f6(0) == 0"
+py_007,python,6,one_shot,gpt-4o-mini-2024-07-18,fp_sample,OK,120,0.0001,"def test_pos(): assert f7(6+5) == 5
+def test_neg(): assert f7(-6-3) == -3
+def test_zero(): assert f7(0) == 0"
