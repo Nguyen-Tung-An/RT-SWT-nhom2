@@ -1,0 +1,89 @@
+function_id,language,code,cc,source_file,function_name
+py_000,python,"def f0(x):
+    if x > 8:
+        return x - 8
+    elif x < -8:
+        return x + 8
+    return 0",8,sample/python/m0,f0
+py_001,python,"def f1(x):
+    if x > 10:
+        return x - 10
+    elif x < -10:
+        return x + 10
+    return 0",10,sample/python/m1,f1
+py_002,python,"def f2(x):
+    if x > 9:
+        return x - 9
+    elif x < -9:
+        return x + 9
+    return 0",9,sample/python/m2,f2
+py_003,python,"def f3(x):
+    if x > 10:
+        return x - 10
+    elif x < -10:
+        return x + 10
+    return 0",10,sample/python/m3,f3
+py_004,python,"def f4(x):
+    if x > 9:
+        return x - 9
+    elif x < -9:
+        return x + 9
+    return 0",9,sample/python/m4,f4
+py_005,python,"def f5(x):
+    if x > 9:
+        return x - 9
+    elif x < -9:
+        return x + 9
+    return 0",9,sample/python/m5,f5
+py_006,python,"def f6(x):
+    if x > 7:
+        return x - 7
+    elif x < -7:
+        return x + 7
+    return 0",7,sample/python/m6,f6
+py_007,python,"def f7(x):
+    if x > 6:
+        return x - 6
+    elif x < -6:
+        return x + 6
+    return 0",6,sample/python/m7,f7
+ja_000,java,"public static int f0(int x) {
+    if (x > 8) return x - 8;
+    else if (x < -8) return x + 8;
+    return 0;
+}",8,sample/java/m0,f0
+ja_001,java,"public static int f1(int x) {
+    if (x > 6) return x - 6;
+    else if (x < -6) return x + 6;
+    return 0;
+}",6,sample/java/m1,f1
+ja_002,java,"public static int f2(int x) {
+    if (x > 9) return x - 9;
+    else if (x < -9) return x + 9;
+    return 0;
+}",9,sample/java/m2,f2
+ja_003,java,"public static int f3(int x) {
+    if (x > 5) return x - 5;
+    else if (x < -5) return x + 5;
+    return 0;
+}",5,sample/java/m3,f3
+ja_004,java,"public static int f4(int x) {
+    if (x > 7) return x - 7;
+    else if (x < -7) return x + 7;
+    return 0;
+}",7,sample/java/m4,f4
+ja_005,java,"public static int f5(int x) {
+    if (x > 7) return x - 7;
+    else if (x < -7) return x + 7;
+    return 0;
+}",7,sample/java/m5,f5
+ja_006,java,"public static int f6(int x) {
+    if (x > 6) return x - 6;
+    else if (x < -6) return x + 6;
+    return 0;
+}",6,sample/java/m6,f6
+ja_007,java,"public static int f7(int x) {
+    if (x > 9) return x - 9;
+    else if (x < -9) return x + 9;
+    return 0;
+}",9,sample/java/m7,f7
