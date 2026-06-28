@@ -234,3 +234,9 @@ config.py
 .DS_Store
 desktop.ini
 Thumbs.db
+<<<<<<< HEAD
+=======
+
+# Large files (thêm nếu data > 100MB)
+# data/raw/
+>>>>>>> origin/main
