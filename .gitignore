@@ -216,3 +216,21 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Pilot Ignore
+*.jar
+data/raw/
+pynguin-report/
+
+# Môn học yêu cầu (RBL-0_Overview)
+# API keys & secrets - TUYỆT ĐỐI không commit
+.env
+*.env
+secrets.json
+api_key.txt
+config.py
+
+# OS files
+.DS_Store
+desktop.ini
+Thumbs.db

@@ -1,0 +1,1235 @@
+func_id,language,raw_source_path,generated_test_code
+JA-002,java,data-research/java_functions/JA-002.java,"```java
+package org.apache.commons.cli;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class CommandLineTest {
+    @Test
+    void testConcat_EmptyArrays() {
+        boolean[] result = CommandLine.concat(new boolean[0], new boolean[0]);
+        assertArrayEquals(new boolean[0], result);
+    }
+
+    @Test
+    void testConcat_SingleNonEmptyArray() {
+        boolean[] result = CommandLine.concat(new boolean[]{true, false});
+        assertArrayEquals(new boolean[]{true, false}, result);
+    }
+
+    @Test
+    void testConcat_MultipleArrays() {
+        boolean[] result = CommandLine.concat(new boolean[]{true}, new boolean[]{false, true}, new boolean[]{});
+        assertArrayEquals(new boolean[]{true, false, true}, result);
+    }
+
+    @Test
+    void testConcat_NullArray() {
+        boolean[] result = CommandLine.concat(new boolean[]{true}, null, new boolean[]{false});
+        assertArrayEquals(new boolean[]{true, false}, result);
+    }
+
+    @Test
+    void testConcat_AllNullArrays() {
+        boolean[] result = CommandLine.concat(null, null);
+        assertArrayEquals(new boolean[0], result);
+    }
+}
+```"
+JA-010,java,data-research/java_functions/JA-010.java,"```java
+package org.apache.commons.cli;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class CommandLineTest {
+    private static final int INDEX_NOT_FOUND = -1;
+
+    @Test
+    void testIndexOf_NaNValue() {
+        double[] array = {1.0, 2.0, Double.NaN, 4.0};
+        assertEquals(2, CommandLine.indexOf(array, Double.NaN, 0));
+    }
+
+    @Test
+    void testIndexOf_EmptyArray() {
+        double[] array = {};
+        assertEquals(INDEX_NOT_FOUND, CommandLine.indexOf(array, 1.0, 0));
+    }
+
+    @Test
+    void testIndexOf_ValueFound() {
+        double[] array = {1.0, 2.0, 3.0, 4.0};
+        assertEquals(2, CommandLine.indexOf(array, 3.0, 0));
+    }
+
+    @Test
+    void testIndexOf_ValueNotFound() {
+        double[] array = {1.0, 2.0, 3.0, 4.0};
+        assertEquals(INDEX_NOT_FOUND, CommandLine.indexOf(array, 5.0, 0));
+    }
+
+    @Test
+    void testIndexOf_StartIndex() {
+        double[] array = {1.0, 2.0, 3.0, 4.0};
+        assertEquals(3, CommandLine.indexOf(array, 4.0, 2));
+    }
+
+    @Test
+    void testIndexOf_StartIndexOutOfBounds() {
+        double[] array = {1.0, 2.0, 3.0, 4.0};
+        assertEquals(INDEX_NOT_FOUND, CommandLine.indexOf(array, 1.0, 5));
+    }
+}
+```"
+JA-012,java,data-research/java_functions/JA-012.java,"```java
+package org.apache.commons.cli;
+
+import org.junit.jupiter.api.Test;
+
+import java.lang.reflect.Array;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+public class DefaultParserTest {
+
+    @Test
+    void testAdd_NullArray_ZeroIndex() {
+        Object result = DefaultParser.add(null, 0, ""element"", String.class);
+        assertEquals(1, Array.getLength(result));
+        assertEquals(""element"", Array.get(result, 0));
+    }
+
+    @Test
+    void testAdd_NullArray_NonZeroIndex() {
+        IndexOutOfBoundsException exception = assertThrows(IndexOutOfBoundsException.class, () -> {
+            DefaultParser.add(null, 1, ""element"", String.class);
+        });
+        assertEquals(""Index: 1, Length: 0"", exception.getMessage());
+    }
+
+    @Test
+    void testAdd_ValidArray_ValidIndex() {
+        String[] array = new String[]{""a"", ""b"", ""c""};
+        Object result = DefaultParser.add(array, 1, ""newElement"", String.class);
+        assertEquals(4, Array.getLength(result));
+        assertEquals(""a"", Array.get(result, 0));
+        assertEquals(""newElement"", Array.get(result, 1));
+        assertEquals(""b"", Array.get(result, 2));
+        assertEquals(""c"", Array.get(result, 3));
+    }
+
+    @Test
+    void testAdd_ValidArray_IndexOutOfBounds() {
+        String[] array = new String[]{""a"", ""b"", ""c""};
+        IndexOutOfBoundsException exception = assertThrows(IndexOutOfBoundsException.class, () -> {
+            DefaultParser.add(array, 4, ""element"", String.class);
+        });
+        assertEquals(""Index: 4, Length: 3"", exception.getMessage());
+    }
+
+    @Test
+    void testAdd_ValidArray_NegativeIndex() {
+        String[] array = new String[]{""a"", ""b"", ""c""};
+        IndexOutOfBoundsException exception = assertThrows(IndexOutOfBoundsException.class, () -> {
+            DefaultParser.add(array, -1, ""element"", String.class);
+        });
+        assertEquals(""Index: -1, Length: 3"", exception.getMessage());
+    }
+}
+```"
+JA-020,java,data-research/java_functions/JA-020.java,"```java
+package org.apache.commons.cli;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class HelpFormatterTest {
+    private static final int INDEX_NOT_FOUND = -1;
+
+    @Test
+    void testLastIndexOf_NullArray() {
+        assertEquals(INDEX_NOT_FOUND, HelpFormatter.lastIndexOf(null, 1, 0));
+    }
+
+    @Test
+    void testLastIndexOf_NegativeStartIndex() {
+        int[] array = {1, 2, 3};
+        assertEquals(INDEX_NOT_FOUND, HelpFormatter.lastIndexOf(array, 1, -1));
+    }
+
+    @Test
+    void testLastIndexOf_StartIndexOutOfBounds() {
+        int[] array = {1, 2, 3};
+        assertEquals(0, HelpFormatter.lastIndexOf(array, 1, 5));
+    }
+
+    @Test
+    void testLastIndexOf_ValueFound() {
+        int[] array = {1, 2, 3, 1};
+        assertEquals(3, HelpFormatter.lastIndexOf(array, 1, 3));
+    }
+
+    @Test
+    void testLastIndexOf_ValueNotFound() {
+        int[] array = {1, 2, 3};
+        assertEquals(INDEX_NOT_FOUND, HelpFormatter.lastIndexOf(array, 4, 2));
+    }
+
+    @Test
+    void testLastIndexOf_EmptyArray() {
+        int[] array = {};
+        assertEquals(INDEX_NOT_FOUND, HelpFormatter.lastIndexOf(array, 1, 0));
+    }
+}
+```"
+JA-022,java,data-research/java_functions/JA-022.java,"```java
+package org.apache.commons.cli;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class DefaultParserTest {
+    
+    @Test
+    void testIndexOf_EmptyArray() {
+        assertEquals(DefaultParser.INDEX_NOT_FOUND, DefaultParser.indexOf(new Object[]{}, new Object(), 0));
+    }
+
+    @Test
+    void testIndexOf_NullObjectToFind() {
+        Object[] array = {1, 2, null, 4};
+        assertEquals(2, DefaultParser.indexOf(array, null, 0));
+    }
+
+    @Test
+    void testIndexOf_ObjectFound() {
+        Object[] array = {1, 2, 3, 4};
+        assertEquals(2, DefaultParser.indexOf(array, 3, 0));
+    }
+
+    @Test
+    void testIndexOf_ObjectNotFound() {
+        Object[] array = {1, 2, 3, 4};
+        assertEquals(DefaultParser.INDEX_NOT_FOUND, DefaultParser.indexOf(array, 5, 0));
+    }
+
+    @Test
+    void testIndexOf_StartIndexOutOfBounds() {
+        Object[] array = {1, 2, 3, 4};
+        assertEquals(DefaultParser.INDEX_NOT_FOUND, DefaultParser.indexOf(array, 1, 5));
+    }
+
+    @Test
+    void testIndexOf_NegativeStartIndex() {
+        Object[] array = {1, 2, 3, 4};
+        assertEquals(0, DefaultParser.indexOf(array, 1, -1));
+    }
+}
+```"
+JA-030,java,data-research/java_functions/JA-030.java,"```java
+package org.apache.commons.cli;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class DefaultParserTest {
+    
+    @Test
+    void testInsert_NullArray() {
+        assertNull(DefaultParser.insert(0, null, (short) 1, (short) 2));
+    }
+
+    @Test
+    void testInsert_EmptyValues() {
+        short[] array = {1, 2, 3};
+        short[] result = DefaultParser.insert(1, array);
+        assertArrayEquals(array, result);
+    }
+
+    @Test
+    void testInsert_ValidInsertion() {
+        short[] array = {1, 2, 3};
+        short[] result = DefaultParser.insert(1, array, (short) 4, (short) 5);
+        assertArrayEquals(new short[]{1, 4, 5, 2, 3}, result);
+    }
+
+    @Test
+    void testInsert_IndexOutOfBounds_Negative() {
+        short[] array = {1, 2, 3};
+        assertThrows(IndexOutOfBoundsException.class, () -> {
+            DefaultParser.insert(-1, array, (short) 4);
+        });
+    }
+
+    @Test
+    void testInsert_IndexOutOfBounds_TooHigh() {
+        short[] array = {1, 2, 3};
+        assertThrows(IndexOutOfBoundsException.class, () -> {
+            DefaultParser.insert(4, array, (short) 4);
+        });
+    }
+
+    @Test
+    void testInsert_InsertionAtStart() {
+        short[] array = {1, 2, 3};
+        short[] result = DefaultParser.insert(0, array, (short) 4);
+        assertArrayEquals(new short[]{4, 1, 2, 3}, result);
+    }
+
+    @Test
+    void testInsert_InsertionAtEnd() {
+        short[] array = {1, 2, 3};
+        short[] result = DefaultParser.insert(3, array, (short) 4);
+        assertArrayEquals(new short[]{1, 2, 3, 4}, result);
+    }
+}
+```"
+JA-032,java,data-research/java_functions/JA-032.java,"```java
+package org.apache.commons.cli;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class DefaultParserTest {
+    @Test
+    void testToBooleanObject_ValueIsNull_TrueValueIsNull() {
+        assertEquals(Boolean.TRUE, DefaultParser.toBooleanObject(null, null, 0, 1));
+    }
+
+    @Test
+    void testToBooleanObject_ValueIsNull_FalseValueIsNull() {
+        assertEquals(Boolean.FALSE, DefaultParser.toBooleanObject(null, 0, null, 1));
+    }
+
+    @Test
+    void testToBooleanObject_ValueIsNull_NullValueIsNull() {
+        assertNull(DefaultParser.toBooleanObject(null, 0, 1, null));
+    }
+
+    @Test
+    void testToBooleanObject_ValueEqualsTrueValue() {
+        assertEquals(Boolean.TRUE, DefaultParser.toBooleanObject(1, 1, 0, 2));
+    }
+
+    @Test
+    void testToBooleanObject_ValueEqualsFalseValue() {
+        assertEquals(Boolean.FALSE, DefaultParser.toBooleanObject(0, 1, 0, 2));
+    }
+
+    @Test
+    void testToBooleanObject_ValueEqualsNullValue() {
+        assertNull(DefaultParser.toBooleanObject(2, 1, 0, 2));
+    }
+
+    @Test
+    void testToBooleanObject_ValueDoesNotMatchAnySpecifiedValue() {
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            DefaultParser.toBooleanObject(3, 1, 0, 2);
+        });
+        assertEquals(""The Integer did not match any specified value"", exception.getMessage());
+    }
+}
+```"
+JA-040,java,data-research/java_functions/JA-040.java,"```java
+package org.apache.commons.cli;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class HelpFormatterTest {
+    
+    @Test
+    void testStripEnd_EmptyString() {
+        assertEquals("""", HelpFormatter.stripEnd("""", null));
+    }
+
+    @Test
+    void testStripEnd_WhitespaceOnly() {
+        assertEquals("""", HelpFormatter.stripEnd(""   "", null));
+    }
+
+    @Test
+    void testStripEnd_NullStripChars() {
+        assertEquals(""Hello"", HelpFormatter.stripEnd(""Hello   "", null));
+    }
+
+    @Test
+    void testStripEnd_EmptyStripChars() {
+        assertEquals(""Hello"", HelpFormatter.stripEnd(""Hello"", """"));
+    }
+
+    @Test
+    void testStripEnd_WithStripChars() {
+        assertEquals(""Hello"", HelpFormatter.stripEnd(""Hello!!!"", ""!""));
+    }
+
+    @Test
+    void testStripEnd_WithMultipleStripChars() {
+        assertEquals(""Hello"", HelpFormatter.stripEnd(""Hello!!!??"", ""!?""));
+    }
+
+    @Test
+    void testStripEnd_AllStripChars() {
+        assertEquals("""", HelpFormatter.stripEnd(""!!!??"", ""!?""));
+    }
+
+    @Test
+    void testStripEnd_NonWhitespace() {
+        assertEquals(""Hello World"", HelpFormatter.stripEnd(""Hello World   "", null));
+    }
+}
+```"
+JA-042,java,data-research/java_functions/JA-042.java,"```java
+package org.apache.commons.cli;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class DefaultParserTest {
+    
+    @Test
+    void testSqueeze_EmptyString() {
+        assertEquals("""", DefaultParser.squeeze(""""));
+    }
+
+    @Test
+    void testSqueeze_NoSet() {
+        assertEquals(""abc"", DefaultParser.squeeze(""abc""));
+    }
+
+    @Test
+    void testSqueeze_ConsecutiveDuplicates() {
+        assertEquals(""abc"", DefaultParser.squeeze(""aaabbbccc""));
+    }
+
+    @Test
+    void testSqueeze_WithSet_OnlyInSet() {
+        assertEquals(""abc"", DefaultParser.squeeze(""aaabbbccc"", ""a"", ""b"", ""c""));
+    }
+
+    @Test
+    void testSqueeze_WithSet_IgnoreInSet() {
+        assertEquals(""ab"", DefaultParser.squeeze(""aaabbb"", ""a""));
+    }
+
+    @Test
+    void testSqueeze_WithSet_Mixed() {
+        assertEquals(""a"", DefaultParser.squeeze(""aaab"", ""a""));
+    }
+
+    @Test
+    void testSqueeze_WithSet_Complex() {
+        assertEquals(""abc"", DefaultParser.squeeze(""aaabbbccc"", ""b""));
+    }
+
+    @Test
+    void testSqueeze_SingleCharacter() {
+        assertEquals(""a"", DefaultParser.squeeze(""a""));
+    }
+
+    @Test
+    void testSqueeze_SingleCharacterWithSet() {
+        assertEquals(""a"", DefaultParser.squeeze(""a"", ""a""));
+    }
+}
+```"
+JA-050,java,data-research/java_functions/JA-050.java,"```java
+package org.apache.commons.cli;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class OptionComparatorTest {
+
+    private final OptionComparator optionComparator = new OptionComparator();
+
+    @Test
+    void testEquals_BothNull() {
+        assertTrue(optionComparator.equals(null, null));
+    }
+
+    @Test
+    void testEquals_FirstNull() {
+        assertFalse(optionComparator.equals(null, ""test""));
+    }
+
+    @Test
+    void testEquals_SecondNull() {
+        assertFalse(optionComparator.equals(""test"", null));
+    }
+
+    @Test
+    void testEquals_SameString() {
+        assertTrue(optionComparator.equals(""test"", ""test""));
+    }
+
+    @Test
+    void testEquals_DifferentString() {
+        assertFalse(optionComparator.equals(""test"", ""TEST""));
+    }
+
+    @Test
+    void testEquals_DifferentLength() {
+        assertFalse(optionComparator.equals(""test"", ""test1""));
+    }
+
+    @Test
+    void testEquals_CharSequenceDifferent() {
+        assertFalse(optionComparator.equals(new StringBuilder(""test""), new StringBuilder(""test1"")));
+    }
+
+    @Test
+    void testEquals_CharSequenceSame() {
+        assertTrue(optionComparator.equals(new StringBuilder(""test""), new StringBuilder(""test"")));
+    }
+}
+```"
+JA-052,java,data-research/java_functions/JA-052.java,"```java
+package org.apache.commons.cli;
+
+import org.junit.jupiter.api.Test;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+public class PatternOptionBuilderTest {
+
+    @Test
+    void testEquals_SameAnnotations() {
+        Annotation a1 = new TestAnnotation(""value"");
+        Annotation a2 = a1;
+        assertTrue(PatternOptionBuilder.equals(a1, a2));
+    }
+
+    @Test
+    void testEquals_NullFirstAnnotation() {
+        Annotation a1 = null;
+        Annotation a2 = new TestAnnotation(""value"");
+        assertFalse(PatternOptionBuilder.equals(a1, a2));
+    }
+
+    @Test
+    void testEquals_NullSecondAnnotation() {
+        Annotation a1 = new TestAnnotation(""value"");
+        Annotation a2 = null;
+        assertFalse(PatternOptionBuilder.equals(a1, a2));
+    }
+
+    @Test
+    void testEquals_DifferentAnnotationTypes() {
+        Annotation a1 = new TestAnnotation(""value"");
+        Annotation a2 = new AnotherTestAnnotation(""value"");
+        assertFalse(PatternOptionBuilder.equals(a1, a2));
+    }
+
+    @Test
+    void testEquals_DifferentValues() {
+        Annotation a1 = new TestAnnotation(""value1"");
+        Annotation a2 = new TestAnnotation(""value2"");
+        assertFalse(PatternOptionBuilder.equals(a1, a2));
+    }
+
+    @Test
+    void testEquals_ValidAnnotations() {
+        Annotation a1 = new TestAnnotation(""value"");
+        Annotation a2 = new TestAnnotation(""value"");
+        assertTrue(PatternOptionBuilder.equals(a1, a2));
+    }
+
+    @Test
+    void testEquals_ReflectiveOperationException() {
+        Annotation a1 = new TestAnnotationWithException();
+        Annotation a2 = new TestAnnotation(""value"");
+        assertFalse(PatternOptionBuilder.equals(a1, a2));
+    }
+
+    private @interface TestAnnotation {
+        String value();
+    }
+
+    private @interface AnotherTestAnnotation {
+        String value();
+    }
+
+    private @interface TestAnnotationWithException {
+        String value() throws ReflectiveOperationException;
+    }
+}
+```"
+JA-060,java,data-research/java_functions/JA-060.java,"```java
+package org.apache.commons.cli;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class PatternOptionBuilderTest {
+    
+    @Test
+    void testShift_NullArray() {
+        long[] array = null;
+        PatternOptionBuilder.shift(array, 0, 5, 2);
+        // No assertion needed, just checking for no exception
+    }
+
+    @Test
+    void testShift_StartIndexOutOfBounds() {
+        long[] array = {1, 2, 3, 4, 5};
+        PatternOptionBuilder.shift(array, 5, 5, 2);
+        assertArrayEquals(new long[]{1, 2, 3, 4, 5}, array);
+    }
+
+    @Test
+    void testShift_EndIndexNegative() {
+        long[] array = {1, 2, 3, 4, 5};
+        PatternOptionBuilder.shift(array, 0, -1, 2);
+        assertArrayEquals(new long[]{1, 2, 3, 4, 5}, array);
+    }
+
+    @Test
+    void testShift_OffsetGreaterThanLength() {
+        long[] array = {1, 2, 3, 4, 5};
+        PatternOptionBuilder.shift(array, 0, 5, 7);
+        assertArrayEquals(new long[]{4, 5, 1, 2, 3}, array);
+    }
+
+    @Test
+    void testShift_OffsetNegative() {
+        long[] array = {1, 2, 3, 4, 5};
+        PatternOptionBuilder.shift(array, 0, 5, -2);
+        assertArrayEquals(new long[]{3, 4, 5, 1, 2}, array);
+    }
+
+    @Test
+    void testShift_OffsetZero() {
+        long[] array = {1, 2, 3, 4, 5};
+        PatternOptionBuilder.shift(array, 0, 5, 0);
+        assertArrayEquals(new long[]{1, 2, 3, 4, 5}, array);
+    }
+
+    @Test
+    void testShift_SingleElement() {
+        long[] array = {1};
+        PatternOptionBuilder.shift(array, 0, 1, 1);
+        assertArrayEquals(new long[]{1}, array);
+    }
+
+    @Test
+    void testShift_TwoElements() {
+        long[] array = {1, 2};
+        PatternOptionBuilder.shift(array, 0, 2, 1);
+        assertArrayEquals(new long[]{2, 1}, array);
+    }
+
+    @Test
+    void testShift_MultipleElements() {
+        long[] array = {1, 2, 3, 4, 5};
+        PatternOptionBuilder.shift(array, 0, 5, 2);
+        assertArrayEquals(new long[]{3, 4, 5, 1, 2}, array);
+    }
+}
+```"
+PY-001,python,data-research/python_functions/PY-001.py,"```python
+import pytest
+from flask.app import Flask, Request, RequestRedirect, FormDataRoutingRedirect
+
+class MockRequest:
+    def __init__(self, routing_exception, method):
+        self.routing_exception = routing_exception
+        self.method = method
+
+class MockApp:
+    def __init__(self, debug):
+        self.debug = debug
+
+    def raise_routing_exception(self, request: MockRequest) -> None:
+        if (
+            not self.debug
+            or not isinstance(request.routing_exception, RequestRedirect)
+            or request.routing_exception.code in {307, 308}
+            or request.method in {""GET"", ""HEAD"", ""OPTIONS""}
+        ):
+            raise request.routing_exception
+
+        raise FormDataRoutingRedirect(request)
+
+def test_raise_routing_exception_not_debug():
+    app = MockApp(debug=False)
+    request = MockRequest(RequestRedirect(302), ""POST"")
+    with pytest.raises(RequestRedirect):
+        app.raise_routing_exception(request)
+
+def test_raise_routing_exception_is_not_redirect():
+    app = MockApp(debug=True)
+    request = MockRequest(Exception(""Some error""), ""POST"")
+    with pytest.raises(Exception):
+        app.raise_routing_exception(request)
+
+def test_raise_routing_exception_redirect_307():
+    app = MockApp(debug=True)
+    request = MockRequest(RequestRedirect(307), ""POST"")
+    with pytest.raises(RequestRedirect):
+        app.raise_routing_exception(request)
+
+def test_raise_routing_exception_redirect_308():
+    app = MockApp(debug=True)
+    request = MockRequest(RequestRedirect(308), ""POST"")
+    with pytest.raises(RequestRedirect):
+        app.raise_routing_exception(request)
+
+def test_raise_routing_exception_get_method():
+    app = MockApp(debug=True)
+    request = MockRequest(RequestRedirect(302), ""GET"")
+    with pytest.raises(RequestRedirect):
+        app.raise_routing_exception(request)
+
+def test_raise_routing_exception_head_method():
+    app = MockApp(debug=True)
+    request = MockRequest(RequestRedirect(302), ""HEAD"")
+    with pytest.raises(RequestRedirect):
+        app.raise_routing_exception(request)
+
+def test_raise_routing_exception_options_method():
+    app = MockApp(debug=True)
+    request = MockRequest(RequestRedirect(302), ""OPTIONS"")
+    with pytest.raises(RequestRedirect):
+        app.raise_routing_exception(request)
+
+def test_raise_routing_exception_valid_case():
+    app = MockApp(debug=True)
+    request = MockRequest(RequestRedirect(302), ""POST"")
+    with pytest.raises(FormDataRoutingRedirect):
+        app.raise_routing_exception(request)
+```"
+PY-002,python,data-research/python_functions/PY-002.py,"```python
+import pytest
+from flask.app import update_template_context
+from unittest.mock import Mock
+
+def test_update_template_context_with_request():
+    ctx = Mock()
+    ctx.has_request = True
+    ctx.request.blueprints = ['blueprint1', 'blueprint2']
+    
+    context = {}
+    template_context_processors = {
+        'blueprint1': [Mock(return_value={'key1': 'value1'})],
+        'blueprint2': [Mock(return_value={'key2': 'value2'})]
+    }
+    
+    app = Mock()
+    app.template_context_processors = template_context_processors
+    
+    update_template_context(app, ctx, context)
+    
+    assert context == {'key1': 'value1', 'key2': 'value2'}
+
+def test_update_template_context_without_request():
+    ctx = Mock()
+    ctx.has_request = False
+    
+    context = {}
+    template_context_processors = {
+        None: [Mock(return_value={'key': 'value'})]
+    }
+    
+    app = Mock()
+    app.template_context_processors = template_context_processors
+    
+    update_template_context(app, ctx, context)
+    
+    assert context == {'key': 'value'}
+
+def test_update_template_context_with_no_processors():
+    ctx = Mock()
+    ctx.has_request = True
+    ctx.request.blueprints = ['blueprint1']
+    
+    context = {}
+    template_context_processors = {
+        'blueprint1': []
+    }
+    
+    app = Mock()
+    app.template_context_processors = template_context_processors
+    
+    update_template_context(app, ctx, context)
+    
+    assert context == {}
+```"
+PY-011,python,data-research/python_functions/PY-011.py,"```python
+import pytest
+from flask.app import AppContext, Response, InternalServerError
+
+class MockApp:
+    def __init__(self, propagate_exceptions=True, testing=False, debug=False):
+        self.config = {""PROPAGATE_EXCEPTIONS"": propagate_exceptions}
+        self.testing = testing
+        self.debug = debug
+
+    def log_exception(self, ctx, exc_info):
+        pass
+
+    def _find_error_handler(self, server_error, blueprints):
+        return None
+
+    def finalize_request(self, ctx, server_error, from_error_handler=False):
+        return server_error
+
+    def ensure_sync(self, handler):
+        return handler
+
+    def handle_exception(self, ctx: AppContext, e: Exception) -> Response:
+        exc_info = sys.exc_info()
+        got_request_exception.send(self, _async_wrapper=self.ensure_sync, exception=e)
+        propagate = self.config[""PROPAGATE_EXCEPTIONS""]
+
+        if propagate is None:
+            propagate = self.testing or self.debug
+
+        if propagate:
+            if exc_info[1] is e:
+                raise
+            raise e
+
+        self.log_exception(ctx, exc_info)
+        server_error = InternalServerError(original_exception=e)
+        handler = self._find_error_handler(server_error, ctx.request.blueprints)
+
+        if handler is not None:
+            server_error = self.ensure_sync(handler)(server_error)
+
+        return self.finalize_request(ctx, server_error, from_error_handler=True)
+
+def test_handle_exception_propagate():
+    app = MockApp(propagate_exceptions=True)
+    ctx = AppContext()
+    with pytest.raises(Exception):
+        app.handle_exception(ctx, Exception(""Test Exception""))
+
+def test_handle_exception_no_propagate():
+    app = MockApp(propagate_exceptions=False)
+    ctx = AppContext()
+    response = app.handle_exception(ctx, Exception(""Test Exception""))
+    assert isinstance(response, InternalServerError)
+
+def test_handle_exception_with_testing_mode():
+    app = MockApp(propagate_exceptions=False, testing=True)
+    ctx = AppContext()
+    response = app.handle_exception(ctx, Exception(""Test Exception""))
+    assert isinstance(response, InternalServerError)
+
+def test_handle_exception_with_debug_mode():
+    app = MockApp(propagate_exceptions=False, debug=True)
+    ctx = AppContext()
+    response = app.handle_exception(ctx, Exception(""Test Exception""))
+    assert isinstance(response, InternalServerError)
+```"
+PY-012,python,data-research/python_functions/PY-012.py,"```python
+import pytest
+from flask.app import Flask, AppContext, Response
+
+@pytest.fixture
+def app():
+    app = Flask(__name__)
+
+    @app.after_request
+    def after_request_func(response):
+        response.headers['X-After-Request'] = 'Processed'
+        return response
+
+    return app
+
+def test_process_response_with_after_request(app):
+    with app.app_context() as ctx:
+        response = Response(""Hello World"")
+        processed_response = app.process_response(ctx, response)
+        assert processed_response.headers['X-After-Request'] == 'Processed'
+
+def test_process_response_with_no_after_request(app):
+    with app.app_context() as ctx:
+        response = Response(""Hello World"")
+        ctx._after_request_functions = []
+        processed_response = app.process_response(ctx, response)
+        assert processed_response is response
+
+def test_process_response_with_session(app):
+    with app.app_context() as ctx:
+        response = Response(""Hello World"")
+        ctx._get_session = lambda: {}
+        ctx._session_interface = app.session_interface
+        processed_response = app.process_response(ctx, response)
+        assert processed_response is response  # Assuming session does not modify response
+
+def test_process_response_with_multiple_after_requests(app):
+    with app.app_context() as ctx:
+        @app.after_request
+        def another_after_request_func(response):
+            response.headers['X-Another-After-Request'] = 'Processed'
+            return response
+
+        response = Response(""Hello World"")
+        processed_response = app.process_response(ctx, response)
+        assert processed_response.headers['X-After-Request'] == 'Processed'
+        assert processed_response.headers['X-Another-After-Request'] == 'Processed'
+```"
+PY-021,python,data-research/python_functions/PY-021.py,"```python
+import pytest
+from flask.app import Flask
+
+@pytest.fixture
+def app():
+    app = Flask(__name__)
+    app.config[""TRUSTED_HOSTS""] = None
+    app.config[""SERVER_NAME""] = ""example.com""
+    app.config[""APPLICATION_ROOT""] = ""/""
+    app.config[""PREFERRED_URL_SCHEME""] = ""http""
+    return app
+
+def test_create_url_adapter_with_request(app):
+    with app.test_request_context(environ={'HTTP_HOST': 'example.com'}):
+        adapter = app.create_url_adapter(app.request)
+        assert adapter is not None
+
+def test_create_url_adapter_with_trusted_hosts(app):
+    app.config[""TRUSTED_HOSTS""] = [""example.com""]
+    with app.test_request_context(environ={'HTTP_HOST': 'example.com'}):
+        adapter = app.create_url_adapter(app.request)
+        assert adapter is not None
+
+def test_create_url_adapter_without_request(app):
+    adapter = app.create_url_adapter(None)
+    assert adapter is not None
+
+def test_create_url_adapter_without_server_name(app):
+    app.config[""SERVER_NAME""] = None
+    adapter = app.create_url_adapter(None)
+    assert adapter is None
+```"
+PY-022,python,data-research/python_functions/PY-022.py,"```python
+import pytest
+from flask.app import handle_user_exception
+from werkzeug.exceptions import BadRequestKeyError, HTTPException
+
+class MockAppContext:
+    def __init__(self, debug=False, trap_bad_request_errors=False):
+        self.debug = debug
+        self.config = {""TRAP_BAD_REQUEST_ERRORS"": trap_bad_request_errors}
+        self.request = MockRequest()
+
+class MockRequest:
+    def __init__(self):
+        self.blueprints = []
+
+def mock_handler(e):
+    return f""Handled: {str(e)}""
+
+def test_handle_user_exception_bad_request_key_error_debug():
+    ctx = MockAppContext(debug=True)
+    e = BadRequestKeyError(""bad_key"")
+    response = handle_user_exception(ctx, e)
+    assert response is None  # Assuming the function returns None for this case
+
+def test_handle_user_exception_bad_request_key_error_no_debug():
+    ctx = MockAppContext(debug=False, trap_bad_request_errors=True)
+    e = BadRequestKeyError(""bad_key"")
+    response = handle_user_exception(ctx, e)
+    assert response is None  # Assuming the function returns None for this case
+
+def test_handle_user_exception_http_exception_not_trapped():
+    ctx = MockAppContext()
+    e = HTTPException(""HTTP error"")
+    response = handle_user_exception(ctx, e)
+    assert response is None  # Assuming the function returns None for this case
+
+def test_handle_user_exception_http_exception_trapped():
+    ctx = MockAppContext()
+    e = HTTPException(""HTTP error"")
+    ctx.trap_http_exception = lambda x: True
+    response = handle_user_exception(ctx, e)
+    assert response is None  # Assuming the function returns None for this case
+
+def test_handle_user_exception_no_handler():
+    ctx = MockAppContext()
+    e = Exception(""generic error"")
+    with pytest.raises(Exception):
+        handle_user_exception(ctx, e)
+```"
+PY-031,python,data-research/python_functions/PY-031.py,"```python
+import pytest
+from flask.app import Flask, AppContext
+
+@pytest.fixture
+def app():
+    app = Flask(__name__)
+
+    @app.before_request
+    def before_request_func():
+        return ""Before Request""
+
+    @app.url_value_preprocessor
+    def url_value_preprocessor(endpoint, values):
+        pass
+
+    return app
+
+def test_preprocess_request_no_before_request(app):
+    with app.app_context():
+        ctx = AppContext(app)
+        ctx.push()
+        assert app.preprocess_request(ctx) is None
+        ctx.pop()
+
+def test_preprocess_request_with_before_request(app):
+    with app.app_context():
+        ctx = AppContext(app)
+        ctx.push()
+        app.before_request_funcs['test_blueprint'] = [lambda: ""Before Request""]
+        assert app.preprocess_request(ctx) == ""Before Request""
+        ctx.pop()
+
+def test_preprocess_request_with_url_value_preprocessor(app):
+    with app.app_context():
+        ctx = AppContext(app)
+        ctx.push()
+        app.url_value_preprocessors['test_blueprint'] = [lambda endpoint, values: None]
+        assert app.preprocess_request(ctx) is None
+        ctx.pop()
+
+def test_preprocess_request_with_multiple_before_requests(app):
+    with app.app_context():
+        ctx = AppContext(app)
+        ctx.push()
+        app.before_request_funcs['test_blueprint'] = [
+            lambda: None,
+            lambda: ""Before Request""
+        ]
+        assert app.preprocess_request(ctx) == ""Before Request""
+        ctx.pop()
+```"
+PY-032,python,data-research/python_functions/PY-032.py,"```python
+import pytest
+from flask.app import wsgi_app
+
+def test_wsgi_app_successful_response(mocker):
+    environ = {'REQUEST_METHOD': 'GET'}
+    start_response = mocker.Mock()
+    app = mocker.Mock()
+    app.request_context.return_value.push = mocker.Mock()
+    app.full_dispatch_request.return_value = lambda environ, start_response: start_response('200 OK', [])
+    
+    response = app.wsgi_app(environ, start_response)
+    
+    assert response == '200 OK'
+    start_response.assert_called_once_with('200 OK', [])
+
+def test_wsgi_app_exception_handling(mocker):
+    environ = {'REQUEST_METHOD': 'GET'}
+    start_response = mocker.Mock()
+    app = mocker.Mock()
+    app.request_context.return_value.push = mocker.Mock()
+    app.full_dispatch_request.side_effect = Exception(""Test Exception"")
+    app.handle_exception.return_value = lambda environ, start_response: start_response('500 Internal Server Error', [])
+    
+    response = app.wsgi_app(environ, start_response)
+    
+    assert response == '500 Internal Server Error'
+    start_response.assert_called_once_with('500 Internal Server Error', [])
+
+def test_wsgi_app_unhandled_exception(mocker):
+    environ = {'REQUEST_METHOD': 'GET'}
+    start_response = mocker.Mock()
+    app = mocker.Mock()
+    app.request_context.return_value.push = mocker.Mock()
+    app.full_dispatch_request.side_effect = ValueError(""Unhandled Exception"")
+    
+    with pytest.raises(ValueError):
+        app.wsgi_app(environ, start_response)
+
+def test_wsgi_app_preserve_context(mocker):
+    environ = {
+        'REQUEST_METHOD': 'GET',
+        'werkzeug.debug.preserve_context': mocker.Mock()
+    }
+    start_response = mocker.Mock()
+    app = mocker.Mock()
+    app.request_context.return_value.push = mocker.Mock()
+    app.full_dispatch_request.return_value = lambda environ, start_response: start_response('200 OK', [])
+    
+    response = app.wsgi_app(environ, start_response)
+    
+    assert response == '200 OK'
+    environ['werkzeug.debug.preserve_context'].assert_called_once()
+```"
+PY-040,python,data-research/python_functions/PY-040.py,"```python
+import pytest
+import click
+from flask.cli import _validate_key
+
+def test_validate_key_adhoc_cert():
+    ctx = click.Context(click.Command(""test""))
+    ctx.params = {""cert"": ""adhoc""}
+    with pytest.raises(click.BadParameter, match='When ""--cert"" is ""adhoc"", ""--key"" is not used.'):
+        _validate_key(ctx, click.Parameter(name=""key""), ""some_key"")
+
+def test_validate_key_ssl_context():
+    class MockSSLContext:
+        pass
+
+    ctx = click.Context(click.Command(""test""))
+    ctx.params = {""cert"": MockSSLContext()}
+    with pytest.raises(click.BadParameter, match='When ""--cert"" is an SSLContext object, ""--key"" is not used.'):
+        _validate_key(ctx, click.Parameter(name=""key""), ""some_key"")
+
+def test_validate_key_no_cert():
+    ctx = click.Context(click.Command(""test""))
+    ctx.params = {""cert"": None}
+    with pytest.raises(click.BadParameter, match='""--cert"" must also be specified.'):
+        _validate_key(ctx, click.Parameter(name=""key""), ""some_key"")
+
+def test_validate_key_required_key():
+    ctx = click.Context(click.Command(""test""))
+    ctx.params = {""cert"": ""some_cert""}
+    with pytest.raises(click.BadParameter, match='Required when using ""--cert"".'):
+        _validate_key(ctx, click.Parameter(name=""key""), None)
+
+def test_validate_key_success():
+    ctx = click.Context(click.Command(""test""))
+    ctx.params = {""cert"": ""some_cert""}
+    result = _validate_key(ctx, click.Parameter(name=""key""), ""some_key"")
+    assert result == ""some_key""
+    assert ctx.params[""cert""] == (""some_cert"", ""some_key"")
+```"
+PY-041,python,data-research/python_functions/PY-041.py,"```python
+import os
+import sys
+import importlib.util
+import pytest
+from flask.helpers import get_root_path
+
+def test_get_root_path_module_with_file():
+    # Create a temporary module with a __file__ attribute
+    module_name = ""test_module""
+    module_code = ""print('This is a test module')""
+    with open(f""{module_name}.py"", ""w"") as f:
+        f.write(module_code)
+    
+    try:
+        # Import the module
+        sys.modules[module_name] = __import__(module_name)
+        assert get_root_path(module_name) == os.path.dirname(os.path.abspath(f""{module_name}.py""))
+    finally:
+        os.remove(f""{module_name}.py"")
+        del sys.modules[module_name]
+
+def test_get_root_path_namespace_package():
+    # Test for a namespace package scenario
+    with pytest.raises(RuntimeError):
+        get_root_path(""non_existent_namespace_package"")
+
+def test_get_root_path_unloaded_main_module():
+    # Test for an unloaded main module
+    assert get_root_path(""__main__"") == os.getcwd()
+
+def test_get_root_path_no_file():
+    # Test for a module without a __file__ attribute
+    module_name = ""test_module_no_file""
+    sys.modules[module_name] = type(sys)(module_name)  # Create a module without a __file__
+    try:
+        with pytest.raises(RuntimeError):
+            get_root_path(module_name)
+    finally:
+        del sys.modules[module_name]
+```"
+PY-046,python,data-research/python_functions/PY-046.py,"```python
+import pytest
+from flask.app import Flask
+
+class TestFlaskSubclass(Flask):
+    def handle_http_exception(self, e):
+        pass
+
+    def handle_user_exception(self, e):
+        pass
+
+    def handle_exception(self, e):
+        pass
+
+    def log_exception(self, e):
+        pass
+
+    def dispatch_request(self):
+        pass
+
+    def full_dispatch_request(self):
+        pass
+
+    def finalize_request(self):
+        pass
+
+    def make_default_options_response(self):
+        pass
+
+    def preprocess_request(self):
+        pass
+
+    def process_response(self, response):
+        return response
+
+    def do_teardown_request(self, exc=None):
+        pass
+
+    def do_teardown_appcontext(self, exc=None):
+        pass
+
+def test_init_subclass_warning(mocker):
+    mock_warning = mocker.patch(""warnings.warn"")
+    TestFlaskSubclass.__init_subclass__()
+
+    assert mock_warning.call_count == 10
+    for method in [
+        ""handle_http_exception"",
+        ""handle_user_exception"",
+        ""handle_exception"",
+        ""log_exception"",
+        ""dispatch_request"",
+        ""full_dispatch_request"",
+        ""finalize_request"",
+        ""make_default_options_response"",
+        ""preprocess_request"",
+        ""process_response"",
+        ""do_teardown_request"",
+        ""do_teardown_appcontext"",
+    ]:
+        mock_warning.assert_any_call(
+            f""The '{method}' method now takes 'ctx: AppContext' as the first parameter. The old signature is deprecated and will not be supported in Flask 4.0."",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+```"
+PY-047,python,data-research/python_functions/PY-047.py,"```python
+import os
+import pathlib
+import importlib.util
+import pytest
+from flask.sansio.scaffold import _find_package_path
+
+def test_find_package_path_valid_module():
+    assert _find_package_path(""os"") == os.path.dirname(os.path.abspath(os.__file__))
+
+def test_find_package_path_valid_namespace_package():
+    # Assuming 'flask' is a namespace package
+    assert _find_package_path(""flask.sansio"") == os.path.dirname(os.path.abspath(""flask/sansio""))
+
+def test_find_package_path_invalid_module():
+    assert _find_package_path(""invalid_module_name"") == os.getcwd()
+
+def test_find_package_path_main_module():
+    assert _find_package_path(""__main__"") == os.getcwd()
+
+def test_find_package_path_empty_string():
+    assert _find_package_path("""") == os.getcwd()
+```"
