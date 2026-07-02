@@ -102,10 +102,26 @@ def main():
                 print(f"   -> LỖI EXCEPTION: {e}")
             append_to_log(log_writer, log_file, func_id, lang, "randoop", out_file, status)
 
-            # EVOSUITE (TẠM THỜI ẨN VÌ GÂY TREO MÁY ẢO JAVA)
-            # print(f"[{func_id}] Chạy EvoSuite cho {package_name}.{class_name}")
-            # out_file = f"generated_tests/evosuite/java/{func_id}_Test.java"
-            # append_to_log(log_writer, log_file, func_id, lang, "evosuite", out_file, "skipped")
+            # EVOSUITE 
+            print(f"[{func_id}] Chạy EvoSuite cho {package_name}.{class_name}")
+            out_file = f"generated_tests/evosuite/java/{func_id}_Test.java"
+            evosuite_cmd = f"java -jar \"{EVOSUITE_JAR}\" -class {package_name}.{class_name} -projectCP \"{cp}\" -Dtest_dir=\"{OUT_DIRS['evosuite']}\""
+            try:
+                res = subprocess.run(evosuite_cmd, shell=True, capture_output=True, text=True, timeout=30)
+                if res.returncode == 0:
+                    status = "ok"
+                    print("   -> EvoSuite chạy thành công.")
+                else:
+                    status = "failed"
+                    # In ra một đoạn lỗi nhỏ để dễ debug
+                    print(f"   -> LỖI EVOSUITE: {res.stderr.strip()[:200]}...")
+            except subprocess.TimeoutExpired:
+                status = "failed"
+                print("   -> LỖI EVOSUITE: Quá thời gian 30 giây (Timeout). Ghi nhận Fail.")
+            except Exception as e:
+                status = "error"
+                print(f"   -> LỖI EXCEPTION: {e}")
+            append_to_log(log_writer, log_file, func_id, lang, "evosuite", out_file, status)
 
         elif lang == "python":
             # PYNGUIN
