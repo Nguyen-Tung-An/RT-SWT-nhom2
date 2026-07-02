@@ -23,7 +23,9 @@ Zero/one-shot evaluation of **GPT-4o-mini** generating unit tests for **Java & P
 - **RQ2** — Mutation score ≥ 60% and higher than baselines? (Paired Wilcoxon)
 - **RQ3** — Negative CC ↔ quality correlation? (Spearman ρ)
 
-> **Model note:** the approved proposal specified `gpt-4o-2024-08-06`; the team only has API access to `gpt-4o-mini`, so **amendment v1.1** (`team-synthesis/` / `ms-analysis/proposal-amendment-v1.1.md`) changes the model to `gpt-4o-mini-2024-07-18` (RQ / metric / threshold / test unchanged). **Pending GV approval before the full run.**
+> **Amendments (finalized by the team 2026-07-02, to be confirmed with GV before the full run):**
+> - **v1.1 — Model:** `gpt-4o-2024-08-06` → **`gpt-4o-mini-2024-07-18`** (API-access constraint; RQ / metric / threshold / test unchanged). See `ms-analysis/proposal-amendment-v1.1.md`.
+> - **v1.2 — Dataset:** Defects4J + CodeXGLUE (N=100) → **team-mined set of 120 functions (60 Java + 60 Python) from 10 pinned OSS repos** (8 Defects4J subject programs + requests/flask, CC 5–10; provenance in `data/raw/README.md`). See `ms-analysis/proposal-amendment-v1.2.md`.
 
 ## Progress
 
