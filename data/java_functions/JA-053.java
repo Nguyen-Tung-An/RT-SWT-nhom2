@@ -1,0 +1,22 @@
+    public static int lastIndexOf(final Object[] array, final Object objectToFind, int startIndex) {
+        if (array == null || startIndex < 0) {
+            return INDEX_NOT_FOUND;
+        }
+        if (startIndex >= array.length) {
+            startIndex = array.length - 1;
+        }
+        if (objectToFind == null) {
+            for (int i = startIndex; i >= 0; i--) {
+                if (array[i] == null) {
+                    return i;
+                }
+            }
+        } else if (array.getClass().getComponentType().isInstance(objectToFind)) {
+            for (int i = startIndex; i >= 0; i--) {
+                if (objectToFind.equals(array[i])) {
+                    return i;
+                }
+            }
+        }
+        return INDEX_NOT_FOUND;
+    }
