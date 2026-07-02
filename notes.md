@@ -66,7 +66,9 @@ This file records every technical decision and error during RBL-4, per RBL-0/RBL
 - **Root cause 1 — DATA:** nhiều file trong `data/python_functions/` là *method xé từ class* (ví dụ PY-001: còn nguyên thụt dòng, `self`, relative import `.debughelpers`) → ghi vào `solution.py` là SyntaxError ngay → INVALID hàng loạt, bất kể chất lượng test của LLM.
 - **Root cause 2 — PROMPT:** LLM không test hàm gốc mà **tự chép lại hàm vào class Mock rồi test bản chép** (test_PY-001 tạo `MockApp` chứa nguyên văn logic) → kể cả chạy được, coverage trên hàm gốc = 0. Kết quả không đo được RQ1/RQ2.
 - **Root cause 3 — DATA:** file hàm mined không kèm import phụ thuộc (PY-041 `get_root_path` dùng `sys`/`os` nhưng file không có `import sys, os`) → mọi test chết NameError trên **cả bản gốc** → mutant nào cũng "bị giết" → ms=100% giả.
+- **Root cause 4 — HARNESS:** `from solution import *` không import tên bắt đầu bằng `_` (PY-047 `_find_package_path` → `NameError` trên mọi test) — harness cần import tường minh `from solution import <func_name>`.
 - **Lỗ hổng harness — MS:** `measure_python.py` không kiểm tra test **pass trên bản gốc** trước khi đo mutation (chuẩn mutation testing bắt buộc green-on-original) → sinh ra ms=100% giả ở trên.
+- **📄 Log nguyên văn lỗi từng hàm (12/12):** `ms-analysis/results/pilot_python_error_log.md` — sinh bằng `ms-analysis/scripts/diagnose_pilot_errors.py` (chạy lại được bất kỳ lúc nào).
 - **Đề xuất (nhóm chốt trước khi đo lại pilot, KHÔNG chạy full run khi chưa xử lý):**
   1. *DG (Kim):* chuẩn hoá file hàm thành self-contained — dedent method, thêm import cần thiết; hoặc thay hàm không thể standalone bằng hàm top-level cùng band CC.
   2. *LR (Hải):* sửa prompt — cấm re-implement, bắt buộc test import và gọi đúng hàm được cung cấp (exemplar one-shot minh hoạ `from solution import <func>`).
