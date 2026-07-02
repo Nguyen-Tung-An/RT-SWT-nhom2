@@ -61,4 +61,15 @@ This file records every technical decision and error during RBL-4, per RBL-0/RBL
 ## Error log
 *(append problems + resolutions here as they occur during the full run)*
 
-- _none recorded yet_
+### 2026-07-02 — Đo pilot Python (12 hàm): 10/12 INVALID + 2 hàm số ảo — 3 root cause ⚠️
+- **Kết quả thô** (`ms-analysis/results/metrics.csv`, method=gpt4o-mini): 10/12 `compiled=0`; PY-041 & PY-047 `compiled=1` nhưng `bc=0.0, ms=100.0` — **số ảo, không dùng được**.
+- **Root cause 1 — DATA:** nhiều file trong `data/python_functions/` là *method xé từ class* (ví dụ PY-001: còn nguyên thụt dòng, `self`, relative import `.debughelpers`) → ghi vào `solution.py` là SyntaxError ngay → INVALID hàng loạt, bất kể chất lượng test của LLM.
+- **Root cause 2 — PROMPT:** LLM không test hàm gốc mà **tự chép lại hàm vào class Mock rồi test bản chép** (test_PY-001 tạo `MockApp` chứa nguyên văn logic) → kể cả chạy được, coverage trên hàm gốc = 0. Kết quả không đo được RQ1/RQ2.
+- **Root cause 3 — DATA:** file hàm mined không kèm import phụ thuộc (PY-041 `get_root_path` dùng `sys`/`os` nhưng file không có `import sys, os`) → mọi test chết NameError trên **cả bản gốc** → mutant nào cũng "bị giết" → ms=100% giả.
+- **Lỗ hổng harness — MS:** `measure_python.py` không kiểm tra test **pass trên bản gốc** trước khi đo mutation (chuẩn mutation testing bắt buộc green-on-original) → sinh ra ms=100% giả ở trên.
+- **Đề xuất (nhóm chốt trước khi đo lại pilot, KHÔNG chạy full run khi chưa xử lý):**
+  1. *DG (Kim):* chuẩn hoá file hàm thành self-contained — dedent method, thêm import cần thiết; hoặc thay hàm không thể standalone bằng hàm top-level cùng band CC.
+  2. *LR (Hải):* sửa prompt — cấm re-implement, bắt buộc test import và gọi đúng hàm được cung cấp (exemplar one-shot minh hoạ `from solution import <func>`).
+  3. *MS (Phúc):* thêm green-check vào `measure_python.py` — test fail trên bản gốc ⇒ INVALID, không đo mutation; các fix này là điều kiện tiên quyết của số liệu hợp lệ.
+  4. Java (`data/java_functions/` cũng là method xé lẻ) nhiều khả năng dính cùng vấn đề — kiểm tra `measure_java` trước khi tin kết quả.
+- **Ý nghĩa:** pilot làm đúng nhiệm vụ — lộ lỗi tích hợp trước full run. Số trong `metrics.csv` hiện tại chỉ là bằng chứng lỗi, **không phải** kết quả RQ.
