@@ -112,13 +112,13 @@ def main():
 
         raw_path = row["raw_source_path"]
         
-        # FIX PATH TO MATCH REAL SYSTEM SINCE REPO IS DIFFERENT
+        # Sử dụng đường dẫn tương đối để chạy được trên mọi máy
         if raw_path.startswith("data-research/"):
             raw_path_sys = raw_path[14:]
         else:
             raw_path_sys = raw_path
             
-        source_path = os.path.join("d:\\SONHAI\\SU26\\SWT301\\research\\research", raw_path_sys)
+        source_path = os.path.join(BASE_DIR, "data", raw_path_sys)
         if not os.path.exists(source_path):
             print(f"Warning: source file not found {source_path}")
             continue
