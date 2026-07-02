@@ -19,9 +19,9 @@ LOG_PATH = os.path.join(BASE_DIR, "results", "generation_log.csv")
 API_LOG_TXT = os.path.join(BASE_DIR, "results", "pilot_api_log.txt")
 PILOT_OUTPUT_CSV = os.path.join(BASE_DIR, "results", "pilot_llm_output.csv")
 
-# DATA_ROOT = thu muc goc chua source code (java_functions/, python_functions/, raw/).
-# Mac dinh = may sinh du lieu (Windows). Tren Colab / may khac: set bien moi truong DATA_ROOT.
-DATA_ROOT = os.getenv("DATA_ROOT", r"d:\SONHAI\SU26\SWT301\research\research")
+# DATA_ROOT = thu muc goc chua source code (java_functions/, python_functions/).
+# Mac dinh = data/ trong repo (Kim da up len main). Colab / may khac: override bang bien moi truong.
+DATA_ROOT = os.getenv("DATA_ROOT", os.path.join(BASE_DIR, "data"))
 # Dataset CSV = pilot mac dinh. De chay FULL: set bien moi truong DATASET_CSV.
 CSV_PATH = os.getenv("DATASET_CSV", CSV_PATH)
 # ============================================
@@ -118,7 +118,7 @@ def main():
 
         raw_path = row["raw_source_path"]
         
-        # FIX PATH TO MATCH REAL SYSTEM SINCE REPO IS DIFFERENT
+        # Sử dụng đường dẫn tương đối để chạy được trên mọi máy
         if raw_path.startswith("data-research/"):
             raw_path_sys = raw_path[14:]
         else:
@@ -196,16 +196,17 @@ def main():
                 f"### Example Output ###\n"
                 f"```python\n"
                 f"import pytest\n"
-                f"from mymath.utils import add\n\n"
+                f"from solution import add\n\n"
                 f"def test_add_both_negative():\n"
                 f"    assert add(-1, -1) == 0\n\n"
                 f"def test_add_normal():\n"
                 f"    assert add(2, 3) == 5\n"
                 f"```\n\n"
                 f"### Actual Task ###\n"
-                f"The function below belongs to module `{package_name}`.\n"
-                f"Generate pytest tests that test `{func_name}`.\n"
-                f"Include the correct import statement: `from {package_name} import ...`.\n\n"
+                f"The target code below will be provided in a module named `solution`.\n"
+                f"Generate pytest tests for `{func_name}`.\n"
+                f"You MUST import the target function/class from the `solution` module (e.g., `from solution import ...`).\n"
+                f"DO NOT use the original package name `{package_name}` in your imports.\n\n"
                 f"```python\n{source_code}\n```"
             )
 
