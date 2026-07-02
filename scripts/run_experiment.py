@@ -18,6 +18,12 @@ OUT_DIR = os.path.join(BASE_DIR, "generated_tests", TEST_SOURCE)
 LOG_PATH = os.path.join(BASE_DIR, "results", "generation_log.csv")
 API_LOG_TXT = os.path.join(BASE_DIR, "results", "pilot_api_log.txt")
 PILOT_OUTPUT_CSV = os.path.join(BASE_DIR, "results", "pilot_llm_output.csv")
+
+# DATA_ROOT = thu muc goc chua source code (java_functions/, python_functions/, raw/).
+# Mac dinh = may sinh du lieu (Windows). Tren Colab / may khac: set bien moi truong DATA_ROOT.
+DATA_ROOT = os.getenv("DATA_ROOT", r"d:\SONHAI\SU26\SWT301\research\research")
+# Dataset CSV = pilot mac dinh. De chay FULL: set bien moi truong DATASET_CSV.
+CSV_PATH = os.getenv("DATASET_CSV", CSV_PATH)
 # ============================================
 
 def clean_code_block(text, language):
@@ -118,7 +124,7 @@ def main():
         else:
             raw_path_sys = raw_path
             
-        source_path = os.path.join("d:\\SONHAI\\SU26\\SWT301\\research\\research", raw_path_sys)
+        source_path = os.path.join(DATA_ROOT, raw_path_sys)
         if not os.path.exists(source_path):
             print(f"Warning: source file not found {source_path}")
             continue
