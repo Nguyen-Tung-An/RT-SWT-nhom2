@@ -42,7 +42,8 @@ This file records every technical decision and error during RBL-4, per RBL-0/RBL
 
 ### Baselines
 - Randoop (Java): ✅ generated — `generated_tests/randoop/java/RegressionTest*.java`.
-- EvoSuite (Java), Pynguin + Hypothesis (Python): ⏳ not yet generated.
+- EvoSuite (Java): ✅ **verify chạy được** (2026-07-02, smoke test 1 class trên JDK 11) — chưa chạy đủ 12 hàm pilot. Xem error log bên dưới về JDK compat + timeout.
+- Pynguin + Hypothesis (Python): ⏳ not yet generated (Pynguin cần Python 3.10, máy đang 3.14).
 
 ---
 
@@ -75,3 +76,9 @@ This file records every technical decision and error during RBL-4, per RBL-0/RBL
   3. *MS (Phúc):* thêm green-check vào `measure_python.py` — test fail trên bản gốc ⇒ INVALID, không đo mutation; các fix này là điều kiện tiên quyết của số liệu hợp lệ.
   4. Java (`data/java_functions/` cũng là method xé lẻ) nhiều khả năng dính cùng vấn đề — kiểm tra `measure_java` trước khi tin kết quả.
 - **Ý nghĩa:** pilot làm đúng nhiệm vụ — lộ lỗi tích hợp trước full run. Số trong `metrics.csv` hiện tại chỉ là bằng chứng lỗi, **không phải** kết quả RQ.
+
+### 2026-07-02 — EvoSuite: fail trên JDK 17, chạy OK trên JDK 11; timeout 30s kill oan mọi run
+- **JDK 17:** master chết `InaccessibleObjectException` ("module java.base does not opens java.util") — module system Java 17 chặn reflection của xstream. `--add-opens` lẫn `JAVA_TOOL_OPTIONS` đều không cứu được vì EvoSuite spawn process con theo cách riêng.
+- **JDK 11** (Temurin 11.0.31 portable, giải nén vào `F:\Java`, không cần cài): ✅ chạy OK — sinh `generated_tests/evosuite/java/.../CommandLine_ESTest.java` (smoke test `search_budget=20`, tổng ~50s/class).
+- **Bug trong fix `43c2f03`:** timeout 30s **ngắn hơn thời gian chạy tối thiểu** (budget mặc định 60s + JVM overhead ≈ 90–120s) → mọi run hợp lệ sẽ bị kill và ghi "failed" — hiện tượng giống hệt "treo máy" nhưng thực ra là chạy chưa xong. Đã sửa trong `run_baselines.py`: `-Dsearch_budget=60` tường minh, timeout 180s, thêm env var `EVOSUITE_JAVA` để trỏ JDK 11.
+- **Setup mỗi máy (jar bị gitignore):** tải `evosuite-1.2.0.jar` từ GitHub releases về repo root; classpath cần `data/raw/commons-cli/target/classes` — clone commons-cli ở commit pin (xem `data/raw/README.md`) rồi `mvn compile`; chạy: `set EVOSUITE_JAVA=<path>\jdk-11\bin\java.exe && python scripts/run_baselines.py`.

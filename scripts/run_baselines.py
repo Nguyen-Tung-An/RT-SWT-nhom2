@@ -19,7 +19,13 @@ OUT_DIRS = {
 # Tên công cụ (Đã check thư mục root)
 RANDOOP_JAR = os.path.join(BASE_DIR, "randoop-all-4.3.4.jar")
 EVOSUITE_JAR = os.path.join(BASE_DIR, "evosuite-1.2.0.jar")
-PYNGUIN_BIN = "pynguin"
+# EvoSuite 1.2.0 chi chay duoc tren JDK 8/11 — tren JDK 17 chet InaccessibleObjectException
+# (module system khoa reflection, --add-opens khong cuu duoc process con).
+# May co java mac dinh la 17+: set EVOSUITE_JAVA tro den java.exe cua JDK 11.
+EVOSUITE_JAVA = os.getenv("EVOSUITE_JAVA", "java")
+# Search budget 60s/class (mac dinh cua EvoSuite) + JVM overhead ~ 90-120s/run.
+# Timeout phai LON HON tong nay, neu khong moi run hop le deu bi kill oan.
+EVOSUITE_TIMEOUT = 180
 
 # Cho phép Pynguin chạy mà không báo lỗi Danger
 os.environ["PYNGUIN_DANGER_AWARE"] = "1"
@@ -105,9 +111,9 @@ def main():
             # EVOSUITE 
             print(f"[{func_id}] Chạy EvoSuite cho {package_name}.{class_name}")
             out_file = f"generated_tests/evosuite/java/{func_id}_Test.java"
-            evosuite_cmd = f"java -jar \"{EVOSUITE_JAR}\" -class {package_name}.{class_name} -projectCP \"{cp}\" -Dtest_dir=\"{OUT_DIRS['evosuite']}\""
+            evosuite_cmd = f"\"{EVOSUITE_JAVA}\" -jar \"{EVOSUITE_JAR}\" -class {package_name}.{class_name} -projectCP \"{cp}\" -Dsearch_budget=60 -Dtest_dir=\"{OUT_DIRS['evosuite']}\""
             try:
-                res = subprocess.run(evosuite_cmd, shell=True, capture_output=True, text=True, timeout=30)
+                res = subprocess.run(evosuite_cmd, shell=True, capture_output=True, text=True, timeout=EVOSUITE_TIMEOUT)
                 if res.returncode == 0:
                     status = "ok"
                     print("   -> EvoSuite chạy thành công.")
@@ -117,7 +123,7 @@ def main():
                     print(f"   -> LỖI EVOSUITE: {res.stderr.strip()[:200]}...")
             except subprocess.TimeoutExpired:
                 status = "failed"
-                print("   -> LỖI EVOSUITE: Quá thời gian 30 giây (Timeout). Ghi nhận Fail.")
+                print(f"   -> LỖI EVOSUITE: Quá thời gian {EVOSUITE_TIMEOUT} giây (Timeout). Ghi nhận Fail.")
             except Exception as e:
                 status = "error"
                 print(f"   -> LỖI EXCEPTION: {e}")
