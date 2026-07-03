@@ -84,6 +84,12 @@ This file records every technical decision and error during RBL-4, per RBL-0/RBL
 - **Chẩn đoán lại pilot với data v2 + test CŨ:** 0×P1 (trước là 9) · 8×P3 (test cũ import flask/click) · 4×P4 (test fail trên bản gốc) → chốt chặn đã chuyển từ DATA sang TEST GENERATION (chờ LR chạy lại prompt mới).
 - Data v2 đã commit vào `data/{java,python}_functions/` (`2ccffc7`). Nhắc DG: lần sau **push lên git** thay vì gửi rar — repo là nguồn chuẩn.
 
+### 2026-07-03 — EvoSuite "thành công GIẢ" (exit 0 nhưng không sinh test) + fix hạ tầng Java ⚠️
+- **Phát hiện:** EvoSuite **exit code 0 kể cả khi thất bại hoàn toàn** — script cũ chỉ check returncode nên log ghi "ok" giả. Root cause tầng 2: master chạy JDK 11 (qua `EVOSUITE_JAVA`) nhưng **client bị spawn bằng java từ `JAVA_HOME`** (vẫn JDK 17) → client chết ngầm.
+- **Fix (`2f2b216`):** run_baselines tự set `JAVA_HOME` theo `EVOSUITE_JAVA` cho process con + status "ok" chỉ khi **file `<Class>_ESTest.java` tồn tại thật**, không tin exit code. 12 dòng log "ok" giả đã được revert trước khi commit (log sạch).
+- **Hạ tầng:** đã build đủ **8/8 repo Java** ở commit pin trên máy RW (7 repo mới: math/csv/collections/gson/jsoup/joda-time/jfreechart). `java_classpath()` mới gộp mọi `*/target/classes` trong repo — cần vì gson mine hàm từ 2 module (`gson/` + `extras/`).
+- **Lưu ý cho full run:** classpath mới chỉ gồm class nội bộ repo, chưa gồm dependency ngoài (jar trong `.m2`) — nếu EvoSuite/Randoop báo NoClassDefFound với joda-time/jfreechart thì bổ sung `mvn dependency:build-classpath`.
+
 ### 2026-07-02 — EvoSuite: fail trên JDK 17, chạy OK trên JDK 11; timeout 30s kill oan mọi run
 - **JDK 17:** master chết `InaccessibleObjectException` ("module java.base does not opens java.util") — module system Java 17 chặn reflection của xstream. `--add-opens` lẫn `JAVA_TOOL_OPTIONS` đều không cứu được vì EvoSuite spawn process con theo cách riêng.
 - **JDK 11** (Temurin 11.0.31 portable, giải nén vào `F:\Java`, không cần cài): ✅ chạy OK — sinh `generated_tests/evosuite/java/.../CommandLine_ESTest.java` (smoke test `search_budget=20`, tổng ~50s/class).

@@ -41,6 +41,25 @@ BASELINE_TOOLS = {t.strip() for t in os.getenv("BASELINE_TOOLS", "randoop,evosui
 os.environ["PYNGUIN_DANGER_AWARE"] = "1"
 # ============================================
 
+def java_classpath(repo_name):
+    """Ghep classpath tu MOI target/classes trong repo (ho tro repo multi-module).
+
+    Vi du gson mine ham tu ca 2 module `gson/` va `extras/` -> cp phai gom ca hai,
+    neu chi lay <repo>/target/classes se thieu class (NoClassDefFound khi gen test).
+    """
+    root = os.path.join(BASE_DIR, "data", "raw", repo_name)
+    cps = []
+    direct = os.path.join(root, "target", "classes")
+    if os.path.isdir(direct):
+        cps.append(direct)
+    if os.path.isdir(root):
+        for sub in sorted(os.listdir(root)):
+            c = os.path.join(root, sub, "target", "classes")
+            if os.path.isdir(c) and c not in cps:
+                cps.append(c)
+    return os.pathsep.join(cps) if cps else direct
+
+
 def extract_context(file_path, lang):
     file_path = file_path.replace("\\", "/")
     if lang == "java":
@@ -105,7 +124,7 @@ def main():
 
 
         if lang == "java":
-            cp = os.path.join(BASE_DIR, "data", "raw", repo_name, "target", "classes")
+            cp = java_classpath(repo_name)
 
             # RANDOOP
             if "randoop" in BASELINE_TOOLS:
