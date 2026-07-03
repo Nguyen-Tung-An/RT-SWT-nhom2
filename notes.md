@@ -93,7 +93,8 @@ This file records every technical decision and error during RBL-4, per RBL-0/RBL
   3. Compile test cần `-Dmaven.compiler.release=11` — EvoSuite sinh code dùng API Java 11 (`Writer.nullWriter()`...), trong khi commons-* target Java 8.
   4. KHÔNG tự chèn jacoco prepare-agent — commons-parent đã tích hợp sẵn JaCoCo, 2 agent cùng lúc = LinkageError crash; chỉ cần gọi `jacoco:report`.
   5. Sửa `separateClassLoader = true → false` trong `*_ESTest.java` — không sửa thì test vẫn xanh nhưng JaCoCo báo **0%** (classloader riêng của EvoSuite làm lệch hash class — lại một kiểu "số giả" nữa).
-- **Còn thiếu cho `metrics.csv`:** (a) tách số theo TỪNG HÀM — parse `jacoco.xml` mức method rồi khớp `func_name` (hiện mới có mức class); (b) PIT mutation score — bước kế của gate.
+- **HOÀN TẤT GATE (2026-07-04):** `measure_java_from_reports.py` tách số theo TỪNG HÀM qua khoảng dòng (jacoco.xml line-level + PIT mutations.xml). PIT chạy OK: 497 mutant, killed 300 (60% toàn cục).
+- **Baseline EvoSuite pilot Java — 12/12 hàm** (lưu `ms-analysis/results/metrics.csv`, method=evosuite): branch coverage median **83.3%** (min 50, max 100) · mutation score median **71.4%** (min 0, max 100). Đây là mốc so găng RQ2 cho gpt-4o-mini. Điểm đáng chú ý: JA-020 ms=0% và JA-050 ms=12.5% — coverage cao không đồng nghĩa mutation cao, đúng lý do proposal chọn cặp metric này.
 
 ### 2026-07-03 — Test Java pilot của LLM cũng phải sinh lại (hậu quả data v1 sai) ⚠️
 - **`generated_tests/gpt4o/java/JA-002_Test.java` test hàm `CommandLine.concat(boolean[]...)` — hàm KHÔNG tồn tại** trong CommandLine thật: pilot generation chạy trên data v1 (nội dung lệch CSV) nên LLM được xem source sai. → 12 test Java pilot hiện tại vô giá trị để đo, **LR phải sinh lại sau khi có data v2** (gộp cùng đợt sinh lại Python).
