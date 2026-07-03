@@ -1,3 +1,8 @@
+from __future__ import annotations
+import importlib.util
+import os
+import pathlib
+
 def _find_package_path(import_name: str) -> str:
     """Find the path that contains the package or module."""
     root_mod_name, _, _ = import_name.partition(".")

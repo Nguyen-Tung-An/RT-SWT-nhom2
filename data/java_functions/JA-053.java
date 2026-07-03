@@ -1,22 +1,30 @@
-    public static int lastIndexOf(final Object[] array, final Object objectToFind, int startIndex) {
-        if (array == null || startIndex < 0) {
-            return INDEX_NOT_FOUND;
+    public static int size(final Object object) {
+        if (object == null) {
+            return 0;
         }
-        if (startIndex >= array.length) {
-            startIndex = array.length - 1;
-        }
-        if (objectToFind == null) {
-            for (int i = startIndex; i >= 0; i--) {
-                if (array[i] == null) {
-                    return i;
-                }
+        int total = 0;
+        if (object instanceof Map<?, ?>) {
+            total = ((Map<?, ?>) object).size();
+        } else if (object instanceof Collection<?>) {
+            total = ((Collection<?>) object).size();
+        } else if (object instanceof Iterable<?>) {
+            total = IterableUtils.size((Iterable<?>) object);
+        } else if (object instanceof Object[]) {
+            total = ((Object[]) object).length;
+        } else if (object instanceof Iterator<?>) {
+            total = IteratorUtils.size((Iterator<?>) object);
+        } else if (object instanceof Enumeration<?>) {
+            final Enumeration<?> it = (Enumeration<?>) object;
+            while (it.hasMoreElements()) {
+                total++;
+                it.nextElement();
             }
-        } else if (array.getClass().getComponentType().isInstance(objectToFind)) {
-            for (int i = startIndex; i >= 0; i--) {
-                if (objectToFind.equals(array[i])) {
-                    return i;
-                }
+        } else {
+            try {
+                total = Array.getLength(object);
+            } catch (final IllegalArgumentException ex) {
+                throw new IllegalArgumentException("Unsupported object type: " + object.getClass().getName());
             }
         }
-        return INDEX_NOT_FOUND;
+        return total;
     }

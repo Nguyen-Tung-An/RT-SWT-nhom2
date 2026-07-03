@@ -1,3 +1,7 @@
+from __future__ import annotations
+import os
+import tempfile
+
 def extract_zipped_paths(path: str) -> str:
     """Replace nonexistent paths that look like they refer to a member of a zip
     archive with the location of an extracted copy of the target, or else

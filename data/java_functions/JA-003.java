@@ -1,14 +1,11 @@
-    public static byte[] concat(byte[]... arrays) {
-        int totalLength = 0;
-        for (byte[] array : arrays) {
-            totalLength = addExact(totalLength, array);
-        }
-        final byte[] result = new byte[totalLength];
-        int currentPos = 0;
-        for (byte[] array : arrays) {
-            if (array != null && array.length > 0) {
-                System.arraycopy(array, 0, result, currentPos, array.length);
-                currentPos += array.length;
+    public static <T> boolean filter(final Iterable<T> collection, final Predicate<? super T> predicate) {
+        boolean result = false;
+        if (collection != null && predicate != null) {
+            for (final Iterator<T> it = collection.iterator(); it.hasNext();) {
+                if (!predicate.test(it.next())) {
+                    it.remove();
+                    result = true;
+                }
             }
         }
         return result;

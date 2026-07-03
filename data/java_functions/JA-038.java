@@ -1,20 +1,15 @@
-    public static boolean isMixedCase(final CharSequence cs) {
-        if (isEmpty(cs) || cs.length() == 1) {
-            return false;
+    public boolean equals(@Nullable Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Attributes that = (Attributes) o;
+        if (size != that.size) return false;
+        for (int i = 0; i < size; i++) {
+            String key = keys[i];
+            assert key != null;
+            int thatI = that.indexOfKey(key);
+            if (thatI == NotFound || !Objects.equals(vals[i], that.vals[thatI]))
+                return false;
         }
-        boolean containsUppercase = false;
-        boolean containsLowercase = false;
-        final int sz = cs.length();
-        for (int i = 0; i < sz; i++) {
-            final char nowChar = cs.charAt(i);
-            if (Character.isUpperCase(nowChar)) {
-                containsUppercase = true;
-            } else if (Character.isLowerCase(nowChar)) {
-                containsLowercase = true;
-            }
-            if (containsUppercase && containsLowercase) {
-                return true;
-            }
-        }
-        return false;
+        return true;
     }

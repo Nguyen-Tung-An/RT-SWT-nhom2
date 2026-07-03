@@ -1,10 +1,12 @@
-    public static boolean isValidAnnotationMemberType(Class<?> type) {
-        if (type == null) {
-            return false;
+    public static DateTimeComparator getInstance(DateTimeFieldType lowerLimit, DateTimeFieldType upperLimit) {
+        if (lowerLimit == null && upperLimit == null) {
+            return ALL_INSTANCE;
         }
-        if (type.isArray()) {
-            type = type.getComponentType();
+        if (lowerLimit == DateTimeFieldType.dayOfYear() && upperLimit == null) {
+            return DATE_INSTANCE;
         }
-        return type.isPrimitive() || type.isEnum() || type.isAnnotation()
-                || String.class.equals(type) || Class.class.equals(type);
+        if (lowerLimit == null && upperLimit == DateTimeFieldType.dayOfYear()) {
+            return TIME_INSTANCE;
+        }
+        return new DateTimeComparator(lowerLimit, upperLimit);
     }

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 def _dump_loader_info(loader: BaseLoader) -> t.Iterator[str]:
     yield f"class: {type(loader).__module__}.{type(loader).__name__}"
     for key, value in sorted(loader.__dict__.items()):

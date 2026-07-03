@@ -1,22 +1,19 @@
-        public boolean equals(final CharSequence cs1, final CharSequence cs2) {
-            if (cs1 == cs2) {
-                return true;
-            }
-            if (cs1 == null || cs2 == null) {
-                return false;
-            }
-            if (cs1.length() != cs2.length()) {
-                return false;
-            }
-            if (cs1 instanceof String && cs2 instanceof String) {
-                return cs1.equals(cs2);
-            }
-            // Step-wise comparison
-            final int length = cs1.length();
-            for (int i = 0; i < length; i++) {
-                if (cs1.charAt(i) != cs2.charAt(i)) {
-                    return false;
-                }
-            }
-            return true;
+    private void appendOption(final StringBuilder buff, final Option option, final boolean required) {
+        if (!required) {
+            buff.append("[");
         }
+        if (option.getOpt() != null) {
+            buff.append(OptionFormatter.DEFAULT_OPT_PREFIX).append(option.getOpt());
+        } else {
+            buff.append(OptionFormatter.DEFAULT_LONG_OPT_PREFIX).append(option.getLongOpt());
+        }
+        // if the Option has a value and a non blank argname
+        if (option.hasArg() && (option.getArgName() == null || !option.getArgName().isEmpty())) {
+            buff.append(option.getOpt() == null ? longOptSeparator : " ");
+            buff.append("<").append(option.getArgName() != null ? option.getArgName() : getArgName()).append(">");
+        }
+        // if the Option is not a required option
+        if (!required) {
+            buff.append("]");
+        }
+    }

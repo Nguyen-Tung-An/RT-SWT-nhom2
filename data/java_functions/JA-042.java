@@ -1,32 +1,12 @@
-    public static String squeeze(final String str, final String... set) {
-        if (isEmpty(str, set)) {
-            return str;
+    protected void handleUnknownToken(final String token) throws ParseException {
+        if (token.startsWith(OptionFormatter.DEFAULT_OPT_PREFIX) && token.length() > 1 && nonOptionAction == NonOptionAction.THROW) {
+            throw new UnrecognizedOptionException("Unrecognized option: " + token, token);
         }
-        final CharSet chars = CharSet.getInstance(set);
-        final StringBuilder buffer = new StringBuilder(str.length());
-        final char[] chrs = str.toCharArray();
-        final int sz = chrs.length;
-        char lastChar = chrs[0];
-        char ch;
-        Character inChars = null;
-        Character notInChars = null;
-        buffer.append(lastChar);
-        for (int i = 1; i < sz; i++) {
-            ch = chrs[i];
-            if (ch == lastChar) {
-                if (inChars != null && ch == inChars) {
-                    continue;
-                }
-                if (notInChars == null || ch != notInChars) {
-                    if (chars.contains(ch)) {
-                        inChars = ch;
-                        continue;
-                    }
-                    notInChars = ch;
-                }
-            }
-            buffer.append(ch);
-            lastChar = ch;
+        if (!token.startsWith(OptionFormatter.DEFAULT_OPT_PREFIX) || token.equals(OptionFormatter.DEFAULT_OPT_PREFIX)
+                || token.length() > 1 && nonOptionAction != NonOptionAction.IGNORE) {
+            addArg(token);
         }
-        return buffer.toString();
+        if (nonOptionAction == NonOptionAction.STOP) {
+            skipParsing = true;
+        }
     }

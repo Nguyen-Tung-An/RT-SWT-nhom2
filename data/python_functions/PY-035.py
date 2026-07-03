@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 def remove_cookie_by_name(
     cookiejar: CookieJar, name: str, domain: str | None = None, path: str | None = None
 ) -> None:

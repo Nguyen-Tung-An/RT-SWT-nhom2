@@ -1,14 +1,20 @@
-    public static int lastIndexOf(final int[] array, final int valueToFind, int startIndex) {
-        if (array == null || startIndex < 0) {
-            return INDEX_NOT_FOUND;
+    private void appendOptionGroup(final StringBuilder buff, final OptionGroup optionGroup) {
+        if (!optionGroup.isRequired()) {
+            buff.append("[");
         }
-        if (startIndex >= array.length) {
-            startIndex = array.length - 1;
+        final List<Option> optList = new ArrayList<>(optionGroup.getOptions());
+        if (getOptionComparator() != null) {
+            Collections.sort(optList, getOptionComparator());
         }
-        for (int i = startIndex; i >= 0; i--) {
-            if (valueToFind == array[i]) {
-                return i;
+        // for each option in the OptionGroup
+        for (final Iterator<Option> it = optList.iterator(); it.hasNext();) {
+            // whether the option is required or not is handled at group level
+            appendOption(buff, it.next(), true);
+            if (it.hasNext()) {
+                buff.append(AbstractHelpFormatter.DEFAULT_OPTION_GROUP_SEPARATOR);
             }
         }
-        return INDEX_NOT_FOUND;
+        if (!optionGroup.isRequired()) {
+            buff.append("]");
+        }
     }

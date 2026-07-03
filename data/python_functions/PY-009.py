@@ -1,3 +1,6 @@
+from __future__ import annotations
+import traceback
+
 def run_command(
     info: ScriptInfo,
     host: str,

@@ -1,3 +1,8 @@
+from __future__ import annotations
+import importlib.util
+import os
+import sys
+
 def get_root_path(import_name: str) -> str:
     """Find the root path of a package, or the path that contains a
     module. If it cannot be found, returns the current working

@@ -1,23 +1,26 @@
-    def _get_source_explained(
-        self, environment: BaseEnvironment, template: str
-    ) -> tuple[str, str | None, t.Callable[[], bool] | None]:
-        attempts = []
-        rv: tuple[str, str | None, t.Callable[[], bool] | None] | None
-        trv: None | (tuple[str, str | None, t.Callable[[], bool] | None]) = None
+from __future__ import annotations
+import typing as t
 
-        for srcobj, loader in self._iter_loaders(template):
-            try:
-                rv = loader.get_source(environment, template)
-                if trv is None:
-                    trv = rv
-            except TemplateNotFound:
-                rv = None
-            attempts.append((loader, srcobj, rv))
+def _get_source_explained(
+    self, environment: BaseEnvironment, template: str
+) -> tuple[str, str | None, t.Callable[[], bool] | None]:
+    attempts = []
+    rv: tuple[str, str | None, t.Callable[[], bool] | None] | None
+    trv: None | (tuple[str, str | None, t.Callable[[], bool] | None]) = None
 
-        from .debughelpers import explain_template_loading_attempts
+    for srcobj, loader in self._iter_loaders(template):
+        try:
+            rv = loader.get_source(environment, template)
+            if trv is None:
+                trv = rv
+        except TemplateNotFound:
+            rv = None
+        attempts.append((loader, srcobj, rv))
 
-        explain_template_loading_attempts(self.app, template, attempts)
+    from .debughelpers import explain_template_loading_attempts
 
-        if trv is not None:
-            return trv
-        raise TemplateNotFound(template)
+    explain_template_loading_attempts(self.app, template, attempts)
+
+    if trv is not None:
+        return trv
+    raise TemplateNotFound(template)

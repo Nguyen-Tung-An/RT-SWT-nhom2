@@ -1,13 +1,15 @@
-    def _prepare_response_obj(
-        self, args: tuple[t.Any, ...], kwargs: dict[str, t.Any]
-    ) -> t.Any:
-        if args and kwargs:
-            raise TypeError("app.json.response() takes either args or kwargs, not both")
+from __future__ import annotations
 
-        if not args and not kwargs:
-            return None
+def _prepare_response_obj(
+    self, args: tuple[t.Any, ...], kwargs: dict[str, t.Any]
+) -> t.Any:
+    if args and kwargs:
+        raise TypeError("app.json.response() takes either args or kwargs, not both")
 
-        if len(args) == 1:
-            return args[0]
+    if not args and not kwargs:
+        return None
 
-        return args or kwargs
+    if len(args) == 1:
+        return args[0]
+
+    return args or kwargs

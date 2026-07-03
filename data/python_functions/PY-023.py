@@ -1,60 +1,64 @@
-    def from_prefixed_env(
-        self, prefix: str = "FLASK", *, loads: t.Callable[[str], t.Any] = json.loads
-    ) -> bool:
-        """Load any environment variables that start with ``FLASK_``,
-        dropping the prefix from the env key for the config key. Values
-        are passed through a loading function to attempt to convert them
-        to more specific types than strings.
+from __future__ import annotations
+import json
+import os
 
-        Keys are loaded in :func:`sorted` order.
+def from_prefixed_env(
+    self, prefix: str = "FLASK", *, loads: t.Callable[[str], t.Any] = json.loads
+) -> bool:
+    """Load any environment variables that start with ``FLASK_``,
+    dropping the prefix from the env key for the config key. Values
+    are passed through a loading function to attempt to convert them
+    to more specific types than strings.
 
-        The default loading function attempts to parse values as any
-        valid JSON type, including dicts and lists.
+    Keys are loaded in :func:`sorted` order.
 
-        Specific items in nested dicts can be set by separating the
-        keys with double underscores (``__``). If an intermediate key
-        doesn't exist, it will be initialized to an empty dict.
+    The default loading function attempts to parse values as any
+    valid JSON type, including dicts and lists.
 
-        :param prefix: Load env vars that start with this prefix,
-            separated with an underscore (``_``).
-        :param loads: Pass each string value to this function and use
-            the returned value as the config value. If any error is
-            raised it is ignored and the value remains a string. The
-            default is :func:`json.loads`.
+    Specific items in nested dicts can be set by separating the
+    keys with double underscores (``__``). If an intermediate key
+    doesn't exist, it will be initialized to an empty dict.
 
-        .. versionadded:: 2.1
-        """
-        prefix = f"{prefix}_"
+    :param prefix: Load env vars that start with this prefix,
+        separated with an underscore (``_``).
+    :param loads: Pass each string value to this function and use
+        the returned value as the config value. If any error is
+        raised it is ignored and the value remains a string. The
+        default is :func:`json.loads`.
 
-        for key in sorted(os.environ):
-            if not key.startswith(prefix):
-                continue
+    .. versionadded:: 2.1
+    """
+    prefix = f"{prefix}_"
 
-            value = os.environ[key]
-            key = key.removeprefix(prefix)
+    for key in sorted(os.environ):
+        if not key.startswith(prefix):
+            continue
 
-            try:
-                value = loads(value)
-            except Exception:
-                # Keep the value as a string if loading failed.
-                pass
+        value = os.environ[key]
+        key = key.removeprefix(prefix)
 
-            if "__" not in key:
-                # A non-nested key, set directly.
-                self[key] = value
-                continue
+        try:
+            value = loads(value)
+        except Exception:
+            # Keep the value as a string if loading failed.
+            pass
 
-            # Traverse nested dictionaries with keys separated by "__".
-            current = self
-            *parts, tail = key.split("__")
+        if "__" not in key:
+            # A non-nested key, set directly.
+            self[key] = value
+            continue
 
-            for part in parts:
-                # If an intermediate dict does not exist, create it.
-                if part not in current:
-                    current[part] = {}
+        # Traverse nested dictionaries with keys separated by "__".
+        current = self
+        *parts, tail = key.split("__")
 
-                current = current[part]
+        for part in parts:
+            # If an intermediate dict does not exist, create it.
+            if part not in current:
+                current[part] = {}
 
-            current[tail] = value
+            current = current[part]
 
-        return True
+        current[tail] = value
+
+    return True

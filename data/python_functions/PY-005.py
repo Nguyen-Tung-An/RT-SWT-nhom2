@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 def _env_file_callback(
     ctx: click.Context, param: click.Option, value: str | None
 ) -> str | None:

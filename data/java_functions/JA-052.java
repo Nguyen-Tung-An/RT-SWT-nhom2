@@ -1,30 +1,24 @@
-    public static boolean equals(final Annotation a1, final Annotation a2) {
-        if (a1 == a2) {
-            return true;
+    public static Class<?> getValueType(final char ch) {
+        switch (ch) {
+        case '@':
+            return OBJECT_VALUE;
+        case ':':
+            return STRING_VALUE;
+        case '%':
+            return NUMBER_VALUE;
+        case '+':
+            return CLASS_VALUE;
+        case '#':
+            return DATE_VALUE;
+        case '<':
+            return EXISTING_FILE_VALUE;
+        case '>':
+            return FILE_VALUE;
+        case '*':
+            return FILES_VALUE;
+        case '/':
+            return URL_VALUE;
         }
-        if (a1 == null || a2 == null) {
-            return false;
-        }
-        final Class<? extends Annotation> type1 = a1.annotationType();
-        final Class<? extends Annotation> type2 = a2.annotationType();
-        Validate.notNull(type1, "Annotation %s with null annotationType()", a1);
-        Validate.notNull(type2, "Annotation %s with null annotationType()", a2);
-        if (!type1.equals(type2)) {
-            return false;
-        }
-        try {
-            for (final Method m : type1.getDeclaredMethods()) {
-                if (m.getParameterTypes().length == 0
-                        && isValidAnnotationMemberType(m.getReturnType())) {
-                    final Object v1 = m.invoke(a1);
-                    final Object v2 = m.invoke(a2);
-                    if (!memberEquals(m.getReturnType(), v1, v2)) {
-                        return false;
-                    }
-                }
-            }
-        } catch (final ReflectiveOperationException ex) {
-            return false;
-        }
-        return true;
+
+        return null;
     }

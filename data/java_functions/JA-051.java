@@ -1,30 +1,42 @@
-    private static boolean arrayMemberEquals(final Class<?> componentType, final Object o1, final Object o2) {
-        if (componentType.isAnnotation()) {
-            return annotationArrayMemberEquals((Annotation[]) o1, (Annotation[]) o2);
+    public long convertLocalToUTC(long instantLocal, boolean strict) {
+        // get the offset at instantLocal (first estimate)
+        int offsetLocal = getOffset(instantLocal);
+        // adjust instantLocal using the estimate and recalc the offset
+        int offset = getOffset(instantLocal - offsetLocal);
+        // if the offsets differ, we must be near a DST boundary
+        if (offsetLocal != offset) {
+            // if strict then always check if in DST gap
+            // otherwise only check if zone in Western hemisphere (as the
+            // value of offset is already correct for Eastern hemisphere)
+            if (strict || offsetLocal < 0) {
+                // determine if we are in the DST gap
+                long nextLocal = nextTransition(instantLocal - offsetLocal);
+                if (nextLocal == (instantLocal - offsetLocal)) {
+                    nextLocal = Long.MAX_VALUE;
+                }
+                long nextAdjusted = nextTransition(instantLocal - offset);
+                if (nextAdjusted == (instantLocal - offset)) {
+                    nextAdjusted = Long.MAX_VALUE;
+                }
+                if (nextLocal != nextAdjusted) {
+                    // yes we are in the DST gap
+                    if (strict) {
+                        // DST gap is not acceptable
+                        throw new IllegalInstantException(instantLocal, getID());
+                    } else {
+                        // DST gap is acceptable, but for the Western hemisphere
+                        // the offset is wrong and will result in local times
+                        // before the cutover so use the offsetLocal instead
+                        offset = offsetLocal;
+                    }
+                }
+            }
         }
-        if (componentType.equals(Byte.TYPE)) {
-            return Arrays.equals((byte[]) o1, (byte[]) o2);
+        // check for overflow
+        long instantUTC = instantLocal - offset;
+        // If there is a sign change, but the two values have different signs...
+        if ((instantLocal ^ instantUTC) < 0 && (instantLocal ^ offset) < 0) {
+            throw new ArithmeticException("Subtracting time zone offset caused overflow");
         }
-        if (componentType.equals(Short.TYPE)) {
-            return Arrays.equals((short[]) o1, (short[]) o2);
-        }
-        if (componentType.equals(Integer.TYPE)) {
-            return Arrays.equals((int[]) o1, (int[]) o2);
-        }
-        if (componentType.equals(Character.TYPE)) {
-            return Arrays.equals((char[]) o1, (char[]) o2);
-        }
-        if (componentType.equals(Long.TYPE)) {
-            return Arrays.equals((long[]) o1, (long[]) o2);
-        }
-        if (componentType.equals(Float.TYPE)) {
-            return Arrays.equals((float[]) o1, (float[]) o2);
-        }
-        if (componentType.equals(Double.TYPE)) {
-            return Arrays.equals((double[]) o1, (double[]) o2);
-        }
-        if (componentType.equals(Boolean.TYPE)) {
-            return Arrays.equals((boolean[]) o1, (boolean[]) o2);
-        }
-        return Arrays.equals((Object[]) o1, (Object[]) o2);
+        return instantUTC;
     }

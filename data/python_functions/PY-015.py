@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 def get_flashed_messages(
     with_categories: bool = False, category_filter: t.Iterable[str] = ()
 ) -> list[str] | list[tuple[str, str]]:

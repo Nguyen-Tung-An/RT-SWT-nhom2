@@ -1,14 +1,16 @@
-    public static int lastIndexOf(final float[] array, final float valueToFind, int startIndex) {
-        if (isEmpty(array) || startIndex < 0) {
-            return INDEX_NOT_FOUND;
+    public static final boolean isContiguous(ReadablePartial partial) {
+        if (partial == null) {
+            throw new IllegalArgumentException("Partial must not be null");
         }
-        if (startIndex >= array.length) {
-            startIndex = array.length - 1;
-        }
-        for (int i = startIndex; i >= 0; i--) {
-            if (valueToFind == array[i]) {
-                return i;
+        DurationFieldType lastType = null;
+        for (int i = 0; i < partial.size(); i++) {
+            DateTimeField loopField = partial.getField(i);
+            if (i > 0) {
+                if (loopField.getRangeDurationField() == null || loopField.getRangeDurationField().getType() != lastType) {
+                    return false;
+                }
             }
+            lastType = loopField.getDurationField().getType();
         }
-        return INDEX_NOT_FOUND;
+        return true;
     }

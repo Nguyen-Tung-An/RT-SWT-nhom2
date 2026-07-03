@@ -1,32 +1,50 @@
-    public static void shift(final char[] array, int startIndexInclusive, int endIndexExclusive, int offset) {
-        if (array == null || startIndexInclusive >= array.length - 1 || endIndexExclusive <= 0) {
-            return;
-        }
-        startIndexInclusive = max0(startIndexInclusive);
-        endIndexExclusive = Math.min(endIndexExclusive, array.length);
-        int n = endIndexExclusive - startIndexInclusive;
-        if (n <= 1) {
-            return;
-        }
-        offset %= n;
-        if (offset < 0) {
-            offset += n;
-        }
-        // For algorithm explanations and proof of O(n) time complexity and O(1) space complexity
-        // see https://beradrian.wordpress.com/2015/04/07/shift-an-array-in-on-in-place/
-        while (n > 1 && offset > 0) {
-            final int nOffset = n - offset;
-            if (offset > nOffset) {
-                swap(array, startIndexInclusive, startIndexInclusive + n - nOffset,  nOffset);
-                n = offset;
-                offset -= nOffset;
-            } else if (offset < nOffset) {
-                swap(array, startIndexInclusive, startIndexInclusive + nOffset,  offset);
-                startIndexInclusive += offset;
-                n = nOffset;
-            } else {
-                swap(array, startIndexInclusive, startIndexInclusive + nOffset, offset);
-                break;
-            }
-        }
+  public <T> T fromJson(JsonReader reader, TypeToken<T> typeOfT)
+      throws JsonIOException, JsonSyntaxException {
+    boolean isEmpty = true;
+    Strictness oldStrictness = reader.getStrictness();
+
+    if (this.strictness != null) {
+      reader.setStrictness(this.strictness);
+    } else if (reader.getStrictness() == Strictness.LEGACY_STRICT) {
+      // For backward compatibility change to LENIENT if reader has default strictness LEGACY_STRICT
+      reader.setStrictness(Strictness.LENIENT);
     }
+
+    try {
+      JsonToken unused = reader.peek();
+      isEmpty = false;
+      TypeAdapter<T> typeAdapter = getAdapter(typeOfT);
+      T object = typeAdapter.read(reader);
+      Class<?> expectedTypeWrapped = Primitives.wrap(typeOfT.getRawType());
+      if (object != null && !expectedTypeWrapped.isInstance(object)) {
+        throw new ClassCastException(
+            "Type adapter '"
+                + typeAdapter
+                + "' returned wrong type; requested "
+                + typeOfT.getRawType()
+                + " but got instance of "
+                + object.getClass()
+                + "\nVerify that the adapter was registered for the correct type.");
+      }
+      return object;
+    } catch (EOFException e) {
+      /*
+       * For compatibility with JSON 1.5 and earlier, we return null for empty
+       * documents instead of throwing.
+       */
+      if (isEmpty) {
+        return null;
+      }
+      throw new JsonSyntaxException(e);
+    } catch (IllegalStateException e) {
+      throw new JsonSyntaxException(e);
+    } catch (IOException e) {
+      // TODO(inder): Figure out whether it is indeed right to rethrow this as JsonSyntaxException
+      throw new JsonSyntaxException(e);
+    } catch (AssertionError e) {
+      throw new AssertionError(
+          "AssertionError (GSON " + GsonBuildConfig.VERSION + "): " + e.getMessage(), e);
+    } finally {
+      reader.setStrictness(oldStrictness);
+    }
+  }

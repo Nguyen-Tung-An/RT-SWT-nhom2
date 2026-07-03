@@ -1,49 +1,51 @@
-    def save_session(
-        self, app: Flask, session: SessionMixin, response: Response
-    ) -> None:
-        name = self.get_cookie_name(app)
-        domain = self.get_cookie_domain(app)
-        path = self.get_cookie_path(app)
-        secure = self.get_cookie_secure(app)
-        partitioned = self.get_cookie_partitioned(app)
-        samesite = self.get_cookie_samesite(app)
-        httponly = self.get_cookie_httponly(app)
+from __future__ import annotations
 
-        # Add a "Vary: Cookie" header if the session was accessed at all.
-        if session.accessed:
+def save_session(
+    self, app: Flask, session: SessionMixin, response: Response
+) -> None:
+    name = self.get_cookie_name(app)
+    domain = self.get_cookie_domain(app)
+    path = self.get_cookie_path(app)
+    secure = self.get_cookie_secure(app)
+    partitioned = self.get_cookie_partitioned(app)
+    samesite = self.get_cookie_samesite(app)
+    httponly = self.get_cookie_httponly(app)
+
+    # Add a "Vary: Cookie" header if the session was accessed at all.
+    if session.accessed:
+        response.vary.add("Cookie")
+
+    # If the session is modified to be empty, remove the cookie.
+    # If the session is empty, return without setting the cookie.
+    if not session:
+        if session.modified:
+            response.delete_cookie(
+                name,
+                domain=domain,
+                path=path,
+                secure=secure,
+                partitioned=partitioned,
+                samesite=samesite,
+                httponly=httponly,
+            )
             response.vary.add("Cookie")
 
-        # If the session is modified to be empty, remove the cookie.
-        # If the session is empty, return without setting the cookie.
-        if not session:
-            if session.modified:
-                response.delete_cookie(
-                    name,
-                    domain=domain,
-                    path=path,
-                    secure=secure,
-                    partitioned=partitioned,
-                    samesite=samesite,
-                    httponly=httponly,
-                )
-                response.vary.add("Cookie")
+        return
 
-            return
+    if not self.should_set_cookie(app, session):
+        return
 
-        if not self.should_set_cookie(app, session):
-            return
-
-        expires = self.get_expiration_time(app, session)
-        val = self.get_signing_serializer(app).dumps(dict(session))  # type: ignore[union-attr]
-        response.set_cookie(
-            name,
-            val,
-            expires=expires,
-            httponly=httponly,
-            domain=domain,
-            path=path,
-            secure=secure,
-            partitioned=partitioned,
-            samesite=samesite,
-        )
-        response.vary.add("Cookie")
+    expires = self.get_expiration_time(app, session)
+    val = self.get_signing_serializer(app).dumps(dict(session))  # type: ignore[union-attr]
+    response.set_cookie(
+        name,
+        val,
+        expires=expires,
+        httponly=httponly,
+        domain=domain,
+        path=path,
+        secure=secure,
+        partitioned=partitioned,
+        samesite=samesite,
+    )
+    response.vary.add("Cookie")

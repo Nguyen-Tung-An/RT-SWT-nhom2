@@ -1,15 +1,13 @@
-    public static short[] concat(short[]... arrays) {
-        int totalLength = 0;
-        for (short[] array : arrays) {
-            totalLength = addExact(totalLength, array);
+    private static Provider validateProvider(Provider provider) {
+        Set<String> ids = provider.getAvailableIDs();
+        if (ids == null || ids.size() == 0) {
+            throw new IllegalArgumentException("The provider doesn't have any available ids");
         }
-        final short[] result = new short[totalLength];
-        int currentPos = 0;
-        for (short[] array : arrays) {
-            if (array != null && array.length > 0) {
-                System.arraycopy(array, 0, result, currentPos, array.length);
-                currentPos += array.length;
-            }
+        if (!ids.contains("UTC")) {
+            throw new IllegalArgumentException("The provider doesn't support UTC");
         }
-        return result;
+        if (!UTC.equals(provider.getZone("UTC"))) {
+            throw new IllegalArgumentException("Invalid UTC zone provided");
+        }
+        return provider;
     }
