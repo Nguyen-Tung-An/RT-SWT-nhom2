@@ -77,6 +77,13 @@ This file records every technical decision and error during RBL-4, per RBL-0/RBL
   4. Java (`data/java_functions/` cũng là method xé lẻ) nhiều khả năng dính cùng vấn đề — kiểm tra `measure_java` trước khi tin kết quả.
 - **Ý nghĩa:** pilot làm đúng nhiệm vụ — lộ lỗi tích hợp trước full run. Số trong `metrics.csv` hiện tại chỉ là bằng chứng lỗi, **không phải** kết quả RQ.
 
+### 2026-07-03 — Data v2 từ DG (functions.rar): P1/P2 sạch 60/60, còn rủi ro runtime ⚠️
+- **Java:** 60/60 file thay nội dung — phát hiện bản cũ trong repo **lệch CSV** (vd JA-002 chứa hàm `concat` lạ thay vì `getOptionValues`). Bản v2 đã khớp.
+- **Python:** 60/60 pass P1 (parse) + P2 (import) — Kim đã dedent + thêm `from __future__ import annotations`.
+- **Còn lại:** ~40/60 hàm tham chiếu tên không định nghĩa trong thân hàm (`click`, `current_app`, `RequestRedirect`...) → NameError khi test chạm nhánh đó; 12 hàm chỉ vướng `self` (mock được). Chi tiết + 2 hướng xử lý (A: vá data / B: đo trong module thật): `ms-analysis/results/data_v2_check.md` — **nhóm cần chốt trước khi LR sinh test mới**.
+- **Chẩn đoán lại pilot với data v2 + test CŨ:** 0×P1 (trước là 9) · 8×P3 (test cũ import flask/click) · 4×P4 (test fail trên bản gốc) → chốt chặn đã chuyển từ DATA sang TEST GENERATION (chờ LR chạy lại prompt mới).
+- Data v2 đã commit vào `data/{java,python}_functions/` (`2ccffc7`). Nhắc DG: lần sau **push lên git** thay vì gửi rar — repo là nguồn chuẩn.
+
 ### 2026-07-02 — EvoSuite: fail trên JDK 17, chạy OK trên JDK 11; timeout 30s kill oan mọi run
 - **JDK 17:** master chết `InaccessibleObjectException` ("module java.base does not opens java.util") — module system Java 17 chặn reflection của xstream. `--add-opens` lẫn `JAVA_TOOL_OPTIONS` đều không cứu được vì EvoSuite spawn process con theo cách riêng.
 - **JDK 11** (Temurin 11.0.31 portable, giải nén vào `F:\Java`, không cần cài): ✅ chạy OK — sinh `generated_tests/evosuite/java/.../CommandLine_ESTest.java` (smoke test `search_budget=20`, tổng ~50s/class).
