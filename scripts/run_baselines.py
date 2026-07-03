@@ -105,9 +105,14 @@ def main():
             # EVOSUITE 
             print(f"[{func_id}] Chạy EvoSuite cho {package_name}.{class_name}")
             out_file = f"generated_tests/evosuite/java/{func_id}_Test.java"
-            evosuite_cmd = f"java -jar \"{EVOSUITE_JAR}\" -class {package_name}.{class_name} -projectCP \"{cp}\" -Dtest_dir=\"{OUT_DIRS['evosuite']}\""
+            evosuite_cmd = [
+                "java", "-jar", EVOSUITE_JAR, 
+                "-class", f"{package_name}.{class_name}", 
+                "-projectCP", cp, 
+                f"-Dtest_dir={OUT_DIRS['evosuite']}"
+            ]
             try:
-                res = subprocess.run(evosuite_cmd, shell=True, capture_output=True, text=True, timeout=30)
+                res = subprocess.run(evosuite_cmd, shell=False, capture_output=True, text=True, timeout=30)
                 if res.returncode == 0:
                     status = "ok"
                     print("   -> EvoSuite chạy thành công.")
