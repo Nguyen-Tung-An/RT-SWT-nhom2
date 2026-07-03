@@ -24,6 +24,12 @@ EVOSUITE_JAR = os.path.join(BASE_DIR, "evosuite-1.2.0.jar")
 # (module system khoa reflection, --add-opens khong cuu duoc process con).
 # May co java mac dinh la 17+: set EVOSUITE_JAVA tro den java.exe cua JDK 11.
 EVOSUITE_JAVA = os.getenv("EVOSUITE_JAVA", "java")
+# EvoSuite master spawn CLIENT bang java lay tu JAVA_HOME -> phai tro JAVA_HOME
+# ve cung JDK voi EVOSUITE_JAVA, neu khong client van chay JDK 17 va chet ngam
+# (master van exit 0 -> "thanh cong" gia).
+EVOSUITE_ENV = os.environ.copy()
+if EVOSUITE_JAVA != "java":
+    EVOSUITE_ENV["JAVA_HOME"] = os.path.dirname(os.path.dirname(EVOSUITE_JAVA))
 # Search budget 60s/class (mac dinh cua EvoSuite) + JVM overhead ~ 90-120s/run.
 # Timeout phai LON HON tong nay, neu khong moi run hop le deu bi kill oan.
 EVOSUITE_TIMEOUT = 180
@@ -130,15 +136,19 @@ def main():
                     "-Dsearch_budget=60",
                     f"-Dtest_dir={OUT_DIRS['evosuite']}"
                 ]
+                # EvoSuite exit 0 ke ca khi that bai -> phai kiem tra file test co that
+                expected_test = os.path.join(OUT_DIRS['evosuite'], *package_name.split("."), f"{class_name}_ESTest.java")
                 try:
-                    res = subprocess.run(evosuite_cmd, shell=False, capture_output=True, text=True, timeout=EVOSUITE_TIMEOUT)
-                    if res.returncode == 0:
+                    res = subprocess.run(evosuite_cmd, shell=False, capture_output=True, text=True,
+                                         timeout=EVOSUITE_TIMEOUT, env=EVOSUITE_ENV)
+                    if res.returncode == 0 and os.path.exists(expected_test):
                         status = "ok"
                         print("   -> EvoSuite chạy thành công.")
                     else:
                         status = "failed"
                         # In ra một đoạn lỗi nhỏ để dễ debug
-                        print(f"   -> LỖI EVOSUITE: {res.stderr.strip()[:200]}...")
+                        err = (res.stderr or res.stdout or "").strip()
+                        print(f"   -> LỖI EVOSUITE (exit={res.returncode}, file={os.path.exists(expected_test)}): {err[:200]}...")
                 except subprocess.TimeoutExpired:
                     status = "failed"
                     print(f"   -> LỖI EVOSUITE: Quá thời gian {EVOSUITE_TIMEOUT} giây (Timeout). Ghi nhận Fail.")
