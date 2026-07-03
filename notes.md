@@ -84,6 +84,17 @@ This file records every technical decision and error during RBL-4, per RBL-0/RBL
 - **Chẩn đoán lại pilot với data v2 + test CŨ:** 0×P1 (trước là 9) · 8×P3 (test cũ import flask/click) · 4×P4 (test fail trên bản gốc) → chốt chặn đã chuyển từ DATA sang TEST GENERATION (chờ LR chạy lại prompt mới).
 - Data v2 đã commit vào `data/{java,python}_functions/` (`2ccffc7`). Nhắc DG: lần sau **push lên git** thay vì gửi rar — repo là nguồn chuẩn.
 
+### 2026-07-04 — GATE ĐO JAVA: PASS ✅ — pipeline JaCoCo chạy end-to-end, có số thật đầu tiên
+- **Cách đo:** chèn test EvoSuite (12 hàm pilot → 4 class) vào `src/test/java` của commons-cli (commit pin, build local) → `mvn test jacoco:report`. 343 test xanh 100%.
+- **Branch coverage (class-level, test EvoSuite):** PatternOptionBuilder **100%** (44/44) · CommandLine **97.06%** (66/68) · HelpFormatter **77.94%** (106/136) · DefaultParser **63.73%** (130/204).
+- **Playbook cho MS khi nhân rộng (5 bẫy đã dẫm):**
+  1. `evosuite-standalone-runtime-1.2.0` KHÔNG có trên Maven Central → tải GitHub releases, `mvn install:install-file -DgeneratePom=true` (không có generatePom sẽ dính pom parent hỏng).
+  2. Project JUnit5 cần thêm dep test: `junit:junit:4.13.2` + `junit-vintage-engine` (test EvoSuite là JUnit4).
+  3. Compile test cần `-Dmaven.compiler.release=11` — EvoSuite sinh code dùng API Java 11 (`Writer.nullWriter()`...), trong khi commons-* target Java 8.
+  4. KHÔNG tự chèn jacoco prepare-agent — commons-parent đã tích hợp sẵn JaCoCo, 2 agent cùng lúc = LinkageError crash; chỉ cần gọi `jacoco:report`.
+  5. Sửa `separateClassLoader = true → false` trong `*_ESTest.java` — không sửa thì test vẫn xanh nhưng JaCoCo báo **0%** (classloader riêng của EvoSuite làm lệch hash class — lại một kiểu "số giả" nữa).
+- **Còn thiếu cho `metrics.csv`:** (a) tách số theo TỪNG HÀM — parse `jacoco.xml` mức method rồi khớp `func_name` (hiện mới có mức class); (b) PIT mutation score — bước kế của gate.
+
 ### 2026-07-03 — Test Java pilot của LLM cũng phải sinh lại (hậu quả data v1 sai) ⚠️
 - **`generated_tests/gpt4o/java/JA-002_Test.java` test hàm `CommandLine.concat(boolean[]...)` — hàm KHÔNG tồn tại** trong CommandLine thật: pilot generation chạy trên data v1 (nội dung lệch CSV) nên LLM được xem source sai. → 12 test Java pilot hiện tại vô giá trị để đo, **LR phải sinh lại sau khi có data v2** (gộp cùng đợt sinh lại Python).
 - Lỗi phụ: file lưu tên `JA-XXX_Test.java` nhưng class bên trong là `<ClassName>Test` → javac không compile được file rời (Java bắt tên file = tên public class). Sinh lại cần sửa cách đặt tên file trong `run_experiment.py`.
