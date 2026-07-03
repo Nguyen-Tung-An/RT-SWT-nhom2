@@ -95,7 +95,8 @@ def figures(df, gpt_m, bname, fig_dir):
                       (ax[1], "mutation_score", "Mutation Score (GPT)")]:
         data = [g[g["language"] == L][col].dropna().to_numpy() for L in ["java", "python"]]
         data = [d if d.size else np.array([0.0]) for d in data]
-        a.boxplot(data, labels=["Java", "Python"], showmeans=True)
+        a.boxplot(data, showmeans=True)
+        a.set_xticks([1, 2], ["Java", "Python"])
         a.set_title(t); a.set_ylabel("%"); a.set_ylim(-5, 105); a.grid(axis="y", alpha=.3)
     fig.suptitle("Phan phoi chat luong test GPT (CC 5-10)"); fig.tight_layout()
     fig.savefig(os.path.join(fig_dir, "fig1_distribution.png"), dpi=300); plt.close(fig)
@@ -103,8 +104,8 @@ def figures(df, gpt_m, bname, fig_dir):
     fig, a = plt.subplots(figsize=(6, 4.5))
     gm = df[df["method"] == gpt_m]["mutation_score"].dropna().to_numpy()
     bm = df[df["method"] == bname]["mutation_score"].dropna().to_numpy()
-    a.boxplot([gm if gm.size else [0], bm if bm.size else [0]],
-              labels=[f"GPT ({gpt_m})", f"Base ({bname})"], showmeans=True)
+    a.boxplot([gm if gm.size else [0], bm if bm.size else [0]], showmeans=True)
+    a.set_xticks([1, 2], [f"GPT ({gpt_m})", f"Base ({bname})"])
     a.set_title("Mutation Score: GPT vs Baseline"); a.set_ylabel("%"); a.set_ylim(-5, 105)
     a.grid(axis="y", alpha=.3); fig.tight_layout()
     fig.savefig(os.path.join(fig_dir, "fig2_comparison.png"), dpi=300); plt.close(fig)

@@ -1,18 +1,31 @@
-    public static String stripEnd(final String str, final String stripChars) {
-        int end = length(str);
-        if (end == 0) {
-            return str;
+    <A extends Appendable> A appendWrappedText(final A appendable, final int width, final int nextLineTabStop, final String text) throws IOException {
+        if (width <= 0) {
+            return appendable;
         }
-        if (stripChars == null) {
-            while (end != 0 && Character.isWhitespace(str.charAt(end - 1))) {
-                end--;
-            }
-        } else if (stripChars.isEmpty()) {
-            return str;
-        } else {
-            while (end != 0 && stripChars.indexOf(str.charAt(end - 1)) != INDEX_NOT_FOUND) {
-                end--;
-            }
+        String render = text;
+        int nextLineTabStopPos = nextLineTabStop;
+        int pos = findWrapPos(render, width, 0);
+        if (pos == -1) {
+            appendable.append(rtrim(render));
+            return appendable;
         }
-        return str.substring(0, end);
+        appendable.append(rtrim(render.substring(0, pos))).append(getNewLine());
+        if (nextLineTabStopPos >= width) {
+            // stops infinite loop happening
+            nextLineTabStopPos = 1;
+        }
+        // all following lines must be padded with nextLineTabStop space characters
+        final String padding = createPadding(nextLineTabStopPos);
+        while (true) {
+            render = padding + render.substring(pos).trim();
+            pos = findWrapPos(render, width, 0);
+            if (pos == -1) {
+                appendable.append(render);
+                return appendable;
+            }
+            if (render.length() > width && pos == nextLineTabStopPos - 1) {
+                pos = width;
+            }
+            appendable.append(rtrim(render.substring(0, pos))).append(getNewLine());
+        }
     }

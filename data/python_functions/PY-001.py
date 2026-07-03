@@ -1,27 +1,29 @@
-    def raise_routing_exception(self, request: Request) -> t.NoReturn:
-        """Intercept routing exceptions and possibly do something else.
+from __future__ import annotations
 
-        In debug mode, intercept a routing redirect and replace it with
-        an error if the body will be discarded.
+def raise_routing_exception(self, request: Request) -> t.NoReturn:
+    """Intercept routing exceptions and possibly do something else.
 
-        With modern Werkzeug this shouldn't occur, since it now uses a
-        308 status which tells the browser to resend the method and
-        body.
+    In debug mode, intercept a routing redirect and replace it with
+    an error if the body will be discarded.
 
-        .. versionchanged:: 2.1
-            Don't intercept 307 and 308 redirects.
+    With modern Werkzeug this shouldn't occur, since it now uses a
+    308 status which tells the browser to resend the method and
+    body.
 
-        :meta private:
-        :internal:
-        """
-        if (
-            not self.debug
-            or not isinstance(request.routing_exception, RequestRedirect)
-            or request.routing_exception.code in {307, 308}
-            or request.method in {"GET", "HEAD", "OPTIONS"}
-        ):
-            raise request.routing_exception  # type: ignore[misc]
+    .. versionchanged:: 2.1
+        Don't intercept 307 and 308 redirects.
 
-        from .debughelpers import FormDataRoutingRedirect
+    :meta private:
+    :internal:
+    """
+    if (
+        not self.debug
+        or not isinstance(request.routing_exception, RequestRedirect)
+        or request.routing_exception.code in {307, 308}
+        or request.method in {"GET", "HEAD", "OPTIONS"}
+    ):
+        raise request.routing_exception  # type: ignore[misc]
 
-        raise FormDataRoutingRedirect(request)
+    from .debughelpers import FormDataRoutingRedirect
+
+    raise FormDataRoutingRedirect(request)

@@ -1,22 +1,26 @@
-    public static String chomp(final String str) {
-        if (isEmpty(str)) {
-            return str;
-        }
-        if (str.length() == 1) {
-            final char ch = str.charAt(0);
-            if (ch == CharUtils.CR || ch == CharUtils.LF) {
-                return EMPTY;
-            }
-            return str;
-        }
-        int lastIdx = str.length() - 1;
-        final char last = str.charAt(lastIdx);
-        if (last == CharUtils.LF) {
-            if (str.charAt(lastIdx - 1) == CharUtils.CR) {
-                lastIdx--;
-            }
-        } else if (last != CharUtils.CR) {
-            lastIdx++;
-        }
-        return str.substring(0, lastIdx);
+  private static int parseInt(String value, int beginIndex, int endIndex)
+      throws NumberFormatException {
+    if (beginIndex < 0 || endIndex > value.length() || beginIndex > endIndex) {
+      throw new NumberFormatException(value);
     }
+    // use same logic as in Integer.parseInt() but less generic we're not supporting negative values
+    int i = beginIndex;
+    int result = 0;
+    int digit;
+    if (i < endIndex) {
+      digit = Character.digit(value.charAt(i++), 10);
+      if (digit < 0) {
+        throw new NumberFormatException("Invalid number: " + value);
+      }
+      result = -digit;
+    }
+    while (i < endIndex) {
+      digit = Character.digit(value.charAt(i++), 10);
+      if (digit < 0) {
+        throw new NumberFormatException("Invalid number: " + value);
+      }
+      result *= 10;
+      result -= digit;
+    }
+    return -result;
+  }

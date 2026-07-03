@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 def _validate_key(ctx: click.Context, param: click.Parameter, value: t.Any) -> t.Any:
     """The ``--key`` option must be specified when ``--cert`` is a file.
     Modifies the ``cert`` param to be a ``(cert, key)`` pair if needed.

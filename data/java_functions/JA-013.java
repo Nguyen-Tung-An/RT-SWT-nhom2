@@ -1,16 +1,14 @@
-    public static int indexOf(final double[] array, final double valueToFind, final int startIndex, final double tolerance) {
-        if (Double.isNaN(valueToFind)) {
-            return indexOfNaN(array, startIndex);
-        }
-        if (isEmpty(array)) {
-            return INDEX_NOT_FOUND;
-        }
-        final double min = valueToFind - tolerance;
-        final double max = valueToFind + tolerance;
-        for (int i = max0(startIndex); i < array.length; i++) {
-            if (array[i] >= min && array[i] <= max) {
-                return i;
+    public int search(final Object object) {
+        int i = size() - 1;        // Current index
+        int n = 1;                 // Current distance
+        while (i >= 0) {
+            final Object current = get(i);
+            if (object == null && current == null ||
+                object != null && object.equals(current)) {
+                return n;
             }
+            i--;
+            n++;
         }
-        return INDEX_NOT_FOUND;
+        return -1;
     }

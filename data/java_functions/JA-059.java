@@ -1,32 +1,44 @@
-    public static void shift(final int[] array, int startIndexInclusive, int endIndexExclusive, int offset) {
-        if (array == null || startIndexInclusive >= array.length - 1 || endIndexExclusive <= 0) {
-            return;
+    public static Interval parseWithOffset(String str) {
+        int separator = str.indexOf('/');
+        if (separator < 0) {
+            throw new IllegalArgumentException("Format requires a '/' separator: " + str);
         }
-        startIndexInclusive = max0(startIndexInclusive);
-        endIndexExclusive = Math.min(endIndexExclusive, array.length);
-        int n = endIndexExclusive - startIndexInclusive;
-        if (n <= 1) {
-            return;
+        String leftStr = str.substring(0, separator);
+        if (leftStr.length() <= 0) {
+            throw new IllegalArgumentException("Format invalid: " + str);
         }
-        offset %= n;
-        if (offset < 0) {
-            offset += n;
+        String rightStr = str.substring(separator + 1);
+        if (rightStr.length() <= 0) {
+            throw new IllegalArgumentException("Format invalid: " + str);
         }
-        // For algorithm explanations and proof of O(n) time complexity and O(1) space complexity
-        // see https://beradrian.wordpress.com/2015/04/07/shift-an-array-in-on-in-place/
-        while (n > 1 && offset > 0) {
-            final int nOffset = n - offset;
-            if (offset > nOffset) {
-                swap(array, startIndexInclusive, startIndexInclusive + n - nOffset,  nOffset);
-                n = offset;
-                offset -= nOffset;
-            } else if (offset < nOffset) {
-                swap(array, startIndexInclusive, startIndexInclusive + nOffset,  offset);
-                startIndexInclusive += offset;
-                n = nOffset;
+
+        DateTimeFormatter dateTimeParser = ISODateTimeFormat.dateTimeParser().withOffsetParsed();
+        PeriodFormatter periodParser = ISOPeriodFormat.standard();
+        DateTime start = null;
+        Period period = null;
+        
+        // before slash
+        char c = leftStr.charAt(0);
+        if (c == 'P' || c == 'p') {
+            period = periodParser.withParseType(PeriodType.standard()).parsePeriod(leftStr);
+        } else {
+            start = dateTimeParser.parseDateTime(leftStr);
+        }
+        
+        // after slash
+        c = rightStr.charAt(0);
+        if (c == 'P' || c == 'p') {
+            if (period != null) {
+                throw new IllegalArgumentException("Interval composed of two durations: " + str);
+            }
+            period = periodParser.withParseType(PeriodType.standard()).parsePeriod(rightStr);
+            return new Interval(start, period);
+        } else {
+            DateTime end = dateTimeParser.parseDateTime(rightStr);
+            if (period != null) {
+                return new Interval(period, end);
             } else {
-                swap(array, startIndexInclusive, startIndexInclusive + nOffset, offset);
-                break;
+                return new Interval(start, end);
             }
         }
     }

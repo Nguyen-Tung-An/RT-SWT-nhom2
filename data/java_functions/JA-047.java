@@ -1,29 +1,28 @@
-    public static String rightPad(final String str, final int size, String padStr) {
-        if (str == null) {
-            return null;
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
         }
-        if (isEmpty(padStr)) {
-            padStr = SPACE;
+        if (!(obj instanceof CategoryLineAnnotation)) {
+            return false;
         }
-        final int padLen = padStr.length();
-        final int strLen = str.length();
-        final int pads = size - strLen;
-        if (pads <= 0) {
-            return str; // returns original String when possible
+        CategoryLineAnnotation that = (CategoryLineAnnotation) obj;
+        if (!this.category1.equals(that.getCategory1())) {
+            return false;
         }
-        if (padLen == 1 && pads <= PAD_LIMIT) {
-            return rightPad(str, size, padStr.charAt(0));
+        if (this.value1 != that.getValue1()) {
+            return false;
         }
-        if (pads == padLen) {
-            return str.concat(padStr);
+        if (!this.category2.equals(that.getCategory2())) {
+            return false;
         }
-        if (pads < padLen) {
-            return str.concat(padStr.substring(0, pads));
+        if (this.value2 != that.getValue2()) {
+            return false;
         }
-        final char[] padding = new char[pads];
-        final char[] padChars = padStr.toCharArray();
-        for (int i = 0; i < pads; i++) {
-            padding[i] = padChars[i % padLen];
+        if (!PaintUtils.equal(this.paint, that.paint)) {
+            return false;
         }
-        return str.concat(new String(padding));
+        if (!Objects.equals(this.stroke, that.stroke)) {
+            return false;
+        }
+        return true;
     }

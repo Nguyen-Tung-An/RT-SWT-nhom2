@@ -1,20 +1,14 @@
-    public static short[] insert(final int index, final short[] array, final short... values) {
-        if (array == null) {
-            return null;
+    private boolean isShortOption(final String token) {
+        // short options (-S, -SV, -S=V, -SV1=V2, -S1S2)
+        if (token == null || !token.startsWith(OptionFormatter.DEFAULT_OPT_PREFIX) || token.length() == 1) {
+            return false;
         }
-        if (isEmpty(values)) {
-            return clone(array);
+        // remove leading "-" and "=value"
+        final int pos = indexOfEqual(token);
+        final String optName = pos == -1 ? token.substring(1) : token.substring(1, pos);
+        if (options.hasShortOption(optName)) {
+            return true;
         }
-        if (index < 0 || index > array.length) {
-            throw new IndexOutOfBoundsException("Index: " + index + ", Length: " + array.length);
-        }
-        final short[] result = new short[array.length + values.length];
-        System.arraycopy(values, 0, result, index, values.length);
-        if (index > 0) {
-            System.arraycopy(array, 0, result, 0, index);
-        }
-        if (index < array.length) {
-            System.arraycopy(array, index, result, index + values.length, array.length - index);
-        }
-        return result;
+        // check for several concatenated short options
+        return !optName.isEmpty() && options.hasShortOption(String.valueOf(optName.charAt(0)));
     }

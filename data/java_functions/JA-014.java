@@ -1,13 +1,20 @@
-    public static int indexOf(final float[] array, final float valueToFind, final int startIndex) {
-        if (isEmpty(array)) {
-            return INDEX_NOT_FOUND;
+    private void printWithQuotes(final Reader reader, final Appendable appendable) throws IOException {
+        if (getQuoteMode() == QuoteMode.NONE) {
+            printWithEscapes(reader, appendable);
+            return;
         }
-        final boolean searchNaN = Float.isNaN(valueToFind);
-        for (int i = max0(startIndex); i < array.length; i++) {
-            final float element = array[i];
-            if (valueToFind == element || searchNaN && Float.isNaN(element)) {
-                return i;
+        final char quote = getQuoteCharacter().charValue(); // Explicit unboxing is intentional
+        final char escape = isEscapeCharacterSet() ? getEscapeChar() : quote;
+        // (1) Append opening quote
+        append(quote, appendable);
+        // (2) Append Reader contents, doubling quotes and escape characters
+        int c;
+        while (EOF != (c = reader.read())) {
+            append((char) c, appendable);
+            if (c == quote || c == escape) {
+                append((char) c, appendable);
             }
         }
-        return INDEX_NOT_FOUND;
+        // (3) Append closing quote
+        append(quote, appendable);
     }

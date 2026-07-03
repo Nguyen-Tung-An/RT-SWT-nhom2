@@ -1,20 +1,37 @@
-    public static float[] insert(final int index, final float[] array, final float... values) {
-        if (array == null) {
-            return null;
+    private Rectangle2D createAlignedRectangle2D(Size2D dimensions,
+            Rectangle2D frame, HorizontalAlignment hAlign,
+            VerticalAlignment vAlign) {
+        Args.nullNotPermitted(hAlign, "hAlign");
+        Args.nullNotPermitted(vAlign, "vAlign");
+        double x = Double.NaN;
+        double y = Double.NaN;
+        switch (hAlign) {
+            case LEFT:
+                x = frame.getX();
+                break;
+            case CENTER:
+                x = frame.getCenterX() - (dimensions.width / 2.0);
+                break;
+            case RIGHT:
+                x = frame.getMaxX() - dimensions.width;
+                break;
+            default:
+                throw new IllegalStateException("Unexpected enum value " + hAlign);
         }
-        if (isEmpty(values)) {
-            return clone(array);
+        switch (vAlign) {
+            case TOP:
+                y = frame.getY();
+                break;
+            case CENTER:
+                y = frame.getCenterY() - (dimensions.height / 2.0);
+                break;
+            case BOTTOM:
+                y = frame.getMaxY() - dimensions.height;
+                break;
+            default:
+                throw new IllegalStateException("Unexpected enum value " + hAlign);
         }
-        if (index < 0 || index > array.length) {
-            throw new IndexOutOfBoundsException("Index: " + index + ", Length: " + array.length);
-        }
-        final float[] result = new float[array.length + values.length];
-        System.arraycopy(values, 0, result, index, values.length);
-        if (index > 0) {
-            System.arraycopy(array, 0, result, 0, index);
-        }
-        if (index < array.length) {
-            System.arraycopy(array, index, result, index + values.length, array.length - index);
-        }
-        return result;
+
+        return new Rectangle2D.Double(x, y, dimensions.width,
+                dimensions.height);
     }

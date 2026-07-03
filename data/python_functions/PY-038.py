@@ -1,3 +1,7 @@
+from __future__ import annotations
+from collections.abc import Mapping
+from collections import OrderedDict
+
 def merge_setting(
     request_setting: Any, session_setting: Any, dict_class: type = OrderedDict
 ) -> Any:

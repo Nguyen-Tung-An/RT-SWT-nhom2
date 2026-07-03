@@ -1,32 +1,12 @@
-    public static void shift(final boolean[] array, int startIndexInclusive, int endIndexExclusive, int offset) {
-        if (array == null || startIndexInclusive >= array.length - 1 || endIndexExclusive <= 0) {
-            return;
+    public int read() throws IOException {
+        final int current = super.read();
+        if (current == CR || current == LF && lastChar != CR || current == EOF && lastChar != CR && lastChar != LF && lastChar != EOF) {
+            lineNumber++;
         }
-        startIndexInclusive = max0(startIndexInclusive);
-        endIndexExclusive = Math.min(endIndexExclusive, array.length);
-        int n = endIndexExclusive - startIndexInclusive;
-        if (n <= 1) {
-            return;
+        if (encoder != null && current != EOF) {
+            this.bytesRead += getEncodedCharLength(current);
         }
-        offset %= n;
-        if (offset < 0) {
-            offset += n;
-        }
-        // For algorithm explanations and proof of O(n) time complexity and O(1) space complexity
-        // see https://beradrian.wordpress.com/2015/04/07/shift-an-array-in-on-in-place/
-        while (n > 1 && offset > 0) {
-            final int nOffset = n - offset;
-            if (offset > nOffset) {
-                swap(array, startIndexInclusive, startIndexInclusive + n - nOffset,  nOffset);
-                n = offset;
-                offset -= nOffset;
-            } else if (offset < nOffset) {
-                swap(array, startIndexInclusive, startIndexInclusive + nOffset,  offset);
-                startIndexInclusive += offset;
-                n = nOffset;
-            } else {
-                swap(array, startIndexInclusive, startIndexInclusive + nOffset, offset);
-                break;
-            }
-        }
+        lastChar = current;
+        position++;
+        return lastChar;
     }

@@ -1,20 +1,15 @@
-    public static int indexOf(final Object[] array, final Object objectToFind, int startIndex) {
-        if (isEmpty(array)) {
-            return INDEX_NOT_FOUND;
-        }
-        startIndex = max0(startIndex);
-        if (objectToFind == null) {
-            for (int i = startIndex; i < array.length; i++) {
-                if (array[i] == null) {
-                    return i;
-                }
+    protected void handleConcatenatedOptions(final String token) throws ParseException {
+        for (int i = 1; i < token.length(); i++) {
+            final String ch = String.valueOf(token.charAt(i));
+            if (!options.hasOption(ch)) {
+                handleUnknownToken(nonOptionAction == NonOptionAction.STOP && i > 1 ? token.substring(i) : token);
+                break;
             }
-        } else {
-            for (int i = startIndex; i < array.length; i++) {
-                if (objectToFind.equals(array[i])) {
-                    return i;
-                }
+            handleOption(options.getOption(ch));
+            if (currentOption != null && token.length() != i + 1) {
+                // add the trail as an argument of the option
+                currentOption.processValue(stripLeadingAndTrailingQuotesDefaultOff(token.substring(i + 1)));
+                break;
             }
         }
-        return INDEX_NOT_FOUND;
     }

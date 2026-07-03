@@ -1,27 +1,44 @@
-    private static int arrayMemberHash(final Class<?> componentType, final Object o) {
-        if (componentType.equals(Byte.TYPE)) {
-            return Arrays.hashCode((byte[]) o);
+    private static Provider getDefaultProvider() {
+        // approach 1
+        try {
+            String providerClass = System.getProperty("org.joda.time.DateTimeZone.Provider");
+            if (providerClass != null) {
+                try {
+                    // do not initialize the class until the type has been checked
+                    Class<?> cls = Class.forName(providerClass, false, DateTimeZone.class.getClassLoader());
+                    if (!Provider.class.isAssignableFrom(cls)) {
+                        throw new IllegalArgumentException("System property referred to class that does not implement " + Provider.class);
+                    }
+                    Provider provider = cls.asSubclass(Provider.class).getConstructor().newInstance();
+                    return validateProvider(provider);
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        } catch (SecurityException ex) {
+            // ignored
         }
-        if (componentType.equals(Short.TYPE)) {
-            return Arrays.hashCode((short[]) o);
+        // approach 2
+        try {
+            String dataFolder = System.getProperty("org.joda.time.DateTimeZone.Folder");
+            if (dataFolder != null) {
+                try {
+                    Provider provider = new ZoneInfoProvider(new File(dataFolder));
+                    return validateProvider(provider);
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        } catch (SecurityException ex) {
+            // ignored
         }
-        if (componentType.equals(Integer.TYPE)) {
-            return Arrays.hashCode((int[]) o);
+        // approach 3
+        try {
+            Provider provider = new ZoneInfoProvider(DEFAULT_TZ_DATA_PATH);
+            return validateProvider(provider);
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
-        if (componentType.equals(Character.TYPE)) {
-            return Arrays.hashCode((char[]) o);
-        }
-        if (componentType.equals(Long.TYPE)) {
-            return Arrays.hashCode((long[]) o);
-        }
-        if (componentType.equals(Float.TYPE)) {
-            return Arrays.hashCode((float[]) o);
-        }
-        if (componentType.equals(Double.TYPE)) {
-            return Arrays.hashCode((double[]) o);
-        }
-        if (componentType.equals(Boolean.TYPE)) {
-            return Arrays.hashCode((boolean[]) o);
-        }
-        return Arrays.hashCode((Object[]) o);
+        // approach 4
+        return new UTCProvider();
     }

@@ -6,7 +6,8 @@ import time
 
 # ================= CẤU HÌNH =================
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-CSV_PATH = os.path.join(BASE_DIR, "data", "full_ground_truth.csv")
+# Mac dinh chay FULL (120 ham). Chay pilot: set bien moi truong DATASET_CSV=<path>\pilot_sample.csv
+CSV_PATH = os.getenv("DATASET_CSV", os.path.join(BASE_DIR, "data", "full_ground_truth.csv"))
 LOG_PATH = os.path.join(BASE_DIR, "results", "generation_log.csv")
 
 # Thư mục xuất file
@@ -19,11 +20,46 @@ OUT_DIRS = {
 # Tên công cụ (Đã check thư mục root)
 RANDOOP_JAR = os.path.join(BASE_DIR, "randoop-all-4.3.4.jar")
 EVOSUITE_JAR = os.path.join(BASE_DIR, "evosuite-1.2.0.jar")
+# EvoSuite 1.2.0 chi chay duoc tren JDK 8/11 — tren JDK 17 chet InaccessibleObjectException
+# (module system khoa reflection, --add-opens khong cuu duoc process con).
+# May co java mac dinh la 17+: set EVOSUITE_JAVA tro den java.exe cua JDK 11.
+EVOSUITE_JAVA = os.getenv("EVOSUITE_JAVA", "java")
+# EvoSuite master spawn CLIENT bang java lay tu JAVA_HOME -> phai tro JAVA_HOME
+# ve cung JDK voi EVOSUITE_JAVA, neu khong client van chay JDK 17 va chet ngam
+# (master van exit 0 -> "thanh cong" gia).
+EVOSUITE_ENV = os.environ.copy()
+if EVOSUITE_JAVA != "java":
+    EVOSUITE_ENV["JAVA_HOME"] = os.path.dirname(os.path.dirname(EVOSUITE_JAVA))
+# Search budget 60s/class (mac dinh cua EvoSuite) + JVM overhead ~ 90-120s/run.
+# Timeout phai LON HON tong nay, neu khong moi run hop le deu bi kill oan.
+# Class lon (vd HelpFormatter ~1500 LOC) can nhieu hon: set EVOSUITE_TIMEOUT=360.
+EVOSUITE_TIMEOUT = int(os.getenv("EVOSUITE_TIMEOUT", "180"))
 PYNGUIN_BIN = "pynguin"
+# Chay lai rieng tung tool: set BASELINE_TOOLS=evosuite (hoac "randoop", "pynguin", danh sach phay)
+BASELINE_TOOLS = {t.strip() for t in os.getenv("BASELINE_TOOLS", "randoop,evosuite,pynguin").split(",")}
 
 # Cho phép Pynguin chạy mà không báo lỗi Danger
 os.environ["PYNGUIN_DANGER_AWARE"] = "1"
 # ============================================
+
+def java_classpath(repo_name):
+    """Ghep classpath tu MOI target/classes trong repo (ho tro repo multi-module).
+
+    Vi du gson mine ham tu ca 2 module `gson/` va `extras/` -> cp phai gom ca hai,
+    neu chi lay <repo>/target/classes se thieu class (NoClassDefFound khi gen test).
+    """
+    root = os.path.join(BASE_DIR, "data", "raw", repo_name)
+    cps = []
+    direct = os.path.join(root, "target", "classes")
+    if os.path.isdir(direct):
+        cps.append(direct)
+    if os.path.isdir(root):
+        for sub in sorted(os.listdir(root)):
+            c = os.path.join(root, sub, "target", "classes")
+            if os.path.isdir(c) and c not in cps:
+                cps.append(c)
+    return os.pathsep.join(cps) if cps else direct
+
 
 def extract_context(file_path, lang):
     file_path = file_path.replace("\\", "/")
@@ -63,7 +99,8 @@ def main():
         os.makedirs(d, exist_ok=True)
     os.makedirs(os.path.join(BASE_DIR, "results"), exist_ok=True)
 
-    with open(CSV_PATH, "r", encoding="utf-8") as f:
+    # utf-8-sig: bo qua BOM neu CSV duoc xuat tu Excel/PowerShell (BOM lam sai ten cot dau)
+    with open(CSV_PATH, "r", encoding="utf-8-sig") as f:
         reader = csv.DictReader(f)
         rows = list(reader)
 
@@ -89,51 +126,59 @@ def main():
 
 
         if lang == "java":
+            cp = java_classpath(repo_name)
+
             # RANDOOP
-            print(f"\n[{func_id}] Chạy Randoop cho {package_name}.{class_name}")
-            out_file = f"generated_tests/randoop/java/{func_id}_Test.java"
-            cp = os.path.join(BASE_DIR, "data", "raw", repo_name, "target", "classes")
-            cmd = f"java -classpath \"{RANDOOP_JAR};{cp}\" randoop.main.Main gentests --testclass={package_name}.{class_name} --junit-output-dir=\"{OUT_DIRS['randoop']}\" --time-limit=10"
-            try:
-                res = subprocess.run(cmd, shell=True, capture_output=True, text=True)
-                if res.returncode == 0:
-                    status = "ok"
-                    print("   -> Randoop chạy thành công.")
-                else:
-                    status = "failed"
-                    print(f"   -> LỖI RANDOOP: {res.stderr.strip()}")
-            except Exception as e:
-                status = "error"
-                print(f"   -> LỖI EXCEPTION: {e}")
-            append_to_log(log_writer, log_file, func_id, lang, "randoop", out_file, status)
+            if "randoop" in BASELINE_TOOLS:
+                print(f"\n[{func_id}] Chạy Randoop cho {package_name}.{class_name}")
+                out_file = f"generated_tests/randoop/java/{func_id}_Test.java"
+                cmd = f"java -classpath \"{RANDOOP_JAR};{cp}\" randoop.main.Main gentests --testclass={package_name}.{class_name} --junit-output-dir=\"{OUT_DIRS['randoop']}\" --time-limit=10"
+                try:
+                    res = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+                    if res.returncode == 0:
+                        status = "ok"
+                        print("   -> Randoop chạy thành công.")
+                    else:
+                        status = "failed"
+                        print(f"   -> LỖI RANDOOP: {res.stderr.strip()}")
+                except Exception as e:
+                    status = "error"
+                    print(f"   -> LỖI EXCEPTION: {e}")
+                append_to_log(log_writer, log_file, func_id, lang, "randoop", out_file, status)
 
-            # EVOSUITE 
-            print(f"[{func_id}] Chạy EvoSuite cho {package_name}.{class_name}")
-            out_file = f"generated_tests/evosuite/java/{func_id}_Test.java"
-            evosuite_cmd = [
-                "java", "-jar", EVOSUITE_JAR, 
-                "-class", f"{package_name}.{class_name}", 
-                "-projectCP", cp, 
-                f"-Dtest_dir={OUT_DIRS['evosuite']}"
-            ]
-            try:
-                res = subprocess.run(evosuite_cmd, shell=False, capture_output=True, text=True, timeout=30)
-                if res.returncode == 0:
-                    status = "ok"
-                    print("   -> EvoSuite chạy thành công.")
-                else:
+            # EVOSUITE
+            if "evosuite" in BASELINE_TOOLS:
+                print(f"[{func_id}] Chạy EvoSuite cho {package_name}.{class_name}")
+                out_file = f"generated_tests/evosuite/java/{func_id}_Test.java"
+                evosuite_cmd = [
+                    EVOSUITE_JAVA, "-jar", EVOSUITE_JAR,
+                    "-class", f"{package_name}.{class_name}",
+                    "-projectCP", cp,
+                    "-Dsearch_budget=60",
+                    f"-Dtest_dir={OUT_DIRS['evosuite']}"
+                ]
+                # EvoSuite exit 0 ke ca khi that bai -> phai kiem tra file test co that
+                expected_test = os.path.join(OUT_DIRS['evosuite'], *package_name.split("."), f"{class_name}_ESTest.java")
+                try:
+                    res = subprocess.run(evosuite_cmd, shell=False, capture_output=True, text=True,
+                                         timeout=EVOSUITE_TIMEOUT, env=EVOSUITE_ENV)
+                    if res.returncode == 0 and os.path.exists(expected_test):
+                        status = "ok"
+                        print("   -> EvoSuite chạy thành công.")
+                    else:
+                        status = "failed"
+                        # In ra một đoạn lỗi nhỏ để dễ debug
+                        err = (res.stderr or res.stdout or "").strip()
+                        print(f"   -> LỖI EVOSUITE (exit={res.returncode}, file={os.path.exists(expected_test)}): {err[:200]}...")
+                except subprocess.TimeoutExpired:
                     status = "failed"
-                    # In ra một đoạn lỗi nhỏ để dễ debug
-                    print(f"   -> LỖI EVOSUITE: {res.stderr.strip()[:200]}...")
-            except subprocess.TimeoutExpired:
-                status = "failed"
-                print("   -> LỖI EVOSUITE: Quá thời gian 30 giây (Timeout). Ghi nhận Fail.")
-            except Exception as e:
-                status = "error"
-                print(f"   -> LỖI EXCEPTION: {e}")
-            append_to_log(log_writer, log_file, func_id, lang, "evosuite", out_file, status)
+                    print(f"   -> LỖI EVOSUITE: Quá thời gian {EVOSUITE_TIMEOUT} giây (Timeout). Ghi nhận Fail.")
+                except Exception as e:
+                    status = "error"
+                    print(f"   -> LỖI EXCEPTION: {e}")
+                append_to_log(log_writer, log_file, func_id, lang, "evosuite", out_file, status)
 
-        elif lang == "python":
+        elif lang == "python" and "pynguin" in BASELINE_TOOLS:
             # PYNGUIN
             print(f"\n[{func_id}] Chạy Pynguin cho module {package_name}")
             out_file = f"generated_tests/pynguin/python/test_{func_id}.py"

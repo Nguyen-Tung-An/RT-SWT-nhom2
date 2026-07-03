@@ -1,27 +1,21 @@
-    public static String overlay(final String str, String overlay, int start, int end) {
-        if (str == null) {
-            return null;
+    public static Period fieldDifference(ReadablePartial start, ReadablePartial end) {
+        if (start == null || end == null) {
+            throw new IllegalArgumentException("ReadablePartial objects must not be null");
         }
-        if (overlay == null) {
-            overlay = EMPTY;
+        if (start.size() != end.size()) {
+            throw new IllegalArgumentException("ReadablePartial objects must have the same set of fields");
         }
-        final int len = str.length();
-        if (start < 0) {
-            start = 0;
+        DurationFieldType[] types = new DurationFieldType[start.size()];
+        int[] values = new int[start.size()];
+        for (int i = 0, isize = start.size(); i < isize; i++) {
+            if (start.getFieldType(i) != end.getFieldType(i)) {
+                throw new IllegalArgumentException("ReadablePartial objects must have the same set of fields");
+            }
+            types[i] = start.getFieldType(i).getDurationType();
+            if (i > 0 && types[i - 1].equals(types[i])) {
+                throw new IllegalArgumentException("ReadablePartial objects must not have overlapping fields");
+            }
+            values[i] = end.getValue(i) - start.getValue(i);
         }
-        if (start > len) {
-            start = len;
-        }
-        if (end < 0) {
-            end = 0;
-        }
-        if (end > len) {
-            end = len;
-        }
-        if (start > end) {
-            final int temp = start;
-            start = end;
-            end = temp;
-        }
-        return str.substring(0, start) + overlay + str.substring(end);
+        return new Period(values, PeriodType.forFields(types));
     }

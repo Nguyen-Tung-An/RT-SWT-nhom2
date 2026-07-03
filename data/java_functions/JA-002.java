@@ -1,15 +1,15 @@
-    public static boolean[] concat(boolean[]... arrays) {
-        int totalLength = 0;
-        for (boolean[] array : arrays) {
-            totalLength = addExact(totalLength, array);
+    public String[] getOptionValues(final Option option) {
+        if (option == null) {
+            return null;
         }
-        final boolean[] result = new boolean[totalLength];
-        int currentPos = 0;
-        for (boolean[] array : arrays) {
-            if (array != null && array.length > 0) {
-                System.arraycopy(array, 0, result, currentPos, array.length);
-                currentPos += array.length;
+        final List<String> values = new ArrayList<>();
+        options.forEach(processedOption -> {
+            if (processedOption.equals(option)) {
+                if (option.isDeprecated()) {
+                    handleDeprecated(option);
+                }
+                values.addAll(processedOption.getValuesList());
             }
-        }
-        return result;
+        });
+        return values.isEmpty() ? null : values.toArray(Util.EMPTY_STRING_ARRAY);
     }

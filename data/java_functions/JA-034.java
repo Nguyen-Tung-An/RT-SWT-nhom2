@@ -1,13 +1,16 @@
-    public boolean contains(final CharRange range) {
-        Objects.requireNonNull(range, "range");
-        if (negated) {
-            if (range.negated) {
-                return start >= range.start && end <= range.end;
-            }
-            return range.end < start || range.start > end;
+    static CharSequence trim(final CharSequence charSequence) {
+        if (charSequence instanceof String) {
+            return ((String) charSequence).trim();
         }
-        if (range.negated) {
-            return start == 0 && end == Character.MAX_VALUE;
+        final int count = charSequence.length();
+        int len = count;
+        int pos = 0;
+
+        while (pos < len && isTrimChar(charSequence, pos)) {
+            pos++;
         }
-        return start <= range.start && end >= range.end;
+        while (pos < len && isTrimChar(charSequence, len - 1)) {
+            len--;
+        }
+        return pos > 0 || len < count ? charSequence.subSequence(pos, len) : charSequence;
     }
