@@ -18,6 +18,12 @@ OUT_DIR = os.path.join(BASE_DIR, "generated_tests", TEST_SOURCE)
 LOG_PATH = os.path.join(BASE_DIR, "results", "generation_log.csv")
 API_LOG_TXT = os.path.join(BASE_DIR, "results", "pilot_api_log.txt")
 PILOT_OUTPUT_CSV = os.path.join(BASE_DIR, "results", "pilot_llm_output.csv")
+
+# DATA_ROOT = thu muc goc chua source code (java_functions/, python_functions/).
+# Mac dinh = data/ trong repo (Kim da up len main). Colab / may khac: override bang bien moi truong.
+DATA_ROOT = os.getenv("DATA_ROOT", os.path.join(BASE_DIR, "data"))
+# Dataset CSV = pilot mac dinh. De chay FULL: set bien moi truong DATASET_CSV.
+CSV_PATH = os.getenv("DATASET_CSV", CSV_PATH)
 # ============================================
 
 def clean_code_block(text, language):
@@ -118,7 +124,7 @@ def main():
         else:
             raw_path_sys = raw_path
             
-        source_path = os.path.join(BASE_DIR, "data", raw_path_sys)
+        source_path = os.path.join(DATA_ROOT, raw_path_sys)
         if not os.path.exists(source_path):
             print(f"Warning: source file not found {source_path}")
             continue
