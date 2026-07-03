@@ -2,7 +2,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses({ RegressionTest0.class })
-public class RegressionTest {
+@Suite.SuiteClasses({ JA_050_Regression0.class })
+public class JA_050_Regression {
 }
 

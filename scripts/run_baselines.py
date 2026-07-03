@@ -131,8 +131,11 @@ def main():
             # RANDOOP
             if "randoop" in BASELINE_TOOLS:
                 print(f"\n[{func_id}] Chạy Randoop cho {package_name}.{class_name}")
-                out_file = f"generated_tests/randoop/java/{func_id}_Test.java"
-                cmd = f"java -classpath \"{RANDOOP_JAR};{cp}\" randoop.main.Main gentests --testclass={package_name}.{class_name} --junit-output-dir=\"{OUT_DIRS['randoop']}\" --time-limit=10"
+                # basename theo func_id de cac lan chay KHONG ghi de nhau
+                # (truoc day moi run deu xuat RegressionTest0.java -> chi con bo test cuoi cung)
+                safe_id = func_id.replace("-", "_")
+                out_file = f"generated_tests/randoop/java/{safe_id}_Regression0.java"
+                cmd = f"java -classpath \"{RANDOOP_JAR};{cp}\" randoop.main.Main gentests --testclass={package_name}.{class_name} --junit-output-dir=\"{OUT_DIRS['randoop']}\" --regression-test-basename={safe_id}_Regression --time-limit=10"
                 try:
                     res = subprocess.run(cmd, shell=True, capture_output=True, text=True)
                     if res.returncode == 0:

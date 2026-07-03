@@ -23,3 +23,15 @@ JA-042,java,9,evosuite,93.75,72.73,1
 JA-050,java,9,evosuite,75.0,12.5,1
 JA-052,java,10,evosuite,100.0,100.0,1
 JA-060,java,10,evosuite,100.0,100.0,1
+JA-002,java,5,randoop,12.5,0.0,1
+JA-010,java,5,randoop,16.67,28.57,1
+JA-012,java,6,randoop,0.0,0.0,1
+JA-020,java,6,randoop,0.0,0.0,1
+JA-022,java,7,randoop,0.0,0.0,1
+JA-030,java,7,randoop,0.0,0.0,1
+JA-032,java,8,randoop,0.0,0.0,1
+JA-040,java,8,randoop,75.0,30.77,1
+JA-042,java,9,randoop,0.0,0.0,1
+JA-050,java,9,randoop,0.0,0.0,1
+JA-052,java,10,randoop,20.0,11.11,1
+JA-060,java,10,randoop,60.0,100.0,1

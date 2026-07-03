@@ -84,6 +84,12 @@ This file records every technical decision and error during RBL-4, per RBL-0/RBL
 - **Chẩn đoán lại pilot với data v2 + test CŨ:** 0×P1 (trước là 9) · 8×P3 (test cũ import flask/click) · 4×P4 (test fail trên bản gốc) → chốt chặn đã chuyển từ DATA sang TEST GENERATION (chờ LR chạy lại prompt mới).
 - Data v2 đã commit vào `data/{java,python}_functions/` (`2ccffc7`). Nhắc DG: lần sau **push lên git** thay vì gửi rar — repo là nguồn chuẩn.
 
+### 2026-07-04 — Baseline Randoop pilot 12/12 + phát hiện bug ghi đè test ⚠️
+- **Bug:** run_baselines dùng chung tên `RegressionTest0.java` cho mọi run → 11/12 bộ test Randoop cũ bị **ghi đè**, chỉ còn bộ của hàm cuối (JA-060). Các dòng log "randoop ok" trước đây gây hiểu nhầm là có đủ test. **Fix:** `--regression-test-basename=<func_id>_Regression` — mỗi hàm một bộ riêng; đã sinh lại đủ 12 bộ (867 test xanh, JDK 17).
+- **Kết quả pilot Randoop** (time-limit 10s/class): bc median **0%** (8/12 hàm = 0%, max 75% JA-040) · ms: giết 113/497 mutant (~23%). Đối chiếu EvoSuite: bc median 83.3%, ms median 71.4%.
+- **⚠️ Threat cần ghi vào report:** EvoSuite chạy budget 60s vs Randoop 10s — so sánh **chưa công bằng**; full run phải cân bằng budget (đề xuất 60s cả hai, sửa `--time-limit=60`).
+- **Trạng thái `metrics.csv`:** 24 dòng JA (evosuite + randoop) = baseline hợp lệ; 12 dòng PY (gpt4o-mini) = số INVALID cũ giữ làm bằng chứng, chờ sinh lại test sau khi chốt A/B.
+
 ### 2026-07-04 — GATE ĐO JAVA: PASS ✅ — pipeline JaCoCo chạy end-to-end, có số thật đầu tiên
 - **Cách đo:** chèn test EvoSuite (12 hàm pilot → 4 class) vào `src/test/java` của commons-cli (commit pin, build local) → `mvn test jacoco:report`. 343 test xanh 100%.
 - **Branch coverage (class-level, test EvoSuite):** PatternOptionBuilder **100%** (44/44) · CommandLine **97.06%** (66/68) · HelpFormatter **77.94%** (106/136) · DefaultParser **63.73%** (130/204).
