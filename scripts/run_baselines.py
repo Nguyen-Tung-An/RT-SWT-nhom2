@@ -35,6 +35,9 @@ if EVOSUITE_JAVA != "java":
 # Class lon (vd HelpFormatter ~1500 LOC) can nhieu hon: set EVOSUITE_TIMEOUT=360.
 EVOSUITE_TIMEOUT = int(os.getenv("EVOSUITE_TIMEOUT", "180"))
 PYNGUIN_BIN = "pynguin"
+# Budget sinh test cua Randoop (giay/class). Pilot cu chay 10s; de so sanh CONG BANG
+# voi EvoSuite (search_budget=60) thi full run nen set RANDOOP_TIME_LIMIT=60.
+RANDOOP_TIME_LIMIT = int(os.getenv("RANDOOP_TIME_LIMIT", "10"))
 # Chay lai rieng tung tool: set BASELINE_TOOLS=evosuite (hoac "randoop", "pynguin", danh sach phay)
 BASELINE_TOOLS = {t.strip() for t in os.getenv("BASELINE_TOOLS", "randoop,evosuite,pynguin").split(",")}
 
@@ -135,7 +138,7 @@ def main():
                 # (truoc day moi run deu xuat RegressionTest0.java -> chi con bo test cuoi cung)
                 safe_id = func_id.replace("-", "_")
                 out_file = f"generated_tests/randoop/java/{safe_id}_Regression0.java"
-                cmd = f"java -classpath \"{RANDOOP_JAR};{cp}\" randoop.main.Main gentests --testclass={package_name}.{class_name} --junit-output-dir=\"{OUT_DIRS['randoop']}\" --regression-test-basename={safe_id}_Regression --time-limit=10"
+                cmd = f"java -classpath \"{RANDOOP_JAR};{cp}\" randoop.main.Main gentests --testclass={package_name}.{class_name} --junit-output-dir=\"{OUT_DIRS['randoop']}\" --regression-test-basename={safe_id}_Regression --time-limit={RANDOOP_TIME_LIMIT}"
                 try:
                     res = subprocess.run(cmd, shell=True, capture_output=True, text=True)
                     if res.returncode == 0:
