@@ -1,0 +1,42 @@
+\section{Threats to Validity}\label{sec:threats}
+% NGƯỜI VIẾT: RW (Lộc)
+% LỢI THẾ: mục này có liệu THẬT từ notes.md (error log RBL-4) — mỗi threat dưới đây
+% là chuyện đã xảy ra và được xử lý, kèm bằng chứng commit. GV chấm rất cao kiểu này.
+
+\subsection{Construct Validity}
+% Gợi ý liệu có sẵn (chi tiết trong notes.md + ms-analysis/results/*):
+% - Đo lường suýt ra "số giả" 3 lần và đều bị chặn bởi kiểm tra chéo:
+%   (1) mutation score 100% ảo khi test fail sẵn trên bản gốc
+%       -> fix: green-check bắt buộc trước khi đo mutation
+%   (2) EvoSuite exit code 0 kể cả khi không sinh test ("thành công giả")
+%       -> fix: xác nhận file test tồn tại thật thay vì tin exit code
+%   (3) JaCoCo báo 0% với test EvoSuite do separateClassLoader
+%       -> fix: tắt separateClassLoader khi đo coverage ngoài
+% - Coverage cao không đồng nghĩa test tốt: JA-020 đạt 60% branch coverage
+%   nhưng mutation score 0% -> lý do dùng CẶP metric.
+% TODO(Lộc): viết thành đoạn văn.
+
+\subsection{Internal Validity}
+% Gợi ý liệu:
+% - Pilot v1 lộ 4 root cause làm INVALID 10/12 hàm Python (data không standalone,
+%   test tự re-implement, thiếu import, import * bỏ tên private) -> data v2 + prompt v2.
+% - Data v1 Java bị lệch nội dung so với CSV (JA-002 chứa hàm không tồn tại)
+%   -> toàn bộ test pilot phải sinh lại; quy trình đối chiếu data-CSV được thêm vào.
+% - Budget baseline: pilot chạy EvoSuite 60s vs Randoop 10s (không công bằng)
+%   -> full run cân bằng 60s/60s.
+% - Randoop output bị ghi đè giữa các lần chạy -> fix basename theo hàm.
+% TODO(Lộc)
+
+\subsection{External Validity}
+% Gợi ý liệu (một phần đã viết sẵn trong amendment v1.1 §3 và v1.2 §3):
+% - gpt-4o-mini là model nhẹ — kết quả KHÔNG tổng quát hoá cho gpt-4o/model lớn hơn.
+% - Dataset 120 hàm từ 10 repo (8 Java Apache-style + flask/requests);
+%   phân bố Python lệch (flask 48/60) — không đại diện mọi loại mã nguồn.
+% - Hàm Python "xé lẻ" phụ thuộc ngữ cảnh module -> phương án đo (A/B) ảnh hưởng
+%   khả năng khái quát; xem data_v2_check.md.
+% TODO(Lộc)
+
+\subsection{Conclusion Validity}
+% Gợi ý: N=120 (thống kê phi tham số Wilcoxon phù hợp cỡ mẫu nhỏ);
+% ngưỡng 80%/60% lấy từ literature (TestPilot floor); alpha=0.05.
+% TODO(Lộc)
