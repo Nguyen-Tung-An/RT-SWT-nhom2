@@ -84,6 +84,12 @@ This file records every technical decision and error during RBL-4, per RBL-0/RBL
 - **Chẩn đoán lại pilot với data v2 + test CŨ:** 0×P1 (trước là 9) · 8×P3 (test cũ import flask/click) · 4×P4 (test fail trên bản gốc) → chốt chặn đã chuyển từ DATA sang TEST GENERATION (chờ LR chạy lại prompt mới).
 - Data v2 đã commit vào `data/{java,python}_functions/` (`2ccffc7`). Nhắc DG: lần sau **push lên git** thay vì gửi rar — repo là nguồn chuẩn.
 
+### 2026-07-03 — Test Java pilot của LLM cũng phải sinh lại (hậu quả data v1 sai) ⚠️
+- **`generated_tests/gpt4o/java/JA-002_Test.java` test hàm `CommandLine.concat(boolean[]...)` — hàm KHÔNG tồn tại** trong CommandLine thật: pilot generation chạy trên data v1 (nội dung lệch CSV) nên LLM được xem source sai. → 12 test Java pilot hiện tại vô giá trị để đo, **LR phải sinh lại sau khi có data v2** (gộp cùng đợt sinh lại Python).
+- Lỗi phụ: file lưu tên `JA-XXX_Test.java` nhưng class bên trong là `<ClassName>Test` → javac không compile được file rời (Java bắt tên file = tên public class). Sinh lại cần sửa cách đặt tên file trong `run_experiment.py`.
+- `ms-analysis/measure_java` thiết kế theo quy ước class `Example` (hàm static bọc trong Example.java) — **không khớp** test thật (test theo package/class thật). Cùng bản chất với quyết định A/B phía Python: khuyến nghị **đo trong ngữ cảnh repo thật** (chèn test vào `src/test/java` của repo pin + JaCoCo/PIT scope theo class đích) — MS xem `data_v2_check.md`.
+- **Đo được ngay không cần chờ LR:** test Randoop (+ EvoSuite đang sinh) xuất phát từ class THẬT → dùng làm gate kiểm chứng pipeline đo Java trước.
+
 ### 2026-07-03 — EvoSuite "thành công GIẢ" (exit 0 nhưng không sinh test) + fix hạ tầng Java ⚠️
 - **Phát hiện:** EvoSuite **exit code 0 kể cả khi thất bại hoàn toàn** — script cũ chỉ check returncode nên log ghi "ok" giả. Root cause tầng 2: master chạy JDK 11 (qua `EVOSUITE_JAVA`) nhưng **client bị spawn bằng java từ `JAVA_HOME`** (vẫn JDK 17) → client chết ngầm.
 - **Fix (`2f2b216`):** run_baselines tự set `JAVA_HOME` theo `EVOSUITE_JAVA` cho process con + status "ok" chỉ khi **file `<Class>_ESTest.java` tồn tại thật**, không tin exit code. 12 dòng log "ok" giả đã được revert trước khi commit (log sạch).
