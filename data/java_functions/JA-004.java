@@ -1,15 +1,15 @@
-    public static char[] concat(char[]... arrays) {
-        int totalLength = 0;
-        for (char[] array : arrays) {
-            totalLength = addExact(totalLength, array);
+    private boolean isDelimiter(final char ch0, final CharSequence charSeq, final int startIndex, final char[] delimiter, final int delimiterLength) {
+        if (ch0 != delimiter[0]) {
+            return false;
         }
-        final char[] result = new char[totalLength];
-        int currentPos = 0;
-        for (char[] array : arrays) {
-            if (array != null && array.length > 0) {
-                System.arraycopy(array, 0, result, currentPos, array.length);
-                currentPos += array.length;
+        final int len = charSeq.length();
+        if (startIndex + delimiterLength > len) {
+            return false;
+        }
+        for (int i = 1; i < delimiterLength; i++) {
+            if (charSeq.charAt(startIndex + i) != delimiter[i]) {
+                return false;
             }
         }
-        return result;
+        return true;
     }

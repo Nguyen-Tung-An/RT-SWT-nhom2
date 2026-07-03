@@ -1,15 +1,33 @@
-    private static boolean memberEquals(final Class<?> type, final Object o1, final Object o2) {
-        if (o1 == o2) {
-            return true;
+    public int compare(Object lhsObj, Object rhsObj) {
+        InstantConverter conv = ConverterManager.getInstance().getInstantConverter(lhsObj);
+        Chronology lhsChrono = conv.getChronology(lhsObj, (Chronology) null);
+        long lhsMillis = conv.getInstantMillis(lhsObj, lhsChrono);
+        
+        // handle null==null and other cases where objects are the same
+        // but only do this after checking the input is valid
+        if (lhsObj == rhsObj) {
+            return 0;
         }
-        if (o1 == null || o2 == null) {
-            return false;
+        
+        conv = ConverterManager.getInstance().getInstantConverter(rhsObj);
+        Chronology rhsChrono = conv.getChronology(rhsObj, (Chronology) null);
+        long rhsMillis = conv.getInstantMillis(rhsObj, rhsChrono);
+
+        if (iLowerLimit != null) {
+            lhsMillis = iLowerLimit.getField(lhsChrono).roundFloor(lhsMillis);
+            rhsMillis = iLowerLimit.getField(rhsChrono).roundFloor(rhsMillis);
         }
-        if (type.isArray()) {
-            return arrayMemberEquals(type.getComponentType(), o1, o2);
+
+        if (iUpperLimit != null) {
+            lhsMillis = iUpperLimit.getField(lhsChrono).remainder(lhsMillis);
+            rhsMillis = iUpperLimit.getField(rhsChrono).remainder(rhsMillis);
         }
-        if (type.isAnnotation()) {
-            return equals((Annotation) o1, (Annotation) o2);
+
+        if (lhsMillis < rhsMillis) {
+            return -1;
+        } else if (lhsMillis > rhsMillis) {
+            return 1;
+        } else {
+            return 0;
         }
-        return o1.equals(o2);
     }

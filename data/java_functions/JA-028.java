@@ -1,20 +1,19 @@
-    public static int[] insert(final int index, final int[] array, final int... values) {
-        if (array == null) {
-            return null;
+    static RequestExecutor get(Request request, @Nullable Response previousResponse) {
+        boolean useHttpClient = Boolean.parseBoolean(System.getProperty(SharedConstants.UseHttpClient, "true"));
+
+        if (request.sslSocketFactory() != null) // downgrade if a socket factory is set, as it can't be supplied to the HttpClient
+            useHttpClient = false;
+        Proxy proxy = request.proxy();
+        if (proxy != null && proxy.type() == Proxy.Type.SOCKS) // HttpClient doesn't support SOCKS proxies
+            useHttpClient = false;
+
+        if (useHttpClient && clientConstructor != null) {
+            try {
+                return clientConstructor.newInstance(request, previousResponse);
+            } catch (Exception e) {
+                return new UrlConnectionExecutor(request, previousResponse);
+            }
+        } else {
+            return new UrlConnectionExecutor(request, previousResponse);
         }
-        if (isEmpty(values)) {
-            return clone(array);
-        }
-        if (index < 0 || index > array.length) {
-            throw new IndexOutOfBoundsException("Index: " + index + ", Length: " + array.length);
-        }
-        final int[] result = new int[array.length + values.length];
-        System.arraycopy(values, 0, result, index, values.length);
-        if (index > 0) {
-            System.arraycopy(array, 0, result, 0, index);
-        }
-        if (index < array.length) {
-            System.arraycopy(array, index, result, index + values.length, array.length - index);
-        }
-        return result;
     }

@@ -1,20 +1,32 @@
-    public static byte[] insert(final int index, final byte[] array, final byte... values) {
-        if (array == null) {
-            return null;
+    private Token parseSimpleToken(final Token token, final int ch) throws IOException {
+        // Faster to use while(true)+break than while(token.type == INVALID)
+        int cur = ch;
+        while (true) {
+            if (readEndOfLine(cur)) {
+                token.type = Token.Type.EORECORD;
+                break;
+            }
+            if (isEndOfFile(cur)) {
+                token.type = Token.Type.EOF;
+                token.isReady = true; // There is data at EOF
+                break;
+            }
+            if (isDelimiter(cur)) {
+                token.type = Token.Type.TOKEN;
+                break;
+            }
+            // continue
+            if (isEscape(cur)) {
+                appendNextEscapedCharacterToToken(token);
+            } else {
+                token.content.append((char) cur);
+            }
+            cur = reader.read(); // continue
         }
-        if (isEmpty(values)) {
-            return clone(array);
+
+        if (ignoreSurroundingSpaces) {
+            trimTrailingSpaces(token.content);
         }
-        if (index < 0 || index > array.length) {
-            throw new IndexOutOfBoundsException("Index: " + index + ", Length: " + array.length);
-        }
-        final byte[] result = new byte[array.length + values.length];
-        System.arraycopy(values, 0, result, index, values.length);
-        if (index > 0) {
-            System.arraycopy(array, 0, result, 0, index);
-        }
-        if (index < array.length) {
-            System.arraycopy(array, index, result, index + values.length, array.length - index);
-        }
-        return result;
+
+        return token;
     }

@@ -1,3 +1,8 @@
+from __future__ import annotations
+import os
+import sys
+import typing as t
+
 def shell_command() -> None:
     """Run an interactive Python shell in the context of a given
     Flask application.  The application will populate the default

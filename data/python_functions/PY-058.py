@@ -1,3 +1,8 @@
+from __future__ import annotations
+import os
+import pathlib
+import sys
+
 def find_package(import_name: str) -> tuple[str | None, str]:
     """Find the prefix that a package is installed under, and the path
     that it would be imported from.

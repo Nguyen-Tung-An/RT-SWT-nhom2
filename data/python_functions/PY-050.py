@@ -1,47 +1,50 @@
-    def from_file(
-        self,
-        filename: str | os.PathLike[str],
-        load: t.Callable[[t.IO[t.Any]], t.Mapping[str, t.Any]],
-        silent: bool = False,
-        text: bool = True,
-    ) -> bool:
-        """Update the values in the config from a file that is loaded
-        using the ``load`` parameter. The loaded data is passed to the
-        :meth:`from_mapping` method.
+from __future__ import annotations
+import os
 
-        .. code-block:: python
+def from_file(
+    self,
+    filename: str | os.PathLike[str],
+    load: t.Callable[[t.IO[t.Any]], t.Mapping[str, t.Any]],
+    silent: bool = False,
+    text: bool = True,
+) -> bool:
+    """Update the values in the config from a file that is loaded
+    using the ``load`` parameter. The loaded data is passed to the
+    :meth:`from_mapping` method.
 
-            import json
-            app.config.from_file("config.json", load=json.load)
+    .. code-block:: python
 
-            import tomllib
-            app.config.from_file("config.toml", load=tomllib.load, text=False)
+        import json
+        app.config.from_file("config.json", load=json.load)
 
-        :param filename: The path to the data file. This can be an
-            absolute path or relative to the config root path.
-        :param load: A callable that takes a file handle and returns a
-            mapping of loaded data from the file.
-        :type load: ``Callable[[Reader], Mapping]`` where ``Reader``
-            implements a ``read`` method.
-        :param silent: Ignore the file if it doesn't exist.
-        :param text: Open the file in text or binary mode.
-        :return: ``True`` if the file was loaded successfully.
+        import tomllib
+        app.config.from_file("config.toml", load=tomllib.load, text=False)
 
-        .. versionchanged:: 2.3
-            The ``text`` parameter was added.
+    :param filename: The path to the data file. This can be an
+        absolute path or relative to the config root path.
+    :param load: A callable that takes a file handle and returns a
+        mapping of loaded data from the file.
+    :type load: ``Callable[[Reader], Mapping]`` where ``Reader``
+        implements a ``read`` method.
+    :param silent: Ignore the file if it doesn't exist.
+    :param text: Open the file in text or binary mode.
+    :return: ``True`` if the file was loaded successfully.
 
-        .. versionadded:: 2.0
-        """
-        filename = os.path.join(self.root_path, filename)
+    .. versionchanged:: 2.3
+        The ``text`` parameter was added.
 
-        try:
-            with open(filename, "r" if text else "rb") as f:
-                obj = load(f)
-        except OSError as e:
-            if silent and e.errno in (errno.ENOENT, errno.EISDIR):
-                return False
+    .. versionadded:: 2.0
+    """
+    filename = os.path.join(self.root_path, filename)
 
-            e.strerror = f"Unable to load configuration file ({e.strerror})"
-            raise
+    try:
+        with open(filename, "r" if text else "rb") as f:
+            obj = load(f)
+    except OSError as e:
+        if silent and e.errno in (errno.ENOENT, errno.EISDIR):
+            return False
 
-        return self.from_mapping(obj)
+        e.strerror = f"Unable to load configuration file ({e.strerror})"
+        raise
+
+    return self.from_mapping(obj)

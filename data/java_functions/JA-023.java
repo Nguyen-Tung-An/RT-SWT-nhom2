@@ -1,20 +1,25 @@
-    public static boolean[] insert(final int index, final boolean[] array, final boolean... values) {
-        if (array == null) {
-            return null;
+    public static <O> List<O> collate(final Iterable<? extends O> iterableA, final Iterable<? extends O> iterableB,
+                                      final Comparator<? super O> comparator, final boolean includeDuplicates) {
+        Objects.requireNonNull(iterableA, "iterableA");
+        Objects.requireNonNull(iterableB, "iterableB");
+        Objects.requireNonNull(comparator, "comparator");
+        // if both Iterables are a Collection, we can estimate the size
+        final int totalSize = iterableA instanceof Collection<?> && iterableB instanceof Collection<?> ?
+                Math.max(1, ((Collection<?>) iterableA).size() + ((Collection<?>) iterableB).size()) : 10;
+
+        final Iterator<O> iterator = new CollatingIterator<>(comparator, iterableA.iterator(), iterableB.iterator());
+        if (includeDuplicates) {
+            return IteratorUtils.toList(iterator, totalSize);
         }
-        if (isEmpty(values)) {
-            return clone(array);
+        final ArrayList<O> mergedList = new ArrayList<>(totalSize);
+        O lastItem = null;
+        while (iterator.hasNext()) {
+            final O item = iterator.next();
+            if (lastItem == null || !lastItem.equals(item)) {
+                mergedList.add(item);
+            }
+            lastItem = item;
         }
-        if (index < 0 || index > array.length) {
-            throw new IndexOutOfBoundsException("Index: " + index + ", Length: " + array.length);
-        }
-        final boolean[] result = new boolean[array.length + values.length];
-        System.arraycopy(values, 0, result, index, values.length);
-        if (index > 0) {
-            System.arraycopy(array, 0, result, 0, index);
-        }
-        if (index < array.length) {
-            System.arraycopy(array, index, result, index + values.length, array.length - index);
-        }
-        return result;
+        mergedList.trimToSize();
+        return mergedList;
     }

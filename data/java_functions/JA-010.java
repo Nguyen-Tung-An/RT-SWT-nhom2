@@ -1,14 +1,19 @@
-    public static int indexOf(final double[] array, final double valueToFind, final int startIndex) {
-        if (Double.isNaN(valueToFind)) {
-            return indexOfNaN(array, startIndex);
+    public <T> T[] getParsedOptionValues(final Option option, final Supplier<T[]> defaultValue) throws ParseException {
+        if (option == null) {
+            return get(defaultValue);
         }
-        if (isEmpty(array)) {
-            return INDEX_NOT_FOUND;
+        final Class<? extends T> clazz = (Class<? extends T>) option.getType();
+        final String[] values = getOptionValues(option);
+        if (values == null) {
+            return get(defaultValue);
         }
-        for (int i = max0(startIndex); i < array.length; i++) {
-            if (valueToFind == array[i]) {
-                return i;
+        final T[] result = (T[]) Array.newInstance(clazz, values.length);
+        try {
+            for (int i = 0; i < values.length; i++) {
+                result[i] = clazz.cast(option.getConverter().apply(values[i]));
             }
+            return result;
+        } catch (final Exception t) {
+            throw ParseException.wrap(t);
         }
-        return INDEX_NOT_FOUND;
     }

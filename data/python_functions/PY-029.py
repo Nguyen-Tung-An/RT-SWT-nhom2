@@ -1,3 +1,7 @@
+from __future__ import annotations
+import os
+from urllib.parse import urlparse
+
 def _urllib3_request_context(
     request: PreparedRequest,
     verify: bool | str | None,

@@ -1,30 +1,38 @@
-    public static String[] substringsBetween(final String str, final String open, final String close) {
-        if (str == null || isEmpty(open) || isEmpty(close)) {
-            return null;
-        }
-        final int strLen = str.length();
-        if (strLen == 0) {
-            return ArrayUtils.EMPTY_STRING_ARRAY;
-        }
-        final int closeLen = close.length();
-        final int openLen = open.length();
-        final List<String> list = new ArrayList<>();
-        int pos = 0;
-        while (pos < strLen - closeLen) {
-            int start = str.indexOf(open, pos);
-            if (start < 0) {
-                break;
+    public int getOffsetFromLocal(long instantLocal) {
+        // get the offset at instantLocal (first estimate)
+        final int offsetLocal = getOffset(instantLocal);
+        // adjust instantLocal using the estimate and recalc the offset
+        final long instantAdjusted = instantLocal - offsetLocal;
+        final int offsetAdjusted = getOffset(instantAdjusted);
+        // if the offsets differ, we must be near a DST boundary
+        if (offsetLocal != offsetAdjusted) {
+            // we need to ensure that time is always after the DST gap
+            // this happens naturally for positive offsets, but not for negative
+            if ((offsetLocal - offsetAdjusted) < 0) {
+                // if we just return offsetAdjusted then the time is pushed
+                // back before the transition, whereas it should be
+                // on or after the transition
+                long nextLocal = nextTransition(instantAdjusted);
+                if (nextLocal == (instantLocal - offsetLocal)) {
+                    nextLocal = Long.MAX_VALUE;
+                }
+                long nextAdjusted = nextTransition(instantLocal - offsetAdjusted);
+                if (nextAdjusted == (instantLocal - offsetAdjusted)) {
+                    nextAdjusted = Long.MAX_VALUE;
+                }
+                if (nextLocal != nextAdjusted) {
+                    return offsetLocal;
+                }
             }
-            start += openLen;
-            final int end = str.indexOf(close, start);
-            if (end < 0) {
-                break;
+        } else if (offsetLocal >= 0) {
+            long prev = previousTransition(instantAdjusted);
+            if (prev < instantAdjusted) {
+                int offsetPrev = getOffset(prev);
+                int diff = offsetPrev - offsetLocal;
+                if (instantAdjusted - prev <= diff) {
+                    return offsetPrev;
+                }
             }
-            list.add(str.substring(start, end));
-            pos = end + closeLen;
         }
-        if (list.isEmpty()) {
-            return null;
-        }
-        return list.toArray(ArrayUtils.EMPTY_STRING_ARRAY);
+        return offsetAdjusted;
     }

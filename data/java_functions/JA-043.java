@@ -1,27 +1,34 @@
-    public static String getShortClassName(String className) {
-        if (StringUtils.isEmpty(className)) {
-            return StringUtils.EMPTY;
+    public static Object get(final Object object, final int index) {
+        final int i = index;
+        if (i < 0) {
+            throw new IndexOutOfBoundsException("Index cannot be negative: " + i);
         }
-        final StringBuilder arrayPrefix = new StringBuilder();
-        // Handle array encoding
-        if (className.startsWith("[")) {
-            while (className.charAt(0) == '[') {
-                className = className.substring(1);
-                arrayPrefix.append("[]");
-            }
-            // Strip Object type encoding
-            if (className.charAt(0) == 'L' && className.charAt(className.length() - 1) == ';') {
-                className = className.substring(1, className.length() - 1);
-            }
-            if (REVERSE_ABBREVIATION_MAP.containsKey(className)) {
-                className = REVERSE_ABBREVIATION_MAP.get(className);
-            }
+        if (object instanceof Map<?, ?>) {
+            final Map<?, ?> map = (Map<?, ?>) object;
+            final Iterator<?> iterator = map.entrySet().iterator();
+            return IteratorUtils.get(iterator, i);
         }
-        final int lastDotIdx = className.lastIndexOf(PACKAGE_SEPARATOR_CHAR);
-        final int innerIdx = className.indexOf(INNER_CLASS_SEPARATOR_CHAR, lastDotIdx == -1 ? 0 : lastDotIdx + 1);
-        String out = className.substring(lastDotIdx + 1);
-        if (innerIdx != -1) {
-            out = out.replace(INNER_CLASS_SEPARATOR_CHAR, PACKAGE_SEPARATOR_CHAR);
+        if (object instanceof Object[]) {
+            return ((Object[]) object)[i];
         }
-        return out + arrayPrefix;
+        if (object instanceof Iterator<?>) {
+            final Iterator<?> it = (Iterator<?>) object;
+            return IteratorUtils.get(it, i);
+        }
+        if (object instanceof Iterable<?>) {
+            final Iterable<?> iterable = (Iterable<?>) object;
+            return IterableUtils.get(iterable, i);
+        }
+        if (object instanceof Enumeration<?>) {
+            final Enumeration<?> it = (Enumeration<?>) object;
+            return EnumerationUtils.get(it, i);
+        }
+        if (object == null) {
+            throw new IllegalArgumentException("Unsupported object type: null");
+        }
+        try {
+            return Array.get(object, i);
+        } catch (final IllegalArgumentException ex) {
+            throw new IllegalArgumentException("Unsupported object type: " + object.getClass().getName());
+        }
     }

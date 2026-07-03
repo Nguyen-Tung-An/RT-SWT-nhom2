@@ -1,42 +1,44 @@
-    def get_namespace(
-        self, namespace: str, lowercase: bool = True, trim_namespace: bool = True
-    ) -> dict[str, t.Any]:
-        """Returns a dictionary containing a subset of configuration options
-        that match the specified namespace/prefix. Example usage::
+from __future__ import annotations
 
-            app.config['IMAGE_STORE_TYPE'] = 'fs'
-            app.config['IMAGE_STORE_PATH'] = '/var/app/images'
-            app.config['IMAGE_STORE_BASE_URL'] = 'http://img.website.com'
-            image_store_config = app.config.get_namespace('IMAGE_STORE_')
+def get_namespace(
+    self, namespace: str, lowercase: bool = True, trim_namespace: bool = True
+) -> dict[str, t.Any]:
+    """Returns a dictionary containing a subset of configuration options
+    that match the specified namespace/prefix. Example usage::
 
-        The resulting dictionary `image_store_config` would look like::
+        app.config['IMAGE_STORE_TYPE'] = 'fs'
+        app.config['IMAGE_STORE_PATH'] = '/var/app/images'
+        app.config['IMAGE_STORE_BASE_URL'] = 'http://img.website.com'
+        image_store_config = app.config.get_namespace('IMAGE_STORE_')
 
-            {
-                'type': 'fs',
-                'path': '/var/app/images',
-                'base_url': 'http://img.website.com'
-            }
+    The resulting dictionary `image_store_config` would look like::
 
-        This is often useful when configuration options map directly to
-        keyword arguments in functions or class constructors.
+        {
+            'type': 'fs',
+            'path': '/var/app/images',
+            'base_url': 'http://img.website.com'
+        }
 
-        :param namespace: a configuration namespace
-        :param lowercase: a flag indicating if the keys of the resulting
-                          dictionary should be lowercase
-        :param trim_namespace: a flag indicating if the keys of the resulting
-                          dictionary should not include the namespace
+    This is often useful when configuration options map directly to
+    keyword arguments in functions or class constructors.
 
-        .. versionadded:: 0.11
-        """
-        rv = {}
-        for k, v in self.items():
-            if not k.startswith(namespace):
-                continue
-            if trim_namespace:
-                key = k[len(namespace) :]
-            else:
-                key = k
-            if lowercase:
-                key = key.lower()
-            rv[key] = v
-        return rv
+    :param namespace: a configuration namespace
+    :param lowercase: a flag indicating if the keys of the resulting
+                      dictionary should be lowercase
+    :param trim_namespace: a flag indicating if the keys of the resulting
+                      dictionary should not include the namespace
+
+    .. versionadded:: 0.11
+    """
+    rv = {}
+    for k, v in self.items():
+        if not k.startswith(namespace):
+            continue
+        if trim_namespace:
+            key = k[len(namespace) :]
+        else:
+            key = k
+        if lowercase:
+            key = key.lower()
+        rv[key] = v
+    return rv

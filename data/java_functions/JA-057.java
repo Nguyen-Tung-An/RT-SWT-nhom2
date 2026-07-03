@@ -1,32 +1,35 @@
-    public static void shift(final double[] array, int startIndexInclusive, int endIndexExclusive, int offset) {
-        if (array == null || startIndexInclusive >= array.length - 1 || endIndexExclusive <= 0) {
-            return;
+    protected void applyToTitle(Title title) {
+        if (title instanceof TextTitle) {
+            TextTitle tt = (TextTitle) title;
+            tt.setFont(this.largeFont);
+            tt.setPaint(this.subtitlePaint);
         }
-        startIndexInclusive = max0(startIndexInclusive);
-        endIndexExclusive = Math.min(endIndexExclusive, array.length);
-        int n = endIndexExclusive - startIndexInclusive;
-        if (n <= 1) {
-            return;
+        else if (title instanceof LegendTitle) {
+            LegendTitle lt = (LegendTitle) title;
+            if (lt.getBackgroundPaint() != null) {
+                lt.setBackgroundPaint(this.legendBackgroundPaint);
+            }
+            lt.setItemFont(this.regularFont);
+            lt.setItemPaint(this.legendItemPaint);
+            if (lt.getWrapper() != null) {
+                applyToBlockContainer(lt.getWrapper());
+            }
         }
-        offset %= n;
-        if (offset < 0) {
-            offset += n;
+        else if (title instanceof PaintScaleLegend) {
+            PaintScaleLegend psl = (PaintScaleLegend) title;
+            psl.setBackgroundPaint(this.legendBackgroundPaint);
+            ValueAxis axis = psl.getAxis();
+            if (axis != null) {
+                applyToValueAxis(axis);
+            }
         }
-        // For algorithm explanations and proof of O(n) time complexity and O(1) space complexity
-        // see https://beradrian.wordpress.com/2015/04/07/shift-an-array-in-on-in-place/
-        while (n > 1 && offset > 0) {
-            final int nOffset = n - offset;
-            if (offset > nOffset) {
-                swap(array, startIndexInclusive, startIndexInclusive + n - nOffset,  nOffset);
-                n = offset;
-                offset -= nOffset;
-            } else if (offset < nOffset) {
-                swap(array, startIndexInclusive, startIndexInclusive + nOffset,  offset);
-                startIndexInclusive += offset;
-                n = nOffset;
-            } else {
-                swap(array, startIndexInclusive, startIndexInclusive + nOffset, offset);
-                break;
+        else if (title instanceof CompositeTitle) {
+            CompositeTitle ct = (CompositeTitle) title;
+            BlockContainer bc = ct.getContainer();
+            for (Block b: bc.getBlocks()) {
+                if (b instanceof Title) {
+                    applyToTitle((Title) b);
+                }
             }
         }
     }

@@ -1,31 +1,27 @@
-    private static String[] splitByCharacterType(final String str, final boolean camelCase) {
-        if (str == null) {
-            return null;
-        }
-        if (str.isEmpty()) {
-            return ArrayUtils.EMPTY_STRING_ARRAY;
-        }
-        final char[] c = str.toCharArray();
-        final List<String> list = new ArrayList<>();
-        int tokenStart = 0;
-        int currentType = Character.getType(c[tokenStart]);
-        for (int pos = tokenStart + 1; pos < c.length; pos++) {
-            final int type = Character.getType(c[pos]);
-            if (type == currentType) {
-                continue;
-            }
-            if (camelCase && type == Character.LOWERCASE_LETTER && currentType == Character.UPPERCASE_LETTER) {
-                final int newTokenStart = pos - 1;
-                if (newTokenStart != tokenStart) {
-                    list.add(new String(c, tokenStart, newTokenStart - tokenStart));
-                    tokenStart = newTokenStart;
+        private void append(String text) {
+            if (text.startsWith("\n"))
+                width = 0; // reset counter if starts with a newline. only from formats above, not in natural text
+            if (text.equals(" ") &&
+                    (accum.length() == 0 || StringUtil.in(accum.substring(accum.length() - 1), " ", "\n")))
+                return; // don't accumulate long runs of empty spaces
+
+            if (text.length() + width > maxWidth) { // won't fit, needs to wrap
+                String[] words = text.split("\\s+");
+                for (int i = 0; i < words.length; i++) {
+                    String word = words[i];
+                    boolean last = i == words.length - 1;
+                    if (!last) // insert a space if not the last word
+                        word = word + " ";
+                    if (word.length() + width > maxWidth) { // wrap and reset counter
+                        accum.append("\n").append(word);
+                        width = word.length();
+                    } else {
+                        accum.append(word);
+                        width += word.length();
+                    }
                 }
-            } else {
-                list.add(new String(c, tokenStart, pos - tokenStart));
-                tokenStart = pos;
+            } else { // fits as is, without need to wrap text
+                accum.append(text);
+                width += text.length();
             }
-            currentType = type;
         }
-        list.add(new String(c, tokenStart, c.length - tokenStart));
-        return list.toArray(ArrayUtils.EMPTY_STRING_ARRAY);
-    }

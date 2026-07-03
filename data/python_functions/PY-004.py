@@ -1,3 +1,7 @@
+from __future__ import annotations
+import sys
+import traceback
+
 def locate_app(
     module_name: str, app_name: str | None, raise_if_not_found: bool = True
 ) -> Flask | None:

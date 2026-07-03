@@ -1,16 +1,18 @@
-    def __init_subclass__(cls, **kwargs: t.Any) -> None:
-        super().__init_subclass__(**kwargs)
+from __future__ import annotations
 
-        if "methods" not in cls.__dict__:
-            methods = set()
+def __init_subclass__(cls, **kwargs: t.Any) -> None:
+    super().__init_subclass__(**kwargs)
 
-            for base in cls.__bases__:
-                if getattr(base, "methods", None):
-                    methods.update(base.methods)  # type: ignore[attr-defined]
+    if "methods" not in cls.__dict__:
+        methods = set()
 
-            for key in http_method_funcs:
-                if hasattr(cls, key):
-                    methods.add(key.upper())
+        for base in cls.__bases__:
+            if getattr(base, "methods", None):
+                methods.update(base.methods)  # type: ignore[attr-defined]
 
-            if methods:
-                cls.methods = methods
+        for key in http_method_funcs:
+            if hasattr(cls, key):
+                methods.add(key.upper())
+
+        if methods:
+            cls.methods = methods

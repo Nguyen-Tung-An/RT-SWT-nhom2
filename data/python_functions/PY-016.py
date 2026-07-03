@@ -1,3 +1,6 @@
+from __future__ import annotations
+from datetime import date
+
 def _default(o: t.Any) -> t.Any:
     if isinstance(o, date):
         return http_date(o)
