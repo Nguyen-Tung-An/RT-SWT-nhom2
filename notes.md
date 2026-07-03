@@ -21,10 +21,10 @@ This file records every technical decision and error during RBL-4, per RBL-0/RBL
 - **Provenance:** `data/raw/README.md` (URL, license, commit pin, ngày tải 2026-06-27).
 - **Status:** ✅ Chốt trong nhóm 2026-07-02 — trình GV xác nhận cùng amendment v1.1 trước full run. See `ms-analysis/proposal-amendment-v1.2.md`.
 
-### OPEN — Prompting strategy: zero-shot vs one-shot
-- `team-synthesis/proposal.md` §5.3 states **zero-shot**.
-- Amendment v1.1 is based on `proposal_ver2_one-shot.md` and states **one-shot (1 exemplar)**.
-- **Action needed:** the team must pick ONE and make all files (proposal, hypotheses, rq, design-rationale) agree. The pilot was run with the strategy in the runner config — confirm which, and update the proposal to match (with GV amendment if it differs from the approved version).
+### ✅ 2026-07-03 — Chốt: ONE-SHOT prompting (đóng OPEN item)
+- Nhóm xác nhận dùng **one-shot (1 exemplar)** — khớp amendment v1.1 và khớp config pilot đã chạy (`run_experiment.py` dùng one-shot prompt từ đầu).
+- Lịch sử vấn đề: `team-synthesis/proposal.md` §5.3 ghi zero-shot, amendment v1.1 ghi one-shot → nay thống nhất **one-shot**.
+- Việc còn lại: khi PL trình GV amendment v1.1 + v1.2, nêu rõ điểm lệch này (proposal gốc ghi zero-shot) để GV xác nhận cùng lúc — sau đó cập nhật proposal/hypotheses/design-rationale cho khớp chữ "one-shot".
 
 ### INVALID handling (from proposal §5.1)
 - Tests that fail to compile or hit a serious runtime error are scored **0%** for both branch coverage and mutation score and marked INVALID. Empty API responses are never auto-filled.
@@ -54,7 +54,7 @@ This file records every technical decision and error during RBL-4, per RBL-0/RBL
 3. ⏳ **Run baselines** EvoSuite / Pynguin / Hypothesis on the same functions.
 4. ⏳ **Full experiment** (120 hàm: 60 Java + 60 Python, theo amendment v1.2) → `results/full_llm_output.csv`, `results/full_api_log.txt`.
 5. ⏳ **Full analysis** → `results/summary.csv` (metric, p-value, effect size, N) + `figures/fig1_distribution.png`, `figures/fig2_comparison.png` (≥ 300 DPI).
-6. ⏳ Resolve the **zero-shot vs one-shot** discrepancy (see above).
+6. ✅ ~~zero-shot vs one-shot~~ — chốt **one-shot** 2026-07-03; còn bước nêu với GV cùng đợt amendment.
 7. ✅ ~~Dataset under review~~ — chốt 2026-07-02: dùng bộ mined từ 10 repo pinned (amendment v1.2); còn bước trình GV xác nhận (gộp với v1.1).
 
 ---
