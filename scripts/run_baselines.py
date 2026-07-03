@@ -99,7 +99,8 @@ def main():
         os.makedirs(d, exist_ok=True)
     os.makedirs(os.path.join(BASE_DIR, "results"), exist_ok=True)
 
-    with open(CSV_PATH, "r", encoding="utf-8") as f:
+    # utf-8-sig: bo qua BOM neu CSV duoc xuat tu Excel/PowerShell (BOM lam sai ten cot dau)
+    with open(CSV_PATH, "r", encoding="utf-8-sig") as f:
         reader = csv.DictReader(f)
         rows = list(reader)
 
