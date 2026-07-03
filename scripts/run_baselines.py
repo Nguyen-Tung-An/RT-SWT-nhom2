@@ -32,7 +32,8 @@ if EVOSUITE_JAVA != "java":
     EVOSUITE_ENV["JAVA_HOME"] = os.path.dirname(os.path.dirname(EVOSUITE_JAVA))
 # Search budget 60s/class (mac dinh cua EvoSuite) + JVM overhead ~ 90-120s/run.
 # Timeout phai LON HON tong nay, neu khong moi run hop le deu bi kill oan.
-EVOSUITE_TIMEOUT = 180
+# Class lon (vd HelpFormatter ~1500 LOC) can nhieu hon: set EVOSUITE_TIMEOUT=360.
+EVOSUITE_TIMEOUT = int(os.getenv("EVOSUITE_TIMEOUT", "180"))
 PYNGUIN_BIN = "pynguin"
 # Chay lai rieng tung tool: set BASELINE_TOOLS=evosuite (hoac "randoop", "pynguin", danh sach phay)
 BASELINE_TOOLS = {t.strip() for t in os.getenv("BASELINE_TOOLS", "randoop,evosuite,pynguin").split(",")}
