@@ -6,7 +6,7 @@ import time
 
 # ================= CẤU HÌNH =================
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-CSV_PATH = os.path.join(BASE_DIR, "data", "pilot_sample.csv")
+CSV_PATH = os.path.join(BASE_DIR, "data", "full_ground_truth.csv")
 LOG_PATH = os.path.join(BASE_DIR, "results", "generation_log.csv")
 
 # Thư mục xuất file
@@ -82,12 +82,17 @@ def main():
         lang = row["language"]
         file_col = row["file"]
         package_name, class_name = extract_context(file_col, lang)
+        
+        # Tự động trích xuất tên repo từ đường dẫn file
+        file_normalized = file_col.replace("\\", "/")
+        repo_name = file_normalized.split("/raw/")[1].split("/")[0] if "/raw/" in file_normalized else ("commons-cli" if lang == "java" else "flask")
+
 
         if lang == "java":
             # RANDOOP
             print(f"\n[{func_id}] Chạy Randoop cho {package_name}.{class_name}")
             out_file = f"generated_tests/randoop/java/{func_id}_Test.java"
-            cp = os.path.join(BASE_DIR, "data", "raw", "commons-cli", "target", "classes")
+            cp = os.path.join(BASE_DIR, "data", "raw", repo_name, "target", "classes")
             cmd = f"java -classpath \"{RANDOOP_JAR};{cp}\" randoop.main.Main gentests --testclass={package_name}.{class_name} --junit-output-dir=\"{OUT_DIRS['randoop']}\" --time-limit=10"
             try:
                 res = subprocess.run(cmd, shell=True, capture_output=True, text=True)
@@ -132,7 +137,7 @@ def main():
             # PYNGUIN
             print(f"\n[{func_id}] Chạy Pynguin cho module {package_name}")
             out_file = f"generated_tests/pynguin/python/test_{func_id}.py"
-            py_project_path = os.path.join(BASE_DIR, "data", "raw", "flask", "src")
+            py_project_path = os.path.join(BASE_DIR, "data", "raw", repo_name, "src")
             cmd = f"{PYNGUIN_BIN} --project-path \"{py_project_path}\" --output-path \"{OUT_DIRS['pynguin']}\" --module-name {package_name} -v"
             try:
                 res = subprocess.run(cmd, shell=True, capture_output=True, text=True)
