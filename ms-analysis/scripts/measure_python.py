@@ -150,7 +150,11 @@ def mutation_score(workdir: str, base_src: str) -> float:
 def measure_one(code: str, func_name: str, test_code: str) -> dict:
     with tempfile.TemporaryDirectory() as wd:
         open(os.path.join(wd, "solution.py"), "w", encoding="utf-8").write(code)
-        test = "from solution import *\n" + strip_self_imports(test_code, func_name)
+        header = "from solution import *\n"
+        # `import *` bo qua ten bat dau bang "_" (vd _find_package_path) -> them import tuong minh
+        if func_name and func_name.isidentifier():
+            header += f"from solution import {func_name}\n"
+        test = header + strip_self_imports(test_code, func_name)
         open(os.path.join(wd, "test_gen.py"), "w", encoding="utf-8").write(test)
         # compiled? thử collect
         try:
@@ -161,6 +165,16 @@ def measure_one(code: str, func_name: str, test_code: str) -> dict:
         except Exception:
             compiled = 0
         if not compiled:
+            return {"branch_coverage": 0.0, "mutation_score": 0.0, "compiled": 0}
+        # GREEN-CHECK: test phai PASS tren ban goc truoc khi do mutation.
+        # Neu test do (fail san tren code dung) thi moi mutant deu "bi giet" gia tao
+        # -> mutation score 100% ao. Chuan mutation testing bat buoc buoc nay.
+        # Test fail tren ban goc = "serious runtime error" theo proposal §5.1 -> INVALID.
+        try:
+            r = _run([PY, "-m", "pytest", "-q", "test_gen.py"], wd)
+            if r.returncode != 0:
+                return {"branch_coverage": 0.0, "mutation_score": 0.0, "compiled": 0}
+        except Exception:
             return {"branch_coverage": 0.0, "mutation_score": 0.0, "compiled": 0}
         try:
             bc = branch_coverage(wd)
