@@ -185,3 +185,15 @@ JA-060,java,evosuite,baseline_tool,,generated_tests/evosuite/java/JA-060_Test.ja
 JA-020,java,evosuite,baseline_tool,,generated_tests/evosuite/java/JA-020_Test.java,ok,2026-07-03T19:52:34.214125
 JA-040,java,evosuite,baseline_tool,,generated_tests/evosuite/java/JA-040_Test.java,ok,2026-07-03T19:56:21.169264
 JA-050,java,evosuite,baseline_tool,,generated_tests/evosuite/java/JA-050_Test.java,ok,2026-07-03T20:00:34.704383
+JA-002,java,randoop,baseline_tool,,generated_tests/randoop/java/JA_002_Regression0.java,ok,2026-07-04T01:15:31.773443
+JA-010,java,randoop,baseline_tool,,generated_tests/randoop/java/JA_010_Regression0.java,ok,2026-07-04T01:15:43.468881
+JA-012,java,randoop,baseline_tool,,generated_tests/randoop/java/JA_012_Regression0.java,ok,2026-07-04T01:15:55.245538
+JA-020,java,randoop,baseline_tool,,generated_tests/randoop/java/JA_020_Regression0.java,ok,2026-07-04T01:17:21.797508
+JA-022,java,randoop,baseline_tool,,generated_tests/randoop/java/JA_022_Regression0.java,ok,2026-07-04T01:17:39.026914
+JA-030,java,randoop,baseline_tool,,generated_tests/randoop/java/JA_030_Regression0.java,ok,2026-07-04T01:17:52.915100
+JA-032,java,randoop,baseline_tool,,generated_tests/randoop/java/JA_032_Regression0.java,ok,2026-07-04T01:18:11.296495
+JA-040,java,randoop,baseline_tool,,generated_tests/randoop/java/JA_040_Regression0.java,ok,2026-07-04T01:18:24.969303
+JA-042,java,randoop,baseline_tool,,generated_tests/randoop/java/JA_042_Regression0.java,ok,2026-07-04T01:18:39.366967
+JA-050,java,randoop,baseline_tool,,generated_tests/randoop/java/JA_050_Regression0.java,ok,2026-07-04T01:18:52.709729
+JA-052,java,randoop,baseline_tool,,generated_tests/randoop/java/JA_052_Regression0.java,ok,2026-07-04T01:19:04.405090
+JA-060,java,randoop,baseline_tool,,generated_tests/randoop/java/JA_060_Regression0.java,ok,2026-07-04T01:19:17.934298
