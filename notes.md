@@ -84,6 +84,12 @@ This file records every technical decision and error during RBL-4, per RBL-0/RBL
 - **Chẩn đoán lại pilot với data v2 + test CŨ:** 0×P1 (trước là 9) · 8×P3 (test cũ import flask/click) · 4×P4 (test fail trên bản gốc) → chốt chặn đã chuyển từ DATA sang TEST GENERATION (chờ LR chạy lại prompt mới).
 - Data v2 đã commit vào `data/{java,python}_functions/` (`2ccffc7`). Nhắc DG: lần sau **push lên git** thay vì gửi rar — repo là nguồn chuẩn.
 
+### 2026-07-04 — FULL RUN sinh test baseline 60 hàm Java (Randoop + EvoSuite, budget cân 60s/60s)
+- **Kết quả sinh** (log đối chiếu khớp file thật): Randoop **40/60 hàm ok** · EvoSuite **34/60 ok** (18 class unique).
+- **Fail tập trung theo repo** (EvoSuite): joda-time 12/12, gson 6, commons-csv 6, commons-cli 2 (timeout class lớn). Nguyên nhân khả năng cao: classpath mới có class nội bộ repo, **thiếu dependency ngoài** (joda-convert, error-prone annotations...) — đúng threat đã ghi 03/07.
+- **Việc kế tiếp:** bổ sung dep bằng `mvn dependency:build-classpath` cho từng repo → rerun riêng các hàm fail (`BASELINE_TOOLS` + CSV lọc) → rồi mới đo full bằng công thức gate.
+- Budget: Randoop đã nâng 10s→60s (`RANDOOP_TIME_LIMIT=60`) để công bằng với EvoSuite — số pilot Randoop 10s cũ chỉ dùng tham khảo, số chính thức là full run này.
+
 ### 2026-07-04 — Baseline Randoop pilot 12/12 + phát hiện bug ghi đè test ⚠️
 - **Bug:** run_baselines dùng chung tên `RegressionTest0.java` cho mọi run → 11/12 bộ test Randoop cũ bị **ghi đè**, chỉ còn bộ của hàm cuối (JA-060). Các dòng log "randoop ok" trước đây gây hiểu nhầm là có đủ test. **Fix:** `--regression-test-basename=<func_id>_Regression` — mỗi hàm một bộ riêng; đã sinh lại đủ 12 bộ (867 test xanh, JDK 17).
 - **Kết quả pilot Randoop** (time-limit 10s/class): bc median **0%** (8/12 hàm = 0%, max 75% JA-040) · ms: giết 113/497 mutant (~23%). Đối chiếu EvoSuite: bc median 83.3%, ms median 71.4%.
