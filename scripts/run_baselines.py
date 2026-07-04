@@ -64,10 +64,18 @@ def java_classpath(repo_name):
     # Noi them DEPENDENCY NGOAI (joda-convert, error-prone...) — thieu chung la
     # EvoSuite/Randoop fail hang loat (joda-time 12/12 fail hom 04/07).
     # File sinh boi: mvn dependency:build-classpath -Dmdep.outputFile=target/dep-cp.txt
-    dep_files = [os.path.join(root, "target", "dep-cp.txt")]
-    if os.path.isdir(root):
-        dep_files += [os.path.join(root, sub, "target", "dep-cp.txt")
-                      for sub in sorted(os.listdir(root))]
+    # Uu tien ban "sane" (da bo bytecode Java 12+ trong multi-release jar —
+    # ASM cu cua EvoSuite 1.2.0 gap major version 65 la chet).
+    dep_names = ("dep-cp-sane.txt", "dep-cp.txt")
+    dirs = [root] + ([os.path.join(root, sub) for sub in sorted(os.listdir(root))]
+                     if os.path.isdir(root) else [])
+    dep_files = []
+    for d in dirs:
+        for name in dep_names:
+            p = os.path.join(d, "target", name)
+            if os.path.isfile(p):
+                dep_files.append(p)
+                break  # co ban sane thi bo qua ban goc trong cung thu muc
     for df in dep_files:
         if os.path.isfile(df):
             content = open(df, encoding="utf-8", errors="replace").read().strip()
