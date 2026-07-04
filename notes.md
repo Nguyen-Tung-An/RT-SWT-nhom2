@@ -84,6 +84,17 @@ This file records every technical decision and error during RBL-4, per RBL-0/RBL
 - **Chẩn đoán lại pilot với data v2 + test CŨ:** 0×P1 (trước là 9) · 8×P3 (test cũ import flask/click) · 4×P4 (test fail trên bản gốc) → chốt chặn đã chuyển từ DATA sang TEST GENERATION (chờ LR chạy lại prompt mới).
 - Data v2 đã commit vào `data/{java,python}_functions/` (`2ccffc7`). Nhắc DG: lần sau **push lên git** thay vì gửi rar — repo là nguồn chuẩn.
 
+### 2026-07-04 — ĐO baseline full HOÀN TẤT: coverage 60/60 hàm × 2 tool (metrics_full.csv) ✅
+- **Kết quả** (`ms-analysis/results/metrics_full.csv`, 120 dòng): EvoSuite bc median **55.0** (mean 51.2, 0–100) · Randoop bc median **21.1** (mean 37.7). Mutation: EvoSuite 26/60 hàm, Randoop 53/60 — các ô thiếu do PIT fail ở một số repo (việc còn lại, không chặn RQ phần coverage).
+- **6 vòng vá orchestrator để đo được 8 repo thật — mỗi vòng một bẫy (liệu cho Threats/Method):**
+  1. Vá pom bằng thay chuỗi chèn nhầm vào `<dependencies>` của maven-release-plugin (joda) → chuyển sang XML parser.
+  2. `junit-vintage-engine` pin 5.10.2 lệch platform 5.13 của project → "JUnit jars not properly aligned"; joda có sẵn junit **3.8.2** phải ép lên 4.13.2.
+  3. Test gốc của project compile fail dưới release 11 (equalsverifier bytecode 61...) → cất test gốc, chỉ compile test mình; bị `git checkout` "hồi sinh" phải xoá lần 2.
+  4. gson giấu `-Werror` dạng `<failOnWarning>true` ở ROOT pom — property CLI không đè được config tường minh; phải vá root pom.
+  5. joda pin surefire **2.21** → chạy "Tests run: 0" im lặng với mọi pattern → gọi thẳng goal surefire 3.2.5; bytecode test 2 pass lẫn JDK 17/11 → phải dọn `target/test-classes` giữa các pass.
+  6. commons-math đặt **`jacoco.skip=true` ngay trong pom** → mọi goal JaCoCo im lặng bỏ qua (450 test chạy, 0 báo cáo) → `-Djacoco.skip=false`.
+- **Bài học xuyên suốt:** "chạy xanh" ≠ "có số liệu" — 4/6 bẫy cho exit code 0. Mọi bước đo đều phải xác minh bằng **file kết quả tồn tại thật**.
+
 ### 2026-07-04 (cập nhật cuối) — Sinh test baseline full HOÀN TẤT: EvoSuite 60/60, Randoop 56/60 ✅
 - **Chuỗi 3 tầng lỗi đã bóc** (mỗi tầng che tầng sau — chi tiết các mục dưới):
   1. joda-time build fail ngầm (pom pin Java 5, JDK 17 từ chối) → `target/classes` RỖNG mà check "folder tồn tại" báo OK → build lại với `-Dmaven.compiler.source/target=8`.
