@@ -40,7 +40,9 @@ SKIPS = ["-Drat.skip=true", "-Dcheckstyle.skip=true", "-Dspotbugs.skip=true", "-
          "-Danimal.sniffer.skip=true", "-Denforcer.skip=true", "-Dmaven.javadoc.skip=true",
          "-Djapicmp.skip=true", "-DfailIfNoTests=false", "-Dmaven.test.failure.ignore=true",
          "-Dmaven.compiler.failOnWarning=false", "-Dspotless.check.skip=true", "-Dspotless.apply.skip=true",
-         "-Dsurefire.failIfNoSpecifiedTests=false"]
+         "-Dsurefire.failIfNoSpecifiedTests=false",
+         # commons-math dat jacoco.skip=true trong pom -> moi goal jacoco im lang bo qua
+         "-Djacoco.skip=false"]
 
 # Test-dep noi bo repo can go bo (khong ton tai trong reactor -> resolve fail):
 REMOVE_TEST_DEPS = {"commons-math": {"commons-math-docs", "commons-math-examples"}}
