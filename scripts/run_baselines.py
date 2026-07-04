@@ -61,6 +61,18 @@ def java_classpath(repo_name):
             c = os.path.join(root, sub, "target", "classes")
             if os.path.isdir(c) and c not in cps:
                 cps.append(c)
+    # Noi them DEPENDENCY NGOAI (joda-convert, error-prone...) — thieu chung la
+    # EvoSuite/Randoop fail hang loat (joda-time 12/12 fail hom 04/07).
+    # File sinh boi: mvn dependency:build-classpath -Dmdep.outputFile=target/dep-cp.txt
+    dep_files = [os.path.join(root, "target", "dep-cp.txt")]
+    if os.path.isdir(root):
+        dep_files += [os.path.join(root, sub, "target", "dep-cp.txt")
+                      for sub in sorted(os.listdir(root))]
+    for df in dep_files:
+        if os.path.isfile(df):
+            content = open(df, encoding="utf-8", errors="replace").read().strip()
+            if content and content not in cps:
+                cps.append(content)
     return os.pathsep.join(cps) if cps else direct
 
 
