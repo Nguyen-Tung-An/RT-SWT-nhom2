@@ -280,6 +280,12 @@ def measure(repo, rows, tools, csv_path):
         for method in tools:
             clean_our_tests(mod_dir)
             rm(os.path.join(mod_dir, "target", "jacoco.exec"))
+            # xoa bytecode test cu — pass truoc compile bang JDK khac (17 vs 11)
+            # de lai class ma surefire quet phai la chet im lang (rc=0, 0 test)
+            tc = os.path.join(mod_dir, "target", "test-classes")
+            if os.path.isdir(tc):
+                import shutil
+                shutil.rmtree(tc, ignore_errors=True)
             if method == "evosuite":
                 n = copy_evosuite_tests(mrows, mod_dir)
                 jdk, rel, tpat, pit_tests = JDK11, "11", "*ESTest", "*ESTest"
@@ -295,11 +301,31 @@ def measure(repo, rows, tools, csv_path):
                          mod_dir, jdk)
             jxml = os.path.join(mod_dir, "target", "site", "jacoco", "jacoco.xml")
             if not os.path.exists(jxml):
-                # fallback: prepare-agent + test-compile + SUREFIRE GOAL TRUC TIEP
+                # fallback 1: prepare-agent + test-compile + SUREFIRE GOAL TRUC TIEP
                 # (khong dung lifecycle `test` de ne surefire co pin trong pom) + report
                 rm(os.path.join(mod_dir, "target", "jacoco.exec"))
                 rc, out = sh(f'mvn -q {JACOCO}:prepare-agent test-compile {SUREFIRE} {JACOCO}:report '
                              f'-Dtest="{tpat}" {comp} ' + " ".join(SKIPS), mod_dir, jdk)
+            if not os.path.exists(jxml):
+                # fallback 2 (bat kha chien bai): chay test TRONG JVM cua maven
+                # (-DforkCount=0 -> argLine trong pom bi bo qua), agent gan vao maven
+                # qua MAVEN_OPTS nen khong config nao de duoc.
+                rm(os.path.join(mod_dir, "target", "jacoco.exec"))
+                agent = os.path.join(os.path.expanduser("~"), ".m2", "repository", "org", "jacoco",
+                                     "org.jacoco.agent", "0.8.12",
+                                     "org.jacoco.agent-0.8.12-runtime.jar").replace("\\", "/")
+                exec_f = os.path.join(mod_dir, "target", "jacoco.exec").replace("\\", "/")
+                env_extra = os.environ.get("MAVEN_OPTS", "")
+                os.environ["MAVEN_OPTS"] = f"-javaagent:{agent}=destfile={exec_f} {env_extra}".strip()
+                try:
+                    rc, out = sh(f'mvn -q test-compile {SUREFIRE} -DforkCount=0 '
+                                 f'-Dtest="{tpat}" {comp} ' + " ".join(SKIPS), mod_dir, jdk)
+                    sh(f"mvn -q {JACOCO}:report", mod_dir, jdk)
+                finally:
+                    if env_extra:
+                        os.environ["MAVEN_OPTS"] = env_extra
+                    else:
+                        os.environ.pop("MAVEN_OPTS", None)
             if not os.path.exists(jxml):
                 print(f"!! {uniq} [{method}]: jacoco.xml KHONG sinh (rc={rc}). Loi cuoi:")
                 print("\n".join([l for l in out.splitlines() if "ERROR" in l][:5]))
