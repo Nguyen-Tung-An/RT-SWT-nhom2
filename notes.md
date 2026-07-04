@@ -7,6 +7,14 @@ This file records every technical decision and error during RBL-4, per RBL-0/RBL
 
 ## Technical decisions
 
+### ✅ 2026-07-05 — CHỐT PHƯƠNG ÁN B: đo Python trong ngữ cảnh module thật
+- **Quyết định nhóm:** đo coverage/mutation của test Python **trong module flask/requests thật** (cài từ clone pinned commit), thay vì sandbox `solution.py` (phương án A). Căn cứ: `ms-analysis/results/data_v2_check.md` — ~40/60 hàm tham chiếu tên module không thể standalone; phía Java đã đo theo đúng triết lý này và chạy tốt (metrics_full.csv).
+- **Hệ quả cho từng vai:**
+  - **LR (Hải):** prompt Python đổi lại — test import từ MODULE THẬT (`from flask.helpers import get_root_path`), không dùng `from solution import` nữa. `run_experiment.py` đã được cập nhật sẵn — chỉ cần pull, set key, chạy lại pilot 24 hàm.
+  - **MS (Phúc):** harness mới `measure_python_module.py` (đo trong module thật, coverage --include file đích, mutation scoped đúng thân hàm, có green-check) — review giúp.
+  - **DG (Kim):** không phải vá gì thêm; data v2 dùng làm input LLM là đủ.
+- Không phải HARKing: đổi cách đo trước khi có số chính thức; nêu với GV cùng gói amendment.
+
 ### 2026-06-28 — Model change (Amendment v1.1)
 - **Decision:** Change the LLM from `gpt-4o-2024-08-06` to **`gpt-4o-mini-2024-07-18`**.
 - **Reason:** The team only has API access to `gpt-4o-mini` (no `gpt-4o` quota) — an objective technical/access constraint under proposal §8.6 (not HARKing).
