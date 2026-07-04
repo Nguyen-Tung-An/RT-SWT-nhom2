@@ -127,9 +127,18 @@ def patch_pom(pom_path, extra_deps=(), remove_test_deps=()):
     for g, a, v in extra_deps:
         add(g, a, v)
     tree.write(pom_path, encoding="utf-8", xml_declaration=True)
-    # go "-Werror" trong compilerArgs (gson) — chi ban clone local
-    txt2 = open(pom_path, encoding="utf-8").read().replace("<arg>-Werror</arg>", "")
-    open(pom_path, "w", encoding="utf-8", newline="\n").write(txt2)
+    fix_pom_text(pom_path)
+
+
+def fix_pom_text(pom_path):
+    """Go cac config lam fail compile test cua minh (chi sua ban clone local):
+    gson root pom co <failOnWarning>true> -> compiler them -Werror, property CLI
+    khong override duoc config tuong minh trong pom."""
+    txt = open(pom_path, encoding="utf-8", errors="replace").read()
+    fixed = (txt.replace("<arg>-Werror</arg>", "")
+                .replace("<failOnWarning>true</failOnWarning>", "<failOnWarning>false</failOnWarning>"))
+    if fixed != txt:
+        open(pom_path, "w", encoding="utf-8", newline="\n").write(fixed)
 
 
 def stash_project_tests(mod_dir):
@@ -137,6 +146,11 @@ def stash_project_tests(mod_dir):
     dst = os.path.join(mod_dir, "src", "_test_java_goc")
     if os.path.isdir(src) and not os.path.isdir(dst):
         os.rename(src, dst)
+    elif os.path.isdir(src) and os.path.isdir(dst):
+        # backup da co nhung test goc "hoi sinh" (vd git checkout khoi phuc
+        # file bi rename) -> xoa sach, chi giu test cua minh (chep lai sau)
+        import shutil
+        shutil.rmtree(src)
     os.makedirs(src, exist_ok=True)
 
 
@@ -271,9 +285,20 @@ def measure(repo, rows, tools, csv_path):
                          mod_dir, jdk)
             jxml = os.path.join(mod_dir, "target", "site", "jacoco", "jacoco.xml")
             if not os.path.exists(jxml):
-                # fallback: goi jacoco tuong minh (repo khong tich hop san)
+                # fallback 1: goi jacoco tuong minh (repo khong tich hop san)
                 rc, out = sh(f'mvn -q {JACOCO}:prepare-agent test {JACOCO}:report -Dtest="{tpat}" {comp} '
                              + " ".join(SKIPS), mod_dir, jdk)
+            if not os.path.exists(jxml):
+                # fallback 2: project tu dinh nghia argLine trong surefire lam rot agent
+                # -> ep agent truc tiep qua -DargLine roi goi report rieng
+                agent = os.path.join(os.path.expanduser("~"), ".m2", "repository", "org", "jacoco",
+                                     "org.jacoco.agent", "0.8.12",
+                                     "org.jacoco.agent-0.8.12-runtime.jar").replace("\\", "/")
+                exec_f = os.path.join(mod_dir, "target", "jacoco.exec").replace("\\", "/")
+                rc, out = sh(f'mvn -q test -Dtest="{tpat}" {comp} '
+                             f'"-DargLine=-javaagent:{agent}=destfile={exec_f}" ' + " ".join(SKIPS),
+                             mod_dir, jdk)
+                sh(f"mvn -q {JACOCO}:report", mod_dir, jdk)
             if not os.path.exists(jxml):
                 print(f"!! {uniq} [{method}]: jacoco.xml KHONG sinh (rc={rc}). Loi cuoi:")
                 print("\n".join([l for l in out.splitlines() if "ERROR" in l][:5]))
