@@ -33,6 +33,9 @@ JDK11 = r"F:\Java\jdk-11.0.31+11"
 JDK17 = r"F:\jdk17"
 PIT = "org.pitest:pitest-maven:1.17.2:mutationCoverage"
 JACOCO = "org.jacoco:jacoco-maven-plugin:0.8.12"
+# Goi surefire truc tiep theo goal de KHONG phu thuoc version pin trong pom
+# (joda pin surefire 2.21 — chay "Tests run: 0" im lang voi moi pattern).
+SUREFIRE = "org.apache.maven.plugins:maven-surefire-plugin:3.2.5:test"
 SKIPS = ["-Drat.skip=true", "-Dcheckstyle.skip=true", "-Dspotbugs.skip=true", "-Dpmd.skip=true",
          "-Danimal.sniffer.skip=true", "-Denforcer.skip=true", "-Dmaven.javadoc.skip=true",
          "-Djapicmp.skip=true", "-DfailIfNoTests=false", "-Dmaven.test.failure.ignore=true",
@@ -137,6 +140,9 @@ def fix_pom_text(pom_path):
     txt = open(pom_path, encoding="utf-8", errors="replace").read()
     fixed = (txt.replace("<arg>-Werror</arg>", "")
                 .replace("<failOnWarning>true</failOnWarning>", "<failOnWarning>false</failOnWarning>"))
+    # pom co <argLine> rieng se de mat agent JaCoCo -> tiem @{argLine} (late binding)
+    if "<argLine>" in fixed and "@{argLine}" not in fixed:
+        fixed = fixed.replace("<argLine>", "<argLine>@{argLine} ")
     if fixed != txt:
         open(pom_path, "w", encoding="utf-8", newline="\n").write(fixed)
 
@@ -232,6 +238,10 @@ def measure(repo, rows, tools, csv_path):
         by_mod.setdefault(module_of(r), []).append(r)
     repo_dir = os.path.join(RAW, repo)
     multi = any(m for m in by_mod)
+    # root pom giu config anh huong module (vd gson <failOnWarning>) -> va luon
+    root_pom = os.path.join(repo_dir, "pom.xml")
+    if os.path.exists(root_pom):
+        fix_pom_text(root_pom)
 
     # multi-module: install toan bo artifact vao .m2 mot lan (extras can gson...)
     if multi:
@@ -285,20 +295,11 @@ def measure(repo, rows, tools, csv_path):
                          mod_dir, jdk)
             jxml = os.path.join(mod_dir, "target", "site", "jacoco", "jacoco.xml")
             if not os.path.exists(jxml):
-                # fallback 1: goi jacoco tuong minh (repo khong tich hop san)
-                rc, out = sh(f'mvn -q {JACOCO}:prepare-agent test {JACOCO}:report -Dtest="{tpat}" {comp} '
-                             + " ".join(SKIPS), mod_dir, jdk)
-            if not os.path.exists(jxml):
-                # fallback 2: project tu dinh nghia argLine trong surefire lam rot agent
-                # -> ep agent truc tiep qua -DargLine roi goi report rieng
-                agent = os.path.join(os.path.expanduser("~"), ".m2", "repository", "org", "jacoco",
-                                     "org.jacoco.agent", "0.8.12",
-                                     "org.jacoco.agent-0.8.12-runtime.jar").replace("\\", "/")
-                exec_f = os.path.join(mod_dir, "target", "jacoco.exec").replace("\\", "/")
-                rc, out = sh(f'mvn -q test -Dtest="{tpat}" {comp} '
-                             f'"-DargLine=-javaagent:{agent}=destfile={exec_f}" ' + " ".join(SKIPS),
-                             mod_dir, jdk)
-                sh(f"mvn -q {JACOCO}:report", mod_dir, jdk)
+                # fallback: prepare-agent + test-compile + SUREFIRE GOAL TRUC TIEP
+                # (khong dung lifecycle `test` de ne surefire co pin trong pom) + report
+                rm(os.path.join(mod_dir, "target", "jacoco.exec"))
+                rc, out = sh(f'mvn -q {JACOCO}:prepare-agent test-compile {SUREFIRE} {JACOCO}:report '
+                             f'-Dtest="{tpat}" {comp} ' + " ".join(SKIPS), mod_dir, jdk)
             if not os.path.exists(jxml):
                 print(f"!! {uniq} [{method}]: jacoco.xml KHONG sinh (rc={rc}). Loi cuoi:")
                 print("\n".join([l for l in out.splitlines() if "ERROR" in l][:5]))
