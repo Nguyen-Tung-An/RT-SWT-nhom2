@@ -84,6 +84,31 @@ This file records every technical decision and error during RBL-4, per RBL-0/RBL
 - **Chẩn đoán lại pilot với data v2 + test CŨ:** 0×P1 (trước là 9) · 8×P3 (test cũ import flask/click) · 4×P4 (test fail trên bản gốc) → chốt chặn đã chuyển từ DATA sang TEST GENERATION (chờ LR chạy lại prompt mới).
 - Data v2 đã commit vào `data/{java,python}_functions/` (`2ccffc7`). Nhắc DG: lần sau **push lên git** thay vì gửi rar — repo là nguồn chuẩn.
 
+### 2026-07-04 — ĐO baseline full HOÀN TẤT: coverage 60/60 hàm × 2 tool (metrics_full.csv) ✅
+- **Kết quả** (`ms-analysis/results/metrics_full.csv`, 120 dòng): EvoSuite bc median **55.0** (mean 51.2, 0–100) · Randoop bc median **21.1** (mean 37.7). Mutation: EvoSuite 26/60 hàm, Randoop 53/60 — các ô thiếu do PIT fail ở một số repo (việc còn lại, không chặn RQ phần coverage).
+- **6 vòng vá orchestrator để đo được 8 repo thật — mỗi vòng một bẫy (liệu cho Threats/Method):**
+  1. Vá pom bằng thay chuỗi chèn nhầm vào `<dependencies>` của maven-release-plugin (joda) → chuyển sang XML parser.
+  2. `junit-vintage-engine` pin 5.10.2 lệch platform 5.13 của project → "JUnit jars not properly aligned"; joda có sẵn junit **3.8.2** phải ép lên 4.13.2.
+  3. Test gốc của project compile fail dưới release 11 (equalsverifier bytecode 61...) → cất test gốc, chỉ compile test mình; bị `git checkout` "hồi sinh" phải xoá lần 2.
+  4. gson giấu `-Werror` dạng `<failOnWarning>true` ở ROOT pom — property CLI không đè được config tường minh; phải vá root pom.
+  5. joda pin surefire **2.21** → chạy "Tests run: 0" im lặng với mọi pattern → gọi thẳng goal surefire 3.2.5; bytecode test 2 pass lẫn JDK 17/11 → phải dọn `target/test-classes` giữa các pass.
+  6. commons-math đặt **`jacoco.skip=true` ngay trong pom** → mọi goal JaCoCo im lặng bỏ qua (450 test chạy, 0 báo cáo) → `-Djacoco.skip=false`.
+- **Bài học xuyên suốt:** "chạy xanh" ≠ "có số liệu" — 4/6 bẫy cho exit code 0. Mọi bước đo đều phải xác minh bằng **file kết quả tồn tại thật**.
+
+### 2026-07-04 (cập nhật cuối) — Sinh test baseline full HOÀN TẤT: EvoSuite 60/60, Randoop 56/60 ✅
+- **Chuỗi 3 tầng lỗi đã bóc** (mỗi tầng che tầng sau — chi tiết các mục dưới):
+  1. joda-time build fail ngầm (pom pin Java 5, JDK 17 từ chối) → `target/classes` RỖNG mà check "folder tồn tại" báo OK → build lại với `-Dmaven.compiler.source/target=8`.
+  2. Dep jar đời mới là multi-release jar chứa bytecode Java 21 → ASM của EvoSuite 1.2.0 chết `Unsupported class file major version 65` → script sanitize bỏ `META-INF/versions/12+` (4 jar), `java_classpath` ưu tiên `dep-cp-sane.txt`.
+  3. **EvoSuite 1.2.0 phải chạy trên JDK 8** (sân nhà của tool): JDK 11 qua được class đơn giản nhưng chết runtime với csv/gson/joda (`ExecutionTracer`, tz-database). Chuyển `EVOSUITE_JAVA` → Temurin 8 (`F:\Java\jdk8u492-b09`) → **21/21 hàm còn lại ok một phát, kể cả 12 hàm joda**.
+- **Chốt sinh test:** EvoSuite **60/60** (30/30 class, verify file thật) · Randoop **56/60** (4 fail thật: JA-024 Lexer, JA-028 RequestDispatch, JA-033, JA-054 — class khó khởi tạo với random testing, ghi nhận INVALID có căn cứ).
+- **Lưu ý method:** test EvoSuite sinh hỗn hợp JDK 11 (39 hàm đợt đầu) + JDK 8 (21 hàm đợt sau), cùng budget 60s — ghi rõ trong report; đo lường không phân biệt (compile release 11 nuốt cả hai).
+
+### 2026-07-04 — FULL RUN sinh test baseline 60 hàm Java (Randoop + EvoSuite, budget cân 60s/60s)
+- **Kết quả sinh** (log đối chiếu khớp file thật): Randoop **40/60 hàm ok** · EvoSuite **34/60 ok** (18 class unique).
+- **Fail tập trung theo repo** (EvoSuite): joda-time 12/12, gson 6, commons-csv 6, commons-cli 2 (timeout class lớn). Nguyên nhân khả năng cao: classpath mới có class nội bộ repo, **thiếu dependency ngoài** (joda-convert, error-prone annotations...) — đúng threat đã ghi 03/07.
+- **Việc kế tiếp:** bổ sung dep bằng `mvn dependency:build-classpath` cho từng repo → rerun riêng các hàm fail (`BASELINE_TOOLS` + CSV lọc) → rồi mới đo full bằng công thức gate.
+- Budget: Randoop đã nâng 10s→60s (`RANDOOP_TIME_LIMIT=60`) để công bằng với EvoSuite — số pilot Randoop 10s cũ chỉ dùng tham khảo, số chính thức là full run này.
+
 ### 2026-07-04 — Baseline Randoop pilot 12/12 + phát hiện bug ghi đè test ⚠️
 - **Bug:** run_baselines dùng chung tên `RegressionTest0.java` cho mọi run → 11/12 bộ test Randoop cũ bị **ghi đè**, chỉ còn bộ của hàm cuối (JA-060). Các dòng log "randoop ok" trước đây gây hiểu nhầm là có đủ test. **Fix:** `--regression-test-basename=<func_id>_Regression` — mỗi hàm một bộ riêng; đã sinh lại đủ 12 bộ (867 test xanh, JDK 17).
 - **Kết quả pilot Randoop** (time-limit 10s/class): bc median **0%** (8/12 hàm = 0%, max 75% JA-040) · ms: giết 113/497 mutant (~23%). Đối chiếu EvoSuite: bc median 83.3%, ms median 71.4%.

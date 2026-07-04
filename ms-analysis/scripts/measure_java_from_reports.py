@@ -57,6 +57,8 @@ def main() -> int:
     ap.add_argument("--jacoco", default=None, help="mac dinh: data/raw/<repo>/target/site/jacoco/jacoco.xml")
     ap.add_argument("--pit", default=None, help="mac dinh: data/raw/<repo>/target/pit-reports/mutations.xml")
     ap.add_argument("--out", default=os.path.join("ms-analysis", "results", "metrics.csv"))
+    ap.add_argument("--skip-missing", action="store_true",
+                    help="bo qua ham khong co du lieu trong bao cao nay (dung cho repo da module)")
     args = ap.parse_args()
 
     raw = os.path.join(REPO_ROOT, "data", "raw", args.repo)
@@ -101,6 +103,8 @@ def main() -> int:
                     killed = sum(1 for x in st if x in ("KILLED", "TIMED_OUT"))
                     ms = round(killed / len(st) * 100, 2)
 
+            if args.skip_missing and bc == "" and ms == "":
+                continue
             rows.append({"function_id": fid, "language": "java", "cc": r["cc"],
                          "method": args.method, "branch_coverage": bc,
                          "mutation_score": ms, "compiled": 1})
