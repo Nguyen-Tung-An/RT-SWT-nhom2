@@ -36,7 +36,12 @@ JACOCO = "org.jacoco:jacoco-maven-plugin:0.8.12"
 SKIPS = ["-Drat.skip=true", "-Dcheckstyle.skip=true", "-Dspotbugs.skip=true", "-Dpmd.skip=true",
          "-Danimal.sniffer.skip=true", "-Denforcer.skip=true", "-Dmaven.javadoc.skip=true",
          "-Djapicmp.skip=true", "-DfailIfNoTests=false", "-Dmaven.test.failure.ignore=true",
-         "-Dmaven.compiler.failOnWarning=false"]
+         "-Dmaven.compiler.failOnWarning=false", "-Dspotless.check.skip=true", "-Dspotless.apply.skip=true"]
+
+# Test-dep noi bo repo can go bo (khong ton tai trong reactor -> resolve fail):
+REMOVE_TEST_DEPS = {"commons-math": {"commons-math-docs", "commons-math-examples"}}
+# Module anh em can them lam test-dep (ESTest import cross-module), theo TEN THU MUC:
+NEED_SIBLINGS = {("gson", "gson"): ["extras", "proto"]}
 POM_NS = "http://maven.apache.org/POM/4.0.0"
 ET.register_namespace("", POM_NS)
 
@@ -61,20 +66,52 @@ def read_gav(pom_path):
     return g, a, v
 
 
-def patch_pom(pom_path, extra_deps=()):
+def vintage_version(txt):
+    """Chon version cho junit-vintage-engine theo tung kieu pom:
+    - co junit-bom / commons-parent -> de trong (da duoc quan ly)
+    - co junit-jupiter kem version cu the -> pin DUNG version do (lech la
+      "JUnit jars not properly aligned" / "TestEngine failed to discover")
+    - con lai (project JUnit3/4 nhu joda) -> 5.10.2
+    """
+    if "junit-bom" in txt or "commons-parent" in txt:
+        return None
+    m = re.search(r"junit-jupiter[^<]*</artifactId>\s*<version>([^<]+)</version>", txt)
+    if m:
+        v = m.group(1).strip()
+        pm = re.match(r"\$\{([^}]+)\}", v)
+        if pm:
+            vm = re.search(rf"<{re.escape(pm.group(1))}>([^<]+)</{re.escape(pm.group(1))}>", txt)
+            v = vm.group(1).strip() if vm else None
+        return v
+    return "5.10.2"
+
+
+def patch_pom(pom_path, extra_deps=(), remove_test_deps=()):
     """Chen test-deps o DUNG project-level <dependencies> (XML, khong thay chuoi)."""
     txt = open(pom_path, encoding="utf-8", errors="replace").read()
-    managed_junit5 = "junit-jupiter" in txt or "junit-bom" in txt
     tree = ET.parse(pom_path)
     root = tree.getroot()
     deps = root.find(q("dependencies"))
     if deps is None:
         deps = ET.SubElement(root, q("dependencies"))
-    have = {(d.findtext(q("groupId")), d.findtext(q("artifactId")))
-            for d in deps.findall(q("dependency"))}
 
-    def add(g, a, v):
-        if (g, a) in have:
+    # go test-dep khong resolve duoc (vd commons-math-docs khong nam trong reactor)
+    for d in list(deps.findall(q("dependency"))):
+        if d.findtext(q("artifactId")) in remove_test_deps:
+            deps.remove(d)
+
+    have = {}
+    for d in deps.findall(q("dependency")):
+        have[(d.findtext(q("groupId")), d.findtext(q("artifactId")))] = d
+
+    def add(g, a, v, force_version=False):
+        d = have.get((g, a))
+        if d is not None:
+            if force_version:
+                ver = d.find(q("version"))
+                if ver is None:
+                    ver = ET.SubElement(d, q("version"))
+                ver.text = v  # vd joda khai bao junit 3.8.2 -> ep len 4.13.2
             return
         d = ET.SubElement(deps, q("dependency"))
         ET.SubElement(d, q("groupId")).text = g
@@ -82,10 +119,10 @@ def patch_pom(pom_path, extra_deps=()):
         if v:
             ET.SubElement(d, q("version")).text = v
         ET.SubElement(d, q("scope")).text = "test"
-        have.add((g, a))
+        have[(g, a)] = d
 
-    add("junit", "junit", "4.13.2")
-    add("org.junit.vintage", "junit-vintage-engine", None if managed_junit5 else "5.10.2")
+    add("junit", "junit", "4.13.2", force_version=True)
+    add("org.junit.vintage", "junit-vintage-engine", vintage_version(txt))
     add("org.evosuite", "evosuite-standalone-runtime", "1.2.0")
     for g, a, v in extra_deps:
         add(g, a, v)
@@ -195,29 +232,23 @@ def measure(repo, rows, tools, csv_path):
             else:
                 os.makedirs(os.path.dirname(marker), exist_ok=True)
                 open(marker, "w").write("ok")
-        # test-dep sang cac module anh em (ESTest co the import cross-module)
-        sibling_gavs = []
-        for sub in sorted(os.listdir(repo_dir)):
-            p = os.path.join(repo_dir, sub, "pom.xml")
-            if os.path.isfile(p):
-                try:
-                    g, a, v = read_gav(p)
-                    if a:
-                        sibling_gavs.append((g, a, v))
-                except ET.ParseError:
-                    pass
-    else:
-        sibling_gavs = []
-
     for mod, mrows in by_mod.items():
         mod_dir = os.path.join(repo_dir, mod) if mod else repo_dir
         pom = os.path.join(mod_dir, "pom.xml")
         if not os.path.exists(pom):
             print(f"!! {repo}/{mod}: khong thay pom, bo qua")
             continue
-        _, self_art, _ = read_gav(pom)
-        extra = [(g, a, v) for (g, a, v) in sibling_gavs if a != self_art] if multi else []
-        patch_pom(pom, extra)
+        # them module anh em lam test-dep NEU can (vd Gson_ESTest import extras/proto)
+        extra = []
+        for sib in NEED_SIBLINGS.get((repo, mod), []):
+            sp = os.path.join(repo_dir, sib, "pom.xml")
+            if os.path.isfile(sp):
+                try:
+                    g, a, v = read_gav(sp)
+                    extra.append((g, a, v))
+                except ET.ParseError:
+                    pass
+        patch_pom(pom, extra, REMOVE_TEST_DEPS.get(repo, ()))
         stash_project_tests(mod_dir)
         target_classes = ",".join(sorted({".".join(pkg_class(r)) for r in mrows}))
         uniq = f"{repo}/{mod or '.'}"
