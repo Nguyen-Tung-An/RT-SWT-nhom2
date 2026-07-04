@@ -84,6 +84,14 @@ This file records every technical decision and error during RBL-4, per RBL-0/RBL
 - **Chẩn đoán lại pilot với data v2 + test CŨ:** 0×P1 (trước là 9) · 8×P3 (test cũ import flask/click) · 4×P4 (test fail trên bản gốc) → chốt chặn đã chuyển từ DATA sang TEST GENERATION (chờ LR chạy lại prompt mới).
 - Data v2 đã commit vào `data/{java,python}_functions/` (`2ccffc7`). Nhắc DG: lần sau **push lên git** thay vì gửi rar — repo là nguồn chuẩn.
 
+### 2026-07-04 (cập nhật cuối) — Sinh test baseline full HOÀN TẤT: EvoSuite 60/60, Randoop 56/60 ✅
+- **Chuỗi 3 tầng lỗi đã bóc** (mỗi tầng che tầng sau — chi tiết các mục dưới):
+  1. joda-time build fail ngầm (pom pin Java 5, JDK 17 từ chối) → `target/classes` RỖNG mà check "folder tồn tại" báo OK → build lại với `-Dmaven.compiler.source/target=8`.
+  2. Dep jar đời mới là multi-release jar chứa bytecode Java 21 → ASM của EvoSuite 1.2.0 chết `Unsupported class file major version 65` → script sanitize bỏ `META-INF/versions/12+` (4 jar), `java_classpath` ưu tiên `dep-cp-sane.txt`.
+  3. **EvoSuite 1.2.0 phải chạy trên JDK 8** (sân nhà của tool): JDK 11 qua được class đơn giản nhưng chết runtime với csv/gson/joda (`ExecutionTracer`, tz-database). Chuyển `EVOSUITE_JAVA` → Temurin 8 (`F:\Java\jdk8u492-b09`) → **21/21 hàm còn lại ok một phát, kể cả 12 hàm joda**.
+- **Chốt sinh test:** EvoSuite **60/60** (30/30 class, verify file thật) · Randoop **56/60** (4 fail thật: JA-024 Lexer, JA-028 RequestDispatch, JA-033, JA-054 — class khó khởi tạo với random testing, ghi nhận INVALID có căn cứ).
+- **Lưu ý method:** test EvoSuite sinh hỗn hợp JDK 11 (39 hàm đợt đầu) + JDK 8 (21 hàm đợt sau), cùng budget 60s — ghi rõ trong report; đo lường không phân biệt (compile release 11 nuốt cả hai).
+
 ### 2026-07-04 — FULL RUN sinh test baseline 60 hàm Java (Randoop + EvoSuite, budget cân 60s/60s)
 - **Kết quả sinh** (log đối chiếu khớp file thật): Randoop **40/60 hàm ok** · EvoSuite **34/60 ok** (18 class unique).
 - **Fail tập trung theo repo** (EvoSuite): joda-time 12/12, gson 6, commons-csv 6, commons-cli 2 (timeout class lớn). Nguyên nhân khả năng cao: classpath mới có class nội bộ repo, **thiếu dependency ngoài** (joda-convert, error-prone annotations...) — đúng threat đã ghi 03/07.
