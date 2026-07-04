@@ -1,22 +1,27 @@
 """
 Do FULL baseline Java (evosuite + randoop) cho moi repo theo cong thuc gate:
-  vá pom -> chép test (transform) -> mvn test + JaCoCo -> PIT -> parser theo hàm.
+  chuan bi (va pom, cat test goc, install multi-module) -> chep test (transform)
+  -> mvn test + JaCoCo -> PIT -> parser theo ham -> metrics_full.csv.
 
-Chay: python ms-analysis/scripts/run_full_java_measurement.py [--repos csv,list] [--tools evosuite,randoop]
-Yeu cau: repos da build + dep-cp.txt da sinh; test da nam trong generated_tests/.
+Chay: python ms-analysis/scripts/run_full_java_measurement.py [--repos a,b] [--tools evosuite,randoop]
 
-Bay da biet (xu ly san trong script — xem notes.md 04/07):
-  - EvoSuite test: can JDK 11 + release 11 + separateClassLoader=false + evosuite-standalone-runtime.
-  - Randoop test:  can JDK 17 + release 17 (sinh duoi JDK 17).
-  - commons-*: JaCoCo TICH HOP SAN (2 agent = crash) -> chi goi jacoco:report;
-    repo khac: goi prepare-agent + report tuong minh.
-  - Ghi file khong BOM.
+Bay da biet (v2 — sau vong do dau 04/07, xem notes.md):
+  - EvoSuite test: JDK 11 + release 11 + separateClassLoader=false + evosuite-standalone-runtime.
+  - Randoop test:  JDK 17 + release 17.
+  - Va pom bang XML (khong thay chuoi — tung chen nham vao <dependencies> cua
+    maven-release-plugin lam joda khong parse duoc pom).
+  - junit-vintage-engine KHONG pin version neu project da quan ly JUnit 5
+    (pin 5.10.2 lech platform 5.13 -> "JUnit jars not properly aligned").
+  - CAT TEST GOC cua project (doi ten src/test/java -> src/_test_java_goc):
+    test cu cua ho compile loi voi release 11 (equalsverifier...), keo theo -Werror.
+  - Repo multi-module: mvn install -DskipTests o ROOT truoc (gson/extras can artifact gson),
+    va them cac module anh em lam test-dep (Gson_ESTest import cross-module).
+  - commons-*: JaCoCo tich hop san; neu khong ra bao cao thi fallback goi tuong minh.
 """
 import argparse
 import csv
 import os
 import re
-import shutil
 import subprocess
 import sys
 import xml.etree.ElementTree as ET
@@ -30,16 +35,17 @@ PIT = "org.pitest:pitest-maven:1.17.2:mutationCoverage"
 JACOCO = "org.jacoco:jacoco-maven-plugin:0.8.12"
 SKIPS = ["-Drat.skip=true", "-Dcheckstyle.skip=true", "-Dspotbugs.skip=true", "-Dpmd.skip=true",
          "-Danimal.sniffer.skip=true", "-Denforcer.skip=true", "-Dmaven.javadoc.skip=true",
-         "-Djapicmp.skip=true", "-DfailIfNoTests=false", "-Dmaven.test.failure.ignore=true"]
-
-DEPS_SNIPPET = """    <!-- RT-SWT-nhom2: do luong test EvoSuite/Randoop (JUnit4) -->
-    <dependency><groupId>junit</groupId><artifactId>junit</artifactId><version>4.13.2</version><scope>test</scope></dependency>
-    <dependency><groupId>org.junit.vintage</groupId><artifactId>junit-vintage-engine</artifactId><version>5.10.2</version><scope>test</scope></dependency>
-    <dependency><groupId>org.evosuite</groupId><artifactId>evosuite-standalone-runtime</artifactId><version>1.2.0</version><scope>test</scope></dependency>
-"""
+         "-Djapicmp.skip=true", "-DfailIfNoTests=false", "-Dmaven.test.failure.ignore=true",
+         "-Dmaven.compiler.failOnWarning=false"]
+POM_NS = "http://maven.apache.org/POM/4.0.0"
+ET.register_namespace("", POM_NS)
 
 
-def sh(cmd, cwd, java_home, timeout=1800):
+def q(tag):
+    return f"{{{POM_NS}}}{tag}"
+
+
+def sh(cmd, cwd, java_home, timeout=2400):
     env = os.environ.copy()
     env["JAVA_HOME"] = java_home
     r = subprocess.run(cmd, cwd=cwd, shell=True, capture_output=True, text=True,
@@ -47,45 +53,77 @@ def sh(cmd, cwd, java_home, timeout=1800):
     return r.returncode, (r.stdout or "") + (r.stderr or "")
 
 
-def patch_pom(pom_path):
-    src = open(pom_path, encoding="utf-8", errors="replace").read()
-    if "evosuite-standalone-runtime" in src:
-        return False
-    if "<dependencies>" not in src:
-        src = src.replace("</project>", "  <dependencies>\n" + DEPS_SNIPPET + "  </dependencies>\n</project>")
-    else:
-        src = src.replace("<dependencies>", "<dependencies>\n" + DEPS_SNIPPET, 1)
-    open(pom_path, "w", encoding="utf-8", newline="\n").write(src)
-    return True
+def read_gav(pom_path):
+    root = ET.parse(pom_path).getroot()
+    g = root.findtext(q("groupId")) or root.findtext(f"{q('parent')}/{q('groupId')}")
+    a = root.findtext(q("artifactId"))
+    v = root.findtext(q("version")) or root.findtext(f"{q('parent')}/{q('version')}")
+    return g, a, v
+
+
+def patch_pom(pom_path, extra_deps=()):
+    """Chen test-deps o DUNG project-level <dependencies> (XML, khong thay chuoi)."""
+    txt = open(pom_path, encoding="utf-8", errors="replace").read()
+    managed_junit5 = "junit-jupiter" in txt or "junit-bom" in txt
+    tree = ET.parse(pom_path)
+    root = tree.getroot()
+    deps = root.find(q("dependencies"))
+    if deps is None:
+        deps = ET.SubElement(root, q("dependencies"))
+    have = {(d.findtext(q("groupId")), d.findtext(q("artifactId")))
+            for d in deps.findall(q("dependency"))}
+
+    def add(g, a, v):
+        if (g, a) in have:
+            return
+        d = ET.SubElement(deps, q("dependency"))
+        ET.SubElement(d, q("groupId")).text = g
+        ET.SubElement(d, q("artifactId")).text = a
+        if v:
+            ET.SubElement(d, q("version")).text = v
+        ET.SubElement(d, q("scope")).text = "test"
+        have.add((g, a))
+
+    add("junit", "junit", "4.13.2")
+    add("org.junit.vintage", "junit-vintage-engine", None if managed_junit5 else "5.10.2")
+    add("org.evosuite", "evosuite-standalone-runtime", "1.2.0")
+    for g, a, v in extra_deps:
+        add(g, a, v)
+    tree.write(pom_path, encoding="utf-8", xml_declaration=True)
+    # go "-Werror" trong compilerArgs (gson) — chi ban clone local
+    txt2 = open(pom_path, encoding="utf-8").read().replace("<arg>-Werror</arg>", "")
+    open(pom_path, "w", encoding="utf-8", newline="\n").write(txt2)
+
+
+def stash_project_tests(mod_dir):
+    src = os.path.join(mod_dir, "src", "test", "java")
+    dst = os.path.join(mod_dir, "src", "_test_java_goc")
+    if os.path.isdir(src) and not os.path.isdir(dst):
+        os.rename(src, dst)
+    os.makedirs(src, exist_ok=True)
 
 
 def module_of(row):
-    """'' neu single-module; 'extras' neu gson/extras/src/main/java/..."""
     f = row["file"].replace("\\", "/")
     m = re.search(r"/raw/[^/]+/(?:(.+?)/)?src/main/java/", f)
     return (m.group(1) or "") if m else ""
 
 
 def pkg_class(row):
-    f = row["file"].replace("\\", "/")
-    rel = f.split("src/main/java/")[1]
-    cls = os.path.basename(rel).replace(".java", "")
-    pkg = os.path.dirname(rel).replace("/", ".")
-    return pkg, cls
+    rel = row["file"].replace("\\", "/").split("src/main/java/")[1]
+    return os.path.dirname(rel).replace("/", "."), os.path.basename(rel).replace(".java", "")
 
 
 def copy_evosuite_tests(rows, mod_dir):
     n = 0
     for r in rows:
         pkg, cls = pkg_class(r)
-        src_dir = os.path.join(GEN, "evosuite", "java", *pkg.split("."))
         for suffix in ("_ESTest.java", "_ESTest_scaffolding.java"):
-            s = os.path.join(src_dir, cls + suffix)
+            s = os.path.join(GEN, "evosuite", "java", *pkg.split("."), cls + suffix)
             if not os.path.exists(s):
                 continue
-            code = open(s, encoding="utf-8", errors="replace").read()
+            code = open(s, encoding="utf-8", errors="replace").read().lstrip("﻿")
             code = code.replace("separateClassLoader = true", "separateClassLoader = false")
-            code = code.lstrip("﻿")
             d = os.path.join(mod_dir, "src", "test", "java", *pkg.split("."))
             os.makedirs(d, exist_ok=True)
             open(os.path.join(d, cls + suffix), "w", encoding="utf-8", newline="\n").write(code)
@@ -101,15 +139,14 @@ def copy_randoop_tests(rows, mod_dir):
         safe = r["func_id"].replace("-", "_")
         for f in os.listdir(os.path.join(GEN, "randoop", "java")):
             if f.startswith(safe + "_Regression"):
-                code = open(os.path.join(GEN, "randoop", "java", f), encoding="utf-8", errors="replace").read()
-                code = code.lstrip("﻿")
+                code = open(os.path.join(GEN, "randoop", "java", f),
+                            encoding="utf-8", errors="replace").read().lstrip("﻿")
                 open(os.path.join(d, f), "w", encoding="utf-8", newline="\n").write(code)
                 n += 1
     return n
 
 
-def clean_tests(mod_dir):
-    """Xoa test do minh chen (ESTest / *_Regression) de 2 pass khong lan nhau."""
+def clean_our_tests(mod_dir):
     t = os.path.join(mod_dir, "src", "test", "java")
     if not os.path.isdir(t):
         return
@@ -117,8 +154,6 @@ def clean_tests(mod_dir):
         for f in files:
             if "_ESTest" in f or re.match(r"JA_\d+_Regression", f):
                 os.remove(os.path.join(root, f))
-    for root, _, files in os.walk(os.path.join(mod_dir, "target"), topdown=False):
-        pass  # jacoco exec xoa rieng
 
 
 def rm(path):
@@ -133,7 +168,8 @@ def run_parser(repo, method, jacoco_xml, pit_xml, csv_path):
            "--out", os.path.join("ms-analysis", "results", "metrics_full.csv")]
     if pit_xml and os.path.exists(pit_xml):
         cmd += ["--pit", pit_xml]
-    r = subprocess.run(cmd, cwd=REPO_ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace")
+    r = subprocess.run(cmd, cwd=REPO_ROOT, capture_output=True, text=True,
+                       encoding="utf-8", errors="replace")
     print(r.stdout.strip())
     if r.returncode != 0:
         print("PARSER ERR:", r.stderr.strip()[-400:])
@@ -143,21 +179,51 @@ def measure(repo, rows, tools, csv_path):
     by_mod = {}
     for r in rows:
         by_mod.setdefault(module_of(r), []).append(r)
-    commons_builtin = repo.startswith("commons-")
+    repo_dir = os.path.join(RAW, repo)
+    multi = any(m for m in by_mod)
+
+    # multi-module: install toan bo artifact vao .m2 mot lan (extras can gson...)
+    if multi:
+        marker = os.path.join(repo_dir, "target", ".rtswt-installed")
+        if not os.path.exists(marker):
+            print(f">> {repo}: mvn install -DskipTests (multi-module, 1 lan)...")
+            rc, out = sh("mvn -q install -DskipTests -Dmaven.test.skip=true " + " ".join(SKIPS),
+                         repo_dir, JDK17)
+            if rc != 0:
+                print(f"!! {repo}: install fail (rc={rc}):",
+                      "\n".join(l for l in out.splitlines() if "ERROR" in l)[:400])
+            else:
+                os.makedirs(os.path.dirname(marker), exist_ok=True)
+                open(marker, "w").write("ok")
+        # test-dep sang cac module anh em (ESTest co the import cross-module)
+        sibling_gavs = []
+        for sub in sorted(os.listdir(repo_dir)):
+            p = os.path.join(repo_dir, sub, "pom.xml")
+            if os.path.isfile(p):
+                try:
+                    g, a, v = read_gav(p)
+                    if a:
+                        sibling_gavs.append((g, a, v))
+                except ET.ParseError:
+                    pass
+    else:
+        sibling_gavs = []
 
     for mod, mrows in by_mod.items():
-        mod_dir = os.path.join(RAW, repo, mod) if mod else os.path.join(RAW, repo)
+        mod_dir = os.path.join(repo_dir, mod) if mod else repo_dir
         pom = os.path.join(mod_dir, "pom.xml")
         if not os.path.exists(pom):
-            print(f"!! {repo}/{mod}: khong thay pom, bo qua {len(mrows)} ham")
+            print(f"!! {repo}/{mod}: khong thay pom, bo qua")
             continue
-        patch_pom(pom)
-        classes = sorted({".".join(pkg_class(r)) for r in mrows})
-        target_classes = ",".join(classes)
+        _, self_art, _ = read_gav(pom)
+        extra = [(g, a, v) for (g, a, v) in sibling_gavs if a != self_art] if multi else []
+        patch_pom(pom, extra)
+        stash_project_tests(mod_dir)
+        target_classes = ",".join(sorted({".".join(pkg_class(r)) for r in mrows}))
         uniq = f"{repo}/{mod or '.'}"
 
         for method in tools:
-            clean_tests(mod_dir)
+            clean_our_tests(mod_dir)
             rm(os.path.join(mod_dir, "target", "jacoco.exec"))
             if method == "evosuite":
                 n = copy_evosuite_tests(mrows, mod_dir)
@@ -169,23 +235,25 @@ def measure(repo, rows, tools, csv_path):
                 print(f"-- {uniq} [{method}]: khong co test, bo qua")
                 continue
             comp = f"-Dmaven.compiler.release={rel} -Dmaven.compiler.source={rel} -Dmaven.compiler.target={rel}"
-            jac = "jacoco:report" if commons_builtin else f"{JACOCO}:prepare-agent test {JACOCO}:report"
-            mvn_test = (f'mvn -q test jacoco:report -Dtest="{tpat}" {comp} ' + " ".join(SKIPS)) if commons_builtin \
-                else (f'mvn -q {JACOCO}:prepare-agent test {JACOCO}:report -Dtest="{tpat}" {comp} ' + " ".join(SKIPS))
             print(f">> {uniq} [{method}] test+jacoco ({n} file test)...")
-            rc, out = sh(mvn_test, mod_dir, jdk)
+            rc, out = sh(f'mvn -q test jacoco:report -Dtest="{tpat}" {comp} ' + " ".join(SKIPS),
+                         mod_dir, jdk)
             jxml = os.path.join(mod_dir, "target", "site", "jacoco", "jacoco.xml")
             if not os.path.exists(jxml):
-                print(f"!! {uniq} [{method}]: jacoco.xml KHONG sinh (rc={rc}). Loi cuoi:\n" +
-                      "\n".join([l for l in out.splitlines() if "ERROR" in l][:5]))
+                # fallback: goi jacoco tuong minh (repo khong tich hop san)
+                rc, out = sh(f'mvn -q {JACOCO}:prepare-agent test {JACOCO}:report -Dtest="{tpat}" {comp} '
+                             + " ".join(SKIPS), mod_dir, jdk)
+            if not os.path.exists(jxml):
+                print(f"!! {uniq} [{method}]: jacoco.xml KHONG sinh (rc={rc}). Loi cuoi:")
+                print("\n".join([l for l in out.splitlines() if "ERROR" in l][:5]))
                 continue
             print(f">> {uniq} [{method}] PIT...")
-            pit_cmd = (f'mvn -q {PIT} -DtargetClasses="{target_classes}" -DtargetTests="{pit_tests}" '
-                       f'-DoutputFormats=XML -DtimestampedReports=false {comp} ' + " ".join(SKIPS))
-            rc2, out2 = sh(pit_cmd, mod_dir, jdk, timeout=3600)
+            rc2, out2 = sh(f'mvn -q {PIT} -DtargetClasses="{target_classes}" -DtargetTests="{pit_tests}" '
+                           f'-DoutputFormats=XML -DtimestampedReports=false {comp} ' + " ".join(SKIPS),
+                           mod_dir, jdk, timeout=3600)
             pxml = os.path.join(mod_dir, "target", "pit-reports", "mutations.xml")
-            if rc2 != 0 and not os.path.exists(pxml):
-                print(f"!! {uniq} [{method}]: PIT fail (rc={rc2}) -> chi co coverage")
+            if not os.path.exists(pxml):
+                print(f"!! {uniq} [{method}]: PIT khong ra bao cao (rc={rc2}) -> chi co coverage")
                 pxml = None
             run_parser(repo, method, jxml, pxml, csv_path)
 
@@ -193,7 +261,7 @@ def measure(repo, rows, tools, csv_path):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--csv", default=os.path.join("data", "full_ground_truth.csv"))
-    ap.add_argument("--repos", default="", help="loc theo ten repo, phay; mac dinh: tat ca")
+    ap.add_argument("--repos", default="")
     ap.add_argument("--tools", default="evosuite,randoop")
     args = ap.parse_args()
 
@@ -201,8 +269,7 @@ def main():
             if r["language"] == "java"]
     by_repo = {}
     for r in rows:
-        name = r["source_repo"].split("/")[-1]
-        by_repo.setdefault(name, []).append(r)
+        by_repo.setdefault(r["source_repo"].split("/")[-1], []).append(r)
     want = [s.strip() for s in args.repos.split(",") if s.strip()] or sorted(by_repo)
     tools = [t.strip() for t in args.tools.split(",")]
 
