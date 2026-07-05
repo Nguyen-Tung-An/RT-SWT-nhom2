@@ -1,0 +1,26 @@
+\section{Introduction}\label{sec:intro}
+% NGƯỜI VIẾT: RW (Lộc)
+%
+% Khung gợi ý (4 đoạn):
+% 1. Bối cảnh: unit test tốn 30-50% effort; LLM hứa hẹn tự sinh test;
+%    các nghiên cứu hiện có báo coverage cao nhưng chủ yếu trên hàm đơn giản.
+% 2. Khoảng trống (GAP — lấy từ team-synthesis/gap-final.md):
+%    - GAP-T: chưa ai đo "điểm gãy" của LLM theo cyclomatic complexity 5-10
+%    - GAP-M: thiếu benchmark thống nhất branch coverage + mutation score
+%      có kiểm định thống kê dưới CC được kiểm soát
+% 3. Đóng góp của nghiên cứu này:
+%    - Đánh giá gpt-4o-mini (one-shot) trên 120 hàm thật (60 Java + 60 Python,
+%      CC 5-10) mined từ 10 repo OSS pinned commit
+%    - So với 2 baseline sinh test tự động (EvoSuite, Randoop) cùng budget 60s
+%    - 3 RQ với kiểm định Wilcoxon/Spearman
+% 4. Cấu trúc bài báo.
+%
+% TODO(Lộc): viết nội dung, ~0.75-1 trang.
+
+% RQ box — giữ nguyên wording đã được GV duyệt trong proposal:
+\textbf{RQ1}: Does GPT-4o-mini achieve $\geq 80\%$ branch coverage on functions
+of medium cyclomatic complexity? \\
+\textbf{RQ2}: Does GPT-4o-mini achieve $\geq 60\%$ mutation score, and does it
+outperform automated baselines? \\
+\textbf{RQ3}: Is there a negative correlation between cyclomatic complexity and
+test quality?
