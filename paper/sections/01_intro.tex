@@ -1,26 +1,63 @@
 \section{Introduction}\label{sec:intro}
-% NGƯỜI VIẾT: RW (Lộc)
-%
-% Khung gợi ý (4 đoạn):
-% 1. Bối cảnh: unit test tốn 30-50% effort; LLM hứa hẹn tự sinh test;
-%    các nghiên cứu hiện có báo coverage cao nhưng chủ yếu trên hàm đơn giản.
-% 2. Khoảng trống (GAP — lấy từ team-synthesis/gap-final.md):
-%    - GAP-T: chưa ai đo "điểm gãy" của LLM theo cyclomatic complexity 5-10
-%    - GAP-M: thiếu benchmark thống nhất branch coverage + mutation score
-%      có kiểm định thống kê dưới CC được kiểm soát
-% 3. Đóng góp của nghiên cứu này:
-%    - Đánh giá gpt-4o-mini (one-shot) trên 120 hàm thật (60 Java + 60 Python,
-%      CC 5-10) mined từ 10 repo OSS pinned commit
-%    - So với 2 baseline sinh test tự động (EvoSuite, Randoop) cùng budget 60s
-%    - 3 RQ với kiểm định Wilcoxon/Spearman
-% 4. Cấu trúc bài báo.
-%
-% TODO(Lộc): viết nội dung, ~0.75-1 trang.
+% =====================================================================
+% BAN NHAP (draft) — RW (Lộc) rà soát, viết lại bằng giọng của mình,
+% rồi chạy AI detector và ghi vào quality/ai_check_log.md trước khi nộp.
+% Số liệu [TODO-...] điền sau khi có kết quả LLM.
+% =====================================================================
 
-% RQ box — giữ nguyên wording đã được GV duyệt trong proposal:
+Unit testing remains one of the most expensive activities in software
+development, frequently cited as consuming 30--50\% of total project
+effort. Large Language Models (LLMs) promise to reduce this cost by
+generating unit tests directly from source code, and recent studies
+report encouraging results: GPT-4-class models achieve high line
+coverage on curated benchmarks such as TestEval and HumanEval.
+However, most of these evaluations concentrate on relatively simple,
+self-contained functions, and they rarely control for the structural
+complexity of the code under test.
+
+This leaves two gaps that our study addresses. First, existing work
+does not systematically examine \emph{where LLM-generated tests break
+down} as cyclomatic complexity (CC) increases; results are typically
+aggregated over functions of mixed, unreported complexity
+(GAP-T). Second, few studies combine \emph{branch coverage} and
+\emph{mutation score} under statistical testing on the same controlled
+sample, even though coverage alone is known to overestimate test
+quality (GAP-M) --- an effect we also observe directly in our own
+baseline data, where a function can reach 60\% branch coverage while
+killing 0\% of mutants (Section~\ref{sec:results}).
+
+We therefore evaluate \textbf{GPT-4o-mini} (one-shot prompting,
+temperature $0$) on \textbf{120 real-world functions} (60 Java, 60
+Python) mined from ten pinned open-source repositories, all within the
+medium-complexity band $5 \le \mathrm{CC} \le 10$. Generated tests are
+executed \emph{in the context of the original projects}, and compared
+against two automated baselines --- EvoSuite and Randoop --- under an
+equal 60-second generation budget per class. Quality is measured by
+branch coverage (JaCoCo, coverage.py) and mutation score (PIT, an
+AST-based mutation engine for Python), with non-parametric statistical
+tests at $\alpha = 0.05$.
+
 \textbf{RQ1}: Does GPT-4o-mini achieve $\geq 80\%$ branch coverage on functions
 of medium cyclomatic complexity? \\
 \textbf{RQ2}: Does GPT-4o-mini achieve $\geq 60\%$ mutation score, and does it
 outperform automated baselines? \\
 \textbf{RQ3}: Is there a negative correlation between cyclomatic complexity and
 test quality?
+
+The contributions of this paper are: (i) a reproducible benchmark of
+120 medium-complexity functions with pinned provenance; (ii) a
+measurement pipeline that scores tests \emph{per function} inside the
+original projects, with a mandatory green-on-original check before
+mutation analysis; (iii) an empirical comparison of GPT-4o-mini
+against search-based and random baselines under equal budgets
+[TODO-so-lieu-chinh]; and (iv) a catalogue of measurement pitfalls
+(silent tool failures, coverage misattribution) that materially affect
+reported numbers if left undetected.
+
+The remainder of this paper is organised as follows.
+Section~\ref{sec:related} reviews related work;
+Section~\ref{sec:method} describes the dataset, generation, and
+measurement methodology; Section~\ref{sec:results} reports results per
+research question; Section~\ref{sec:discussion} discusses
+implications; Section~\ref{sec:threats} examines threats to validity;
+and Section~\ref{sec:conclusion} concludes.

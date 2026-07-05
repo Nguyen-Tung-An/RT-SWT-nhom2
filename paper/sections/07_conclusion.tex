@@ -1,5 +1,41 @@
-﻿\section{Conclusion}\label{sec:conclusion}
-% NGUOI VIET: RW (Loc)
-% Khung: tra loi thang 3 RQ (moi RQ 1-2 cau, co so) + 1 doan future work
-% (model lon hon, dataset can bang hon, do trong CI that).
-% TODO(Loc)
+\section{Conclusion}\label{sec:conclusion}
+% =====================================================================
+% BAN NHAP (draft) — RW (Lộc). Cau tra loi RQ1-RQ3 dang la KHUNG cho:
+% dien so that sau khi do xong phia LLM (cho Hai sinh test).
+% =====================================================================
+
+We evaluated GPT-4o-mini as a unit-test generator for 120 real-world
+Java and Python functions of medium cyclomatic complexity (CC 5--10),
+measured inside the original projects and compared against EvoSuite
+and Randoop under equal 60-second budgets.
+
+\textbf{RQ1 (coverage threshold).} [TODO: GPT-4o-mini đạt/không đạt
+median branch coverage $\geq 80\%$; one-sample Wilcoxon $p = \dots$.
+Đối chiếu: chính EvoSuite cũng chỉ đạt median 55.0\% trên dataset này,
+nên kết quả cần đọc trong bối cảnh đó.]
+
+\textbf{RQ2 (quality vs.\ baselines).} [TODO: so sánh mutation score
+GPT-4o-mini với EvoSuite/Randoop; paired Wilcoxon $p = \dots$, effect
+size $r = \dots$. Baseline hiện có: EvoSuite coverage median 55.0\%,
+Randoop 21.1\%.]
+
+\textbf{RQ3 (complexity correlation).} [TODO: Spearman $\rho = \dots$
+giữa CC và coverage/mutation của test LLM; kết luận về ``điểm gãy''
+trong band CC 5--10.]
+
+Beyond the numeric answers, two lessons generalise. First, evaluating
+LLM-generated tests on \emph{extracted} functions systematically
+understates the difficulty of real code: functions mined from mature
+projects depend on their module context, and measurement is only
+meaningful inside that context. Second, the measurement pipeline
+itself is a first-class threat: most of the failures we encountered
+were silent (exit code 0), and without artefact-level verification
+they would have produced confident but wrong numbers.
+
+\textbf{Future work.} Replicating the study with larger models
+(GPT-4o, Claude-class) to test whether the observed limits are
+model-size effects; extending the dataset beyond two Python libraries
+and toward higher complexity bands (CC $> 10$) to locate the breaking
+point more precisely; and integrating the generation--measurement
+loop into CI so that LLM tests are evaluated continuously rather than
+in one-off experiments.
