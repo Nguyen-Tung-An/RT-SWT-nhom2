@@ -334,9 +334,11 @@ def measure(repo, rows, tools, csv_path):
                 print("\n".join([l for l in out.splitlines() if "ERROR" in l][:5]))
                 continue
             print(f">> {uniq} [{method}] PIT...")
+            # skipFailingTests: suite co test flaky fail thi PIT mac dinh ABORT
+            # ("tests did not pass without mutation") -> bo test do thay vi bo ca repo
             rc2, out2 = sh(f'mvn -q {PIT} -DtargetClasses="{target_classes}" -DtargetTests="{pit_tests}" '
-                           f'-DoutputFormats=XML -DtimestampedReports=false {comp} ' + " ".join(SKIPS),
-                           mod_dir, jdk, timeout=3600)
+                           f'-DoutputFormats=XML -DtimestampedReports=false -DskipFailingTests=true {comp} '
+                           + " ".join(SKIPS), mod_dir, jdk, timeout=3600)
             pxml = os.path.join(mod_dir, "target", "pit-reports", "mutations.xml")
             if not os.path.exists(pxml):
                 print(f"!! {uniq} [{method}]: PIT khong ra bao cao (rc={rc2}) -> chi co coverage")
