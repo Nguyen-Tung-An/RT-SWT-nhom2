@@ -93,7 +93,8 @@ This file records every technical decision and error during RBL-4, per RBL-0/RBL
 - Data v2 đã commit vào `data/{java,python}_functions/` (`2ccffc7`). Nhắc DG: lần sau **push lên git** thay vì gửi rar — repo là nguồn chuẩn.
 
 ### 2026-07-04 — ĐO baseline full HOÀN TẤT: coverage 60/60 hàm × 2 tool (metrics_full.csv) ✅
-- **Kết quả** (`ms-analysis/results/metrics_full.csv`, 120 dòng): EvoSuite bc median **55.0** (mean 51.2, 0–100) · Randoop bc median **21.1** (mean 37.7). Mutation: EvoSuite 26/60 hàm, Randoop 53/60 — các ô thiếu do PIT fail ở một số repo (việc còn lại, không chặn RQ phần coverage).
+- **Kết quả** (`ms-analysis/results/metrics_full.csv`, 120 dòng): EvoSuite bc median **55.0** (mean 51.2, 0–100) · Randoop bc median **21.1** (mean 37.7).
+- **Mutation (cập nhật 05/07): 57/60 hàm × 2 tool** — fix bằng `-DskipFailingTests=true` (PIT mặc định ABORT cả repo khi suite có 1 test flaky fail — bẫy thứ 7). 3 hàm còn lại (JA-017, JA-048, JA-058) **không có mutant nào trong khoảng dòng** ở cả 2 tool → N/A hợp lệ, loại khỏi phân tích mutation (không impute).
 - **6 vòng vá orchestrator để đo được 8 repo thật — mỗi vòng một bẫy (liệu cho Threats/Method):**
   1. Vá pom bằng thay chuỗi chèn nhầm vào `<dependencies>` của maven-release-plugin (joda) → chuyển sang XML parser.
   2. `junit-vintage-engine` pin 5.10.2 lệch platform 5.13 của project → "JUnit jars not properly aligned"; joda có sẵn junit **3.8.2** phải ép lên 4.13.2.
