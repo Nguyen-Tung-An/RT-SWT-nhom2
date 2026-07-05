@@ -150,7 +150,9 @@ def measure_one(row, test_src):
         bc = 0.0 if bc is None else bc
 
         # 3) MUTATION: mutate truc tiep than ham trong module that, khoi phuc sau
-        original = open(mod_file, encoding="utf-8").read()
+        # (doc/ghi BINARY de khoi phuc dung tung byte — newline CRLF/LF giu nguyen)
+        original_bytes = open(mod_file, "rb").read()
+        original = original_bytes.decode("utf-8")
         muts = gen_module_mutants(original, lo, hi)
         killed = 0
         try:
@@ -163,7 +165,7 @@ def measure_one(row, test_src):
                 except subprocess.TimeoutExpired:
                     killed += 1
         finally:
-            open(mod_file, "w", encoding="utf-8", newline="\n").write(original)
+            open(mod_file, "wb").write(original_bytes)
         ms = round(killed / len(muts) * 100, 2) if muts else 0.0
         return {"branch_coverage": bc, "mutation_score": ms, "compiled": 1}
 
