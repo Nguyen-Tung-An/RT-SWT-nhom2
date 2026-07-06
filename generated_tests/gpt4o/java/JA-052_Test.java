@@ -1,72 +1,56 @@
 package org.apache.commons.cli;
 
 import org.junit.jupiter.api.Test;
-
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 public class PatternOptionBuilderTest {
-
     @Test
-    void testEquals_SameAnnotations() {
-        Annotation a1 = new TestAnnotation("value");
-        Annotation a2 = a1;
-        assertTrue(PatternOptionBuilder.equals(a1, a2));
+    void testGetValueType_ObjectValue() {
+        assertEquals(OBJECT_VALUE, PatternOptionBuilder.getValueType('@'));
     }
 
     @Test
-    void testEquals_NullFirstAnnotation() {
-        Annotation a1 = null;
-        Annotation a2 = new TestAnnotation("value");
-        assertFalse(PatternOptionBuilder.equals(a1, a2));
+    void testGetValueType_StringValue() {
+        assertEquals(STRING_VALUE, PatternOptionBuilder.getValueType(':'));
     }
 
     @Test
-    void testEquals_NullSecondAnnotation() {
-        Annotation a1 = new TestAnnotation("value");
-        Annotation a2 = null;
-        assertFalse(PatternOptionBuilder.equals(a1, a2));
+    void testGetValueType_NumberValue() {
+        assertEquals(NUMBER_VALUE, PatternOptionBuilder.getValueType('%'));
     }
 
     @Test
-    void testEquals_DifferentAnnotationTypes() {
-        Annotation a1 = new TestAnnotation("value");
-        Annotation a2 = new AnotherTestAnnotation("value");
-        assertFalse(PatternOptionBuilder.equals(a1, a2));
+    void testGetValueType_ClassValue() {
+        assertEquals(CLASS_VALUE, PatternOptionBuilder.getValueType('+'));
     }
 
     @Test
-    void testEquals_DifferentValues() {
-        Annotation a1 = new TestAnnotation("value1");
-        Annotation a2 = new TestAnnotation("value2");
-        assertFalse(PatternOptionBuilder.equals(a1, a2));
+    void testGetValueType_DateValue() {
+        assertEquals(DATE_VALUE, PatternOptionBuilder.getValueType('#'));
     }
 
     @Test
-    void testEquals_ValidAnnotations() {
-        Annotation a1 = new TestAnnotation("value");
-        Annotation a2 = new TestAnnotation("value");
-        assertTrue(PatternOptionBuilder.equals(a1, a2));
+    void testGetValueType_ExistingFileValue() {
+        assertEquals(EXISTING_FILE_VALUE, PatternOptionBuilder.getValueType('<'));
     }
 
     @Test
-    void testEquals_ReflectiveOperationException() {
-        Annotation a1 = new TestAnnotationWithException();
-        Annotation a2 = new TestAnnotation("value");
-        assertFalse(PatternOptionBuilder.equals(a1, a2));
+    void testGetValueType_FileValue() {
+        assertEquals(FILE_VALUE, PatternOptionBuilder.getValueType('>'));
     }
 
-    private @interface TestAnnotation {
-        String value();
+    @Test
+    void testGetValueType_FilesValue() {
+        assertEquals(FILES_VALUE, PatternOptionBuilder.getValueType('*'));
     }
 
-    private @interface AnotherTestAnnotation {
-        String value();
+    @Test
+    void testGetValueType_URLValue() {
+        assertEquals(URL_VALUE, PatternOptionBuilder.getValueType('/'));
     }
 
-    private @interface TestAnnotationWithException {
-        String value() throws ReflectiveOperationException;
+    @Test
+    void testGetValueType_InvalidCharacter() {
+        assertNull(PatternOptionBuilder.getValueType('!'));
     }
 }

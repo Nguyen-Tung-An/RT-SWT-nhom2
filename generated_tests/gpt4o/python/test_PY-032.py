@@ -1,52 +1,74 @@
 import pytest
+from flask import Flask
 from flask.app import wsgi_app
 
-def test_wsgi_app_successful_response(mocker):
-    environ = {'REQUEST_METHOD': 'GET'}
-    start_response = mocker.Mock()
-    app = mocker.Mock()
-    app.request_context.return_value.push = mocker.Mock()
-    app.full_dispatch_request.return_value = lambda environ, start_response: start_response('200 OK', [])
-    
-    response = app.wsgi_app(environ, start_response)
-    
-    assert response == '200 OK'
-    start_response.assert_called_once_with('200 OK', [])
+@pytest.fixture
+def app():
+    app = Flask(__name__)
+    return app
 
-def test_wsgi_app_exception_handling(mocker):
-    environ = {'REQUEST_METHOD': 'GET'}
-    start_response = mocker.Mock()
-    app = mocker.Mock()
-    app.request_context.return_value.push = mocker.Mock()
-    app.full_dispatch_request.side_effect = Exception("Test Exception")
-    app.handle_exception.return_value = lambda environ, start_response: start_response('500 Internal Server Error', [])
-    
-    response = app.wsgi_app(environ, start_response)
-    
-    assert response == '500 Internal Server Error'
-    start_response.assert_called_once_with('500 Internal Server Error', [])
-
-def test_wsgi_app_unhandled_exception(mocker):
-    environ = {'REQUEST_METHOD': 'GET'}
-    start_response = mocker.Mock()
-    app = mocker.Mock()
-    app.request_context.return_value.push = mocker.Mock()
-    app.full_dispatch_request.side_effect = ValueError("Unhandled Exception")
-    
-    with pytest.raises(ValueError):
-        app.wsgi_app(environ, start_response)
-
-def test_wsgi_app_preserve_context(mocker):
+def test_wsgi_app_success(app):
     environ = {
         'REQUEST_METHOD': 'GET',
-        'werkzeug.debug.preserve_context': mocker.Mock()
+        'PATH_INFO': '/',
+        'wsgi.version': (1, 0),
+        'wsgi.url_scheme': 'http',
+        'SERVER_NAME': 'localhost',
+        'SERVER_PORT': '5000',
+        'wsgi.input': b'',
+        'CONTENT_LENGTH': '0',
     }
-    start_response = mocker.Mock()
-    app = mocker.Mock()
-    app.request_context.return_value.push = mocker.Mock()
-    app.full_dispatch_request.return_value = lambda environ, start_response: start_response('200 OK', [])
     
-    response = app.wsgi_app(environ, start_response)
-    
-    assert response == '200 OK'
-    environ['werkzeug.debug.preserve_context'].assert_called_once()
+    def start_response(status, headers):
+        assert status == '200 OK'
+        assert ('Content-Type', 'text/html; charset=utf-8') in headers
+
+    response = wsgi_app(app, environ, start_response)
+    assert response == b''  # Assuming the default response is empty
+
+def test_wsgi_app_exception_handling(app):
+    environ = {
+        'REQUEST_METHOD': 'GET',
+        'PATH_INFO': '/',
+        'wsgi.version': (1, 0),
+        'wsgi.url_scheme': 'http',
+        'SERVER_NAME': 'localhost',
+        'SERVER_PORT': '5000',
+        'wsgi.input': b'',
+        'CONTENT_LENGTH': '0',
+    }
+
+    # Simulate an exception in the request handling
+    app.full_dispatch_request = lambda ctx: (_ for _ in ()).throw(ValueError("Test Exception"))
+
+    def start_response(status, headers):
+        assert status == '500 INTERNAL SERVER ERROR'
+        assert ('Content-Type', 'text/html; charset=utf-8') in headers
+
+    response = wsgi_app(app, environ, start_response)
+    assert response is not None  # Ensure that a response is returned even on error
+
+def test_wsgi_app_ignore_error(app):
+    environ = {
+        'REQUEST_METHOD': 'GET',
+        'PATH_INFO': '/',
+        'wsgi.version': (1, 0),
+        'wsgi.url_scheme': 'http',
+        'SERVER_NAME': 'localhost',
+        'SERVER_PORT': '5000',
+        'wsgi.input': b'',
+        'CONTENT_LENGTH': '0',
+        'werkzeug.debug.preserve_context': lambda ctx: None,
+    }
+
+    app.should_ignore_error = lambda e: isinstance(e, ValueError)
+
+    # Simulate an exception in the request handling
+    app.full_dispatch_request = lambda ctx: (_ for _ in ()).throw(ValueError("Test Exception"))
+
+    def start_response(status, headers):
+        assert status == '500 INTERNAL SERVER ERROR'
+        assert ('Content-Type', 'text/html; charset=utf-8') in headers
+
+    response = wsgi_app(app, environ, start_response)
+    assert response is not None  # Ensure that a response is returned even on error

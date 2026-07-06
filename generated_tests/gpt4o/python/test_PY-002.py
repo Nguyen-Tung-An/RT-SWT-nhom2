@@ -1,54 +1,39 @@
 import pytest
+from flask import Flask, g
 from flask.app import update_template_context
-from unittest.mock import Mock
 
-def test_update_template_context_with_request():
-    ctx = Mock()
-    ctx.has_request = True
-    ctx.request.blueprints = ['blueprint1', 'blueprint2']
-    
-    context = {}
-    template_context_processors = {
-        'blueprint1': [Mock(return_value={'key1': 'value1'})],
-        'blueprint2': [Mock(return_value={'key2': 'value2'})]
+@pytest.fixture
+def app():
+    app = Flask(__name__)
+    app.template_context_processors = {
+        None: [lambda: {'key1': 'value1'}],
+        'blueprint1': [lambda: {'key2': 'value2'}]
     }
-    
-    app = Mock()
-    app.template_context_processors = template_context_processors
-    
-    update_template_context(app, ctx, context)
-    
-    assert context == {'key1': 'value1', 'key2': 'value2'}
+    return app
 
-def test_update_template_context_without_request():
-    ctx = Mock()
-    ctx.has_request = False
-    
-    context = {}
-    template_context_processors = {
-        None: [Mock(return_value={'key': 'value'})]
-    }
-    
-    app = Mock()
-    app.template_context_processors = template_context_processors
-    
-    update_template_context(app, ctx, context)
-    
-    assert context == {'key': 'value'}
+@pytest.fixture
+def ctx(app):
+    class MockContext:
+        def __init__(self, has_request, blueprints):
+            self.has_request = has_request
+            self.request = type('Request', (object,), {'blueprints': blueprints})
 
-def test_update_template_context_with_no_processors():
-    ctx = Mock()
-    ctx.has_request = True
-    ctx.request.blueprints = ['blueprint1']
-    
+    return MockContext(True, ['blueprint1'])
+
+def test_update_template_context_with_request(app, ctx):
     context = {}
-    template_context_processors = {
-        'blueprint1': []
-    }
-    
-    app = Mock()
-    app.template_context_processors = template_context_processors
-    
     update_template_context(app, ctx, context)
-    
+    assert context['key1'] == 'value1'
+    assert context['key2'] == 'value2'
+
+def test_update_template_context_without_request(app):
+    context = {}
+    ctx = type('MockContext', (object,), {'has_request': False})
+    update_template_context(app, ctx, context)
     assert context == {}
+
+def test_update_template_context_with_existing_keys(app, ctx):
+    context = {'key1': 'existing_value'}
+    update_template_context(app, ctx, context)
+    assert context['key1'] == 'existing_value'
+    assert context['key2'] == 'value2'

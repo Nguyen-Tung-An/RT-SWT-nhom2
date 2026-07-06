@@ -3,47 +3,63 @@ package org.apache.commons.cli;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class OptionComparatorTest {
-
-    private final OptionComparator optionComparator = new OptionComparator();
+class HelpFormatterTest {
 
     @Test
-    void testEquals_BothNull() {
-        assertTrue(optionComparator.equals(null, null));
+    void testAppendOption_OptionalWithShortOpt() {
+        StringBuilder buff = new StringBuilder();
+        Option option = new Option("a", "alpha", true, "Alpha option");
+        option.setArgName("arg");
+        HelpFormatter formatter = new HelpFormatter();
+        formatter.appendOption(buff, option, false);
+        assertEquals("[--alpha <arg>]", buff.toString());
     }
 
     @Test
-    void testEquals_FirstNull() {
-        assertFalse(optionComparator.equals(null, "test"));
+    void testAppendOption_OptionalWithLongOpt() {
+        StringBuilder buff = new StringBuilder();
+        Option option = new Option(null, "beta", true, "Beta option");
+        option.setArgName("arg");
+        HelpFormatter formatter = new HelpFormatter();
+        formatter.appendOption(buff, option, false);
+        assertEquals("[--beta <arg>]", buff.toString());
     }
 
     @Test
-    void testEquals_SecondNull() {
-        assertFalse(optionComparator.equals("test", null));
+    void testAppendOption_RequiredWithShortOpt() {
+        StringBuilder buff = new StringBuilder();
+        Option option = new Option("c", "charlie", false, "Charlie option");
+        HelpFormatter formatter = new HelpFormatter();
+        formatter.appendOption(buff, option, true);
+        assertEquals("--charlie", buff.toString());
     }
 
     @Test
-    void testEquals_SameString() {
-        assertTrue(optionComparator.equals("test", "test"));
+    void testAppendOption_RequiredWithLongOpt() {
+        StringBuilder buff = new StringBuilder();
+        Option option = new Option(null, "delta", false, "Delta option");
+        HelpFormatter formatter = new HelpFormatter();
+        formatter.appendOption(buff, option, true);
+        assertEquals("--delta", buff.toString());
     }
 
     @Test
-    void testEquals_DifferentString() {
-        assertFalse(optionComparator.equals("test", "TEST"));
+    void testAppendOption_OptionalWithNoArgName() {
+        StringBuilder buff = new StringBuilder();
+        Option option = new Option("e", "echo", true, "Echo option");
+        option.setArgName(null);
+        HelpFormatter formatter = new HelpFormatter();
+        formatter.appendOption(buff, option, false);
+        assertEquals("[--echo <arg>]", buff.toString());
     }
 
     @Test
-    void testEquals_DifferentLength() {
-        assertFalse(optionComparator.equals("test", "test1"));
-    }
-
-    @Test
-    void testEquals_CharSequenceDifferent() {
-        assertFalse(optionComparator.equals(new StringBuilder("test"), new StringBuilder("test1")));
-    }
-
-    @Test
-    void testEquals_CharSequenceSame() {
-        assertTrue(optionComparator.equals(new StringBuilder("test"), new StringBuilder("test")));
+    void testAppendOption_OptionalWithEmptyArgName() {
+        StringBuilder buff = new StringBuilder();
+        Option option = new Option("f", "foxtrot", true, "Foxtrot option");
+        option.setArgName("");
+        HelpFormatter formatter = new HelpFormatter();
+        formatter.appendOption(buff, option, false);
+        assertEquals("[--foxtrot <arg>]", buff.toString());
     }
 }

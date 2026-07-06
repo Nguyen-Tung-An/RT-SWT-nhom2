@@ -1,70 +1,61 @@
 import pytest
-from flask.app import Flask, Request, RequestRedirect, FormDataRoutingRedirect
+from flask import Flask, Request
+from werkzeug.exceptions import RequestRedirect
+from flask.app import raise_routing_exception
 
-class MockRequest:
-    def __init__(self, routing_exception, method):
-        self.routing_exception = routing_exception
-        self.method = method
+class TestApp:
+    def setup_method(self):
+        self.app = Flask(__name__)
+        self.app.debug = True
 
-class MockApp:
-    def __init__(self, debug):
-        self.debug = debug
+    def test_raise_routing_exception_not_debug(self):
+        self.app.debug = False
+        request = Request(environ={'REQUEST_METHOD': 'POST'})
+        request.routing_exception = RequestRedirect('http://example.com', 301)
+        
+        with pytest.raises(RequestRedirect):
+            raise_routing_exception(self.app, request)
 
-    def raise_routing_exception(self, request: MockRequest) -> None:
-        if (
-            not self.debug
-            or not isinstance(request.routing_exception, RequestRedirect)
-            or request.routing_exception.code in {307, 308}
-            or request.method in {"GET", "HEAD", "OPTIONS"}
-        ):
-            raise request.routing_exception
+    def test_raise_routing_exception_redirect_307(self):
+        request = Request(environ={'REQUEST_METHOD': 'POST'})
+        request.routing_exception = RequestRedirect('http://example.com', 307)
+        
+        with pytest.raises(RequestRedirect):
+            raise_routing_exception(self.app, request)
 
-        raise FormDataRoutingRedirect(request)
+    def test_raise_routing_exception_redirect_308(self):
+        request = Request(environ={'REQUEST_METHOD': 'POST'})
+        request.routing_exception = RequestRedirect('http://example.com', 308)
+        
+        with pytest.raises(RequestRedirect):
+            raise_routing_exception(self.app, request)
 
-def test_raise_routing_exception_not_debug():
-    app = MockApp(debug=False)
-    request = MockRequest(RequestRedirect(302), "POST")
-    with pytest.raises(RequestRedirect):
-        app.raise_routing_exception(request)
+    def test_raise_routing_exception_get_method(self):
+        request = Request(environ={'REQUEST_METHOD': 'GET'})
+        request.routing_exception = RequestRedirect('http://example.com', 301)
+        
+        with pytest.raises(RequestRedirect):
+            raise_routing_exception(self.app, request)
 
-def test_raise_routing_exception_is_not_redirect():
-    app = MockApp(debug=True)
-    request = MockRequest(Exception("Some error"), "POST")
-    with pytest.raises(Exception):
-        app.raise_routing_exception(request)
+    def test_raise_routing_exception_head_method(self):
+        request = Request(environ={'REQUEST_METHOD': 'HEAD'})
+        request.routing_exception = RequestRedirect('http://example.com', 301)
+        
+        with pytest.raises(RequestRedirect):
+            raise_routing_exception(self.app, request)
 
-def test_raise_routing_exception_redirect_307():
-    app = MockApp(debug=True)
-    request = MockRequest(RequestRedirect(307), "POST")
-    with pytest.raises(RequestRedirect):
-        app.raise_routing_exception(request)
+    def test_raise_routing_exception_options_method(self):
+        request = Request(environ={'REQUEST_METHOD': 'OPTIONS'})
+        request.routing_exception = RequestRedirect('http://example.com', 301)
+        
+        with pytest.raises(RequestRedirect):
+            raise_routing_exception(self.app, request)
 
-def test_raise_routing_exception_redirect_308():
-    app = MockApp(debug=True)
-    request = MockRequest(RequestRedirect(308), "POST")
-    with pytest.raises(RequestRedirect):
-        app.raise_routing_exception(request)
-
-def test_raise_routing_exception_get_method():
-    app = MockApp(debug=True)
-    request = MockRequest(RequestRedirect(302), "GET")
-    with pytest.raises(RequestRedirect):
-        app.raise_routing_exception(request)
-
-def test_raise_routing_exception_head_method():
-    app = MockApp(debug=True)
-    request = MockRequest(RequestRedirect(302), "HEAD")
-    with pytest.raises(RequestRedirect):
-        app.raise_routing_exception(request)
-
-def test_raise_routing_exception_options_method():
-    app = MockApp(debug=True)
-    request = MockRequest(RequestRedirect(302), "OPTIONS")
-    with pytest.raises(RequestRedirect):
-        app.raise_routing_exception(request)
-
-def test_raise_routing_exception_valid_case():
-    app = MockApp(debug=True)
-    request = MockRequest(RequestRedirect(302), "POST")
-    with pytest.raises(FormDataRoutingRedirect):
-        app.raise_routing_exception(request)
+    def test_raise_routing_exception_valid_case(self):
+        request = Request(environ={'REQUEST_METHOD': 'POST'})
+        request.routing_exception = RequestRedirect('http://example.com', 301)
+        
+        # Simulate the condition where FormDataRoutingRedirect would be raised
+        self.app.debug = True
+        with pytest.raises(FormDataRoutingRedirect):
+            raise_routing_exception(self.app, request)

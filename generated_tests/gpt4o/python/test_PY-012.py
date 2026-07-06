@@ -1,5 +1,6 @@
 import pytest
-from flask.app import Flask, AppContext, Response
+from flask import Flask, Response
+from flask.app import AppContext
 
 @pytest.fixture
 def app():
@@ -13,34 +14,35 @@ def app():
     return app
 
 def test_process_response_with_after_request(app):
-    with app.app_context() as ctx:
+    with app.app_context():
+        ctx = AppContext(app)
         response = Response("Hello World")
+        ctx._after_request_functions.append(app.after_request_funcs[None][0])
         processed_response = app.process_response(ctx, response)
         assert processed_response.headers['X-After-Request'] == 'Processed'
 
-def test_process_response_with_no_after_request(app):
-    with app.app_context() as ctx:
-        response = Response("Hello World")
-        ctx._after_request_functions = []
-        processed_response = app.process_response(ctx, response)
-        assert processed_response is response
+def test_process_response_with_blueprint_after_request(app):
+    with app.app_context():
+        @app.route('/test')
+        def test_route():
+            return "Test"
 
-def test_process_response_with_session(app):
-    with app.app_context() as ctx:
-        response = Response("Hello World")
-        ctx._get_session = lambda: {}
-        ctx._session_interface = app.session_interface
-        processed_response = app.process_response(ctx, response)
-        assert processed_response is response  # Assuming session does not modify response
-
-def test_process_response_with_multiple_after_requests(app):
-    with app.app_context() as ctx:
         @app.after_request
-        def another_after_request_func(response):
-            response.headers['X-Another-After-Request'] = 'Processed'
+        def blueprint_after_request(response):
+            response.headers['X-Blueprint'] = 'Processed'
             return response
 
+        app.register_blueprint(app.blueprint, url_prefix='/test')
+        response = app.test_client().get('/test')
+        processed_response = app.process_response(app.app_context(), response)
+        assert processed_response.headers['X-Blueprint'] == 'Processed'
+
+def test_process_response_with_session(app):
+    with app.app_context():
+        ctx = AppContext(app)
         response = Response("Hello World")
+        ctx._get_session = lambda: {}
+        app.session_interface.is_null_session = lambda session: False
+        app.session_interface.save_session = lambda self, session, response: response.headers.update({'X-Session': 'Saved'})
         processed_response = app.process_response(ctx, response)
-        assert processed_response.headers['X-After-Request'] == 'Processed'
-        assert processed_response.headers['X-Another-After-Request'] == 'Processed'
+        assert processed_response.headers['X-Session'] == 'Saved'

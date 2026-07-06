@@ -3,50 +3,53 @@ package org.apache.commons.cli;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class DefaultParserTest {
-    
+class DefaultParserTest {
+
+    private final DefaultParser parser = new DefaultParser();
+
     @Test
-    void testSqueeze_EmptyString() {
-        assertEquals("", DefaultParser.squeeze(""));
+    void testHandleUnknownToken_ThrowAction() {
+        parser.setNonOptionAction(NonOptionAction.THROW);
+        Exception exception = assertThrows(UnrecognizedOptionException.class, () -> {
+            parser.handleUnknownToken("--unknown");
+        });
+        assertEquals("Unrecognized option: --unknown", exception.getMessage());
     }
 
     @Test
-    void testSqueeze_NoSet() {
-        assertEquals("abc", DefaultParser.squeeze("abc"));
+    void testHandleUnknownToken_IgnoreAction() {
+        parser.setNonOptionAction(NonOptionAction.IGNORE);
+        parser.handleUnknownToken("--unknown");
+        // No exception should be thrown, and we can verify the state if needed
     }
 
     @Test
-    void testSqueeze_ConsecutiveDuplicates() {
-        assertEquals("abc", DefaultParser.squeeze("aaabbbccc"));
+    void testHandleUnknownToken_StopAction() {
+        parser.setNonOptionAction(NonOptionAction.STOP);
+        parser.handleUnknownToken("--unknown");
+        assertTrue(parser.isSkipParsing());
     }
 
     @Test
-    void testSqueeze_WithSet_OnlyInSet() {
-        assertEquals("abc", DefaultParser.squeeze("aaabbbccc", "a", "b", "c"));
+    void testHandleUnknownToken_EmptyToken() {
+        parser.setNonOptionAction(NonOptionAction.THROW);
+        parser.handleUnknownToken("");
+        // No exception should be thrown, and we can verify the state if needed
     }
 
     @Test
-    void testSqueeze_WithSet_IgnoreInSet() {
-        assertEquals("ab", DefaultParser.squeeze("aaabbb", "a"));
+    void testHandleUnknownToken_DefaultOptPrefixOnly() {
+        parser.setNonOptionAction(NonOptionAction.THROW);
+        Exception exception = assertThrows(UnrecognizedOptionException.class, () -> {
+            parser.handleUnknownToken(OptionFormatter.DEFAULT_OPT_PREFIX);
+        });
+        assertEquals("Unrecognized option: " + OptionFormatter.DEFAULT_OPT_PREFIX, exception.getMessage());
     }
 
     @Test
-    void testSqueeze_WithSet_Mixed() {
-        assertEquals("a", DefaultParser.squeeze("aaab", "a"));
-    }
-
-    @Test
-    void testSqueeze_WithSet_Complex() {
-        assertEquals("abc", DefaultParser.squeeze("aaabbbccc", "b"));
-    }
-
-    @Test
-    void testSqueeze_SingleCharacter() {
-        assertEquals("a", DefaultParser.squeeze("a"));
-    }
-
-    @Test
-    void testSqueeze_SingleCharacterWithSet() {
-        assertEquals("a", DefaultParser.squeeze("a", "a"));
+    void testHandleUnknownToken_ValidToken() {
+        parser.setNonOptionAction(NonOptionAction.IGNORE);
+        parser.handleUnknownToken("validToken");
+        // No exception should be thrown, and we can verify the state if needed
     }
 }

@@ -1,17 +1,17 @@
 import pytest
-from flask.app import Flask
+from flask import Flask, AppContext
 
 class TestFlaskSubclass(Flask):
-    def handle_http_exception(self, e):
+    def handle_http_exception(self):
         pass
 
-    def handle_user_exception(self, e):
+    def handle_user_exception(self):
         pass
 
-    def handle_exception(self, e):
+    def handle_exception(self):
         pass
 
-    def log_exception(self, e):
+    def log_exception(self):
         pass
 
     def dispatch_request(self):
@@ -29,36 +29,48 @@ class TestFlaskSubclass(Flask):
     def preprocess_request(self):
         pass
 
-    def process_response(self, response):
-        return response
-
-    def do_teardown_request(self, exc=None):
+    def process_response(self):
         pass
 
-    def do_teardown_appcontext(self, exc=None):
+    def do_teardown_request(self):
         pass
 
-def test_init_subclass_warning(mocker):
-    mock_warning = mocker.patch("warnings.warn")
-    TestFlaskSubclass.__init_subclass__()
+    def do_teardown_appcontext(self):
+        pass
 
-    assert mock_warning.call_count == 10
-    for method in [
-        "handle_http_exception",
-        "handle_user_exception",
-        "handle_exception",
-        "log_exception",
-        "dispatch_request",
-        "full_dispatch_request",
-        "finalize_request",
-        "make_default_options_response",
-        "preprocess_request",
-        "process_response",
-        "do_teardown_request",
-        "do_teardown_appcontext",
-    ]:
-        mock_warning.assert_any_call(
-            f"The '{method}' method now takes 'ctx: AppContext' as the first parameter. The old signature is deprecated and will not be supported in Flask 4.0.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
+def test_init_subclass_warning_for_old_signature(monkeypatch):
+    with pytest.warns(DeprecationWarning, match="The 'handle_http_exception' method now takes 'ctx: AppContext'"):
+        TestFlaskSubclass.__init_subclass__()
+
+    with pytest.warns(DeprecationWarning, match="The 'handle_user_exception' method now takes 'ctx: AppContext'"):
+        TestFlaskSubclass.__init_subclass__()
+
+    with pytest.warns(DeprecationWarning, match="The 'handle_exception' method now takes 'ctx: AppContext'"):
+        TestFlaskSubclass.__init_subclass__()
+
+    with pytest.warns(DeprecationWarning, match="The 'log_exception' method now takes 'ctx: AppContext'"):
+        TestFlaskSubclass.__init_subclass__()
+
+    with pytest.warns(DeprecationWarning, match="The 'dispatch_request' method now takes 'ctx: AppContext'"):
+        TestFlaskSubclass.__init_subclass__()
+
+    with pytest.warns(DeprecationWarning, match="The 'full_dispatch_request' method now takes 'ctx: AppContext'"):
+        TestFlaskSubclass.__init_subclass__()
+
+    with pytest.warns(DeprecationWarning, match="The 'finalize_request' method now takes 'ctx: AppContext'"):
+        TestFlaskSubclass.__init_subclass__()
+
+    with pytest.warns(DeprecationWarning, match="The 'make_default_options_response' method now takes 'ctx: AppContext'"):
+        TestFlaskSubclass.__init_subclass__()
+
+    with pytest.warns(DeprecationWarning, match="The 'preprocess_request' method now takes 'ctx: AppContext'"):
+        TestFlaskSubclass.__init_subclass__()
+
+    with pytest.warns(DeprecationWarning, match="The 'process_response' method now takes 'ctx: AppContext'"):
+        TestFlaskSubclass.__init_subclass__()
+
+    with pytest.warns(DeprecationWarning, match="The 'do_teardown_request' method now takes 'ctx: AppContext'"):
+        TestFlaskSubclass.__init_subclass__()
+
+    with pytest.warns(DeprecationWarning, match="The 'do_teardown_appcontext' method now takes 'ctx: AppContext'"):
+        TestFlaskSubclass.__init_subclass__()
