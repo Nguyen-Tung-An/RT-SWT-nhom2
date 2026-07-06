@@ -1,0 +1,74 @@
+\section{Threats to Validity}\label{sec:threats}
+% =====================================================================
+% BAN NHAP (draft) — RW (Lộc) rà soát + viết lại giọng mình + AI-check.
+% Moi su kien duoi day co bang chung trong notes.md (error log RBL-4)
+% va lich su commit cua repo — co the truy xuat khi GV hoi.
+% =====================================================================
+
+\subsection{Construct Validity}
+Our measurements nearly produced misleading numbers on three separate
+occasions, each of which was caught only by cross-checking tool output
+against actual artefacts. First, mutation scores of 100\% appeared for
+tests that in fact \emph{failed on the unmutated code}: every mutant
+was ``killed'' trivially. We therefore made a green-on-original check
+mandatory before any mutation analysis; tests that fail on the
+original are scored INVALID. Second, EvoSuite returns exit code 0 even
+when it generates no tests at all; a run of 12 functions was initially
+logged as fully successful although zero test files existed. Our
+pipeline now verifies the existence of the generated file rather than
+trusting exit codes. Third, JaCoCo silently reported 0\% coverage for
+EvoSuite tests because EvoSuite's separate instrumenting class loader
+changes class identity; disabling \texttt{separateClassLoader} during
+measurement restored correct attribution. More broadly, our own data
+confirm that coverage alone is an unreliable proxy for test quality:
+one baseline suite reached 60\% branch coverage on a function while
+killing 0\% of its mutants, which is precisely why we report the
+coverage--mutation pair.
+
+\subsection{Internal Validity}
+The pilot run revealed integration defects that would have invalidated
+the main results had they gone unnoticed. The first version of the
+Java dataset contained function files whose contents did not match the
+metadata (the LLM was shown the wrong source and generated tests for a
+non-existent method); all pilot LLM tests were therefore discarded and
+regenerated after the dataset was corrected. On the Python side, 10 of
+12 pilot measurements were initially INVALID for reasons unrelated to
+the LLM (functions extracted without their module context), which
+motivated the decision to measure inside the real installed modules at
+pinned commits. Baseline generation also required care: an early
+configuration gave EvoSuite a 60-second search budget but Randoop only
+10 seconds, and Randoop output files initially overwrote one another
+across runs; both issues were fixed before the final generation
+(equal 60-second budgets, per-function output names). Tool-environment
+mismatches (EvoSuite 1.2.0 requiring a Java~8 runtime; multi-release
+dependency JARs containing Java~21 bytecode that crashes older ASM;
+one project disabling JaCoCo via \texttt{jacoco.skip=true} in its own
+build) were each diagnosed and neutralised; we note that four of the
+six measurement-pipeline failures we encountered terminated with exit
+code~0, i.e., they were silent.
+
+\subsection{External Validity}
+The subject model is \texttt{gpt-4o-mini-2024-07-18}; results
+characterise this lightweight model and must not be generalised to
+larger models such as GPT-4o (amendment v1.1). The dataset covers two
+ecosystems --- Apache-style Java libraries and Python web libraries
+(flask, requests) --- and is uneven within Python (48 of 60 functions
+come from flask); functions requiring heavyweight environmental
+context (GUI, network) are under-represented. Baseline coverage varies
+strongly by repository (near-perfect on numeric utility code,
+substantially lower on parser- and formatter-style classes), so
+absolute thresholds such as the 80\% target of RQ1 should be read
+against this per-repository variation rather than as a universal bar.
+
+\subsection{Conclusion Validity}
+With $N = 120$ functions (60 per language) we rely on non-parametric
+tests (one-sample and paired Wilcoxon, Spearman correlation,
+$\alpha = 0.05$) and report effect sizes alongside $p$-values.
+Thresholds (80\% coverage, 60\% mutation) were fixed in the approved
+proposal before any full-run data were collected, and all protocol
+changes (model, dataset, prompting mode, measurement context) were
+recorded as amendments before the corresponding data were produced,
+mitigating HARKing. Mutation scores for a minority of baseline cells
+were unavailable where PIT could not process a repository
+[TODO-cap-nhat-sau-khi-dap-mutation]; these cells are reported as
+missing rather than imputed.
