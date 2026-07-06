@@ -1,42 +1,59 @@
 package org.apache.commons.cli;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
-public class DefaultParserTest {
-    
-    @Test
-    void testIndexOf_EmptyArray() {
-        assertEquals(DefaultParser.INDEX_NOT_FOUND, DefaultParser.indexOf(new Object[]{}, new Object(), 0));
+class DefaultParserTest {
+    private DefaultParser parser;
+    private Options options;
+    private NonOptionAction nonOptionAction;
+
+    @BeforeEach
+    void setUp() {
+        parser = new DefaultParser();
+        options = mock(Options.class);
+        nonOptionAction = NonOptionAction.STOP;
+        parser.setOptions(options);
+        parser.setNonOptionAction(nonOptionAction);
     }
 
     @Test
-    void testIndexOf_NullObjectToFind() {
-        Object[] array = {1, 2, null, 4};
-        assertEquals(2, DefaultParser.indexOf(array, null, 0));
+    void testHandleConcatenatedOptions_UnknownToken() throws ParseException {
+        when(options.hasOption("a")).thenReturn(false);
+        parser.handleConcatenatedOptions("a");
+        // Verify that handleUnknownToken is called with the correct argument
+        // This requires additional mocking and verification based on the implementation
     }
 
     @Test
-    void testIndexOf_ObjectFound() {
-        Object[] array = {1, 2, 3, 4};
-        assertEquals(2, DefaultParser.indexOf(array, 3, 0));
+    void testHandleConcatenatedOptions_KnownOptionWithoutArgument() throws ParseException {
+        when(options.hasOption("b")).thenReturn(true);
+        when(options.getOption("b")).thenReturn(mock(Option.class));
+        parser.handleConcatenatedOptions("b");
+        // Verify that handleOption is called with the correct option
+        verify(options).getOption("b");
     }
 
     @Test
-    void testIndexOf_ObjectNotFound() {
-        Object[] array = {1, 2, 3, 4};
-        assertEquals(DefaultParser.INDEX_NOT_FOUND, DefaultParser.indexOf(array, 5, 0));
+    void testHandleConcatenatedOptions_KnownOptionWithArgument() throws ParseException {
+        when(options.hasOption("c")).thenReturn(true);
+        Option optionC = mock(Option.class);
+        when(options.getOption("c")).thenReturn(optionC);
+        parser.handleConcatenatedOptions("cvalue");
+        // Verify that processValue is called with the correct argument
+        verify(optionC).processValue("value");
     }
 
     @Test
-    void testIndexOf_StartIndexOutOfBounds() {
-        Object[] array = {1, 2, 3, 4};
-        assertEquals(DefaultParser.INDEX_NOT_FOUND, DefaultParser.indexOf(array, 1, 5));
-    }
-
-    @Test
-    void testIndexOf_NegativeStartIndex() {
-        Object[] array = {1, 2, 3, 4};
-        assertEquals(0, DefaultParser.indexOf(array, 1, -1));
+    void testHandleConcatenatedOptions_MultipleOptions() throws ParseException {
+        when(options.hasOption("d")).thenReturn(true);
+        when(options.hasOption("e")).thenReturn(true);
+        when(options.getOption("d")).thenReturn(mock(Option.class));
+        when(options.getOption("e")).thenReturn(mock(Option.class));
+        parser.handleConcatenatedOptions("de");
+        // Verify that both options are processed
+        verify(options).getOption("d");
+        verify(options).getOption("e");
     }
 }

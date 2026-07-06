@@ -13,7 +13,7 @@ TOP_P = 1.0
 TEMPERATURE = 0.0
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-CSV_PATH = os.path.join(BASE_DIR, "data", "pilot_sample.csv")
+CSV_PATH = os.path.join(BASE_DIR, "data", "full_ground_truth.csv")
 OUT_DIR = os.path.join(BASE_DIR, "generated_tests", TEST_SOURCE)
 LOG_PATH = os.path.join(BASE_DIR, "results", "generation_log.csv")
 API_LOG_TXT = os.path.join(BASE_DIR, "results", "pilot_api_log.txt")

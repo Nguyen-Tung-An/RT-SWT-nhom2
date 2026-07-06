@@ -1,47 +1,38 @@
 import pytest
-from flask.app import handle_user_exception
+from flask import Flask, request
 from werkzeug.exceptions import BadRequestKeyError, HTTPException
+from flask.app import AppContext, handle_user_exception
 
-class MockAppContext:
-    def __init__(self, debug=False, trap_bad_request_errors=False):
-        self.debug = debug
-        self.config = {"TRAP_BAD_REQUEST_ERRORS": trap_bad_request_errors}
-        self.request = MockRequest()
+app = Flask(__name__)
 
-class MockRequest:
-    def __init__(self):
-        self.blueprints = []
+@app.errorhandler(HTTPException)
+def handle_http_exception(e):
+    return f"HTTP Exception: {e}", e.code
 
-def mock_handler(e):
-    return f"Handled: {str(e)}"
+def test_handle_user_exception_bad_request_key_error():
+    with app.app_context():
+        exception = BadRequestKeyError("bad_key")
+        response = handle_user_exception(app, AppContext(), exception)
+        assert response is None  # Adjust based on actual behavior
 
-def test_handle_user_exception_bad_request_key_error_debug():
-    ctx = MockAppContext(debug=True)
-    e = BadRequestKeyError("bad_key")
-    response = handle_user_exception(ctx, e)
-    assert response is None  # Assuming the function returns None for this case
-
-def test_handle_user_exception_bad_request_key_error_no_debug():
-    ctx = MockAppContext(debug=False, trap_bad_request_errors=True)
-    e = BadRequestKeyError("bad_key")
-    response = handle_user_exception(ctx, e)
-    assert response is None  # Assuming the function returns None for this case
-
-def test_handle_user_exception_http_exception_not_trapped():
-    ctx = MockAppContext()
-    e = HTTPException("HTTP error")
-    response = handle_user_exception(ctx, e)
-    assert response is None  # Assuming the function returns None for this case
-
-def test_handle_user_exception_http_exception_trapped():
-    ctx = MockAppContext()
-    e = HTTPException("HTTP error")
-    ctx.trap_http_exception = lambda x: True
-    response = handle_user_exception(ctx, e)
-    assert response is None  # Assuming the function returns None for this case
+def test_handle_user_exception_http_exception():
+    with app.app_context():
+        exception = HTTPException("HTTP Error")
+        response = handle_user_exception(app, AppContext(), exception)
+        assert response == ("HTTP Exception: HTTP Error", 500)  # Adjust based on actual behavior
 
 def test_handle_user_exception_no_handler():
-    ctx = MockAppContext()
-    e = Exception("generic error")
-    with pytest.raises(Exception):
-        handle_user_exception(ctx, e)
+    with app.app_context():
+        exception = Exception("Generic Exception")
+        with pytest.raises(Exception):
+            handle_user_exception(app, AppContext(), exception)
+
+def test_handle_user_exception_with_custom_handler():
+    @app.errorhandler(Exception)
+    def custom_handler(e):
+        return "Custom Error", 400
+
+    with app.app_context():
+        exception = Exception("Custom Exception")
+        response = handle_user_exception(app, AppContext(), exception)
+        assert response == "Custom Error", 400

@@ -3,54 +3,57 @@ package org.apache.commons.cli;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class DefaultParserTest {
-    
+public class NonOptionActionTest {
+
+    private final NonOptionAction nonOptionAction = new NonOptionAction();
+
     @Test
-    void testInsert_NullArray() {
-        assertNull(DefaultParser.insert(0, null, (short) 1, (short) 2));
+    void testIsShortOption_NullToken() {
+        assertFalse(nonOptionAction.isShortOption(null));
     }
 
     @Test
-    void testInsert_EmptyValues() {
-        short[] array = {1, 2, 3};
-        short[] result = DefaultParser.insert(1, array);
-        assertArrayEquals(array, result);
+    void testIsShortOption_EmptyToken() {
+        assertFalse(nonOptionAction.isShortOption(""));
     }
 
     @Test
-    void testInsert_ValidInsertion() {
-        short[] array = {1, 2, 3};
-        short[] result = DefaultParser.insert(1, array, (short) 4, (short) 5);
-        assertArrayEquals(new short[]{1, 4, 5, 2, 3}, result);
+    void testIsShortOption_SingleDash() {
+        assertFalse(nonOptionAction.isShortOption("-"));
     }
 
     @Test
-    void testInsert_IndexOutOfBounds_Negative() {
-        short[] array = {1, 2, 3};
-        assertThrows(IndexOutOfBoundsException.class, () -> {
-            DefaultParser.insert(-1, array, (short) 4);
-        });
+    void testIsShortOption_ValidShortOption() {
+        // Assuming options.hasShortOption("S") returns true
+        assertTrue(nonOptionAction.isShortOption("-S"));
     }
 
     @Test
-    void testInsert_IndexOutOfBounds_TooHigh() {
-        short[] array = {1, 2, 3};
-        assertThrows(IndexOutOfBoundsException.class, () -> {
-            DefaultParser.insert(4, array, (short) 4);
-        });
+    void testIsShortOption_ValidShortOptionWithValue() {
+        // Assuming options.hasShortOption("S") returns true
+        assertTrue(nonOptionAction.isShortOption("-S=value"));
     }
 
     @Test
-    void testInsert_InsertionAtStart() {
-        short[] array = {1, 2, 3};
-        short[] result = DefaultParser.insert(0, array, (short) 4);
-        assertArrayEquals(new short[]{4, 1, 2, 3}, result);
+    void testIsShortOption_ConcatenatedShortOptions() {
+        // Assuming options.hasShortOption("S") returns true
+        assertTrue(nonOptionAction.isShortOption("-SV"));
     }
 
     @Test
-    void testInsert_InsertionAtEnd() {
-        short[] array = {1, 2, 3};
-        short[] result = DefaultParser.insert(3, array, (short) 4);
-        assertArrayEquals(new short[]{1, 2, 3, 4}, result);
+    void testIsShortOption_ConcatenatedShortOptionsWithValues() {
+        // Assuming options.hasShortOption("S") returns true
+        assertTrue(nonOptionAction.isShortOption("-SV1=V2"));
+    }
+
+    @Test
+    void testIsShortOption_InvalidShortOption() {
+        // Assuming options.hasShortOption("X") returns false
+        assertFalse(nonOptionAction.isShortOption("-X"));
+    }
+
+    @Test
+    void testIsShortOption_EmptyAfterDash() {
+        assertFalse(nonOptionAction.isShortOption("-"));
     }
 }
