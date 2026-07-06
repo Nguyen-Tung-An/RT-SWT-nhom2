@@ -35,6 +35,9 @@ if EVOSUITE_JAVA != "java":
 # Class lon (vd HelpFormatter ~1500 LOC) can nhieu hon: set EVOSUITE_TIMEOUT=360.
 EVOSUITE_TIMEOUT = int(os.getenv("EVOSUITE_TIMEOUT", "180"))
 PYNGUIN_BIN = "pynguin"
+# Budget sinh test cua Randoop (giay/class). Pilot cu chay 10s; de so sanh CONG BANG
+# voi EvoSuite (search_budget=60) thi full run nen set RANDOOP_TIME_LIMIT=60.
+RANDOOP_TIME_LIMIT = int(os.getenv("RANDOOP_TIME_LIMIT", "10"))
 # Chay lai rieng tung tool: set BASELINE_TOOLS=evosuite (hoac "randoop", "pynguin", danh sach phay)
 BASELINE_TOOLS = {t.strip() for t in os.getenv("BASELINE_TOOLS", "randoop,evosuite,pynguin").split(",")}
 
@@ -58,6 +61,26 @@ def java_classpath(repo_name):
             c = os.path.join(root, sub, "target", "classes")
             if os.path.isdir(c) and c not in cps:
                 cps.append(c)
+    # Noi them DEPENDENCY NGOAI (joda-convert, error-prone...) — thieu chung la
+    # EvoSuite/Randoop fail hang loat (joda-time 12/12 fail hom 04/07).
+    # File sinh boi: mvn dependency:build-classpath -Dmdep.outputFile=target/dep-cp.txt
+    # Uu tien ban "sane" (da bo bytecode Java 12+ trong multi-release jar —
+    # ASM cu cua EvoSuite 1.2.0 gap major version 65 la chet).
+    dep_names = ("dep-cp-sane.txt", "dep-cp.txt")
+    dirs = [root] + ([os.path.join(root, sub) for sub in sorted(os.listdir(root))]
+                     if os.path.isdir(root) else [])
+    dep_files = []
+    for d in dirs:
+        for name in dep_names:
+            p = os.path.join(d, "target", name)
+            if os.path.isfile(p):
+                dep_files.append(p)
+                break  # co ban sane thi bo qua ban goc trong cung thu muc
+    for df in dep_files:
+        if os.path.isfile(df):
+            content = open(df, encoding="utf-8", errors="replace").read().strip()
+            if content and content not in cps:
+                cps.append(content)
     return os.pathsep.join(cps) if cps else direct
 
 
@@ -131,8 +154,11 @@ def main():
             # RANDOOP
             if "randoop" in BASELINE_TOOLS:
                 print(f"\n[{func_id}] Chạy Randoop cho {package_name}.{class_name}")
-                out_file = f"generated_tests/randoop/java/{func_id}_Test.java"
-                cmd = f"java -classpath \"{RANDOOP_JAR};{cp}\" randoop.main.Main gentests --testclass={package_name}.{class_name} --junit-output-dir=\"{OUT_DIRS['randoop']}\" --time-limit=10"
+                # basename theo func_id de cac lan chay KHONG ghi de nhau
+                # (truoc day moi run deu xuat RegressionTest0.java -> chi con bo test cuoi cung)
+                safe_id = func_id.replace("-", "_")
+                out_file = f"generated_tests/randoop/java/{safe_id}_Regression0.java"
+                cmd = f"java -classpath \"{RANDOOP_JAR};{cp}\" randoop.main.Main gentests --testclass={package_name}.{class_name} --junit-output-dir=\"{OUT_DIRS['randoop']}\" --regression-test-basename={safe_id}_Regression --time-limit={RANDOOP_TIME_LIMIT}"
                 try:
                     res = subprocess.run(cmd, shell=True, capture_output=True, text=True)
                     if res.returncode == 0:

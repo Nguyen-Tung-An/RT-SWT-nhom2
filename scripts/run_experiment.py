@@ -196,17 +196,21 @@ def main():
                 f"### Example Output ###\n"
                 f"```python\n"
                 f"import pytest\n"
-                f"from solution import add\n\n"
+                f"from mymath.utils import add\n\n"
                 f"def test_add_both_negative():\n"
                 f"    assert add(-1, -1) == 0\n\n"
                 f"def test_add_normal():\n"
                 f"    assert add(2, 3) == 5\n"
                 f"```\n\n"
                 f"### Actual Task ###\n"
-                f"The target code below will be provided in a module named `solution`.\n"
+                # PHUONG AN B (chot 05/07): test chay trong MODULE THAT (flask/requests
+                # da cai tu commit pin) -> import tu module goc, KHONG dung solution.py.
+                f"The function below belongs to the installed module `{package_name}`.\n"
                 f"Generate pytest tests for `{func_name}`.\n"
-                f"You MUST import the target function/class from the `solution` module (e.g., `from solution import ...`).\n"
-                f"DO NOT use the original package name `{package_name}` in your imports.\n\n"
+                f"You MUST import the target from its real module: `from {package_name} import {func_name}`\n"
+                f"(or import the enclosing class from `{package_name}` and call the method on an instance).\n"
+                f"Do NOT re-implement or copy the function into the test file — test the imported original.\n"
+                f"The module and its dependencies are installed and importable.\n\n"
                 f"```python\n{source_code}\n```"
             )
 
