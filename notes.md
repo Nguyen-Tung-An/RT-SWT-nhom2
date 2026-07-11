@@ -41,6 +41,15 @@ This file records every technical decision and error during RBL-4, per RBL-0/RBL
 
 ## Experiment log
 
+### 2026-07-11 — MS: đo Python FULL (gpt-4o-mini) + phân tích 8-lib + draft Results ✅ — còn chờ metrics Java
+- **Coverage Python (RQ1/RQ3):** 60/60 hàm — valid **32/60** (28 INVALID: 23 `ImportError` do LLM import sai symbol, 5 `TypeError`/`AttributeError` nhạy môi trường); 23 hàm thật sự chạm code đích. Effective median **75%** (11/23 ≥ 80%, 6 hàm 100%) → **fail to reject H0** (Wilcoxon p=0.67, r=−0.10). Lớp all (invalid=0): median **0%**.
+- **Mutation Python (RQ2-A, mutmut):** 17 hàm có số — median **36.84%** (chỉ 4/17 ≥ 60%) → **fail to reject H0** (p=0.99, r=−0.66).
+- **RQ3 Python:** Spearman ρ=+0.18 (p=0.41, n=23) — KHÔNG có tương quan âm CC↔coverage trong dải CC 5–10.
+- **Finding chính:** tỉ lệ test invalid 46.7% (chủ yếu ImportError) tự nó là kết quả quan trọng.
+- **File:** `ms-analysis/results/{metrics_project.csv, metrics_py_mut.csv, metrics_merged_8lib.csv, summary_8lib.csv}` + `fig1_distribution.png`/`fig2_comparison.png` (300 DPI). Script: `ms-analysis/scripts/{analyze_8lib.py, make_figures_8lib.py, kaggle_coverage_py.py, kaggle_mutation_py.py, kaggle_java_8lib.py}`. Section Results: `paper/sections/04_results.tex` (số Python thật, chừa chỗ `[JAVA: ...]`) + 2 hình trong `paper/figures/`.
+- **⏳ CẦN LỘC (RBL-4):** file metrics **Java gpt-4o-mini per hàm** (coverage + mutation, đo CÙNG harness Maven+JaCoCo+PIT với baseline — khác harness sẽ làm RQ2-B vô hiệu) → đặt vào `ms-analysis/results/metrics_java_gpt.csv` (cột lý tưởng: `function_id,language,cc,branch_coverage,mutation_score,compiled`; tên cột khác cũng được, script tự map). Sau đó chạy:
+  `python ms-analysis/scripts/analyze_8lib.py --py-cov ms-analysis/results/metrics_project.csv --py-mut ms-analysis/results/metrics_py_mut.csv --java-gpt ms-analysis/results/metrics_java_gpt.csv --baseline ms-analysis/results/metrics_full.csv --out ms-analysis/results` + `python ms-analysis/scripts/make_figures_8lib.py` → ra đủ RQ1/RQ2-A/RQ2-B/RQ3 cả 2 ngôn ngữ + effect size + hình, rồi điền nốt `[JAVA: ...]` trong 04_results.tex.
+
 ### 2026-06-28 22:05–22:08 — Pilot run (LLM generation)
 - Model: `gpt-4o-mini-2024-07-18`, `temperature=0.0`.
 - Sample: **24 functions** — 12 Java (`JA-002 … JA-060`) + 12 Python (`PY-001 … PY-047`).

@@ -1,7 +1,108 @@
-﻿\section{Results}\label{sec:results}
 % NGUOI VIET: MS (Phuc)
-% Nguon so lieu: ms-analysis/results/metrics.csv + summary.csv (khi full run xong).
-% Bang/hinh bat buoc: fig1_distribution.png, fig2_comparison.png (300 DPI),
-% bang per-RQ voi p-value + effect size. Baseline pilot da co:
-% EvoSuite bc median 83.3%/ms 71.4%; Randoop (10s) bc median 0%.
-% TODO(Phuc): dien so full run.
+% Nguon so lieu: ms-analysis/results/{metrics_project.csv, metrics_py_mut.csv, summary_8lib.csv}
+% Hinh: paper/figures/fig1_distribution.png (+ fig2_comparison.png cho RQ2-B khi co Java).
+% NGUYEN TAC TRUNG THUC (da ra soat validity):
+%  - Bao CA HAI lop: "all N=60" (invalid/no-touch = 0) VA "effective" (test that su do SUT).
+%    Con so effective la CO DIEU KIEN -> luon di kem lop all.
+%  - Tach invalid do LLM (import sai) vs do moi truong/dataset (nhay version, platform-only).
+%  - So Python = DA DO THAT. So Java = cho metrics gpt-4o-mini cua nhom -> [JAVA: ...].
+\section{Results}
+\label{sec:results}
+
+We evaluate one-shot \texttt{gpt-4o-mini-2024-07-18} unit tests on 120 functions
+(60 Java from 8 Defects4J subject programs; 60 Python from \texttt{flask}/\texttt{requests})
+at cyclomatic complexity 5--10. Branch coverage uses JaCoCo (Java) / Coverage.py (Python);
+mutation score uses PIT (Java) / mutmut (Python). Tests $\alpha = 0.05$; effect size is
+matched-pairs rank-biserial $r$ (Wilcoxon) and Spearman $\rho$ (RQ3). Following the
+pre-registered scoring rule, non-compiling / non-executing suites score 0\% and are marked
+\textsc{invalid}. We report every metric at two levels: \emph{all} ($N=60$, invalid $=0$)
+and \emph{effective} (valid suites that actually exercise the target); the effective figures
+are conditional and are always reported next to the \emph{all} figures.
+
+\subsection{Test validity (a primary finding)}
+For Python, only \textbf{32/60 (53.3\%)} of generated suites executed $\ge 1$ test;
+\textbf{28/60 (46.7\%)} were \textsc{invalid}. Of the 32 valid suites, only \textbf{23}
+exercised the target function (branch coverage $>0$); 9 ran but did not touch the code
+(mock / self-implementation). Breaking down the 28 invalid suites:
+\begin{itemize}
+  \item \textbf{23 --- \texttt{ImportError}} (LLM-attributable): the test imports a symbol
+        that does not exist in the target module (e.g.\ importing an instance method as a
+        module-level function). A small subset of these are dataset/platform artefacts
+        rather than LLM faults (e.g.\ \texttt{proxy\_bypass\_registry} is Windows-only;
+        \texttt{merge\_environment\_settings} is a method, not module-level).
+  \item \textbf{5 --- \texttt{TypeError}/\texttt{AttributeError}} (environment-sensitive):
+        may vary with the exact \texttt{flask}/\texttt{requests} dependency versions and
+        should be confirmed in the canonical pinned environment.
+\end{itemize}
+\emph{High test invalidity is thus itself a key result}, dominated by LLM import errors.
+[JAVA: dien X/60 valid, breakdown invalid Java.]
+
+\subsection{RQ1 --- Branch coverage vs.\ 80\%}
+Counting all 60 functions, the median branch coverage is \textbf{0\%} (only 23/60 suites
+cover any branch of the target). On the effective subset the median is \textbf{75.0\%}
+($n=23$; 11/23 reach $\ge 80\%$, 6 at 100\%), which still does \emph{not} reach the 80\%
+threshold (one-sample Wilcoxon, $p = 0.67$, $r = -0.10$). [JAVA: median all + effective + p + r.]
+We \emph{fail to reject} $H0$ at both levels: gpt-4o-mini does not reliably meet 80\% coverage
+(Fig.~\ref{fig:dist}).
+
+\subsection{RQ2 --- Mutation score}
+\textbf{(A) vs.\ 60\%.} Over all 60 functions the median mutation score is \textbf{0\%}
+(only 17/60 produced a measurable score). On the measured subset (green, passing tests that
+touch the code) the median is \textbf{36.84\%} ($n=17$; only 4/17 reach $\ge 60\%$), far below
+the threshold (one-sample Wilcoxon, $p = 0.99$, $r = -0.66$). [JAVA: median all + subset + p + r.]
+We \emph{fail to reject} $H0$: generated tests are weak at killing mutants.
+
+\textbf{(B) vs.\ baseline.} [JAVA: paired Wilcoxon GPT vs EvoSuite/Randoop tren cung 60 ham Java
+(git \texttt{metrics\_full.csv}, cung harness Maven+JaCoCo+PIT) -- dien median difference, $p$, $r$.]
+
+\subsection{RQ3 --- Complexity vs.\ quality}
+For Python (effective subset), Spearman $\rho = +0.18$ ($p = 0.41$, $n = 23$): \emph{no}
+significant negative correlation between cyclomatic complexity and branch coverage within
+the CC 5--10 band. [JAVA: rho Java.] We \emph{fail to reject} $H0$.
+
+\begin{table}[t]
+\centering
+\caption{Per-RQ summary (gpt-4o-mini). ``all'' $=60$ functions (invalid $=0$); ``eff.''
+$=$ effective subset. Java pending (same harness as baseline).}
+\label{tab:rq}
+\begin{tabular}{lllrrl}
+\hline
+RQ & Metric & Level & Median & $p$ & Effect \\
+\hline
+RQ1 Py & Coverage$\ge$80 & all (60) & 0\% & -- & -- \\
+       &                 & eff (23) & 75.0\% & 0.67 & $r{=}{-}0.10$ \\
+RQ2A Py & Mutation$\ge$60 & all (60) & 0\% & -- & -- \\
+        &                & eff (17) & 36.84\% & 0.99 & $r{=}{-}0.66$ \\
+RQ3 Py & CC$\sim$Cov & eff (23) & $\rho{=}{+}0.18$ & 0.41 & $+0.18$ \\
+RQ1/2/3 Java & (coverage/mutation/CC) & -- & \_ & \_ & \_ \\
+RQ2B Java & GPT vs baseline & paired & \_ & \_ & \_ \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figures/fig1_distribution.png}
+\caption{Branch coverage and mutation score of gpt-4o-mini on the effective subset
+(dashed: 80\% / 60\% thresholds). The all-function medians are 0\% (see text).}
+\label{fig:dist}
+\end{figure}
+
+\subsection{Summary of findings}
+On the metrics currently available (Python), one-shot gpt-4o-mini unit tests \emph{fail to
+meet} both thresholds \emph{even on the most favourable (effective) subset}, and \emph{fail}
+entirely when all 60 functions are counted (median 0\% at the \emph{all} level). We find
+\emph{no} significant complexity--quality correlation within CC 5--10. A 46.7\% test-invalidity
+rate---dominated by LLM import errors---is a key finding. Java results, measured with the
+same harness as the committed baseline, are to be integrated (Table~\ref{tab:rq}).
+
+\subsection{Threats to validity}
+\textbf{Conditional subset.} Effective-level medians (75\%/37\%) condition on suites that
+compiled and touched the target; they \emph{over-state} raw ability relative to the all-level
+(0\%). We report both. \textbf{Environment.} Python figures were produced in a clean
+editable-install environment; the exact invalid rate is sensitive to \texttt{flask}/
+\texttt{requests} dependency versions and should be reproduced in the canonical pinned
+environment. \textbf{Sample size.} Effective $n$ is small (23 / 17). \textbf{Single sample.}
+One generation per function (one-shot, temp $=0$) gives no per-function variance estimate.
+\textbf{Cross-language tooling.} Coverage.py/mutmut (Python) vs JaCoCo/PIT (Java) differ in
+implementation; comparisons are made within language.
