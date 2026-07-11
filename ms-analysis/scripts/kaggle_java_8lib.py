@@ -187,13 +187,33 @@ def jacoco_branch(xmlf,cls,s,e):
     t=cov+mis
     return round(cov/t*100,2) if t else None
 
-rows=[]; _dbg=[0]; _cerr=[]
+# ---- GHI CSV TUNG DONG (incremental) — chet giua chung van con file; moi dong con in ra log voi prefix [CSV] de xem live/khoi phuc ----
+FIELDS=["function_id","language","cc","branch_coverage","mutation_score","compiled","note"]
+CSVF=os.path.join(OUT,"metrics_java_gpt.csv")
+rows=[]; done=set()
+if os.path.exists(CSVF):   # resume trong cung session: bo qua ham da do roi
+    try:
+        for _r in csv.DictReader(open(CSVF,encoding="utf-8")):
+            if _r.get("function_id"): rows.append(_r); done.add(_r["function_id"])
+    except Exception: rows=[]; done=set()
+_csv=open(CSVF,"a" if done else "w",newline="",encoding="utf-8")
+_w=csv.DictWriter(_csv,fieldnames=FIELDS)
+if not done:
+    _w.writeheader(); _csv.flush(); print("[CSV] "+",".join(FIELDS))
+else:
+    print("Resume: bo qua",len(done),"ham da do trong",CSVF)
+def save_row(row):
+    rows.append(row); _w.writerow({k:row.get(k,"") for k in FIELDS}); _csv.flush(); os.fsync(_csv.fileno())
+    print("[CSV] "+",".join(str(row.get(k,"")) for k in FIELDS))
+
+_dbg=[0]; _cerr=[]
 TC=os.path.join(WORK,"tclasses")
 for fid in sorted(gt):
+    if fid in done: continue
     info=gt[fid]; row={"function_id":fid,"language":"java","cc":info["cc"],"branch_coverage":"","mutation_score":"","compiled":0}
     tf=os.path.join(TESTS,fid+"_Test.java")
     if info["repo"] not in built or not os.path.exists(tf):
-        row["note"]="no-build" if info["repo"] not in built else "no-test"; rows.append(row); print(fid,row["note"]); continue
+        row["note"]="no-build" if info["repo"] not in built else "no-test"; save_row(row); print(fid,row["note"]); continue
     app_cp,classes,srcdir=classpath_for(info)
     if _dbg[0]<5: print("  [DBG]",fid,"classes_dir_exist=",os.path.isdir(classes),"| cp_len=",len(app_cp),"| srcdir_exist=",os.path.isdir(srcdir))
     src=normalize(open(tf,encoding="utf-8").read(),info)
@@ -219,7 +239,7 @@ for fid in sorted(gt):
         open(os.path.join(LOG,fid+"_javac.log"),"w").write(c1.stderr[-2000:])
         errs=[l.strip() for l in c1.stderr.splitlines() if "error:" in l]; _cerr.extend(errs[:2])
         if _dbg[0]<5: print("  [DBG]",fid,"| JAVAC:",(errs[0][:200] if errs else c1.stderr.strip()[-250:])); _dbg[0]+=1
-        row["note"]="compile-error"; rows.append(row); print(fid,"compile-error"); continue
+        row["note"]="compile-error"; save_row(row); print(fid,"compile-error"); continue
     run_cp=os.pathsep.join([classes,TC,J5,app_cp])
     # coverage JaCoCo
     ex=os.path.join(WORK,"jacoco.exec"); [os.remove(ex) for _ in range(1) if os.path.exists(ex)]
@@ -237,10 +257,12 @@ for fid in sorted(gt):
     row["branch_coverage"]= bc if bc is not None else 0.0
     row["mutation_score"]= ms if ms is not None else ""
     row["compiled"]=1; row["note"]="ok"
-    rows.append(row); print(fid,"bc=",bc,"ms=",ms)
+    save_row(row); print(fid,"bc=",bc,"ms=",ms)
 
+_csv.close()
 import pandas as pd
-df=pd.DataFrame(rows); df.to_csv(f"{OUT}/metrics_java_gpt.csv",index=False)
+df=pd.DataFrame(rows)   # CSV da duoc ghi tung dong o tren — KHONG ghi lai o day
+df["compiled"]=pd.to_numeric(df["compiled"],errors="coerce").fillna(0).astype(int)  # resume doc tu CSV ra string
 print("\n== Do duoc:", int((df["compiled"]==1).sum()),"/",len(df)," | build OK repos:",sorted(built))
 from collections import Counter as _C
 if _cerr:
