@@ -61,10 +61,15 @@ def rq2(gpt, base, bname, thr, alpha):
         m = pd.merge(gpt[["function_id", "mutation_score"]],
                      base[["function_id", "mutation_score"]], on="function_id",
                      suffixes=("_gpt", "_base"))
+        n_before = len(m)
+        # loai cap thieu du lieu (vd PIT fail o muc repo cho ca ham hop le) —
+        # 1 NaN duy nhat se lam np.median/wilcoxon tra NaN cho TOAN BO ket qua.
+        m = m.dropna(subset=["mutation_score_gpt", "mutation_score_base"])
         if len(m) == 0:
-            return {"error": "khong co cap chung"}
+            return {"error": "khong co cap chung (sau khi loai NaN)"}
         g = m["mutation_score_gpt"].to_numpy(float); b = m["mutation_score_base"].to_numpy(float)
-        r = {"baseline": bname, "n_pairs": int(len(m)), "median_mut_gpt": float(np.median(g)),
+        r = {"baseline": bname, "n_pairs": int(len(m)),
+             "n_pairs_before_dropna": n_before, "median_mut_gpt": float(np.median(g)),
              "median_mut_base": float(np.median(b)), "threshold": thr,
              "test": "paired Wilcoxon (alt=greater)", "effect_size_rank_biserial": rank_biserial_paired(g, b)}
         if np.all((g - b) == 0):
