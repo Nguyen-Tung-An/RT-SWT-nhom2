@@ -59,7 +59,10 @@ def main() -> int:
     ap.add_argument("--out", default=os.path.join("ms-analysis", "results", "metrics.csv"))
     ap.add_argument("--skip-missing", action="store_true",
                     help="bo qua ham khong co du lieu trong bao cao nay (dung cho repo da module)")
+    ap.add_argument("--exclude", default="", help="func_id phay, da ghi INVALID rieng (vd test khong compile) — "
+                    "khong xu ly lai o day de tranh ghi de compiled=0 thanh compiled=1")
     args = ap.parse_args()
+    exclude_ids = {x.strip() for x in args.exclude.split(",") if x.strip()}
 
     raw = os.path.join(REPO_ROOT, "data", "raw", args.repo)
     jacoco_xml = args.jacoco or os.path.join(raw, "target", "site", "jacoco", "jacoco.xml")
@@ -82,6 +85,8 @@ def main() -> int:
     with open(os.path.join(REPO_ROOT, args.csv), encoding="utf-8-sig") as f:
         for r in csv.DictReader(f):
             if r["language"] != "java" or args.repo not in r["source_repo"]:
+                continue
+            if r["func_id"] in exclude_ids:
                 continue
             fid, s, e = r["func_id"], int(r["start_line"]), int(r["end_line"])
             src_name = os.path.basename(r["file"].replace("\\", "/"))

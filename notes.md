@@ -7,6 +7,68 @@ This file records every technical decision and error during RBL-4, per RBL-0/RBL
 
 ## Technical decisions
 
+### 🎯 2026-07-12 — KẾT QUẢ RQ1/RQ2/RQ3 ĐẦU TIÊN (gpt4o-mini, N=120, α=0.05)
+Hải merge PR sinh test full 120 hàm (60 Java + 60 Python) theo phương án B. Đo xong toàn bộ,
+kết quả trong `ms-analysis/results/rq_evosuite/` (baseline EvoSuite) và `rq_randoop/` (baseline Randoop).
+
+**Tỷ lệ hợp lệ (compiled=1, qua hết green-check) — RẤT THẤP:**
+| | Valid | Tổng | Tỷ lệ |
+|---|---|---|---|
+| Java | 5 | 60 | 8.3% |
+| Python | 4 | 60 | 6.7% |
+| **Tổng** | **9** | **120** | **7.5%** |
+
+**RQ1 — branch coverage ≥ 80%?** median = 0.0% (n=120) → **KHÔNG đạt**, p=1.0 (Wilcoxon một mẫu).
+Vì 111/120 hàm bị forced về 0 (compiled=0 theo proposal §5.1), median tất yếu = 0.
+
+**RQ2 — mutation ≥ 60% và thắng baseline?** median_mut_gpt = 0.0% cả 2 baseline.
+Effect size (rank-biserial): vs EvoSuite = **-0.956**, vs Randoop = **-0.927** (âm rất mạnh —
+baseline thắng áp đảo). p ≈ 0.995–0.9996 → **KHÔNG đạt, KHÔNG thắng baseline** (ngược hướng H1 hoàn toàn).
+
+**RQ3 — CC càng cao, chất lượng càng giảm?** Spearman ρ = 0.043 (coverage), 0.106 (mutation),
+cả hai p > 0.25 → **không có tương quan có ý nghĩa** (dữ liệu quá thưa — chỉ 9 điểm dữ liệu thực
+trong dải CC 5–10 để dò tương quan; 111 điểm còn lại đều = 0 nên không mang thông tin về CC).
+
+**Nguyên nhân chính (đọc từ log lỗi thật, không suy diễn):**
+- LLM hallucinate sai chữ ký API thật: gọi method `private`, sai overload, sai kiểu tham số
+  (Java: `getMatchingLongOptions` private trong `DefaultParser`; nhiều lỗi "ambiguous reference"/
+  "incompatible types").
+- Import sai: nhầm method-của-class thành hàm top-level (`update_template_context` là method
+  của `Flask`, LLM viết `from flask.app import update_template_context` — ImportError), hoặc
+  đoán sai đường dẫn nội bộ (`from flask.json.tag import ...` khi tên thật khác).
+- Giả định sai hành vi thật: mock `Mockito` một `final class` (không mock được), assert sai giá
+  trị kỳ vọng so với hành vi thực tế của flask/requests/commons-* thật.
+- **Kết luận quan trọng nhất:** phương án B (đo trong module/repo thật) khắc nghiệt hơn nhiều so
+  với sandbox — đây chính xác là lý do nhóm chọn B (đo đúng bản chất, không làm đẹp số bằng cách
+  cô lập hàm khỏi ngữ cảnh thật). Baseline (EvoSuite/Randoop) không gặp vấn đề này vì chúng tạo
+  test bằng phân tích bytecode/reflection, không "đoán" API như LLM one-shot.
+
+**Việc còn lại trước khi đưa vào report:**
+1. Đây là **N=1 lần đo với 1 model, 1 lần sinh** — không loại trừ khả năng prompt one-shot có thể
+   cải thiện (ví dụ thêm chữ ký API thật vào input, không chỉ source code thô).
+2. 3 hàm Java (JA-005, JA-035, JA-007) có bc thật nhưng ms rỗng — xem mục "PIT minion crash"
+   bên dưới, **đã điều tra kỹ, chấp nhận là giới hạn đã biết** (không phải lỗi hàm).
+3. Cân nhắc: kết quả cực đoan (RQ1/RQ2 "reject" hoàn toàn theo chiều ngược) là **phát hiện chính
+   đáng của nghiên cứu** (câu trả lời RQ có thể là "KHÔNG, và đây là lý do tại sao") — không phải
+   lỗi cần "sửa cho đẹp". Thảo luận với GV trước khi coi đây là kết quả cuối.
+
+### 2026-07-12 — PIT "Minion exited abnormally" cho commons-math/jfreechart — đã điều tra, chấp nhận giới hạn
+- **Bug thật đã tìm và fix:** `target/classes` VÀ `target/test-classes` của 2 repo này **hoàn toàn
+  rỗng** khi tới bước PIT — vì bước đo trước đó rơi vào nhánh fallback (`test-compile` + goal
+  SUREFIRE trực tiếp, không qua lifecycle `test` đầy đủ) không đảm bảo chạy phase `compile`/
+  `test-compile` cho MAIN source. → Đã thêm `mvn compile` tường minh trước bước đo (commit
+  `3e39370`) — fix chung, áp dụng cho mọi repo, không chỉ 2 cái này.
+- **Lỗi còn lại (chưa gỡ được):** sau khi class đã có đầy đủ, PIT vẫn crash:
+  `SEVERE: Coverage generator Minion exited abnormally due to UNKNOWN_ERROR`. Đã thử:
+  JDK 17 (crash) → JDK 11 + recompile release=11 (vẫn crash, cùng lỗi) → xác nhận không phải do
+  bytecode version hay JDK giống case EvoSuite trước đây. Nguyên nhân sâu hơn (có thể do plugin
+  "Reset environment for javassist" của PIT tương tác với code cụ thể của 2 repo này) — **chưa
+  root-cause được trong thời gian hợp lý**.
+- **Quyết định:** dừng điều tra thêm — chỉ ảnh hưởng **mutation_score của 3/120 hàm** (JA-005,
+  JA-035, JA-007), branch_coverage của cả 3 vẫn hợp lệ và đã có trong `metrics_full.csv`. Không
+  ảnh hưởng kết luận RQ1/RQ2/RQ3 (n_pairs RQ2 vẫn ≥54, effect size không đổi hướng). Ghi nhận là
+  giới hạn đã biết trong Threats, không phải fabricate/bỏ qua âm thầm.
+
 ### ✅ 2026-07-05 — CHỐT PHƯƠNG ÁN B: đo Python trong ngữ cảnh module thật
 - **Quyết định nhóm:** đo coverage/mutation của test Python **trong module flask/requests thật** (cài từ clone pinned commit), thay vì sandbox `solution.py` (phương án A). Căn cứ: `ms-analysis/results/data_v2_check.md` — ~40/60 hàm tham chiếu tên module không thể standalone; phía Java đã đo theo đúng triết lý này và chạy tốt (metrics_full.csv).
 - **Hệ quả cho từng vai:**
