@@ -325,6 +325,25 @@ def evict_invalid_gpt4o_tests(mod_dir, jdk, comp, file_to_func, max_rounds=15):
             invalid.append(fid)
             os.remove(p)
             print(f"  !! {fid}: INVALID (khong compile hoac test fail luc chay) -> loai khoi batch")
+    # XAC THUC LAN CUOI: neu vong lap thoat vi "khong xac dinh duoc file loi"
+    # (rc!=0 nhung khong file nao khop regex loi/surefire), CAC FILE CON LAI co
+    # the chua bao gio thuc su chay (vd bi 1 file khac trong batch lam sap ca
+    # buoc test truoc do, hoac loi Maven khac thuong) — DUNG mac dinh la valid
+    # chi vi "khong bat duoc ly do sai". Yeu cau MOI file con lai phai co bao
+    # cao surefire that, tests>0, 0 fail/error, moi duoc tinh la hop le.
+    for p in list(remaining):
+        cls = os.path.splitext(os.path.basename(p))[0]
+        reports = _surefire_txt(mod_dir, cls)
+        ok = False
+        if reports:
+            txt = open(reports[0], encoding="utf-8", errors="replace").read()
+            m = re.search(r"Tests run:\s*(\d+),\s*Failures:\s*(\d+),\s*Errors:\s*(\d+)", txt)
+            ok = bool(m) and int(m.group(1)) > 0 and int(m.group(2)) == 0 and int(m.group(3)) == 0
+        if not ok:
+            fid = remaining.pop(p)
+            invalid.append(fid)
+            os.remove(p)
+            print(f"  !! {fid}: INVALID (khong co bao cao surefire hop le sau vong lap) -> loai khoi batch")
     return remaining, invalid
 
 
