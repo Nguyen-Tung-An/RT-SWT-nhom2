@@ -1,0 +1,46 @@
+{
+  "config": {
+    "gpt_method": "gpt4o-mini",
+    "baseline": "evosuite",
+    "cov_threshold": 80.0,
+    "mut_threshold": 60.0,
+    "alpha": 0.05,
+    "n_functions": 120
+  },
+  "RQ1_branch_coverage": {
+    "n": 120,
+    "median_branch_cov": 0.0,
+    "threshold": 80.0,
+    "test": "one-sample Wilcoxon (alt=greater)",
+    "statistic": 42.0,
+    "p_value": 1.0,
+    "reject_H0": false
+  },
+  "RQ2_mutation_vs_baseline": {
+    "baseline": "evosuite",
+    "n_pairs": 54,
+    "n_pairs_before_dropna": 60,
+    "median_mut_gpt": 0.0,
+    "median_mut_base": 0.0,
+    "threshold": 60.0,
+    "test": "paired Wilcoxon (alt=greater)",
+    "effect_size_rank_biserial": -0.9558823529411765,
+    "statistic": 3.0,
+    "p_value": 0.9996133709778631,
+    "reject_H0": false
+  },
+  "RQ3_cc_correlation": {
+    "cc_vs_branch_coverage": {
+      "spearman_rho": 0.04260059371633829,
+      "p_value": 0.6440874957473877,
+      "n": 120,
+      "reject_H0": false
+    },
+    "cc_vs_mutation_score": {
+      "spearman_rho": 0.1060776868939591,
+      "p_value": 0.25499468469977316,
+      "n": 117,
+      "reject_H0": false
+    }
+  }
+}
