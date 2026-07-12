@@ -15,6 +15,18 @@ WORK = "/kaggle/working/j8"; REPOS_DIR = os.path.join(WORK, "repos"); JARS = os.
 LOG = os.path.join(OUT, "logs"); os.makedirs(REPOS_DIR, exist_ok=True); os.makedirs(JARS, exist_ok=True); os.makedirs(LOG, exist_ok=True)
 print("INPUT =", INPUT)
 
+# 0a) KIEM TRA DAU VAO NGAY — fail fast: thieu dataset thi biet sau 5 giay, khong doi build 60' xong moi chet
+#     (loi FileNotFoundError 12/07: batch khong thay dataset -> INPUT roi ve /kaggle/input -> chet sau khi build xong)
+GT_CSV = _h[0] if _h else ""
+_t = glob.glob("/kaggle/input/**/generated_tests/gpt4o/java", recursive=True)
+TESTS = _t[0] if _t else ""
+_ntest = len(glob.glob(os.path.join(TESTS, "*.java"))) if TESTS else 0
+print("GT_CSV =", GT_CSV or "KHONG THAY"); print("TESTS =", TESTS or "KHONG THAY", "| so file test java:", _ntest)
+if not GT_CSV or _ntest == 0:
+    print("== /kaggle/input dang co gi (toi da 100 dong) ==")
+    for _p in sorted(glob.glob("/kaggle/input/**", recursive=True))[:100]: print("  ", _p)
+    raise SystemExit("LOI DAU VAO: khong thay full_ground_truth.csv / test java. Kiem tra: (1) panel Input cua notebook co dataset nhom2-8lib chua, (2) trang dataset het chu 'Processing' chua, (3) roi moi Save & Run All lai.")
+
 # 0) JDK 17 + git + Maven. apt cho Maven 3.6.3 (LUON co); nang 3.9 neu tai duoc (apache hay chan urllib -> co fallback apt)
 subprocess.run("apt-get -qq update && apt-get -qq install -y openjdk-17-jdk-headless git maven", shell=True)
 MVN = "mvn"
@@ -96,10 +108,9 @@ for _rp in sorted(built):
     _c=glob.glob(os.path.join(REPOS_DIR,_rp,"**","target","classes"),recursive=True)
     print("  ",_rp,"->",len(_c),"dir; vd:",_c[:2])
 
-# 3) GT + tests
-_t=glob.glob(f"{INPUT}/**/generated_tests/gpt4o/java",recursive=True); TESTS=_t[0] if _t else f"{INPUT}/generated_tests/gpt4o/java"
+# 3) GT + tests (GT_CSV/TESTS da xac minh ton tai o buoc 0a)
 gt={}
-for r in csv.DictReader(open(f"{INPUT}/csv/full_ground_truth.csv")):
+for r in csv.DictReader(open(GT_CSV, encoding="utf-8")):
     if r.get("language")=="java":
         fp=r["file"]  # data-research/raw/<repo>/<module?>/src/main/java/<pkg>/<Class>.java
         m=re.search(r"raw/([^/]+)/(.*)src/main/java/(.+)\.java$", fp)
@@ -108,6 +119,8 @@ for r in csv.DictReader(open(f"{INPUT}/csv/full_ground_truth.csv")):
         cls=os.path.basename(fp).replace(".java","")
         gt[r["func_id"]]={"repo":repo,"module":module,"fqcn":fq,"class":cls,"cc":r["cc"],
                           "start":int(r["start_line"]),"end":int(r["end_line"])}
+print("GT java doc duoc:", len(gt), "ham (ky vong 60)")
+if not gt: raise SystemExit("LOI: GT doc duoc nhung 0 ham java khop dinh dang cot 'file' — gui vai dong dau full_ground_truth.csv cho MS.")
 
 KNOWN={"Arrays","Assertions","Mockito","Object","Objects","String","Integer","Double","Math","Test","Executable","System","Class","List","Map","Set"}
 def normalize(src,info):
