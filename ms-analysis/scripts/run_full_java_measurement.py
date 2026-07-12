@@ -20,6 +20,7 @@ Bay da biet (v2 — sau vong do dau 04/07, xem notes.md):
 """
 import argparse
 import csv
+import glob
 import os
 import re
 import subprocess
@@ -273,34 +274,58 @@ def copy_gpt4o_tests(rows, mod_dir):
     return file_to_func
 
 
-def evict_uncompilable(mod_dir, jdk, comp, file_to_func, max_rounds=15):
-    """Test LLM sinh ra co the goi method private / sai kieu / sai overload
-    (INVALID theo proposal Ã‚Â§5.1) -> COMPILE LOI. Vi javac compile CA MODULE
-    trong 1 lan, 1 file loi se lam MAT test cua het cac ham khac trong cung
-    dot — phai loai tung file loi ra roi bien dich lai, lap toi khi sach hoac
-    het vong. Tra ve list func_id bi loai (se ghi INVALID vao metrics)."""
+def _surefire_txt(mod_dir, cls):
+    return glob.glob(os.path.join(mod_dir, "target", "surefire-reports", f"*{cls}.txt"))
+
+
+def evict_invalid_gpt4o_tests(mod_dir, jdk, comp, file_to_func, max_rounds=15):
+    """Test LLM sinh ra co the (a) goi method private/sai kieu/sai overload ->
+    COMPILE LOI, hoac (b) compile duoc nhung FAIL/ERROR luc chay (vd Mockito
+    khong mock duoc final class, assert sai) -> ca hai deu la 'serious runtime
+    error'/khong compile theo proposal Ã‚Â§5.1 = INVALID, giong het chinh sach
+    green-check nghiem ngat da ap dung cho Python (khong doi xu long leo giua
+    2 ngon ngu — mot phan test fail la ca ham bi loai, khong do coverage/mutation).
+    Chay `mvn test` (khong chi test-compile) moi vong de bat CA HAI loai loi
+    cung luc, loai file tuong ung, lap toi sach hoac het vong.
+    Tra ve (remaining, invalid): remaining = {file: func_id} con hop le,
+    invalid = list func_id bi loai (se ghi INVALID vao metrics)."""
     invalid = []
     remaining = dict(file_to_func)
     for _ in range(max_rounds):
         if not remaining:
             break
-        rc, out = sh(f"mvn -q test-compile {comp} " + " ".join(SKIPS), mod_dir, jdk, timeout=600)
-        if rc == 0:
-            break
-        # Maven in path kieu URI ("/F:/Ky_5/.../File.java") tren Windows -> so
-        # sanh theo BASENAME cho chac (moi file trong batch nay ten duy nhat).
+        rc, out = sh(f"mvn -q test {comp} " + " ".join(SKIPS), mod_dir, jdk, timeout=900)
+        # (a) loi compile — Maven in path kieu URI ("/F:/Ky_5/.../File.java")
+        # tren Windows -> so sanh theo BASENAME (moi file trong batch nay
+        # ten duy nhat).
         bad_basenames = {os.path.basename(b) for b in
                          re.findall(r"\[ERROR\]\s+(\S+\.java):\[\d+,\d+\]", out)}
         bad_here = [p for p in remaining if os.path.basename(p) in bad_basenames]
-        if not bad_here:
-            print("  !! test-compile fail nhung khong parse duoc file loi tu output, dung vong lap")
+        # (b) compile OK nhung fail/error luc chay — doc surefire report .txt
+        for p in list(remaining):
+            if p in bad_here:
+                continue
+            cls = os.path.splitext(os.path.basename(p))[0]
+            reports = _surefire_txt(mod_dir, cls)
+            if not reports:
+                continue  # co the do file KHAC trong batch lam sap build; xu ly vong sau
+            txt = open(reports[0], encoding="utf-8", errors="replace").read()
+            m = re.search(r"Tests run:\s*(\d+),\s*Failures:\s*(\d+),\s*Errors:\s*(\d+)", txt)
+            if m and (int(m.group(1)) == 0 or int(m.group(2)) > 0 or int(m.group(3)) > 0):
+                bad_here.append(p)
+        if rc == 0 and not bad_here:
             break
-        for p in bad_here:
-            fid = remaining.pop(p)
+        if not bad_here:
+            print("  !! mvn test that bai nhung khong xac dinh duoc file loi, dung vong lap")
+            break
+        for p in set(bad_here):
+            fid = remaining.pop(p, None)
+            if fid is None:
+                continue
             invalid.append(fid)
             os.remove(p)
-            print(f"  !! {fid}: test khong compile duoc (INVALID) -> loai khoi batch")
-    return invalid
+            print(f"  !! {fid}: INVALID (khong compile hoac test fail luc chay) -> loai khoi batch")
+    return remaining, invalid
 
 
 def append_invalid_rows(csv_out_path, full_csv_path, method, func_ids):
@@ -427,14 +452,16 @@ def measure(repo, rows, tools, csv_path):
                 pit_tests = ",".join(f"{p}.JA_*" for p in pkgs_here)
                 comp0 = f"-Dmaven.compiler.release={rel} -Dmaven.compiler.source={rel} -Dmaven.compiler.target={rel}"
                 file_to_func = copy_gpt4o_tests(mrows, mod_dir)
-                # test LLM co the goi method private / sai overload (INVALID
-                # theo proposal Ã‚Â§5.1) -> loai file loi truoc khi do, ghi
-                # thang cac ham do vao metrics voi compiled=0.
-                invalid_ids = evict_uncompilable(mod_dir, jdk, comp0, file_to_func)
+                # test LLM co the (a) goi method private/sai overload -> COMPILE
+                # LOI, hoac (b) compile OK nhung FAIL luc chay (Mockito khong
+                # mock duoc final class, assert sai...) -> ca hai deu INVALID
+                # theo proposal Ã‚Â§5.1 (dong bo chinh sach voi green-check ben
+                # Python — khong do coverage/mutation cho ham co test fail).
+                _, invalid_ids = evict_invalid_gpt4o_tests(mod_dir, jdk, comp0, file_to_func)
                 if invalid_ids:
                     append_invalid_rows(os.path.join(REPO_ROOT, "ms-analysis", "results", "metrics_full.csv"),
                                         os.path.join(REPO_ROOT, csv_path), "gpt4o-mini", invalid_ids)
-                    print(f"  -> {len(invalid_ids)} ham INVALID (khong compile duoc): {', '.join(invalid_ids)}")
+                    print(f"  -> {len(invalid_ids)} ham INVALID (khong compile hoac test fail luc chay): {', '.join(invalid_ids)}")
                 n = len(file_to_func) - len(invalid_ids)
             else:
                 n = copy_randoop_tests(mrows, mod_dir)
