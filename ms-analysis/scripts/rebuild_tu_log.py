@@ -5,7 +5,7 @@
 import sys
 inp = sys.argv[1] if len(sys.argv) > 1 else "log.txt"
 out = sys.argv[2] if len(sys.argv) > 2 else "metrics_java_gpt.csv"
-HDR = "function_id,language,cc,branch_coverage,mutation_score,compiled,note"
+HDR = "function_id,language,cc,branch_coverage,mutation_score,compiled,note,tests_passed,tests_failed"
 seen = {}
 for l in open(inp, encoding="utf-8", errors="ignore"):
     l = l.strip()

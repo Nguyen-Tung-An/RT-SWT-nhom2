@@ -186,28 +186,36 @@ def pit_score(rep,cls,s,e):
             if mu.get("status") in ("KILLED","TIMED_OUT") or mu.get("detected")=="true": killed+=1
     return round(killed/tot*100,2) if tot else None
 
-def jacoco_branch(xmlf,cls,s,e):
+def jacoco_branch(xmlf,fqcn,s,e):
+    # FIX 13/07: <line> nam trong <sourcefile>, KHONG nam trong <class> -> ban cu luon tra None (0% gia)
     if not os.path.exists(xmlf): return None
     try: root=ET.parse(xmlf).getroot()
     except Exception: return None
+    pkg=fqcn.rsplit(".",1)[0].replace(".","/") if "." in fqcn else ""
+    srcname=fqcn.rsplit(".",1)[-1]+".java"
     cov=mis=0
-    for c in root.iter("class"):
-        if not (c.get("name","")).split("$")[0].endswith(cls.replace(".","/")): continue
-        for ln in c.iter("line"):
-            nr=int(ln.get("nr","-1"))
-            if s<=nr<=e:
-                cov+=int(ln.get("cb","0")); mis+=int(ln.get("mb","0"))
+    for p in root.iter("package"):
+        if p.get("name","")!=pkg: continue
+        for sf in p.iter("sourcefile"):
+            if sf.get("name","")!=srcname: continue
+            for ln in sf.iter("line"):
+                nr=int(ln.get("nr","-1"))
+                if s<=nr<=e:
+                    cov+=int(ln.get("cb","0")); mis+=int(ln.get("mb","0"))
     t=cov+mis
     return round(cov/t*100,2) if t else None
 
 # ---- GHI CSV TUNG DONG (incremental) — chet giua chung van con file; moi dong con in ra log voi prefix [CSV] de xem live/khoi phuc ----
-FIELDS=["function_id","language","cc","branch_coverage","mutation_score","compiled","note"]
+FIELDS=["function_id","language","cc","branch_coverage","mutation_score","compiled","note","tests_passed","tests_failed"]
 CSVF=os.path.join(OUT,"metrics_java_gpt.csv")
 rows=[]; done=set()
 if os.path.exists(CSVF):   # resume trong cung session: bo qua ham da do roi
     try:
-        for _r in csv.DictReader(open(CSVF,encoding="utf-8")):
-            if _r.get("function_id"): rows.append(_r); done.add(_r["function_id"])
+        _rd=csv.DictReader(open(CSVF,encoding="utf-8"))
+        if _rd.fieldnames==FIELDS:
+            for _r in _rd:
+                if _r.get("function_id"): rows.append(_r); done.add(_r["function_id"])
+        else: print("CSV cu sai schema (ban script cu) -> bo, do lai tu dau")
     except Exception: rows=[]; done=set()
 _csv=open(CSVF,"a" if done else "w",newline="",encoding="utf-8")
 _w=csv.DictWriter(_csv,fieldnames=FIELDS)
@@ -254,17 +262,25 @@ for fid in sorted(gt):
         if _dbg[0]<5: print("  [DBG]",fid,"| JAVAC:",(errs[0][:200] if errs else c1.stderr.strip()[-250:])); _dbg[0]+=1
         row["note"]="compile-error"; save_row(row); print(fid,"compile-error"); continue
     run_cp=os.pathsep.join([classes,TC,J5,app_cp])
-    # coverage JaCoCo
+    # coverage JaCoCo (chinh run nay la lan chay test -> bat output de GREEN-CHECK so test thuc chay)
     ex=os.path.join(WORK,"jacoco.exec"); [os.remove(ex) for _ in range(1) if os.path.exists(ex)]
-    subprocess.run(["java",f"-javaagent:{JACOCO_AGENT}=destfile={ex}","-cp",run_cp,
+    jr=subprocess.run(["java",f"-javaagent:{JACOCO_AGENT}=destfile={ex}","-cp",run_cp,
                     "org.junit.platform.console.ConsoleLauncher","-c",f"{info['fqcn'].rsplit('.',1)[0]}.{tname}","--disable-banner"],capture_output=True,text=True)
+    open(os.path.join(LOG,fid+"_junit.log"),"w").write(jr.stdout[-2500:]+"\n==ERR==\n"+jr.stderr[-1000:])
+    _mp=re.search(r"(\d+)\s+tests successful",jr.stdout); _mf=re.search(r"(\d+)\s+tests failed",jr.stdout)
+    row["tests_passed"]=int(_mp.group(1)) if _mp else 0; row["tests_failed"]=int(_mf.group(1)) if _mf else 0
+    if row["tests_passed"]+row["tests_failed"]==0:   # compile duoc nhung 0 test chay = INVALID (khong lay 0% gia)
+        row["compiled"]=0; row["note"]="no-tests-run"; save_row(row); print(fid,"no-tests-run"); continue
     jx=os.path.join(WORK,"jacoco.xml")
     subprocess.run(["java","-jar",JACOCO_CLI,"report",ex,"--classfiles",classes,"--sourcefiles",srcdir,"--xml",jx],capture_output=True,text=True)
     bc=jacoco_branch(jx,info["fqcn"],info["start"],info["end"])
     rep=os.path.join(WORK,"pit"); shutil.rmtree(rep,ignore_errors=True)
+    # FIX 13/07: --skipFailingTests=true — PIT mac dinh bo chay neu co test fail (test gpt hay fail assert)
+    # -> ms=None hang loat; day cung la fix Loc dung cho baseline (metrics_full) nen harness dong nhat
     pit=subprocess.run(["java","-cp",PIT_CP,"org.pitest.mutationtest.commandline.MutationCoverageReport","--classPath",run_cp,
                         "--targetClasses",info["fqcn"],"--targetTests",f"{info['fqcn'].rsplit('.',1)[0]}.{tname}","--sourceDirs",srcdir,
-                        "--reportDir",rep,"--outputFormats","XML","--timestampedReports","false","--mutators","DEFAULTS"],capture_output=True,text=True,timeout=600)
+                        "--reportDir",rep,"--outputFormats","XML","--timestampedReports","false","--mutators","DEFAULTS",
+                        "--skipFailingTests","true"],capture_output=True,text=True,timeout=600)
     open(os.path.join(LOG,fid+"_pit.log"),"w").write((pit.stdout+"\n==ERR==\n"+pit.stderr)[-3000:])
     ms=pit_score(rep,info["class"],info["start"],info["end"])
     row["branch_coverage"]= bc if bc is not None else 0.0
