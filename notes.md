@@ -46,11 +46,28 @@ trong dải CC 5–10 để dò tương quan; 111 điểm còn lại đều = 0 
 **Việc còn lại trước khi đưa vào report:**
 1. Đây là **N=1 lần đo với 1 model, 1 lần sinh** — không loại trừ khả năng prompt one-shot có thể
    cải thiện (ví dụ thêm chữ ký API thật vào input, không chỉ source code thô).
-2. 3 hàm Java (JA-005, JA-035, JA-007) có bc thật nhưng ms rỗng vì PIT fail ở mức REPO
-   (commons-math, jfreechart) — không phải lỗi của hàm, cần thử lại PIT riêng cho 2 repo này.
+2. 3 hàm Java (JA-005, JA-035, JA-007) có bc thật nhưng ms rỗng — xem mục "PIT minion crash"
+   bên dưới, **đã điều tra kỹ, chấp nhận là giới hạn đã biết** (không phải lỗi hàm).
 3. Cân nhắc: kết quả cực đoan (RQ1/RQ2 "reject" hoàn toàn theo chiều ngược) là **phát hiện chính
    đáng của nghiên cứu** (câu trả lời RQ có thể là "KHÔNG, và đây là lý do tại sao") — không phải
    lỗi cần "sửa cho đẹp". Thảo luận với GV trước khi coi đây là kết quả cuối.
+
+### 2026-07-12 — PIT "Minion exited abnormally" cho commons-math/jfreechart — đã điều tra, chấp nhận giới hạn
+- **Bug thật đã tìm và fix:** `target/classes` VÀ `target/test-classes` của 2 repo này **hoàn toàn
+  rỗng** khi tới bước PIT — vì bước đo trước đó rơi vào nhánh fallback (`test-compile` + goal
+  SUREFIRE trực tiếp, không qua lifecycle `test` đầy đủ) không đảm bảo chạy phase `compile`/
+  `test-compile` cho MAIN source. → Đã thêm `mvn compile` tường minh trước bước đo (commit
+  `3e39370`) — fix chung, áp dụng cho mọi repo, không chỉ 2 cái này.
+- **Lỗi còn lại (chưa gỡ được):** sau khi class đã có đầy đủ, PIT vẫn crash:
+  `SEVERE: Coverage generator Minion exited abnormally due to UNKNOWN_ERROR`. Đã thử:
+  JDK 17 (crash) → JDK 11 + recompile release=11 (vẫn crash, cùng lỗi) → xác nhận không phải do
+  bytecode version hay JDK giống case EvoSuite trước đây. Nguyên nhân sâu hơn (có thể do plugin
+  "Reset environment for javassist" của PIT tương tác với code cụ thể của 2 repo này) — **chưa
+  root-cause được trong thời gian hợp lý**.
+- **Quyết định:** dừng điều tra thêm — chỉ ảnh hưởng **mutation_score của 3/120 hàm** (JA-005,
+  JA-035, JA-007), branch_coverage của cả 3 vẫn hợp lệ và đã có trong `metrics_full.csv`. Không
+  ảnh hưởng kết luận RQ1/RQ2/RQ3 (n_pairs RQ2 vẫn ≥54, effect size không đổi hướng). Ghi nhận là
+  giới hạn đã biết trong Threats, không phải fabricate/bỏ qua âm thầm.
 
 ### ✅ 2026-07-05 — CHỐT PHƯƠNG ÁN B: đo Python trong ngữ cảnh module thật
 - **Quyết định nhóm:** đo coverage/mutation của test Python **trong module flask/requests thật** (cài từ clone pinned commit), thay vì sandbox `solution.py` (phương án A). Căn cứ: `ms-analysis/results/data_v2_check.md` — ~40/60 hàm tham chiếu tên module không thể standalone; phía Java đã đo theo đúng triết lý này và chạy tốt (metrics_full.csv).
