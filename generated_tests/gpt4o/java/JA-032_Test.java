@@ -4,41 +4,56 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class DefaultParserTest {
+
+    private final DefaultParser parser = new DefaultParser();
+
     @Test
-    void testToBooleanObject_ValueIsNull_TrueValueIsNull() {
-        assertEquals(Boolean.TRUE, DefaultParser.toBooleanObject(null, null, 0, 1));
+    void testIsLongOption_NullToken() {
+        assertFalse(parser.isLongOption(null));
     }
 
     @Test
-    void testToBooleanObject_ValueIsNull_FalseValueIsNull() {
-        assertEquals(Boolean.FALSE, DefaultParser.toBooleanObject(null, 0, null, 1));
+    void testIsLongOption_EmptyToken() {
+        assertFalse(parser.isLongOption(""));
     }
 
     @Test
-    void testToBooleanObject_ValueIsNull_NullValueIsNull() {
-        assertNull(DefaultParser.toBooleanObject(null, 0, 1, null));
+    void testIsLongOption_SingleCharacterToken() {
+        assertFalse(parser.isLongOption("-"));
     }
 
     @Test
-    void testToBooleanObject_ValueEqualsTrueValue() {
-        assertEquals(Boolean.TRUE, DefaultParser.toBooleanObject(1, 1, 0, 2));
+    void testIsLongOption_InvalidPrefix() {
+        assertFalse(parser.isLongOption("A"));
     }
 
     @Test
-    void testToBooleanObject_ValueEqualsFalseValue() {
-        assertEquals(Boolean.FALSE, DefaultParser.toBooleanObject(0, 1, 0, 2));
+    void testIsLongOption_ValidLongOption() {
+        assertTrue(parser.isLongOption("--option"));
     }
 
     @Test
-    void testToBooleanObject_ValueEqualsNullValue() {
-        assertNull(DefaultParser.toBooleanObject(2, 1, 0, 2));
+    void testIsLongOption_PartialLongOption() {
+        assertTrue(parser.isLongOption("--op"));
     }
 
     @Test
-    void testToBooleanObject_ValueDoesNotMatchAnySpecifiedValue() {
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            DefaultParser.toBooleanObject(3, 1, 0, 2);
-        });
-        assertEquals("The Integer did not match any specified value", exception.getMessage());
+    void testIsLongOption_LongOptionWithValue() {
+        assertTrue(parser.isLongOption("--option=value"));
+    }
+
+    @Test
+    void testIsLongOption_ShortOptionWithValue() {
+        assertTrue(parser.isLongOption("-o=value"));
+    }
+
+    @Test
+    void testIsLongOption_InvalidLongOption() {
+        assertFalse(parser.isLongOption("--invalidOption"));
+    }
+
+    @Test
+    void testIsLongOption_ShortOption() {
+        assertFalse(parser.isLongOption("-o"));
     }
 }

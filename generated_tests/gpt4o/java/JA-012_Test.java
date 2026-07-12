@@ -1,54 +1,65 @@
 package org.apache.commons.cli;
 
 import org.junit.jupiter.api.Test;
-
-import java.lang.reflect.Array;
-
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+import java.util.Arrays;
+import java.util.Collections;
 
 public class DefaultParserTest {
 
     @Test
-    void testAdd_NullArray_ZeroIndex() {
-        Object result = DefaultParser.add(null, 0, "element", String.class);
-        assertEquals(1, Array.getLength(result));
-        assertEquals("element", Array.get(result, 0));
+    void testHandleLongOptionWithEqual_UnknownToken() throws ParseException {
+        DefaultParser parser = mock(DefaultParser.class);
+        when(parser.getMatchingLongOptions("unknown")).thenReturn(Collections.emptyList());
+        doNothing().when(parser).handleUnknownToken(anyString());
+
+        parser.handleLongOptionWithEqual("unknown=value");
+
+        verify(parser).handleUnknownToken(anyString());
     }
 
     @Test
-    void testAdd_NullArray_NonZeroIndex() {
-        IndexOutOfBoundsException exception = assertThrows(IndexOutOfBoundsException.class, () -> {
-            DefaultParser.add(null, 1, "element", String.class);
+    void testHandleLongOptionWithEqual_AmbiguousOption() throws ParseException {
+        DefaultParser parser = mock(DefaultParser.class);
+        when(parser.getMatchingLongOptions("opt")).thenReturn(Arrays.asList("opt1", "opt2"));
+        when(parser.options.hasLongOption("opt")).thenReturn(false);
+
+        assertThrows(AmbiguousOptionException.class, () -> {
+            parser.handleLongOptionWithEqual("opt=value");
         });
-        assertEquals("Index: 1, Length: 0", exception.getMessage());
     }
 
     @Test
-    void testAdd_ValidArray_ValidIndex() {
-        String[] array = new String[]{"a", "b", "c"};
-        Object result = DefaultParser.add(array, 1, "newElement", String.class);
-        assertEquals(4, Array.getLength(result));
-        assertEquals("a", Array.get(result, 0));
-        assertEquals("newElement", Array.get(result, 1));
-        assertEquals("b", Array.get(result, 2));
-        assertEquals("c", Array.get(result, 3));
+    void testHandleLongOptionWithEqual_AcceptsArg() throws ParseException {
+        DefaultParser parser = mock(DefaultParser.class);
+        Option option = mock(Option.class);
+        when(option.acceptsArg()).thenReturn(true);
+        when(parser.getMatchingLongOptions("opt")).thenReturn(Collections.singletonList("opt"));
+        when(parser.options.hasLongOption("opt")).thenReturn(true);
+        when(parser.options.getOption("opt")).thenReturn(option);
+        doNothing().when(parser).handleOption(option);
+        doNothing().when(parser).currentOption.processValue(anyString());
+
+        parser.handleLongOptionWithEqual("opt=value");
+
+        verify(parser).handleOption(option);
+        verify(parser.currentOption).processValue("value");
     }
 
     @Test
-    void testAdd_ValidArray_IndexOutOfBounds() {
-        String[] array = new String[]{"a", "b", "c"};
-        IndexOutOfBoundsException exception = assertThrows(IndexOutOfBoundsException.class, () -> {
-            DefaultParser.add(array, 4, "element", String.class);
-        });
-        assertEquals("Index: 4, Length: 3", exception.getMessage());
-    }
+    void testHandleLongOptionWithEqual_DoesNotAcceptArg() throws ParseException {
+        DefaultParser parser = mock(DefaultParser.class);
+        Option option = mock(Option.class);
+        when(option.acceptsArg()).thenReturn(false);
+        when(parser.getMatchingLongOptions("opt")).thenReturn(Collections.singletonList("opt"));
+        when(parser.options.hasLongOption("opt")).thenReturn(true);
+        when(parser.options.getOption("opt")).thenReturn(option);
+        doNothing().when(parser).handleUnknownToken(anyString());
 
-    @Test
-    void testAdd_ValidArray_NegativeIndex() {
-        String[] array = new String[]{"a", "b", "c"};
-        IndexOutOfBoundsException exception = assertThrows(IndexOutOfBoundsException.class, () -> {
-            DefaultParser.add(array, -1, "element", String.class);
-        });
-        assertEquals("Index: -1, Length: 3", exception.getMessage());
+        parser.handleLongOptionWithEqual("opt=value");
+
+        verify(parser).handleUnknownToken(anyString());
     }
 }
