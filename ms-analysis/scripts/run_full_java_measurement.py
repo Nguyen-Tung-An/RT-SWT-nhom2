@@ -489,6 +489,13 @@ def measure(repo, rows, tools, csv_path):
                 print(f"-- {uniq} [{method}]: khong co test hop le, bo qua")
                 continue
             comp = f"-Dmaven.compiler.release={rel} -Dmaven.compiler.source={rel} -Dmaven.compiler.target={rel}"
+            # DAM BAO main source da compile DUNG bytecode version cho `jdk` nay.
+            # Bug tung gap: khi buoc do sau day roi vao fallback (test-compile +
+            # SUREFIRE goal truc tiep, khong qua lifecycle `test` day du), phase
+            # `compile` cho MAIN source đôi khi khong chay -> target/classes RONG
+            # -> PIT bao "Created 0 mutation test units" / "No mutations found"
+            # (commons-math, jfreechart). `mvn compile` rieng, tuong minh, luon an toan.
+            sh(f"mvn -q compile {comp} " + " ".join(SKIPS), mod_dir, jdk, timeout=600)
             print(f">> {uniq} [{method}] test+jacoco ({n} file test)...")
             jxml = os.path.join(mod_dir, "target", "site", "jacoco", "jacoco.xml")
             pxml_path = os.path.join(mod_dir, "target", "pit-reports", "mutations.xml")
