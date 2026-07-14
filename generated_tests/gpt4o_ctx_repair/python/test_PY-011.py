@@ -1,0 +1,34 @@
+import pytest
+from flask import Flask
+from werkzeug.exceptions import InternalServerError
+
+@pytest.fixture
+def app():
+    app = Flask(__name__)
+    app.config["PROPAGATE_EXCEPTIONS"] = False
+    return app
+
+def test_handle_exception_logs_error(app):
+    with pytest.raises(InternalServerError):
+        app.handle_exception(app.app_context(), Exception("Test Exception"))
+
+def test_handle_exception_propagates_error(app):
+    app.config["PROPAGATE_EXCEPTIONS"] = True
+    with pytest.raises(Exception) as exc_info:
+        app.handle_exception(app.app_context(), Exception("Test Exception"))
+    assert str(exc_info.value) == "Test Exception"
+
+def test_handle_exception_with_custom_handler(app):
+    @app.errorhandler(InternalServerError)
+    def custom_error_handler(e):
+        return "Custom Error", 500
+
+    with app.app_context():
+        response = app.handle_exception(app.app_context(), Exception("Test Exception"))
+        assert response[0] == "Custom Error"
+        assert response[1] == 500
+
+def test_handle_exception_without_handler(app):
+    app.config["PROPAGATE_EXCEPTIONS"] = False
+    with pytest.raises(InternalServerError):
+        app.handle_exception(app.app_context(), Exception("Test Exception"))
