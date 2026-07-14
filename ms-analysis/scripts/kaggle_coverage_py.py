@@ -8,6 +8,7 @@
 # DUNG: click cell -> Ctrl+A -> Delete -> DAN TOAN BO file nay -> Run All. (Add Input = nhom2-data; Internet ON)
 # =====================================================================
 import os, sys, glob, re, csv, json, subprocess, shutil, importlib, tempfile
+import importlib.util  # [FIX-D] 'import importlib' KHONG tu nap importlib.util -> _resolvable() AttributeError -> strip nham MOI import hop le (false-invalid hang loat neu chay o moi truong chua nap san util). Nap tuong minh de tai lap on dinh.
 
 # ----- INPUT tu dong tim -----
 _h = glob.glob("/kaggle/input/**/full_ground_truth.csv", recursive=True)

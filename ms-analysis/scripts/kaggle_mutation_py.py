@@ -13,6 +13,7 @@
 #  - Test không chạm hàm thật (mock/self-impl) -> mutmut ra ~0 (mọi mutant sống) — đây là FINDING thật, không phải lỗi.
 # =====================================================================
 import os, sys, glob, re, csv, subprocess, shutil, importlib, tempfile, shlex
+import importlib.util  # [FIX-D] xem kaggle_coverage_py: nap tuong minh, tranh _resolvable() strip nham import hop le
 
 _h = glob.glob("/kaggle/input/**/full_ground_truth.csv", recursive=True)
 INPUT = os.path.dirname(os.path.dirname(_h[0])) if _h else "/kaggle/input"
