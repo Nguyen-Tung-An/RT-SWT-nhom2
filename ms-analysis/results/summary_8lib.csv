@@ -1,0 +1,13 @@
+rq,n,median,stat,p,effect_rb,decision
+RQ1_cov>=80_python,23,75.0,124.0,0.6653360078163204,-0.101,fail to reject H0
+RQ1_cov>=80_all,23,75.0,124.0,0.6653360078163204,-0.101,fail to reject H0
+RQ2A_mut>=60_python,17,36.84,26.0,0.9915966474234075,-0.66,fail to reject H0
+RQ2A_mut>=60_all,17,36.84,26.0,0.9915966474234075,-0.66,fail to reject H0
+RQ2B_gpt_vs_evosuite,0,,,,,thieu cap ghep
+RQ2B_gpt_vs_randoop,0,,,,,thieu cap ghep
+RQ3_cc~cov_python,23,,0.181,0.407803507678592,0.181,fail to reject H0
+RQ3_cc~cov_all,23,,0.181,0.407803507678592,0.181,fail to reject H0
+RQ1_ALL_cov_python,60,0.0,,,,mo ta lop all (invalid=0)
+RQ2A_ALL_mut_python,60,0.0,,,,mo ta lop all (thieu=0)
+RQ1_ALL_cov_all,60,0.0,,,,mo ta lop all (invalid=0)
+RQ2A_ALL_mut_all,60,0.0,,,,mo ta lop all (thieu=0)
