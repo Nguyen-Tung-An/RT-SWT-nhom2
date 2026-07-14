@@ -221,6 +221,8 @@ __marimo__/
 *.jar
 data/raw/
 pynguin-report/
+.venv-pynguin310/
+ms-analysis/results/_pynguin_work/
 
 # Môn học yêu cầu (RBL-0_Overview)
 # API keys & secrets - TUYỆT ĐỐI không commit

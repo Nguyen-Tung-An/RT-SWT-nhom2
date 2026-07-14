@@ -1,13 +1,19 @@
 rq,n,median,stat,p,effect_rb,decision
 RQ1_cov>=80_python,23,75.0,124.0,0.6653360078163204,-0.101,fail to reject H0
-RQ1_cov>=80_all,23,75.0,124.0,0.6653360078163204,-0.101,fail to reject H0
+RQ1_cov>=80_java,5,50.0,3.0,0.90625,-0.6,fail to reject H0
+RQ1_cov>=80_all,28,75.0,159.0,0.842459095238966,-0.217,fail to reject H0
 RQ2A_mut>=60_python,17,36.84,26.0,0.9915966474234075,-0.66,fail to reject H0
-RQ2A_mut>=60_all,17,36.84,26.0,0.9915966474234075,-0.66,fail to reject H0
-RQ2B_gpt_vs_evosuite,0,,,,,thieu cap ghep
-RQ2B_gpt_vs_randoop,0,,,,,thieu cap ghep
+RQ2A_mut>=60_java,54,0.0,1.0,0.9999999999998269,-0.999,fail to reject H0
+RQ2A_mut>=60_all,71,0.0,38.0,0.9999999999999778,-0.97,fail to reject H0
+RQ2B_gpt_vs_evosuite,54,0.0,0.0,0.0004358423668112835,-1.0,khac biet co y nghia
+RQ2B_gpt_vs_pynguin,13,36.84,5.0,0.009765625,0.848,khac biet co y nghia
+RQ2B_gpt_vs_randoop,54,0.0,0.0,0.0033456181158508813,-1.0,khac biet co y nghia
 RQ3_cc~cov_python,23,,0.181,0.407803507678592,0.181,fail to reject H0
-RQ3_cc~cov_all,23,,0.181,0.407803507678592,0.181,fail to reject H0
+RQ3_cc~cov_java,5,,0.132,0.8329531569240444,0.132,fail to reject H0
+RQ3_cc~cov_all,28,,0.164,0.4033958799087598,0.164,fail to reject H0
 RQ1_ALL_cov_python,60,0.0,,,,mo ta lop all (invalid=0)
 RQ2A_ALL_mut_python,60,0.0,,,,mo ta lop all (thieu=0)
-RQ1_ALL_cov_all,60,0.0,,,,mo ta lop all (invalid=0)
-RQ2A_ALL_mut_all,60,0.0,,,,mo ta lop all (thieu=0)
+RQ1_ALL_cov_java,60,0.0,,,,mo ta lop all (invalid=0)
+RQ2A_ALL_mut_java,60,0.0,,,,mo ta lop all (thieu=0)
+RQ1_ALL_cov_all,120,0.0,,,,mo ta lop all (invalid=0)
+RQ2A_ALL_mut_all,120,0.0,,,,mo ta lop all (thieu=0)

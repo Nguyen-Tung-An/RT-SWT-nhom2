@@ -59,9 +59,18 @@ def q(tag):
 def sh(cmd, cwd, java_home, timeout=2400):
     env = os.environ.copy()
     env["JAVA_HOME"] = java_home
-    r = subprocess.run(cmd, cwd=cwd, shell=True, capture_output=True, text=True,
-                       encoding="utf-8", errors="replace", timeout=timeout, env=env)
-    return r.returncode, (r.stdout or "") + (r.stderr or "")
+    try:
+        r = subprocess.run(cmd, cwd=cwd, shell=True, capture_output=True, text=True,
+                           encoding="utf-8", errors="replace", timeout=timeout, env=env)
+        return r.returncode, (r.stdout or "") + (r.stderr or "")
+    except subprocess.TimeoutExpired as e:
+        # 1 lenh treo (vd PIT tren class khong lo cua jfreechart) khong duoc lam
+        # sap CA SCRIPT — coi nhu rc loi, cac nhanh goi sh() da tu xu ly rc!=0/
+        # thieu file output roi (fallback JaCoCo thu cong, "PIT khong ra bao cao"...).
+        out = ((e.stdout or "") if isinstance(e.stdout, str) else (e.stdout or b"").decode("utf-8", "replace")) + \
+              ((e.stderr or "") if isinstance(e.stderr, str) else (e.stderr or b"").decode("utf-8", "replace"))
+        print(f"!! TIMEOUT ({timeout}s): {cmd[:120]}...")
+        return -1, out + f"\n[TIMEOUT sau {timeout}s]"
 
 
 def read_gav(pom_path):
@@ -130,6 +139,11 @@ def patch_pom(pom_path, extra_deps=(), remove_test_deps=()):
     add("junit", "junit", "4.13.2", force_version=True)
     add("org.junit.vintage", "junit-vintage-engine", vintage_version(txt))
     add("org.evosuite", "evosuite-standalone-runtime", "1.2.0")
+    # can cho test GPT-4o-mini (JUnit5 Jupiter + hay mock Mockito) — them vo dieu kien,
+    # khong dung thi Maven bo qua, khong anh huong evosuite/randoop.
+    add("org.junit.jupiter", "junit-jupiter-api", "5.10.2")
+    add("org.junit.jupiter", "junit-jupiter-engine", "5.10.2")
+    add("org.mockito", "mockito-core", "5.11.0")
     for g, a, v in extra_deps:
         add(g, a, v)
     tree.write(pom_path, encoding="utf-8", xml_declaration=True)
@@ -206,13 +220,39 @@ def copy_randoop_tests(rows, mod_dir):
     return n
 
 
+def copy_gpt4o_tests(rows, mod_dir, test_source="gpt4o"):
+    """Test GPT one-shot: 1 file rieng/ham, ten class hay TRUNG nhau giua cac ham
+    cung target class (vd 6 ham cua AccurateMath deu duoc GPT dat ten
+    'AccurateMathTest') -> phai doi ten class + file duy nhat theo func_id,
+    khong thi ghi de mat nhau. KHONG sua noi dung test (giu dung one-shot output).
+    test_source="gpt4o_ctx" -> doc tu generated_tests/gpt4o_ctx/ (RQ4 exploratory,
+    xem run_experiment_rq4_context.py) thay vi generated_tests/gpt4o/ (N=120 goc)."""
+    n = 0
+    for r in rows:
+        src_path = os.path.join(GEN, test_source, "java", r["func_id"] + "_Test.java")
+        if not os.path.exists(src_path):
+            continue
+        code = open(src_path, encoding="utf-8", errors="replace").read().lstrip("﻿")
+        pm = re.search(r"^\s*package\s+([\w.]+)\s*;", code, re.MULTILINE)
+        pkg = pm.group(1) if pm else ""
+        cm = re.search(r"\bclass\s+(\w+)", code)
+        orig_cls = cm.group(1) if cm else r["func_id"].replace("-", "_") + "_Test"
+        uniq_cls = f"{orig_cls}_{r['func_id'].replace('-', '_')}"
+        code = re.sub(rf"\bclass\s+{re.escape(orig_cls)}\b", f"class {uniq_cls}", code, count=1)
+        d = os.path.join(mod_dir, "src", "test", "java", *pkg.split("."))
+        os.makedirs(d, exist_ok=True)
+        open(os.path.join(d, uniq_cls + ".java"), "w", encoding="utf-8", newline="\n").write(code)
+        n += 1
+    return n
+
+
 def clean_our_tests(mod_dir):
     t = os.path.join(mod_dir, "src", "test", "java")
     if not os.path.isdir(t):
         return
     for root, _, files in os.walk(t):
         for f in files:
-            if "_ESTest" in f or re.match(r"JA_\d+_Regression", f):
+            if "_ESTest" in f or re.match(r"JA_\d+_Regression", f) or "_JA_" in f:
                 os.remove(os.path.join(root, f))
 
 
@@ -221,11 +261,88 @@ def rm(path):
         os.remove(path)
 
 
-def run_parser(repo, method, jacoco_xml, pit_xml, csv_path):
+def ensure_invalid_row(out_csv, method, func_id, cc):
+    """measure_java_from_reports.py CHI ghi dong khi co du lieu coverage that (va luon
+    dat compiled=1) — ham compile loi / 0 test chay se KHONG co dong nao ca, khac voi
+    quy tac INVALID=0% da dang ky (proposal Sec5.1). Goi ham nay SAU moi lan do de dam
+    bao du 60/60 ham deu co 1 dong — thieu thi tu ghi INVALID (compiled=0)."""
+    fields = ["function_id", "language", "cc", "method", "branch_coverage", "mutation_score", "compiled"]
+    rows = []
+    if os.path.exists(out_csv):
+        with open(out_csv, encoding="utf-8-sig") as f:
+            rows = list(csv.DictReader(f))
+    if any(r["method"] == method and r["function_id"] == func_id for r in rows):
+        return
+    rows.append({"function_id": func_id, "language": "java", "cc": cc, "method": method,
+                  "branch_coverage": 0, "mutation_score": 0, "compiled": 0})
+    with open(out_csv, "w", encoding="utf-8", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=fields)
+        w.writeheader()
+        for r in rows:
+            w.writerow({k: r.get(k, "") for k in fields})
+
+
+def build_and_measure(mod_dir, jdk, rel, tpat, pit_tests, target_classes, repo, method, csv_path, n, uniq,
+                       exclude_ids=None, out_csv=None):
+    """1 lan test+jacoco -> PIT -> parse. Dung chung cho batch (evosuite/randoop)
+    va single-function (gpt4o-mini, xem loi ben duoi ve ly do tach rieng)."""
+    comp = f"-Dmaven.compiler.release={rel} -Dmaven.compiler.source={rel} -Dmaven.compiler.target={rel}"
+    jxml = os.path.join(mod_dir, "target", "site", "jacoco", "jacoco.xml")
+    pxml = os.path.join(mod_dir, "target", "pit-reports", "mutations.xml")
+    # xoa bao cao cu (vd file jacoco.xml 0-byte con lai tu ham truoc trong CUNG module)
+    # truoc khi do — os.path.exists() coi file rong la "co roi" nen se bo qua het
+    # cac fallback ben duoi va dung nham bao cao HAM KHAC / bao cao hong.
+    rm(jxml)
+    rm(pxml)
+
+    def valid(p):
+        return os.path.exists(p) and os.path.getsize(p) > 0
+
+    print(f">> {uniq} [{method}] test+jacoco ({n} file test)...")
+    rc, out = sh(f'mvn -q test jacoco:report -Dtest="{tpat}" {comp} ' + " ".join(SKIPS), mod_dir, jdk)
+    if not valid(jxml):
+        rm(os.path.join(mod_dir, "target", "jacoco.exec"))
+        rc, out = sh(f'mvn -q {JACOCO}:prepare-agent test-compile {SUREFIRE} {JACOCO}:report '
+                     f'-Dtest="{tpat}" {comp} ' + " ".join(SKIPS), mod_dir, jdk)
+    if not valid(jxml):
+        rm(os.path.join(mod_dir, "target", "jacoco.exec"))
+        agent = os.path.join(os.path.expanduser("~"), ".m2", "repository", "org", "jacoco",
+                             "org.jacoco.agent", "0.8.12",
+                             "org.jacoco.agent-0.8.12-runtime.jar").replace("\\", "/")
+        exec_f = os.path.join(mod_dir, "target", "jacoco.exec").replace("\\", "/")
+        env_extra = os.environ.get("MAVEN_OPTS", "")
+        os.environ["MAVEN_OPTS"] = f"-javaagent:{agent}=destfile={exec_f} {env_extra}".strip()
+        try:
+            rc, out = sh(f'mvn -q test-compile {SUREFIRE} -DforkCount=0 '
+                         f'-Dtest="{tpat}" {comp} ' + " ".join(SKIPS), mod_dir, jdk)
+            sh(f"mvn -q {JACOCO}:report", mod_dir, jdk)
+        finally:
+            if env_extra:
+                os.environ["MAVEN_OPTS"] = env_extra
+            else:
+                os.environ.pop("MAVEN_OPTS", None)
+    if not valid(jxml):
+        print(f"!! {uniq} [{method}]: jacoco.xml KHONG sinh (rc={rc}). Loi cuoi:")
+        print("\n".join(out.splitlines()[-25:]))
+        return
+    print(f">> {uniq} [{method}] PIT...")
+    rc2, out2 = sh(f'mvn -q {PIT} -DtargetClasses="{target_classes}" -DtargetTests="{pit_tests}" '
+                   f'-DoutputFormats=XML -DtimestampedReports=false -DskipFailingTests=true {comp} '
+                   + " ".join(SKIPS), mod_dir, jdk, timeout=3600)
+    if not valid(pxml):
+        print(f"!! {uniq} [{method}]: PIT khong ra bao cao (rc={rc2}) -> chi co coverage")
+        print("\n".join(out2.splitlines()[-15:]))
+        pxml = None
+    run_parser(repo, method, jxml, pxml, csv_path, exclude_ids, out_csv)
+
+
+def run_parser(repo, method, jacoco_xml, pit_xml, csv_path, exclude_ids=None, out_csv=None):
     cmd = [sys.executable, os.path.join(REPO_ROOT, "ms-analysis", "scripts", "measure_java_from_reports.py"),
            "--csv", csv_path, "--repo", repo, "--method", method,
            "--jacoco", jacoco_xml, "--skip-missing",
-           "--out", os.path.join("ms-analysis", "results", "metrics_full.csv")]
+           "--out", out_csv or os.path.join("ms-analysis", "results", "metrics_full.csv")]
+    if exclude_ids:
+        cmd += ["--exclude", ",".join(sorted(exclude_ids))]
     if pit_xml and os.path.exists(pit_xml):
         cmd += ["--pit", pit_xml]
     r = subprocess.run(cmd, cwd=REPO_ROOT, capture_output=True, text=True,
@@ -281,14 +398,59 @@ def measure(repo, rows, tools, csv_path):
         uniq = f"{repo}/{mod or '.'}"
 
         for method in tools:
-            clean_our_tests(mod_dir)
-            rm(os.path.join(mod_dir, "target", "jacoco.exec"))
-            # xoa bytecode test cu — pass truoc compile bang JDK khac (17 vs 11)
-            # de lai class ma surefire quet phai la chet im lang (rc=0, 0 test)
-            tc = os.path.join(mod_dir, "target", "test-classes")
-            if os.path.isdir(tc):
-                import shutil
-                shutil.rmtree(tc, ignore_errors=True)
+            def reset_test_state():
+                clean_our_tests(mod_dir)
+                rm(os.path.join(mod_dir, "target", "jacoco.exec"))
+                # xoa bytecode test cu — pass truoc compile bang JDK khac (17 vs 11)
+                # de lai class ma surefire quet phai la chet im lang (rc=0, 0 test)
+                tc = os.path.join(mod_dir, "target", "test-classes")
+                if os.path.isdir(tc):
+                    import shutil
+                    shutil.rmtree(tc, ignore_errors=True)
+
+            GPT_METHODS = {
+                # method -> (thu muc test nguon trong generated_tests/, file CSV ket qua)
+                # "gpt4o-mini"       = N=120 chinh thuc, DA DANG KY (khong duoc dung).
+                # "gpt4o-mini-ctx"   = RQ4 exploratory: co API context that.
+                # "gpt4o-mini-ctx-repair" = RQ5 exploratory: RQ4 + 1 vong feedback/repair.
+                # Ca RQ4/RQ5 ghi CSV RIENG, khong bao gio cham metrics_full.csv cua N=120.
+                "gpt4o-mini": ("gpt4o", "metrics_full.csv"),
+                "gpt4o-mini-ctx": ("gpt4o_ctx", "metrics_rq4.csv"),
+                "gpt4o-mini-ctx-repair": ("gpt4o_ctx_repair", "metrics_rq5.csv"),
+            }
+            if method in GPT_METHODS:
+                # QUAN TRONG: khac evosuite/randoop (test tool sinh, hau nhu luon compile
+                # duoc ca batch) — GPT one-shot ty le loi compile rat cao (~xem notes.md).
+                # Neu gop ca batch vao 1 lan `mvn test-compile`, 1 file loi se lam SAP
+                # CA MODULE (javac compile tat ca test source cung luc), khien nhung ham
+                # co test hop le trong CUNG module bi tinh oan la INVALID. -> do TUNG HAM
+                # rieng (1 file test/lan), cach ly loi compile dung pham vi cua no.
+                test_source, out_csv_name = GPT_METHODS[method]
+                out_csv = os.path.join(REPO_ROOT, "ms-analysis", "results", out_csv_name)
+                all_repo_ids = {rr["func_id"] for rr in rows}
+                for r in mrows:
+                    reset_test_state()
+                    n = copy_gpt4o_tests([r], mod_dir, test_source=test_source)
+                    if n == 0:
+                        print(f"-- {uniq} [{method}] {r['func_id']}: khong co file test, bo qua")
+                        ensure_invalid_row(out_csv, method, r["func_id"], r["cc"])
+                        continue
+                    tgt_cls = ".".join(pkg_class(r))
+                    # exclude MOI ham khac trong repo: chi 1 test dang chay -> JaCoCo van
+                    # liet ke (mb=toan bo,cb=0) cho cac ham khac cung file (class da load
+                    # nhung dong cua ho khong chay) — neu khong loai se GHI DE ket qua DUNG
+                    # cua ham do (da do o lan rieng cua no) bang so 0% gia tu lan nay.
+                    exclude = all_repo_ids - {r["func_id"]}
+                    build_and_measure(mod_dir, JDK17, "17", "*_JA_*", "*_JA_*", tgt_cls,
+                                      repo, method, csv_path, n, f"{uniq}/{r['func_id']}",
+                                      exclude_ids=exclude, out_csv=out_csv)
+                    # build_and_measure khong tra ve trang thai + measure_java_from_reports.py
+                    # khong bao gio ghi compiled=0 -> tu kiem tra, thieu dong thi ghi INVALID
+                    # (dung quy tac da dang ky Sec5.1: compile loi/khong co coverage that = 0%).
+                    ensure_invalid_row(out_csv, method, r["func_id"], r["cc"])
+                continue
+
+            reset_test_state()
             if method == "evosuite":
                 n = copy_evosuite_tests(mrows, mod_dir)
                 jdk, rel, tpat, pit_tests = JDK11, "11", "*ESTest", "*ESTest"
@@ -298,52 +460,8 @@ def measure(repo, rows, tools, csv_path):
             if n == 0:
                 print(f"-- {uniq} [{method}]: khong co test, bo qua")
                 continue
-            comp = f"-Dmaven.compiler.release={rel} -Dmaven.compiler.source={rel} -Dmaven.compiler.target={rel}"
-            print(f">> {uniq} [{method}] test+jacoco ({n} file test)...")
-            rc, out = sh(f'mvn -q test jacoco:report -Dtest="{tpat}" {comp} ' + " ".join(SKIPS),
-                         mod_dir, jdk)
-            jxml = os.path.join(mod_dir, "target", "site", "jacoco", "jacoco.xml")
-            if not os.path.exists(jxml):
-                # fallback 1: prepare-agent + test-compile + SUREFIRE GOAL TRUC TIEP
-                # (khong dung lifecycle `test` de ne surefire co pin trong pom) + report
-                rm(os.path.join(mod_dir, "target", "jacoco.exec"))
-                rc, out = sh(f'mvn -q {JACOCO}:prepare-agent test-compile {SUREFIRE} {JACOCO}:report '
-                             f'-Dtest="{tpat}" {comp} ' + " ".join(SKIPS), mod_dir, jdk)
-            if not os.path.exists(jxml):
-                # fallback 2 (bat kha chien bai): chay test TRONG JVM cua maven
-                # (-DforkCount=0 -> argLine trong pom bi bo qua), agent gan vao maven
-                # qua MAVEN_OPTS nen khong config nao de duoc.
-                rm(os.path.join(mod_dir, "target", "jacoco.exec"))
-                agent = os.path.join(os.path.expanduser("~"), ".m2", "repository", "org", "jacoco",
-                                     "org.jacoco.agent", "0.8.12",
-                                     "org.jacoco.agent-0.8.12-runtime.jar").replace("\\", "/")
-                exec_f = os.path.join(mod_dir, "target", "jacoco.exec").replace("\\", "/")
-                env_extra = os.environ.get("MAVEN_OPTS", "")
-                os.environ["MAVEN_OPTS"] = f"-javaagent:{agent}=destfile={exec_f} {env_extra}".strip()
-                try:
-                    rc, out = sh(f'mvn -q test-compile {SUREFIRE} -DforkCount=0 '
-                                 f'-Dtest="{tpat}" {comp} ' + " ".join(SKIPS), mod_dir, jdk)
-                    sh(f"mvn -q {JACOCO}:report", mod_dir, jdk)
-                finally:
-                    if env_extra:
-                        os.environ["MAVEN_OPTS"] = env_extra
-                    else:
-                        os.environ.pop("MAVEN_OPTS", None)
-            if not os.path.exists(jxml):
-                print(f"!! {uniq} [{method}]: jacoco.xml KHONG sinh (rc={rc}). Loi cuoi:")
-                print("\n".join([l for l in out.splitlines() if "ERROR" in l][:5]))
-                continue
-            print(f">> {uniq} [{method}] PIT...")
-            # skipFailingTests: suite co test flaky fail thi PIT mac dinh ABORT
-            # ("tests did not pass without mutation") -> bo test do thay vi bo ca repo
-            rc2, out2 = sh(f'mvn -q {PIT} -DtargetClasses="{target_classes}" -DtargetTests="{pit_tests}" '
-                           f'-DoutputFormats=XML -DtimestampedReports=false -DskipFailingTests=true {comp} '
-                           + " ".join(SKIPS), mod_dir, jdk, timeout=3600)
-            pxml = os.path.join(mod_dir, "target", "pit-reports", "mutations.xml")
-            if not os.path.exists(pxml):
-                print(f"!! {uniq} [{method}]: PIT khong ra bao cao (rc={rc2}) -> chi co coverage")
-                pxml = None
-            run_parser(repo, method, jxml, pxml, csv_path)
+            build_and_measure(mod_dir, jdk, rel, tpat, pit_tests, target_classes,
+                              repo, method, csv_path, n, uniq)
 
 
 def main():
@@ -366,7 +484,10 @@ def main():
             print(f"!! khong co ham nao thuoc {repo}")
             continue
         print(f"\n================ {repo} ({len(by_repo[repo])} ham) ================")
-        measure(repo, by_repo[repo], tools, args.csv)
+        try:
+            measure(repo, by_repo[repo], tools, args.csv)
+        except Exception as e:  # noqa: BLE001 — 1 repo loi khong duoc lam mat du lieu cac repo khac
+            print(f"!! {repo}: loi khong xu ly duoc, bo qua phan con lai cua repo nay: {e!r}")
 
     print("\nXONG. Ket qua: ms-analysis/results/metrics_full.csv")
 
