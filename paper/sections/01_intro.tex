@@ -2,7 +2,7 @@
 % =====================================================================
 % BAN NHAP (draft) — RW (Lộc) rà soát, viết lại bằng giọng của mình,
 % rồi chạy AI detector và ghi vào quality/ai_check_log.md trước khi nộp.
-% Số liệu [TODO-...] điền sau khi có kết quả LLM.
+% Số liệu đã điền đủ (N=120, Java+Python) — chỉ còn rà lại giọng văn + AI-check.
 % =====================================================================
 
 Unit testing remains one of the most expensive activities in software
@@ -49,8 +49,11 @@ The contributions of this paper are: (i) a reproducible benchmark of
 measurement pipeline that scores tests \emph{per function} inside the
 original projects, with a mandatory green-on-original check before
 mutation analysis; (iii) an empirical comparison of GPT-4o-mini
-against search-based and random baselines under equal budgets
-[TODO-so-lieu-chinh]; and (iv) a catalogue of measurement pitfalls
+against search-based and random baselines under equal budgets, showing
+it loses decisively to search-based Java tools (EvoSuite, Randoop;
+paired rank-biserial $r=-1.00$) while both GPT-4o-mini and every
+baseline fall well short of the 80\%/60\% thresholds on this
+medium-complexity sample; and (iv) a catalogue of measurement pitfalls
 (silent tool failures, coverage misattribution) that materially affect
 reported numbers if left undetected.
 

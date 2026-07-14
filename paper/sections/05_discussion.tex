@@ -1,8 +1,182 @@
-﻿\section{Discussion}\label{sec:discussion}
+\section{Discussion}\label{sec:discussion}
 % NGUOI VIET: PL (An) + MS (Phuc)
-% Goi y diem thao luan tu du lieu da co:
-% - Coverage cao != test tot (JA-020: bc 60% nhung ms 0%) -> y nghia cap metric
-% - Diem gay theo CC (RQ3) o dau, khac gi literature
-% - Chi phi: ~1 USD cho 120 ham (gpt-4o-mini) vs thoi gian may cua EvoSuite
-% - INVALID rate va nguyen nhan (tach loi LLM vs loi pipeline)
-% TODO(An+Phuc)
+% Ban nhap so bo tu RW (Loc) sau khi co du lieu Java+Python day du -- can An/Phuc doc lai,
+% doi giong van, va xac nhan so lieu truoc khi nop.
+
+\subsection{Coverage is not test quality}
+Our own data reproduce, on a controlled sample, a pattern that motivated this study's
+focus on paired metrics: branch coverage and mutation score diverge. Baseline suites on
+\texttt{JA-020} reach 60\% branch coverage while killing 0\% of mutants --- the suite visits
+the target's branches without asserting anything that distinguishes correct from mutated
+behaviour. At the aggregate level, the same divergence appears between RQ1 and RQ2: the
+effective-subset coverage figures (75.0\% Python, 50.0\% Java) look far less alarming than
+the corresponding mutation figures (36.84\% Python, 0\% Java). A reader who saw only branch
+coverage would conclude gpt-4o-mini's tests are moderately competent; a reader who saw only
+mutation score would conclude they are close to worthless. Reporting both, and reporting
+both at the \emph{all} and \emph{effective} levels, is therefore not a methodological
+nicety but a precondition for a non-misleading conclusion.
+
+\subsection{Where does the ``breaking point'' actually sit?}
+The original motivation for this study (GAP-T) was to locate the cyclomatic-complexity
+threshold at which LLM test generation degrades. RQ3 finds no significant CC--quality
+correlation within CC~5--10 in either language ($\rho \in [+0.13, +0.18]$, all $p>0.4$).
+Read alongside RQ1/RQ2, this suggests the ``breaking point'' framing needs revision: quality
+does not degrade \emph{gradually} across CC~5--10. Instead it is dominated by a
+\emph{binary} outcome decided largely independently of CC within this band --- does the
+generated suite compile, and does it happen to invoke the sampled method rather than a
+same-named neighbour or an inherited overload. A function at CC~5 and a function at CC~10 in
+our sample are roughly equally likely to fail this binary gate. This does not mean
+complexity is irrelevant to LLM test generation in general; it means that within the
+narrow, pre-selected medium-complexity band we sampled (chosen precisely to avoid the
+extremes), the dominant source of variance is something else. Locating a true breaking
+point would require sampling low-CC ($<5$) and high-CC ($>10$) functions for contrast, which
+we identify as future work (Section~\ref{sec:conclusion}).
+
+\subsection{Cost is not the bottleneck; correctness is}
+Generating all 120 one-shot suites with \texttt{gpt-4o-mini-2024-07-18} cost approximately
+\$1 (amendment~v1.1, \S8.2) and completed in minutes; EvoSuite and Randoop, by contrast,
+were run under a 60-second \emph{search} budget \emph{per function}, i.e.\ tens of minutes of
+machine time for the same 60 Java functions, before measurement. On a pure
+cost-and-latency basis, the LLM is two to three orders of magnitude cheaper. Yet on the
+metric that matters --- does the resulting suite exercise and kill mutants on the intended
+target --- gpt-4o-mini loses to both search-based baselines with the maximum possible
+paired effect size ($r=-1.00$). This is the central practical tension our data expose: the
+LLM's advantage is speed and cost, not reliability, and the two are not close enough to
+trade off casually. A pipeline that spent the saved machine-minutes on a bounded number of
+compile-and-retry iterations (a feedback loop, discussed next) would very plausibly close
+much of this gap without approaching EvoSuite/Randoop's wall-clock cost.
+
+\subsection{The INVALID rate as a finding, not a bug}
+We deliberately did not filter the dataset to exclude functions that are structurally hard
+for a one-shot external test to reach (e.g.\ \texttt{private} target methods): 17/60 Java
+functions in our sample are \texttt{private}, and removing them post hoc --- after already
+observing that Java's effective rate is low --- would have amounted to selecting the sample
+based on the outcome we were trying to measure, undermining the pre-registered protocol
+(amendments~v1.1/v1.2, \S\ref{sec:threats}). The decision paid off empirically in an
+unexpected way: visibility turns out \emph{not} to be the dominant cause. Only 1 of the 9
+truly non-compiling Java functions, and only 14 of the 46 Java functions that compiled but
+touched nothing, involve a \texttt{private} target (Section~\ref{sec:results}). Had we
+filtered on visibility we would have removed the wrong variable and left the dominant
+failure mode --- wrong-target invocation via overload/name resolution, clustering around
+API-heavy classes such as \texttt{AccurateMath} and \texttt{Gson} --- completely
+unexplained.
+
+This pattern is not unique to our sample. Haratian et al.\ (2026) report a 63\%
+compilation-error rate for GPT-4o on 353 real Java pull requests, roughly half our Java
+\textsc{invalid}-or-no-touch rate (91.7\%) but the same qualitative story: one-shot,
+zero-context generation on real (not curated) code compiles far less reliably than
+benchmark-style evaluations suggest. Sapozhnikov et al.\ (2024) similarly report over 50\%
+malformed/non-compiling ChatGPT-generated Java tests, and Kumar et al.\ (2025) attribute
+weak single-pass results directly to the \emph{absence of an iterative-repair loop}. The
+techniques the wider literature uses to close this gap --- feeding compiler/test-failure
+output back to the model (Zeng et al., 2026; Xue et al., 2025), retrieving real API
+signatures instead of raw source text (addressing exactly the wrong-target-invocation
+pattern we observe), or sampling multiple candidates and keeping the one that compiles ---
+all require leaving the strict one-shot setting we evaluate here. Our results should
+therefore be read as a lower bound on what GPT-4o-mini can do with this codebase, and as
+direct motivation for why the literature has moved toward feedback-augmented and
+retrieval-augmented pipelines rather than static one-shot prompting.
+
+\subsection{Why gpt-4o-mini ``beats'' Pynguin}
+The RQ2-B result against Pynguin ($r=+0.85$, gpt-4o-mini favoured) illustrates a general
+risk in baseline comparisons: a win can reflect the baseline's tooling difficulty rather
+than the treatment's strength. Pynguin's own median branch coverage on this dataset is
+0.0\% (Section~\ref{sec:threats}), driven by search timeouts and a \texttt{dill}
+serialization failure on modules importing \texttt{\_json} --- issues orthogonal to
+gpt-4o-mini's test-writing ability. We report the comparison because it is the
+pre-registered baseline for Python (amendment~v1.2) and because suppressing an inconvenient
+result would itself be a validity threat, but we caution against reading it as evidence that
+gpt-4o-mini produces good Python tests in absolute terms; RQ1/RQ2-A already show it does
+not.
+
+\subsection{RQ4 (exploratory, post-hoc): does real API context help?}
+\label{sec:rq4}
+Motivated by the wrong-target-invocation pattern above, we ran a small \emph{exploratory,
+post-hoc} follow-up: the same 120 functions, same model/temperature/exemplar, but with the
+target class's (Java) or module's (Python) real public-API skeleton --- method signatures,
+nested-class structure, module-level-function-vs-class-method distinction, extracted
+directly from the pinned source with \texttt{javalang}/\texttt{ast} --- inserted into the
+one-shot prompt. This is explicitly \emph{not} part of the pre-registered RQ1--RQ3: it is
+reported here, separately, because the idea arose only after seeing the N=120 results, and
+folding it into the confirmatory analysis would be HARKing. The new tests were generated
+into a separate directory and measured into a separate results file, never overwriting the
+registered N=120 data.
+
+\textbf{Java.} The compile rate is unchanged (51/60 both arms), but the \emph{effective}
+rate --- suites that actually exercise the target --- more than doubles: 11/60 (18.3\%)
+with context vs.\ 5/60 (8.3\%) without. Paired by function, 7/60 improve, 1/60 regresses,
+52/60 are unchanged; a one-sided paired Wilcoxon test is not significant at $\alpha=0.05$ but
+close (7 vs.\ 1 favourable pairs is nonetheless suggestive) and the effect size among the
+non-tied pairs is moderate-to-large. Mutation score shows no improvement ($n=48$ paired,
+both medians 0\%). We read this as a promising but inconclusive signal that context reduces
+wrong-target invocation (its intended target) without yet translating into stronger
+fault-detection --- consistent with context fixing a \emph{structural knowledge} gap
+(which method to call) rather than a \emph{behavioural reasoning} gap (what the method
+actually does), the latter being what mutation score measures.
+
+\textbf{Python.} On the pre-registered whole-suite-must-pass criterion, context looks
+\emph{worse} (7/60 vs.\ 32/60 compiled) --- but this is a measurement artefact, not evidence
+that context hurts. Counting individual test functions rather than whole files, the two
+arms are statistically indistinguishable (267 test cases, 33.3\% passing, with context vs.\
+233 test cases, 32.2\% passing, without). Context leads gpt-4o-mini to write \emph{more}
+test cases per file (a plausible effect of seeing more of the API surface), and because our
+Python \textsc{invalid} criterion requires every test in a file to pass, more tests per file
+mechanically increases the chance that at least one fails on an unrelated behavioural bug ---
+we traced one such case (\texttt{flask.logging.has\_level\_handler}) to an identical
+misunderstanding of logger-hierarchy propagation present in \emph{both} arms, unrelated to
+context. This illustrates a second-order threat to validity worth flagging for future work:
+an all-or-nothing pass criterion penalises test-suite thoroughness whenever any one
+assertion is wrong, and can make two arms with near-identical per-test correctness look
+dramatically different.
+
+\textbf{Implication.} Static API context is a low-cost intervention (no additional model
+calls beyond the original one-shot budget) that shows a real, if not yet significant, effect
+on Java's wrong-target problem, and a neutral effect on Python once measured fairly. Neither
+result changes the RQ1--RQ3 conclusions (Section~\ref{sec:results}): gpt-4o-mini one-shot
+generation, with or without context, remains well short of the 80\%/60\% thresholds.
+
+\subsection{RQ5 (exploratory, post-hoc): one feedback/repair iteration on top of RQ4}
+\label{sec:rq5}
+As a single, pre-committed follow-up to RQ4 --- decided \emph{before} running it, and run
+\emph{once}, per our own anti-HARKing discipline (we do not keep iterating techniques until
+a threshold is crossed) --- we fed each RQ4 suite that was not yet effective back to
+gpt-4o-mini together with a real failure signal (Java: the 0\%-coverage outcome and the
+target's API skeleton, since Maven/JVM error logs proved too noisy to use as a clean
+compiler-diagnostic signal, Section~\ref{sec:threats}; Python: the actual fresh
+\texttt{pytest} failure output) and asked for one corrective rewrite. Suites already
+effective at RQ4 (11/60 Java, matching Python's per-test baseline) were carried forward
+unchanged rather than re-generated.
+
+\textbf{Java: further, still-inconclusive improvement.} The effective rate rises again, from
+11/60 (18.3\%, RQ4) to \textbf{15/60 (25.0\%)}. Critically, of the functions that changed, 4
+improved and \emph{none regressed} (repair $\geq$ context on every paired function); the
+one-sided paired Wilcoxon test gives $p=0.063$ --- still short of $\alpha=0.05$ at this
+sample size, but with the maximum possible rank-biserial effect size ($r=1.00$, since every
+non-tied pair favours repair) and a monotonic improvement across three stages (8.3\% $\to$
+18.3\% $\to$ 25.0\%). Mutation score remains flat at a median of 0\% ($n=45$ paired
+functions), unchanged from RQ4: repair helps gpt-4o-mini hit the right lines more often, but,
+as with context alone, does not yet translate into assertions strong enough to kill mutants.
+
+\textbf{Python: a genuine regression, not a measurement artefact this time.} Per-test-case
+pass rate \emph{drops} to 15.5\% (106/682 tests), well below both RQ4 (33.3\%) and the
+original no-context arm (32.2\%). Unlike the RQ4-vs-original comparison, this is not an
+artefact of file count or suite length alone: test volume grew again (682 tests across 60
+files, vs.\ 267 at RQ4), consistent with gpt-4o-mini responding to a visible failure by
+\emph{expanding} the suite (adding more cases) rather than narrowly fixing the specific
+assertion that failed, and the additional cases fail at a higher rate than the original ones
+survived. We do not have a definitive mechanism for this and did not run further diagnostics
+to find one, consistent with our commitment to run this technique once and report the
+outcome rather than keep adjusting until it looks better.
+
+\textbf{Overall verdict on RQ4+RQ5.} Across two rounds of low-cost, non-fine-tuning
+intervention, Java shows a real (if not significance-clearing) upward trend on coverage
+effectiveness and no downside; Python shows no benefit from context and a real regression
+from single-shot repair. Neither technique, alone or combined, closes the gap to the
+pre-registered 80\%/60\% thresholds (Section~\ref{sec:results}): the median across the full
+$N=120$ sample remains 0\% for both metrics at every stage we tried. This is itself a
+finding: the specific interventions the literature suggests as next steps after one-shot
+prompting (Section~\ref{sec:related}) are not a guaranteed fix, help unevenly across
+languages, and in at least one case (Python repair) can make matters worse --- a caution
+against assuming that ``add more scaffolding'' straightforwardly improves LLM test
+generation. Per our agreement not to keep searching for a technique that crosses the
+threshold, we stop here rather than attempt a third intervention.

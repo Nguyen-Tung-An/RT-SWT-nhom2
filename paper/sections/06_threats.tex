@@ -68,7 +68,38 @@ Thresholds (80\% coverage, 60\% mutation) were fixed in the approved
 proposal before any full-run data were collected, and all protocol
 changes (model, dataset, prompting mode, measurement context) were
 recorded as amendments before the corresponding data were produced,
-mitigating HARKing. Mutation scores for a minority of baseline cells
-were unavailable where PIT could not process a repository
-[TODO-cap-nhat-sau-khi-dap-mutation]; these cells are reported as
-missing rather than imputed.
+mitigating HARKing. Mutation scores for 3/60 baseline cells
+(\texttt{JA-005}, \texttt{JA-035}, \texttt{JA-007}, all in
+\texttt{jfreechart}) were unavailable: PIT's coverage-generator
+``Minion'' process crashed with an unrecovered \texttt{UNKNOWN\_ERROR}
+on this repository regardless of JDK version (8/11/17) or bytecode
+release target, a failure mode we could not root-cause within the
+project timeline. Branch coverage for these 3 functions is unaffected
+(measured independently, before the PIT step) and remains in
+\texttt{metrics\_full.csv}; only the mutation-score cell is reported as
+missing rather than imputed as zero, so it does not silently deflate
+the baseline's RQ2 numbers. The same three functions also appear among
+the LLM's own \textsc{invalid}/non-effective Java results
+(Section~\ref{sec:results}) for the unrelated reason of wrong-target
+invocation, which is coincidental --- the two failure mechanisms
+(PIT-on-jfreechart vs.\ LLM wrong-target) are independent and were
+diagnosed separately.
+
+A second, unrelated environment issue affected only the Pynguin
+baseline (Python): Pynguin's bytecode instrumentation produced
+empty test suites (0.0\% coverage) for every module when run under
+Python~3.14, the interpreter used for the rest of the measurement
+pipeline. We diagnosed this as a genuine tool--interpreter
+incompatibility (not a configuration error) by reproducing it with
+verbose logging and isolating it to Pynguin's internal master--worker
+subprocess, then resolved it by provisioning a dedicated Python~3.10
+virtual environment for Pynguin invocations only, matching the
+interpreter version most Pynguin releases are validated against. This
+is an infrastructure fix, not a protocol amendment: it changes neither
+the pre-registered metric, threshold, dataset, nor model, and was
+applied uniformly before any Pynguin measurement was taken, so it
+introduces no HARKing risk. Even after the fix, Pynguin's own median
+branch coverage on this dataset remained 0.0\% (Section~\ref{sec:results}),
+which we take to be a genuine, if weak, result about Pynguin's
+real-world difficulty on these modules rather than a residual
+environment defect.
