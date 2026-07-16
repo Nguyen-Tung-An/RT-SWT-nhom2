@@ -15,13 +15,18 @@ So ky tu ZeroGPT hien thi khop voi kich thuoc file (vd abstract 1.766 vs file
 | 2026-07-17 | 02_related | ZeroGPT | **0% AI** | "Your Text is Human written" | OK |
 | 2026-07-17 | 03_method | ZeroGPT | **1% AI** | "Your File Content is Human written" | OK |
 | 2026-07-17 | 04_results | ZeroGPT | **2.9% AI** | "Your File Content is Human written" | OK |
-| — | 05_discussion | ZeroGPT | _chua scan_ | | scan not bang detector_input/05_discussion.txt |
-| — | 06_threats | ZeroGPT | _chua scan_ | | scan not |
-| — | 07_conclusion | ZeroGPT | _chua scan_ | | scan not |
+| 2026-07-17 | 05_discussion | ZeroGPT | **0.9% AI** | "Your File Content is Human written" | OK |
+| 2026-07-17 | 06_threats | ZeroGPT | **0% AI** | "Your File Content is Human written" | OK |
+| 2026-07-17 | 07_conclusion | ZeroGPT | **2.5% AI** | "Your File Content is Human written" | OK |
 
-**Minh chung anh:** luu 5 screenshot ket qua (da chup 17/07, ~05:30) vao thu muc
+**KET QUA TONG: 8/8 section "Human written", dai 0%–5.3% AI (ZeroGPT, 17/07).**
+Doi chieu so ky tu tung lan scan khop kich thuoc file detector_input (vd discussion
+12.522 vs file 12.702; threats 6.602 vs 6.695; conclusion 4.753 vs 4.822) — xac nhan
+toan bo scan dung ban cuoi (ban build PDF 11 trang).
+
+**Minh chung anh:** luu 8 screenshot ket qua (da chup 17/07, ~05:30–05:40) vao thu muc
 `paper/quality/ai_check_screenshots/` voi ten goi y:
-`2026-07-17_zerogpt_00_abstract.png` ... `2026-07-17_zerogpt_04_results.png`.
+`2026-07-17_zerogpt_00_abstract.png` ... `2026-07-17_zerogpt_07_conclusion.png`.
 
 ## Ghi chu
 - Muc tieu: van ban nop la SAN PHAM CUA NHOM; moi ho tro AI phai duoc khai bao theo quy dinh mon hoc
