@@ -18,7 +18,7 @@ Wang et al. [ref] introduce TestEval - Python LeetCode-style tasks
 et al. [ref] reach 99.05% branch coverage on HumanEval-Java across
 Gemini, GPT-4o, and Claude-3.5. Lira et al. [ref] find a 90.69%
 success rate for Gemini 1.5-Pro when both source and docstring are provided. Chudic and
-Calkl [ref] and Jasti et al. [ref]
+Calikli [ref] and Jasti et al. [ref]
 push further on similar tasks.
 
 These numbers are hard to argue with - on these benchmarks. The problem is that
