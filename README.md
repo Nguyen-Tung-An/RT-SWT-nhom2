@@ -40,7 +40,7 @@ Zero/one-shot evaluation of **GPT-4o-mini** generating unit tests for **Java & P
 ```
 RT-SWT-nhom2/
 ├── SLR/                     # Systematic literature review (RBL-1/2)
-│   ├── papers/              # Included paper PDFs
+│   ├── papers/              # Included papers (danh sách trong README; PDF đã gỡ — bản quyền)
 │   ├── 01_all_records.csv / 02_after_screening_v1.csv / 03_final_included.csv
 │   ├── evidence_table.md / gap_statement.md / gap-analysis.md
 │   ├── ie-criteria.md / prisma_flow.md / search-log.md
@@ -49,7 +49,7 @@ RT-SWT-nhom2/
 │   ├── evidence-table-merged.md / gap-assignment.md / gap-final.md / proposal.md
 ├── data/                    # raw/, pilot_sample.csv, *_ground_truth.csv
 ├── scripts/                 # run_experiment.py, run_baselines.py, test_api.py
-├── generated_tests/         # gpt4o/{java,python}, randoop/java
+├── generated_tests/         # gpt4o*/{java,python}, evosuite/java (randoop đã gỡ — xem randoop/README.md)
 ├── results/                 # pilot_llm_output.csv, pilot_api_log.txt, generation_log.csv
 ├── ms-analysis/             # metric measurement (JaCoCo/PIT, Coverage.py/pytest-mutagen) + notebooks
 ├── notes.md                 # technical decisions + error log
