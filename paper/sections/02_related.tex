@@ -98,9 +98,11 @@ template-based repair~\cite{gu2025template}, and YATE~\cite{konstantinou2025yate
 follow this pattern, while DISTINCT~\cite{xue2025distinct} steers regeneration through
 description-guided consistency analysis rather than raw compiler output.
 Retrieval-augmented approaches substitute raw source with real API signatures or class
-skeletons extracted from call-graph context~\cite{liu2025typeaware}. Other systems use
-selection or filtering over generated candidates, but once that machinery is added, the
-result is no longer a clean measurement of one-shot generation.
+skeletons extracted from call-graph context~\cite{liu2025typeaware}. Other systems
+optimise or select over generated candidates --- TestDecision, for instance, drives
+sequential suite construction with greedy optimisation and reinforcement
+learning~\cite{wang2026testdecision} --- but once that machinery is added, the result is
+no longer a clean measurement of one-shot generation.
 
 These systems produce measurable improvements. But the improvements are hard to
 interpret: each layer of scaffolding makes it less clear what the underlying model
@@ -124,8 +126,10 @@ ours, and it is why we report coverage and mutation score together rather than t
 one as a substitute for the other.
 
 Most prior work reports one metric or the other --- rarely both, almost never tied
-together statistically on the same functions (GAP-M). That gap makes it difficult to say
-whether LLM-generated tests are genuinely useful or merely good at executing code. We
+together statistically on the same functions --- and even when mutation is reported, it
+is sometimes measured with custom, non-standard harnesses~\cite{silva2025comparative}
+(GAP-M). That gap makes it difficult to say whether LLM-generated tests are genuinely
+useful or merely good at executing code. We
 address it directly: both metrics, same function IDs, threshold tests and per-function
 baseline comparisons run together.
 

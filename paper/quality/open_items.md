@@ -11,9 +11,10 @@
       KHÔNG phải GPT-4o thuần trên TestGenEval. Bài + bib đã sửa theo (title bib đã đổi);
       Kim đọc lại xác nhận. GPT-4o thuần trên benchmark gốc ≈ 35.2% cov / 18.8% mut
       (arXiv 2410.00752) — nếu muốn dùng số thuần thì thêm entry bib mới cho benchmark.
-- [ ] **silva2025comparative** và **wang2026testdecision** hiện KHÔNG còn được cite
-      (best-of-N và Pynguin-pairing không truy được về 2 paper này theo evidence table).
-      Tìm chỗ cite đúng (CODAMOSA #15? so sánh model panel ở §2.1/2.2?) hoặc bỏ khỏi bib.
+- [x] ~~silva2025comparative va wang2026testdecision khong duoc cite~~ — DA CITE LAI
+      17/07 dung cho: TestDecision → §2.4 (selection/optimisation — dung theo title
+      paper); silva → §2.5 (mutation do bang custom harness, khong dung PIT chuan —
+      dung theo gap-final.md cua team). References du 25/25.
 - [ ] Commit **team-synthesis/** (gap-final.md + evidence-table-merged.md N=40, hiện nằm
       ngoài repo ở `F:\Ky_5\SWT301_Materials\sytheniss\`) vào repo — SLR/ trong repo là bản
       RBL-2 cá nhân có taxonomy GAP KHÁC bản team (grader đọc chéo sẽ thấy lệch; bài đang
