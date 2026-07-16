@@ -1,29 +1,27 @@
 \section*{Abstract}
-% NGUOI VIET: PL (An). Ban nhap tu RW (Loc) sau khi co ket qua day du -- can An doc lai,
-% doi giong van, va chay AI detector truoc khi nop.
+% NGUOI VIET: PL (An). 2026-07-17: wire tu ban tieng Viet cua Loc (RW) — cau truc &
+% nhan nha theo ban Viet, dich sang English boi may + bo sung 2 fact thieu (pinned
+% commits; curated/khong kiem soat CC). LUU Y: ban nop doc van phai TU DICH TAY theo
+% abstract_rewrite_kit.md — ban tex nay chi la nguon noi dung / build PDF.
 
-Large language models are increasingly proposed as unit-test generators, but most
-evaluations report results on curated, low-complexity benchmarks without controlling for
-the structural complexity of the code under test. We evaluate the native, one-shot
-capability of \texttt{gpt-4o-mini} on \textbf{120 real-world functions} (60 Java, 60 Python)
-of medium cyclomatic complexity ($5 \le \mathrm{CC} \le 10$), mined from ten pinned
-open-source repositories and measured \emph{inside the original projects} against two
-automated baselines (EvoSuite, Randoop for Java; Pynguin for Python), using branch coverage
-and mutation score under non-parametric statistical tests ($\alpha=0.05$). Across the full
-sample, median branch coverage and mutation score are both \textbf{0\%}
-($N=120$); even restricted to the subset of suites that compile and exercise the intended
-target (28/120, 23.3\%), median coverage reaches only 75.0\%, still short of an 80\%
-threshold, and median mutation score reaches only 36.84\% (Python) and 0\% (Java), both far
-below a 60\% threshold. Paired comparisons show \texttt{gpt-4o-mini} losing decisively to
-search-based Java baselines (rank-biserial $r=-1.00$ against both EvoSuite and Randoop) while
-nominally beating Pynguin --- a result driven by Pynguin's own tooling failures on this
-dataset (0.0\% median coverage) rather than LLM strength. We find no significant correlation
-between complexity and test quality within the CC~5--10 band studied, indicating that a
-binary compile/wrong-target outcome, not a graded complexity effect, dominates variance in
-this range. Java and Python fail for structurally different reasons --- import errors at
-compile time in Python versus silent wrong-method resolution in Java --- a distinction only
-visible because suites were measured against real project code rather than isolated
-functions. These results suggest one-shot LLM test generation, evaluated without retrieval
-or repair-loop assistance, is not yet a reliable substitute for search-based tools on
-medium-complexity, real-world code, and motivate the feedback- and context-augmented
-pipelines increasingly explored in the literature.
+Unit-test generation with large language models (LLMs) is becoming increasingly common,
+but most existing studies still rely on simple, curated benchmarks that neither reflect
+the complexity of real-world code nor control for it. This study tests the one-shot
+capability of \texttt{gpt-4o-mini} on 120 real-world functions (60 Java, 60 Python) of
+medium cyclomatic complexity (5--10), mined from ten open-source repositories at pinned
+commits and evaluated directly inside their original projects. Its results are compared
+against EvoSuite and Randoop (Java) and Pynguin (Python) on branch coverage and mutation
+score, using non-parametric tests ($\alpha = 0.05$). Across all 120 functions, median
+coverage and median mutation score are both 0\%. Only 28/120 suites (23.3\%) compile and
+actually test the intended function; their median coverage is 75.0\%, still below the
+80\% bar. Over suites with a measurable mutation score, the median is 36.84\% for Python
+and 0\% for Java, both under the 60\% threshold. Against the baselines, \texttt{gpt-4o-mini} is beaten outright by both
+Java tools (EvoSuite and Randoop, $r = -1.00$ for each). It beats Pynguin only because
+Pynguin failed completely on this dataset (median coverage 0.0\%). Within the CC~5--10
+band there is no clear link between complexity and test quality; what decides the
+outcome is whether a suite compiles and tests the right function. Python failures are
+mostly bad imports, while Java calls the wrong method without any error --- something
+only visible when running on real project code. Overall, one-shot LLM generation,
+without retrieval or repair, cannot yet replace automated test-generation tools on real
+code of medium complexity. The results support adding feedback loops and richer context
+when generating tests.

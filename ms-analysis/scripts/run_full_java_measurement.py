@@ -414,6 +414,7 @@ def measure(repo, rows, tools, csv_path):
                 # "gpt4o-mini-ctx"   = RQ4 exploratory: co API context that.
                 # "gpt4o-mini-ctx-repair" = RQ5 exploratory: RQ4 + 1 vong feedback/repair.
                 # Ca RQ4/RQ5 ghi CSV RIENG, khong bao gio cham metrics_full.csv cua N=120.
+                # (RQ6 "fullfile" da thu nghiem mot phan roi huy bo -- xem git history.)
                 "gpt4o-mini": ("gpt4o", "metrics_full.csv"),
                 "gpt4o-mini-ctx": ("gpt4o_ctx", "metrics_rq4.csv"),
                 "gpt4o-mini-ctx-repair": ("gpt4o_ctx_repair", "metrics_rq5.csv"),

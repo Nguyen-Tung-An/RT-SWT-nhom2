@@ -1,101 +1,153 @@
 \section{Related Work}\label{sec:related}
-% NGUOI VIET: DG (Kim)
-% Ban nhap tu RW (Loc), tong hop tu team-synthesis/evidence-table-merged.md (40 paper)
-% va gap-final.md. Can Kim doc lai + doi giong van truoc khi nop.
+% NGUOI VIET: DG (Kim). 2026-07-17: ban nay la ban TAY (Loc viet lai toan bo section).
+% Wire boi RW/Claude, chi sua: (1) cite 84.3/33.8 -> jain2025testgeneval (ban nhap ghi
+% nham dakhela2023); (2) doan chon band CC thay bang can cu that (proposal chot truoc,
+% khong co artefact nao ve "thu 3<=CC<=15"); (3) JA-008 ghi ro la BASELINE suite;
+% (4) "explained most of the gap" -> gap thu hep nhung EvoSuite van dan (55.0 vs 21.1);
+% (5) "below 50%" -> "often below about 50%" (Zhang upper = 52.1% success);
+% (6) khoi phuc "six Java projects" + "33.82%" (Intro dang tua vao dai 33-40%);
+% (7) British spelling + LaTeX escape. Kim doc lai vi day la section cua Kim.
 
-\subsection{LLM-based test generation on curated benchmarks}
-A large share of recent work reports strong results for GPT-4-class models on curated,
-self-contained benchmarks. Wang et al.\ (2025) report GPT-4o reaching 98.65\% line and
-97.16\% branch coverage on TestEval (Python, LeetCode-style problems); Kumar et al.\ (2025)
-report 99.05\% branch coverage for a mix of Gemini/GPT-4o/Claude-3.5 on HumanEval-Java; Lira
-et al.\ (2025) report a 90.69\% hit rate for Gemini~1.5-Pro with source and docstring
-context on HumanEval. These benchmarks share two properties directly relevant to our
-design: functions are short, single-file, and largely self-contained (no real project
-context to resolve), and complexity is not controlled or reported. Chudic and Çal{\i}kl{\i}
-(2026) and Jasti et al.\ (2026) similarly report high coverage on HumanEval/ClassEval-style
-problems. This class of result motivates the first half of our GAP statement (GAP-T): high
-performance on curated, low-complexity problems does not establish how the same models
-behave on medium-complexity, real-project code.
+Three gaps kept coming up as we read through the literature. We call them GAP-T, GAP-M,
+and GAP-D. GAP-T is the one that shaped our design the most: plain zero- or one-shot
+GPT-4-family generation is rarely measured at the function level, no study covers both
+Java and Python together, and none of them tracks where along the complexity axis
+performance starts to break down. We needed that information before we could decide how
+to set up our own study. GAP-M is narrower: coverage and fault-detection ability are
+seldom analysed together in a single statistical test on a controlled sample. GAP-D
+follows from the other two --- without complexity constraints, datasets tend to be
+small, synthetic, or skewed toward easy functions. The rest of this section is organised
+around these three gaps.
 
-\subsection{Degradation on real-world code}
-A second, smaller cluster measures LLM test generation directly on real projects and
-reports substantially weaker results. Haratian et al.\ (2026) evaluate GPT-4o on 353 real
-Java pull requests and report a 63\% compilation-error rate and only 13\% fail-to-pass
-effectiveness (vs.\ 36\% for EvoSuite on the same PRs). Sapozhnikov et al.\ (2024) report
-that over 50\% of ChatGPT-generated Java tests are malformed or non-compiling, attributing
-this partly to prompt-size limits forcing incomplete context. Zhang et al.\ (2024, arXiv
-2409.17561 / TestBench) report Java compile-error rates of 47.9--55.9\% across CodeLlama,
-GPT-3.5, and GPT-4 on nine open-source projects. Konstantinou et al.\ (2026) find that a
-plain GPT-4o-mini pipeline produces many non-compiling/non-passing tests across six Java
-projects, with mutation score falling to 33.82\% --- notably the same model we evaluate.
-Jain and Le Goues (2025) report a mutation score of only 33.8\% for GPT-4o on TestGenEval
-(Python), despite an 84.3\% pass@1. Our Java \textsc{invalid}-or-no-touch rate (91.7\%) and
-Python \textsc{invalid} rate (46.7\%) are more severe than most of these figures, which we
-attribute to two compounding factors largely absent from the cited studies: (i) we measure
-tests \emph{inside the real installed project} rather than in isolation, so a test must
-resolve real imports, real class hierarchies, and real method signatures to count as
-effective, and (ii) we use a lighter model (\texttt{gpt-4o-mini}) than the \texttt{gpt-4o}/
-\texttt{GPT-4-Turbo} evaluated in most of the cited work. Both choices make our setting
-harder by design, consistent with our goal of measuring a lower bound rather than a
-best-case capability.
+\subsection{LLM-based test generation on curated benchmarks}\label{sec:rel-curated}
+A large share of the positive results in this area come from curated, self-contained
+benchmarks. Wang et al.~\cite{wang2025testeval} introduce TestEval --- Python
+LeetCode-style tasks --- and report up to 98.65\% line coverage and 97.16\% branch
+coverage for GPT-4o. Kumar et al.~\cite{kumar2025empirical} get 99.05\% branch coverage
+on HumanEval-Java using Gemini, GPT-4o, and Claude-3.5. Lira
+et al.~\cite{lira2025evaluating} find a 90.69\% success rate for Gemini~1.5-Pro on
+HumanEval when both source and docstring are given. Chudic and
+\c{C}al{\i}kl{\i}~\cite{chudic2026enhancement} and Jasti et al.~\cite{jasti2026feedback}
+push coverage even higher on similar tasks. The numbers are hard to argue with --- on
+these benchmarks, at least.
 
-\subsection{Automated (non-LLM) baselines}
-Search-based and random test generation give us a non-LLM point of comparison. EvoSuite
-uses a genetic-algorithm search over test suites and is widely used as an SBST baseline in
-this literature (e.g.\ Ouédraogo et al., 2025; Gu et al., 2025; Broide et al., 2026, all on
-Defects4J); Randoop instead performs feedback-directed random testing. Both are deterministic
-in their \emph{approach} (not in the tests they emit) and do not depend on natural-language
-prompting, so their coverage/mutation numbers are not subject to the compile-time failure
-modes we observe for the LLM. On the Python side, Pynguin is the closest analogue to
-EvoSuite, using the DYNAMOSA many-objective search algorithm; it is used as a baseline or
-point of comparison in, e.g., Wang et al.\ (2026) and Konstantinou et al.\ (2025), typically
-alongside or against LLM-based approaches. We use EvoSuite and Randoop (Java) and Pynguin
-(Python) as our own baselines (amendments~v1.1/v1.2), under an equal generation-time budget
-per function/module rather than an equal number of LLM calls, since the two families of tool
-are not naturally comparable on a per-call basis.
+These numbers are impressive. But they come from short, single functions solved in
+isolation --- the models never have to deal with real project structure, imports, or
+cross-module dependencies. None of these studies controls or reports cyclomatic
+complexity, so we cannot tell at which point performance starts to drop. The benchmarks
+are also public and widely used, which means many tasks may have appeared in the models'
+training data. After reading through these results, our reaction was not ``LLMs are
+great at testing'' but rather ``LLMs are great at solving programming puzzles.'' That is
+a different thing entirely.
 
-\subsection{Closing the one-shot gap: repair loops, retrieval, and context}
-A substantial part of the literature is explicitly organised around \emph{fixing} the
-weaknesses that plain one-shot/zero-shot prompting exhibits. Feedback/repair loops --- fed
-compiler or test-failure output back to the model and iterated --- are the most common
-technique (e.g.\ Zeng et al., 2026's Logic-CoT vs.\ ChatUniTest; Xue et al., 2025's
-description-guided repair; Gu et al., 2025's template-based repair with an LLM fallback).
-Retrieval-augmented approaches supply real API signatures or class skeletons instead of raw
-source text, directly targeting the wrong-target/hallucinated-signature failure mode we
-observe in our own Java results (Section~\ref{sec:discussion}); Liu et al.\ (2025) use
-call-graph context for this purpose, and Konstantinou et al.\ (2025)'s HITS combines
-call-graph and generation history. Best-of-$N$ sampling (generate several candidates, keep
-the one that compiles) is used by, e.g., Silva et al.\ (2025) across a large panel of models.
-All of these techniques share one property: they leave the strict single-call, single-sample
-setting that our RQ1--RQ3 are designed to isolate. We deliberately do \emph{not} adopt them,
-because our goal is to measure the native, unassisted capability of one-shot prompting on
-medium-complexity, real-project code --- the same quantity the GAP-T statement identifies as
-under-measured --- rather than the capability of a full agentic pipeline built around the
-model.
+To study that directly, we built a dataset of 120 functions from ten pinned open-source
+repositories, restricted to a medium complexity band ($5 \le \mathrm{CC} \le 10$,
+measured with Lizard). We did not tune this range against our own results --- it was
+fixed in the proposal, before any test was generated. The reasoning: below CC~5 sits
+mostly trivial one- or two-branch code that any tool handles, and above CC~10 sits the
+extreme territory for which our survey found no complexity-controlled, GPT-4-family
+numbers at all. The 5--10 band is the regime the literature leaves unmeasured.
 
-\subsection{Coverage vs.\ mutation score as a validity concern}
-Several studies explicitly warn that coverage alone overstates test quality, which motivates
-our GAP-M and our choice to report both metrics under paired statistical tests rather than
-coverage alone. Dakhela et al.\ (2023) and Antal et al.\ (2025) both report a gap between
-syntactic/coverage success and semantic correctness; Jain and Le Goues (2025)'s 84.3\%
-pass@1 alongside a 33.8\% mutation score is a direct instance of the same pattern we
-reproduce on our own data (\texttt{JA-020}: 60\% branch coverage, 0\% mutation score;
-Section~\ref{sec:discussion}). Few of the surveyed papers combine branch coverage and
-mutation score under the same statistical test on a complexity-controlled sample (GAP-M);
-most report one metric or the other, or report both without a shared significance test tying
-them to a single hypothesis.
+\subsection{Degradation on real-world code}\label{sec:rel-real}
+Move from curated puzzles to real projects, and the picture changes fast. Haratian
+et al.~\cite{haratian2026praware} find GPT-4o compiling in only 37\% of Java pull
+requests --- fail-to-pass at 13\%, versus EvoSuite's 36\% on the same PRs. Sapozhnikov
+et al.~\cite{sapozhnikov2024empirical} report more than half of ChatGPT-generated Java
+tests are malformed or non-compiling, partly because prompt-size limits force dropped
+context. Zhang et al.'s TestBench~\cite{zhang2024testbench} puts Java compile-error
+rates at 47.9--55.9\% across nine open-source projects for CodeLlama, GPT-3.5, and
+GPT-4. Konstantinou et al.~\cite{konstantinou2026evaluating} show a plain zero-shot pipeline
+--- \texttt{gpt-4o-mini} among the models --- still producing many non-compiling or
+non-passing tests across six Java projects, with an aggregate mutation score down to
+33.82\%. On Python, even Jain and Le~Goues's TestForge --- an agentic, feedback-driven pipeline
+built on GPT-4o --- reaches an 84.3\% pass@1 on TestGenEval while its mutation score
+stays at 33.8\%~\cite{jain2025testgeneval}.
+
+Each of these studies stresses a different failure mode: compilation errors, malformed
+tests, or weak mutation scores. The direction is consistent. The numbers are not. Each
+group chose its own repositories, prompts, and pass criteria, so placing the results on
+a common scale turned out to be harder than we expected. When we tried to do that while
+designing our study, almost every individual decision looked reasonable --- but the
+results still could not be compared directly. We find Haratian
+et al.~\cite{haratian2026praware} particularly informative, because they compare GPT-4o
+and EvoSuite on the same pull requests and still see GPT-4o far behind on both
+compilation and fail-to-pass effectiveness.
+
+Our own numbers are at the pessimistic end. Java: 91.7\% \textsc{invalid}-or-no-touch.
+Python: 46.7\% \textsc{invalid}. We count a suite as \emph{effective} only if it both compiles and
+executes at least one line of the intended target function. A suite that compiles
+against the wrong method counts as zero. We saw this often enough that it stopped
+feeling like an edge case. The first time it happened, the suite looked completely
+plausible --- clean compilation, reasonable test names. Only when we checked coverage
+and mutation did we realise it had never touched the target method at all.
+
+\subsection{Automated (non-LLM) baselines}\label{sec:rel-baselines}
+The main non-LLM baselines are EvoSuite~\cite{fraser2011evosuite},
+Randoop~\cite{pacheco2007randoop}, and Pynguin~\cite{lukasczyk2022pynguin}. EvoSuite
+uses genetic search and is the standard SBST baseline on
+Defects4J~\cite{ouedraogo2025prompt,gu2025template,broide2026evogpt}. Randoop uses
+feedback-directed random testing. Pynguin fills the same role for Python with the
+DYNAMOSA algorithm. None of them relies on
+natural-language prompting, which is why compile-time failures simply do not show up in
+their scores.
+
+One thing we had to get right before any comparison made sense was the time budget. With
+default settings, EvoSuite looked significantly better than Randoop. The margin was
+larger than we expected. When we checked, EvoSuite had 60 seconds and Randoop had 10. We
+standardised everything: 60 seconds per class for EvoSuite and Randoop, 90 seconds per
+module for Pynguin, set per class (Java) or per module (Python) rather than per call. In the full run,
+with equal budgets, EvoSuite still led --- 55.0 versus 21.1 median branch coverage. Without that fix,
+we would have been measuring configuration choices, not the tools themselves.
+
+\subsection{Closing the one-shot gap: repair loops, retrieval, and context}\label{sec:rel-fixes}
+When plain prompting fails, the common response is to add machinery around the model.
+Repair loops feed compiler errors or test failures back to the model and ask it to try
+again --- Logic-CoT~\cite{zeng2026logic}, template-based repair~\cite{gu2025template},
+and YATE~\cite{konstantinou2025yate} all follow this pattern, while
+DISTINCT~\cite{xue2025distinct} steers regeneration through description-guided
+consistency analysis rather than raw compiler output. Retrieval-augmented approaches supply real API signatures or class
+skeletons from call-graph context instead of raw source~\cite{liu2025typeaware}.
+Best-of-$N$ sampling just generates multiple candidates and keeps whichever compiles.
+
+These systems work. But they make it hard to know what the model is actually
+contributing, versus what the scaffolding is doing. We wanted to know what happens with
+no scaffolding at all --- plain prompting, one sample, no repair. That is a simpler
+setting than any of the pipelines above. It is also the missing baseline. If we do not
+know how one-shot generation performs on medium-complexity real code, we cannot tell how
+much the pipelines are actually helping.
+
+\subsection{Coverage vs.\ mutation score as a validity concern}\label{sec:rel-covmut}
+\texttt{JA-008} was the function that made this problem concrete for us. Branch
+coverage: 60\%. Mutation score: 0\%. We spent time checking whether something had broken
+in our pipeline. Nothing had. The baseline suite was executing the function --- it just
+never checked whether the output was correct. No assertions that mattered.
+
+Moradi Dakhel et al.~\cite{dakhela2023} and Antal et al.~\cite{antal2025leveraging} both
+describe this pattern: high coverage, low mutation score, tests that touch lines without
+catching bugs. The sharpest published instance we found is TestForge's 84.3\% pass@1 sitting alongside
+a 33.8\% mutation score~\cite{jain2025testgeneval} --- and that is an agentic pipeline,
+not one-shot prompting.
+\texttt{JA-008} is ours.
+
+Most prior work reports one metric or the other, or puts them side by side without tying
+them together statistically. That makes it hard to say whether LLM-generated tests are
+actually useful or just good at executing code. We use both together --- a threshold
+test plus per-function comparisons against baselines --- on the same function IDs as in
+RQ1.
 
 \subsection{Positioning}
-Taken together, the surveyed literature establishes that LLM test generation performs well
-on simple, curated problems (Section~2.1) but degrades substantially on real, uncurated code
-(Section~2.2), and that the community's response has largely been architectural --- feedback
-loops, retrieval, multi-sample selection (Section~2.4) --- rather than a controlled
-measurement of \emph{where}, along a complexity axis, one-shot generation stops being
-reliable. No paper in our evidence table isolates cyclomatic complexity as the controlled
-variable across a matched Java/Python sample with both coverage and mutation score under a
-shared statistical test (GAP-T/GAP-M/GAP-D, confirmed against 34, 13, and 4 supporting papers
-respectively in our systematic review). This is precisely the gap RQ1--RQ3 are designed to
-fill: not another demonstration that one-shot LLM tests can fail on real code, but a
-controlled measurement, within a fixed medium-complexity band, of exactly how they fail and
-how that compares, function-for-function, against non-LLM baselines under the same
-pass/fail and quality criteria.
+Reading across everything we surveyed, three things stand out. On curated benchmarks,
+results are strong --- near-perfect coverage on TestEval and
+HumanEval~\cite{wang2025testeval,kumar2025empirical,lira2025evaluating}. On real
+projects, they are not --- Java compilation success often below about
+50\%~\cite{haratian2026praware,zhang2024testbench}, and mutation scores far below the
+coverage numbers. And most of the real gains in recent work come from the surrounding
+system --- repair loops, retrieval, selection --- not from better raw
+generation~\cite{zeng2026logic,xue2025distinct,gu2025template,konstantinou2025yate,liu2025typeaware}.
+
+What that leaves open is the question we actually care about: how does plain one-shot
+generation perform on medium-complexity, real-project code, measured consistently across
+languages and metrics? Nobody has answered that yet. RQ1--RQ3 are our attempt. The setup
+is deliberately simple --- one prompt, one sample, fixed complexity range, same metrics
+for Java and Python. Simple enough to reason about. Close enough to practice that the
+failures should matter.

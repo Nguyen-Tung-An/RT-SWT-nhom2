@@ -1,0 +1,69 @@
+Conclusion
+
+This study measured GPT-4o-mini as a one-shot unit-test generator on 120 real-world Java and
+Python functions of medium cyclomatic complexity (CC 5-10), scoring every suite inside its
+host project and comparing against EvoSuite and Randoop (Java, equal 60-second budgets) and
+Pynguin (Python, 90-second budget).
+
+RQ1 (coverage threshold). GPT-4o-mini does not achieve a median branch
+coverage >= 80% at any level of analysis. Across all 120 sampled functions the median is
+0% (H_0 not rejected, one-sample Wilcoxon). Even restricted to the 28 functions whose
+suites both compiled and exercised the target, the median stops at 75.0% (p=0.84,
+r=-0.22). The bar itself is demanding: on the same 60 Java functions EvoSuite manages a
+median branch coverage of 55.0% and Randoop 21.1%, so no tool clears 80% on this
+CC 5-10 sample.
+
+RQ2 (quality vs.\ baselines). Mutation scores are weaker still: over the suites with a
+measurable mutation score, the median is 36.84% for Python (n=17) and 0% for Java
+(n=54), both well under the 60% threshold. Paired
+Wilcoxon tests hand both Java baselines a decisive win - EvoSuite at p<0.001, Randoop at
+p=0.003, each with r=-1.00: not one function where the two suites differed went to
+GPT-4o-mini. Against Pynguin the comparison flips (p=0.010, r=+0.85 in GPT-4o-mini's
+favour), but Pynguin recorded just 0.0% median coverage on this dataset - a tooling
+failure examined in Section Threats - so the win says nothing about the
+robustness of GPT-4o-mini's own tests.
+
+RQ3 (complexity correlation). Cyclomatic complexity shows no significant
+correlation with coverage inside the CC 5-10 band in either language (Python rho=+0.18,
+p=0.41; Java rho=+0.13, p=0.83; pooled rho=+0.16, p=0.40). Within this band,
+test effectiveness hinges on a binary outcome - whether the generated suite compiles and
+invokes the correct target (Section Results) - rather than on any continuous
+relationship with complexity. Locating the true "breaking point" would take a sample that
+extends below CC 5 and above CC 10.
+
+Two lessons stand out. First, evaluating LLM-generated tests on functions extracted out of
+context understates the difficulty of real-world code: functions from mature projects lean
+on their surrounding module, and an evaluation that ignores that context flatters the model.
+Second, the measurement pipeline deserves the same scrutiny as the model. Most of the
+failures we hit were silent - exit code 0, no artefact - so every step had to be checked
+against a report file that actually exists on disk (Section Threats). Coverage
+alone is likewise too coarse a signal; without the paired mutation analysis, apparently
+adequate suites would have been overrated.
+
+Future work. RQ4 and RQ5, two exploratory post-hoc follow-ups
+(Sections N- N), asked whether low-cost prompting interventions
+could close the gap to the pre-registered thresholds. They could not. Java's effective-suite
+rate did climb across the three stages - 8.3% 18.3% 25.0% with no
+intervention, real API context, and one feedback/repair iteration respectively - one-sided
+p=0.074 for the context step and p=0.063 for the repair step, both short of
+significance at n=60, while mutation score stayed at 0% throughout. Python gained nothing from either the added context or the
+feedback/repair step; the single-shot repair in fact produced a clear decline, most likely
+because gpt-4o-mini answered failures by padding the suite with more tests rather than by
+fixing the failed assertions. We stopped the exploratory arm at these two interventions and
+did not keep hunting for a technique that would cross the preset thresholds (anti-HARKing).
+
+Five concrete directions remain: (1) expanding the Java sample to test whether the positive
+coverage trend from RQ4/RQ5 reaches statistical significance; (2) evaluating multi-iteration
+repair loops with explicit stopping criteria based on suite size, to determine whether
+Python's regression is a property of single-shot repair or persists under further
+refinement; (3) replicating the analyses with larger LLMs (GPT-4o or Claude-class models) to
+isolate the role of model capacity; (4) broadening the dataset to additional Python
+libraries and to functions of higher cyclomatic complexity (CC > 10) to locate potential
+breaking points more precisely; and (5) integrating the generation-measurement pipeline
+into continuous integration workflows for ongoing, in situ assessment. All five call for
+pre-registered protocols.
+
+On this evidence, one-shot LLM test generation is not yet a substitute for EvoSuite or
+Randoop on real-world code. Closing that gap will take feedback, retrieval, and repair
+mechanisms on the generation side, and context-aware, artefact-verified benchmarks on the
+evaluation side.

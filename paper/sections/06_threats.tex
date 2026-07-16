@@ -1,105 +1,98 @@
 \section{Threats to Validity}\label{sec:threats}
 % =====================================================================
 % BAN NHAP (draft) — RW (Lộc) rà soát + viết lại giọng mình + AI-check.
+% Da qua 1 luot viet lai ky thuat (doi cau truc cau, GIU NGUYEN toan bo su kien/so lieu).
 % Moi su kien duoi day co bang chung trong notes.md (error log RBL-4)
 % va lich su commit cua repo — co the truy xuat khi GV hoi.
+% Da tich hop ban chinh sua prose + format lai 2026-07-17 (RW)
+% FIX FACT 2026-07-17: 3 o mutation thieu = JA-017/JA-048/JA-058 — xem paper/quality/open_items.md
+% Da quet van phong (bo cum cong thuc, cu the hoa) 2026-07-17 (RW)
 % =====================================================================
 
 \subsection{Construct Validity}
-Our measurements nearly produced misleading numbers on three separate
-occasions, each of which was caught only by cross-checking tool output
-against actual artefacts. First, mutation scores of 100\% appeared for
-tests that in fact \emph{failed on the unmutated code}: every mutant
-was ``killed'' trivially. We therefore made a green-on-original check
-mandatory before any mutation analysis; tests that fail on the
-original are scored INVALID. Second, EvoSuite returns exit code 0 even
-when it generates no tests at all; a run of 12 functions was initially
-logged as fully successful although zero test files existed. Our
-pipeline now verifies the existence of the generated file rather than
-trusting exit codes. Third, JaCoCo silently reported 0\% coverage for
-EvoSuite tests because EvoSuite's separate instrumenting class loader
-changes class identity; disabling \texttt{separateClassLoader} during
-measurement restored correct attribution. More broadly, our own data
-confirm that coverage alone is an unreliable proxy for test quality:
-one baseline suite reached 60\% branch coverage on a function while
-killing 0\% of its mutants, which is precisely why we report the
-coverage--mutation pair.
+Three times during this study a measurement produced a wrong result while the tooling
+signalled success, and each time only a cross-check against the artefacts on disk caught it.
+The first: mutation scores of 100\% for test suites that had in fact \emph{failed on the
+unmutated code} --- every mutant was trivially ``killed'' because the suite was already
+broken. A green-on-original check now runs before any mutation analysis; a test that fails
+on the baseline source is scored \textsc{invalid} outright. The second: EvoSuite returns exit code 0
+even when it generates no tests whatsoever, and a run of 12 functions was initially logged
+as a complete success with zero test files on disk. The pipeline now checks for the
+generated file itself rather than trusting the exit code. The third: JaCoCo silently
+reported 0\% coverage for EvoSuite tests, because EvoSuite's separate instrumenting class
+loader changes class identity underneath it; disabling \texttt{separateClassLoader} during
+measurement fixed the attribution.
+
+A fourth construct threat is disclosed rather than fixed: the two Python arms are scored by
+different mutation instruments --- \texttt{mutmut} for the \texttt{gpt-4o-mini} suites, our
+custom AST engine for the Pynguin suites (Section~\ref{sec:method}). Both enforce the same
+green-on-original gate and the same function-range scoping, but their operator sets differ,
+so the Python RQ2-B pairing compares scores produced by two different instruments. Given
+that Pynguin's median coverage on this dataset was 0.0\%, the direction of that comparison
+does not hinge on the instrument choice. Our own data also show why coverage alone is an
+unreliable proxy for test quality: one baseline suite reached 60\% branch coverage on a
+function while killing 0\% of its mutants, which is exactly why we report the
+coverage--mutation pair rather than either alone.
 
 \subsection{Internal Validity}
-The pilot run revealed integration defects that would have invalidated
-the main results had they gone unnoticed. The first version of the
-Java dataset contained function files whose contents did not match the
-metadata (the LLM was shown the wrong source and generated tests for a
-non-existent method); all pilot LLM tests were therefore discarded and
-regenerated after the dataset was corrected. On the Python side, 10 of
-12 pilot measurements were initially INVALID for reasons unrelated to
-the LLM (functions extracted without their module context), which
-motivated the decision to measure inside the real installed modules at
-pinned commits. Baseline generation also required care: an early
-configuration gave EvoSuite a 60-second search budget but Randoop only
-10 seconds, and Randoop output files initially overwrote one another
-across runs; both issues were fixed before the final generation
-(equal 60-second budgets, per-function output names). Tool-environment
-mismatches (EvoSuite 1.2.0 requiring a Java~8 runtime; multi-release
-dependency JARs containing Java~21 bytecode that crashes older ASM;
-one project disabling JaCoCo via \texttt{jacoco.skip=true} in its own
-build) were each diagnosed and neutralised; we note that four of the
-six measurement-pipeline failures we encountered terminated with exit
-code~0, i.e., they were silent.
+The pilot run existed to surface integration defects before the main study, and it did. The
+first version of the Java dataset contained function files whose contents did not match
+their metadata --- \texttt{JA-002}'s file held an unrelated \texttt{concat} method instead
+of \texttt{getOptionValues} --- so the LLM was shown source code unrelated to the specified
+method. Every pilot LLM test was discarded and regenerated once the dataset was corrected.
+On the Python side, 10 out of 12 pilot measurements came back \textsc{invalid} because functions had
+been extracted without their module context, an error unrelated to the LLM; measurement
+moved into real installed modules at pinned commits as a result. Baseline generation had
+its own defects: early experiments gave EvoSuite a 60-second search budget against
+Randoop's 10 seconds, and Randoop's output files were overwritten across runs. Both were
+fixed before the main experiments --- equal budgets, per-function output names. Several
+tool--environment mismatches also had to be resolved: EvoSuite~1.2.0 ran under JDK~11 for most classes but needed a
+Java~8 runtime for the \texttt{csv}/\texttt{gson}/\texttt{joda} classes, so the generated
+suites mix JDK~11 (39 functions) and JDK~8 (21 functions) provenance; multi-release dependency JARs carried Java~21 bytecode that older ASM versions
+reject (\texttt{Unsupported class file major version 65}); and \texttt{commons-math}
+disables JaCoCo in its own pom via \texttt{jacoco.skip=true}. Four out of six
+measurement-pipeline failures terminated with exit code~0. Silent failures of that kind
+survive anything short of checking that the result artefacts actually exist.
 
 \subsection{External Validity}
-The subject model is \texttt{gpt-4o-mini-2024-07-18}; results
-characterise this lightweight model and must not be generalised to
-larger models such as GPT-4o (amendment v1.1). The dataset covers two
-ecosystems --- Apache-style Java libraries and Python web libraries
-(flask, requests) --- and is uneven within Python (48 of 60 functions
-come from flask); functions requiring heavyweight environmental
-context (GUI, network) are under-represented. Baseline coverage varies
-strongly by repository (near-perfect on numeric utility code,
-substantially lower on parser- and formatter-style classes), so
-absolute thresholds such as the 80\% target of RQ1 should be read
-against this per-repository variation rather than as a universal bar.
+Every result here characterises the lightweight \texttt{gpt-4o-mini-2024-07-18} and only
+that model; extrapolating to larger models such as GPT-4o is unwarranted (amendment~v1.1).
+The dataset spans two ecosystems --- Apache-style Java libraries and Python web libraries
+(flask, requests) --- and is unevenly distributed within Python: 48 of 60 functions come
+from flask. Functions that depend on heavyweight environmental context, such as GUI or
+network access, are under-represented. Baseline coverage also varies sharply by repository,
+running near-perfect on numeric utility code but substantially lower on parser- and
+formatter-style classes, so a threshold like RQ1's 80\% target is repository-relative
+rather than a universal bar.
 
 \subsection{Conclusion Validity}
-With $N = 120$ functions (60 per language) we rely on non-parametric
-tests (one-sample and paired Wilcoxon, Spearman correlation,
-$\alpha = 0.05$) and report effect sizes alongside $p$-values.
-Thresholds (80\% coverage, 60\% mutation) were fixed in the approved
-proposal before any full-run data were collected, and all protocol
-changes (model, dataset, prompting mode, measurement context) were
-recorded as amendments before the corresponding data were produced,
-mitigating HARKing. Mutation scores for 3/60 baseline cells
-(\texttt{JA-005}, \texttt{JA-035}, \texttt{JA-007}, all in
-\texttt{jfreechart}) were unavailable: PIT's coverage-generator
-``Minion'' process crashed with an unrecovered \texttt{UNKNOWN\_ERROR}
-on this repository regardless of JDK version (8/11/17) or bytecode
-release target, a failure mode we could not root-cause within the
-project timeline. Branch coverage for these 3 functions is unaffected
-(measured independently, before the PIT step) and remains in
-\texttt{metrics\_full.csv}; only the mutation-score cell is reported as
-missing rather than imputed as zero, so it does not silently deflate
-the baseline's RQ2 numbers. The same three functions also appear among
-the LLM's own \textsc{invalid}/non-effective Java results
-(Section~\ref{sec:results}) for the unrelated reason of wrong-target
-invocation, which is coincidental --- the two failure mechanisms
-(PIT-on-jfreechart vs.\ LLM wrong-target) are independent and were
-diagnosed separately.
+With $N = 120$ functions (60 per language), we rely throughout on non-parametric tests ---
+one-sample and paired Wilcoxon, Spearman correlation, $\alpha = 0.05$ --- and report effect
+sizes alongside every $p$-value. The thresholds (80\% coverage, 60\% mutation) were fixed in
+the approved proposal before any full-run data existed, and every protocol change made
+along the way (model, dataset, prompting mode, measurement context) was recorded as an
+amendment before the corresponding data were produced --- that ordering is what mitigates
+HARKing here. Mutation scores for 3/60 baseline cells --- \texttt{JA-017}
+(\texttt{jfreechart}), \texttt{JA-048} and \texttt{JA-058} (both \texttt{jsoup}) --- were
+unavailable: PIT generated no mutants within these functions' target line ranges under
+either baseline tool, so there was nothing to score. Branch coverage for these 3 functions
+is unaffected, since it is measured independently and before the PIT step, and remains in
+\texttt{metrics\_full.csv}; only the mutation-score cell is reported as missing rather than
+imputed as zero, so the baseline's RQ2 numbers are not silently deflated. The same three
+functions also appear among the LLM's own \textsc{invalid}/non-effective Java results
+(Section~\ref{sec:results}), for an entirely unrelated reason: wrong-target invocation.
+PIT's missing mutants and the LLM's wrong-target problem were diagnosed separately; the
+overlap is coincidence.
 
-A second, unrelated environment issue affected only the Pynguin
-baseline (Python): Pynguin's bytecode instrumentation produced
-empty test suites (0.0\% coverage) for every module when run under
-Python~3.14, the interpreter used for the rest of the measurement
-pipeline. We diagnosed this as a genuine tool--interpreter
-incompatibility (not a configuration error) by reproducing it with
-verbose logging and isolating it to Pynguin's internal master--worker
-subprocess, then resolved it by provisioning a dedicated Python~3.10
-virtual environment for Pynguin invocations only, matching the
-interpreter version most Pynguin releases are validated against. This
-is an infrastructure fix, not a protocol amendment: it changes neither
-the pre-registered metric, threshold, dataset, nor model, and was
-applied uniformly before any Pynguin measurement was taken, so it
-introduces no HARKing risk. Even after the fix, Pynguin's own median
-branch coverage on this dataset remained 0.0\% (Section~\ref{sec:results}),
-which we take to be a genuine, if weak, result about Pynguin's
-real-world difficulty on these modules rather than a residual
-environment defect.
+A separate environment issue hit only the Pynguin baseline (Python). Under Python~3.14, the
+interpreter used everywhere else in the measurement pipeline, Pynguin's bytecode
+instrumentation produced empty test suites (0.0\% coverage) for every module. Reproducing
+the failure with verbose logging traced it to Pynguin's internal master--worker subprocess
+--- a genuine tool--interpreter incompatibility rather than a configuration mistake. The
+fix was a dedicated Python~3.10 virtual environment for Pynguin invocations only, the
+interpreter version most Pynguin releases are actually validated against. It changes none
+of the pre-registered metric, threshold, dataset, or model, and it was applied uniformly
+before a single Pynguin measurement was taken, so it carries no HARKing risk. Even with the
+fix in place, Pynguin's own median branch coverage on this dataset stayed at 0.0\%
+(Section~\ref{sec:results}), which we read as a genuine, if weak, finding about Pynguin's
+real-world difficulty on these modules rather than a leftover environment defect.

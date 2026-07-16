@@ -1,13 +1,17 @@
-% RT-SWT-nhom2 — BibTeX. Moi entry co DOI/arXiv theo yeu cau RBL-5.
-% Nguon: team-synthesis/proposal.md muc References + evidence-table-merged.md.
-% Cac entry danh dau TODO: dien noi dung day du tu evidence table.
+% RT-SWT-nhom2 -- BibTeX. Moi entry co DOI hoac arXiv/URL (Screenshot 2).
+% Nguon: team-synthesis/evidence-table-merged.md (N=40). Tieu de + tac gia doi chieu
+% qua arXiv/ACL/Springer/SBQS/SBES. Key dung trong \cite{} o 02_related.tex.
 
-@inproceedings{sapozhnikov2024empirical,
-  author    = {Sapozhnikov, G. and others},
-  title     = {An Empirical Study on the Structural Coverage and Compilation Rate of {ChatGPT}-Generated Unit Tests},
-  booktitle = {Proc. ICSE Companion},
-  year      = {2024},
-  doi       = {10.1145/3634737.3637701}
+% ============================================================
+%  2.1  LLM tren benchmark curated
+% ============================================================
+@inproceedings{wang2025testeval,
+  author    = {Wang, Wenhan and Yang, Chenyuan and Wang, Zhijie and Huang, Yuheng and Chu, Zhaoyang and Song, Da and Zhang, Lingming and Chen, An Ran and Ma, Lei},
+  title     = {{TestEval}: Benchmarking Large Language Models for Test Case Generation},
+  booktitle = {Findings of the Association for Computational Linguistics: NAACL 2025},
+  pages     = {3547--3562},
+  year      = {2025},
+  doi       = {10.18653/v1/2025.findings-naacl.197}
 }
 
 @article{kumar2025empirical,
@@ -20,11 +24,46 @@
   doi     = {10.1109/ACCESS.2025.3637221}
 }
 
-@misc{jain2025testgeneval,
-  author        = {Jain, R. and Le Goues, C.},
-  title         = {{TestGenEval}: A Realistic Benchmark and Dataset for Evaluating {LLM}-Based Software Test Generation},
-  year          = {2025},
-  eprint        = {2503.14713},
+@inproceedings{lira2025evaluating,
+  author    = {Lira and others},
+  title     = {Evaluating the Effectiveness and Cost-Efficiency of Large Language Models in Automated Unit Test Generation},
+  booktitle = {Anais do Simp{\'o}sio Brasileiro de Qualidade de Software (SBQS)},
+  year      = {2025},
+  url       = {https://sol.sbc.org.br/index.php/sbqs/article/view/39000}
+}
+
+@misc{chudic2026enhancement,
+  author        = {Chudic, Alex and {\c{C}}al{\i}kl{\i}, G{\"u}l},
+  title         = {Automated Test Suite Enhancement Using Large Language Models with Few-shot Prompting},
+  year          = {2026},
+  eprint        = {2602.12256},
+  archivePrefix = {arXiv}
+}
+
+@misc{jasti2026feedback,
+  author        = {Jasti, Kushal and Sahu, Tejamani Prashanth and Pentyala, Rishitha and Mohit, Muvvala and Yelleti, Vivek},
+  title         = {{FeedbackLLM}: Metadata-Driven Multi-Agentic Language-Agnostic Test Case Generator with Evolving Prompt and Coverage Feedback},
+  year          = {2026},
+  eprint        = {2605.01264},
+  archivePrefix = {arXiv}
+}
+
+% ============================================================
+%  2.2  Degradation tren real-world code
+% ============================================================
+@inproceedings{sapozhnikov2024empirical,
+  author    = {Sapozhnikov, G. and others},
+  title     = {An Empirical Study on the Structural Coverage and Compilation Rate of {ChatGPT}-Generated Unit Tests},
+  booktitle = {Proc. ICSE Companion},
+  year      = {2024},
+  doi       = {10.1145/3634737.3637701}
+}
+
+@misc{zhang2024testbench,
+  author        = {Zhang, Quanjun and Shang, Ye and Fang, Chunrong and Gu, Siqi and Zhou, Jianyi and Chen, Zhenyu},
+  title         = {{TestBench}: Evaluating Class-Level Test Case Generation Capability of Large Language Models},
+  year          = {2024},
+  eprint        = {2409.17561},
   archivePrefix = {arXiv}
 }
 
@@ -44,14 +83,116 @@
   archivePrefix = {arXiv}
 }
 
-% TODO(Kim): dien day du 5 entry con lai tu evidence-table-merged.md
-% [1] Wang et al. 2025 - GPT-4o tren TestEval (210 Python) - Branch/Line Cov
-% [7] Lira et al. 2025 - GPT-4o/Gemini tren HumanEval - Branch Cov, Hit rate
-% [8] Gu et al. 2025 - ChatGPT-4.0 tren Defects4J (8192) - Pass rate, Line Cov
-% [9] Liu et al. 2025 - GPT-4o tren 183 Python modules - Statement/Branch Cov
-% [10] Broide et al. 2026 - GPT-4o/Claude 3 tren Defects4J - LCCT/BCCT/MSCT
+@misc{jain2025testgeneval,
+  author        = {Jain, R. and Le Goues, C.},
+  title         = {{TestForge}: Feedback-Driven, Agentic Test Suite Generation},
+  year          = {2025},
+  eprint        = {2503.14713},
+  archivePrefix = {arXiv}
+}
 
-% ---- Cong cu (trich dan chuan) ----
+% ============================================================
+%  2.3 / 2.4  Baselines, repair loops, retrieval, context, best-of-N
+% ============================================================
+@article{ouedraogo2025prompt,
+  author  = {Ou{\'e}draogo, Wendk{\^u}uni C. and others},
+  title   = {Prompt Engineering in {LLMs} for Automated Unit Test Generation: A Large-Scale Study},
+  journal = {Empirical Software Engineering},
+  year    = {2025},
+  doi     = {10.1007/s10664-026-10840-4}
+}
+
+@misc{gu2025template,
+  author        = {Gu, Siqi and others},
+  title         = {Improving {LLM}-based Unit Test Generation via Template-based Repair},
+  year          = {2025},
+  eprint        = {2408.03095},
+  archivePrefix = {arXiv},
+  note          = {ACM Trans. Softw. Eng. Methodol. (TOSEM)}
+}
+
+@misc{broide2026evogpt,
+  author        = {Broide, Lior and Stern, Roni and Mordoch, Argaman},
+  title         = {{EvoGPT}: Leveraging {LLM}-Driven Seed Diversity to Improve Search-Based Test Suite Generation},
+  year          = {2026},
+  eprint        = {2505.12424},
+  archivePrefix = {arXiv}
+}
+
+@misc{wang2026testdecision,
+  author        = {Wang, Guoqing and Yang, Chengran and Zhou, Xiaoxuan and Sun, Zeyu and Wang, Bo and Lo, David and Hao, Dan},
+  title         = {{TestDecision}: Sequential Test Suite Generation via Greedy Optimization and Reinforcement Learning},
+  year          = {2026},
+  eprint        = {2604.01799},
+  archivePrefix = {arXiv}
+}
+
+@misc{konstantinou2025yate,
+  author        = {Konstantinou, Michael and Degiovanni, Renzo and Zhang, Jie M. and Harman, Mark and Papadakis, Mike},
+  title         = {{YATE}: The Role of Test Repair in {LLM}-Based Unit Test Generation},
+  year          = {2025},
+  eprint        = {2507.18316},
+  archivePrefix = {arXiv}
+}
+
+@misc{xue2025distinct,
+  author        = {Xue, Pengyu and Zhang, Yuxiang and Yang, Zhen and Ren, Xiaoxue and Li, Xiang and Hu, Pengfei and Wu, Linhao and Li, Kainan},
+  title         = {{DISTINCT}: A Description-Guided Branch-Consistency Analysis Framework for Non-Regressive Test Case Generation},
+  year          = {2025},
+  eprint        = {2506.07486},
+  archivePrefix = {arXiv},
+  note          = {IEEE Trans. Softw. Eng. (TSE)}
+}
+
+@misc{liu2025typeaware,
+  author        = {Liu, Runlin and others},
+  title         = {Type-aware {LLM}-based Regression Test Generation for {Python} Programs},
+  year          = {2025},
+  eprint        = {2503.14000},
+  archivePrefix = {arXiv}
+}
+
+@inproceedings{silva2025comparative,
+  author    = {Silva and others},
+  title     = {{LLMs} as Test Generators: A Comparative Benchmarking Study},
+  booktitle = {Anais do Simp{\'o}sio Brasileiro de Engenharia de Software (SBES)},
+  year      = {2025},
+  url       = {https://sol.sbc.org.br/index.php/sbes/article/view/36983}
+}
+
+@article{zeng2026logic,
+  author  = {Zeng and others},
+  title   = {A Logic-Guided and Explainable Approach to {LLM}-Based Unit Test Generation},
+  journal = {Applied Sciences},
+  volume  = {16},
+  number  = {5},
+  pages   = {2542},
+  year    = {2026},
+  doi     = {10.3390/app16052542}
+}
+
+% ============================================================
+%  2.5  Coverage vs mutation score
+% ============================================================
+@misc{dakhela2023,
+  author        = {Moradi Dakhel, Arghavan and Nikanjam, Amin and Majdinasab, Vahid and Khomh, Foutse and Desmarais, Michel C.},
+  title         = {Effective Test Generation Using Pre-trained Large Language Models and Mutation Testing},
+  year          = {2023},
+  eprint        = {2308.16557},
+  archivePrefix = {arXiv}
+}
+
+@inproceedings{antal2025leveraging,
+  author    = {Antal, G{\'a}bor and others},
+  title     = {Leveraging {GPT-4} for Vulnerability-Witnessing Unit Test Generation},
+  booktitle = {Proc. EASE},
+  year      = {2025},
+  doi       = {10.1145/3756681.3757075}
+}
+
+% ============================================================
+%  Cong cu (trich dan chuan)
+% ============================================================
 @inproceedings{fraser2011evosuite,
   author    = {Fraser, Gordon and Arcuri, Andrea},
   title     = {{EvoSuite}: Automatic Test Suite Generation for Object-Oriented Software},

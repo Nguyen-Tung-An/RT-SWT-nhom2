@@ -1,88 +1,126 @@
 \section{Methodology}\label{sec:method}
-% NGUOI VIET: LR (Hai) + MS (Phuc)
-% Ban nhap tu RW (Loc), tong hop tu proposal.md Sec5, amendment v1.1/v1.2, va notes.md.
-% Can Hai/Phuc doc lai + xac nhan chi tiet trien khai truoc khi nop.
+% NGUOI VIET: RW (Loc) + LR (Hai) + MS (Phuc) -- xem kich-ban-viet-method.md.
+% Da qua 1 luot viet lai ky thuat (doi cau truc cau); van can moi nguoi tu doc +
+% xac nhan chi tiet trien khai truoc khi nop.
+% Da tich hop ban chinh sua prose + format lai 2026-07-17 (RW)
 
 \subsection{Dataset}
-The dataset consists of \textbf{120 real-world functions} (60 Java, 60 Python) with
-cyclomatic complexity $5 \le \mathrm{CC} \le 10$, measured with Lizard. The original
-proposal specified Defects4J and CodeXGLUE as data sources; during dataset preparation the
-team found that CodeXGLUE is a code-intelligence benchmark (summarisation/translation) and
-not a runnable function corpus suited to coverage/mutation measurement, and that the
-surveyed literature does not consistently use this pairing. This was recorded as
-amendment~v1.2 (2026-07-02, approved before the full run) and resolved by mining functions
-directly from ten pinned open-source repositories at fixed commits instead: eight Java
-projects overlapping with Defects4J's subject programs (\texttt{commons-cli},
-\texttt{commons-math}, \texttt{commons-csv}, \texttt{commons-collections}, \texttt{gson},
-\texttt{jsoup}, \texttt{joda-time}, \texttt{jfreechart}) and two Python projects
-(\texttt{flask}, \texttt{requests}). Each repository is cloned at a pinned commit with full
-provenance (URL, licence, commit hash, download date) recorded separately, so the dataset is
-exactly reproducible. The Python split is uneven by design of the source ecosystem (more
-functions come from \texttt{flask} than \texttt{requests}); this is disclosed as a threat to
-external validity (Section~\ref{sec:threats}) rather than corrected by resampling, to avoid
-altering the dataset after any measurement had begun.
+% 3.1 — ban tay cua Loc (RW), wire 2026-07-17; chi sua chinh ta British + "manually"
+The proposal identified Defects4J and CodeXGLUE as data sources. However, CodeXGLUE was
+ultimately excluded during preparation because it is a code-intelligence benchmark for
+tasks like summarisation and translation, rather than a corpus of executable functions
+suitable for coverage or mutation tools. Additionally, no paper in our review had paired
+it with such measurements. We documented the change as amendment~v1.2 (finalised by the
+team on 2026-07-02, before the full experiment), and collected the functions ourselves
+from ten repositories at fixed commits. Eight are Java projects overlapping Defects4J's
+subject programs --- \texttt{commons-cli}, \texttt{commons-math}, \texttt{commons-csv},
+\texttt{commons-collections}, \texttt{gson}, \texttt{jsoup}, \texttt{joda-time},
+\texttt{jfreechart} --- plus \texttt{flask} and \texttt{requests} for Python. The URL,
+licence, commit hash, and download date are recorded for every repository, enabling the
+exact dataset to be reconstructed. The final sample contains \textbf{120 real-world
+functions}, 60 per language, each with a cyclomatic complexity between 5 and 10, as
+measured by Lizard. One caveat is that \texttt{flask} contributes 48 of the 60 Python
+functions, a by-product of how the two projects are structured. We retained this
+imbalance --- resampling after measurement had begun would have been a greater issue ---
+and disclose it in Section~\ref{sec:threats}.
 
 \subsection{Test generation}
-\textbf{LLM.} We evaluate \texttt{gpt-4o-mini-2024-07-18} (pinned snapshot),
-\texttt{temperature=0}, \texttt{top\_p=1}, \texttt{max\_tokens=2048}, one-shot prompting (a
-single worked exemplar precedes the target function in the prompt). The original proposal
-specified \texttt{gpt-4o}; the team's OpenAI account only had access to \texttt{gpt-4o-mini}
-at execution time, an objective access constraint recorded as amendment~v1.1
-(2026-06-28, approved before the full run) rather than a post-hoc substitution --- a
-legitimate academic precedent exists for evaluating \texttt{gpt-4o-mini} specifically (one
-of the papers in our own related-work table does so). All research questions, metrics,
-thresholds, and statistical tests were kept unchanged by both amendments.
+\textbf{LLM.} All 120 suites come from one model call each:
+\texttt{gpt-4o-mini-2024-07-18} (the dated snapshot, so reruns hit identical weights),
+\texttt{temperature=0}, \texttt{top\_p=1}, \texttt{max\_tokens=2048}, one-shot --- a
+single worked example precedes the target function in every prompt. The proposal had
+named \texttt{gpt-4o}; the team's API account simply had no access to it when the
+experiment ran, so we switched to \texttt{gpt-4o-mini} and recorded the change as
+amendment~v1.1 (documented 2026-06-28, finalised by the team 2026-07-02 --- both before
+the full run). The same model has been evaluated on its own in this literature
+before~\cite{konstantinou2026evaluating}, which keeps the substitution inside our
+evidence base. Research questions, metrics, thresholds, and statistical tests were not
+touched by either amendment.
 
-\textbf{Baselines.} Java: EvoSuite and Randoop, both under an equal 60-second
-per-class/per-function search budget (an initial 60s-vs-10s asymmetry between EvoSuite and
-Randoop was identified during pilot testing and corrected before the full run;
-Section~\ref{sec:threats}). Python: Pynguin (DYNAMOSA algorithm, 90-second search budget per
-module); Hypothesis was listed as a candidate baseline in the original proposal but was not
-exercised in the reported results.
+\textbf{Baselines.} EvoSuite~\cite{fraser2011evosuite} and
+Randoop~\cite{pacheco2007randoop} generate the Java comparison suites, with 60 seconds of
+search per class each. That budget was not equal at first --- the pilot ran EvoSuite at
+60 seconds but Randoop at 10, a bias we only caught when comparing pilot outputs --- and
+was harmonised before the main experiment (Section~\ref{sec:threats}).
+Pynguin~\cite{lukasczyk2022pynguin} covers Python, running DYNAMOSA with 90 seconds per
+module. Hypothesis appeared as a candidate baseline in the earliest proposal but was
+never used for the reported results.
 
 \subsection{Measurement}
-Generated tests are executed \emph{inside the original project}, not in isolation: each
-function is measured by building/running the actual repository at its pinned commit,
-because a substantial fraction of functions reference names and behaviour that only resolve
-correctly inside their real module (Section~\ref{sec:threats} documents the pilot finding
-that motivated this choice). For Java, tests are compiled and run with Maven; branch
-coverage is collected with JaCoCo and mutation testing with PIT, both attributed \emph{per
-function} by intersecting the tool's line-level report with each function's
-\texttt{[start\_line, end\_line]} range in the pinned source file --- necessary because
-JaCoCo/PIT report at class granularity while our unit of analysis is the function. Because
-GPT-generated Java suites have a much higher per-file compile-failure rate than
-tool-generated ones, each GPT-authored test is compiled and measured \emph{individually}
-(one file per function per run), so that a single compile error cannot be mistaken for a
-failure in a co-located, otherwise-valid test in the same class. For Python, functions are
-measured inside the installed module (editable install of the pinned \texttt{flask}/
-\texttt{requests} checkout); branch coverage uses \texttt{coverage.py} and mutation testing
-uses a lightweight AST-level mutation operator (binary-operator, comparison-operator, and
-boolean-operator swaps, boolean/numeric-constant perturbation) restricted to statements
-within each function's line range, applied identically to both the GPT-4o-mini and Pynguin
-arms so the two are measured with the same instrument.
+We chose not to measure functions in isolation. Instead, every generated test runs inside
+the real project, built and executed at the function's pinned commit (the exact commit
+hashes, URLs, and download dates are recorded in the dataset's provenance file) ---
+because a large share of the functions in our sample only behave correctly and only
+resolve the names they reference inside their actual module (Section~\ref{sec:threats}
+walks through the pilot result that pushed us toward this decision).
 
-A test suite is scored \textsc{invalid} (branch coverage $=0$, mutation score $=0$) if it
-fails to compile/import or fails to execute (proposal~\S5.1). A stronger, mandatory
-\emph{green-on-original} check is additionally enforced before any mutation analysis: a
-suite that does not pass on the unmutated source is rejected outright, since scoring
-mutation kills for an already-failing suite would silently inflate the mutation score
-(Section~\ref{sec:threats} documents a concrete case this check caught). We further
-distinguish, at the reporting level, between a suite that is \textsc{invalid} and a suite
-that \emph{compiles and runs but exercises none of the target function's lines}
-(branch coverage $=0$ despite \texttt{compiled=1}); both score 0\% on our metrics, but they
-are different failure mechanisms and are reported separately in Section~\ref{sec:results}.
+\textbf{Java.} Maven~3.9.16 compiles and runs the tests; JaCoCo~0.8.12 collects branch
+coverage, and PIT~1.17.2~\cite{coles2016pit} handles mutation testing. Since both tools
+report at class granularity and our unit of analysis is the individual function, we
+attribute their output per function by intersecting each report's line numbers with the
+function's own \texttt{[start\_line, end\_line]} range in the pinned source; the mutation
+score of a function is the proportion of PIT-generated mutants within that range that its
+suite kills. Scaling this across 60 functions surfaced two infrastructure bugs of our
+own: an uncaught PIT timeout that crashed an entire measurement run, and stale
+\texttt{jacoco.xml}/\texttt{mutations.xml} reports being picked up for the next function
+measured in the same module. The second bug would have silently credited one function
+with another's coverage, so the pipeline now clears report files between runs.
+GPT-generated Java suites fail to compile far more often than the tool-generated ones do,
+so each GPT-authored test is compiled and measured individually, with one file per
+function per run, rather than batching. Batching could result in a working test failing
+due to a compile error from another test in the same file.
+
+\textbf{Python.} Functions are measured within an editable installation of the pinned
+\texttt{flask} (3.2.0.dev, pinned 2026-05-31) and \texttt{requests} (2.34.2, pinned
+2026-06-15) checkouts; \texttt{coverage.py}~7.15.1 collects branch coverage, cut to the
+function's line range as on the Java side. Mutation testing uses two instruments, one per
+arm. The \texttt{gpt-4o-mini} suites are scored with \texttt{mutmut}~2.4.4, scoped to the
+target function by marking every line outside its range with \texttt{\# pragma: no
+mutate}; only test cases that pass on the unmutated source are executed, and the score is
+the fraction of non-surviving mutants (killed or timed out) over all mutants generated in
+the range. The Pynguin suites are scored with a custom engine built on Python's standard
+\texttt{ast} module (no external dependency): it swaps arithmetic ($+\leftrightarrow-$,
+$\times\leftrightarrow\div$), comparison ($>\,\leftrightarrow\,\ge$,
+$<\,\leftrightarrow\,\le$, $=\,\leftrightarrow\,\ne$), and boolean
+(\texttt{and}$\,\leftrightarrow\,$\texttt{or}) operators, negates boolean constants, and
+increments numeric constants by one --- each mutant changes exactly one site inside the
+function's line range, capped at 20 mutants per function. For every mutant the whole
+suite is re-run with a 90-second timeout; a mutant counts as killed if the suite fails or
+times out, and the source file is restored after each run. Functions with no mutable site
+in range are reported as missing rather than scored 0. Neither pipeline attempts
+equivalent-mutant detection, so both denominators include all generated mutants and the
+resulting scores are conservative. Both instruments enforce the same green-on-original
+gate and the same function-range scoping, but their operator sets differ; the paired
+RQ2-B comparison between \texttt{gpt-4o-mini} and Pynguin therefore crosses instruments,
+and we flag this explicitly as a construct-validity threat in Section~\ref{sec:threats}
+(the Java RQ2-B comparisons are unaffected --- PIT scores both arms). Restricting
+mutation to the function's own line range is itself a deliberate constraint: it excludes
+helper functions and class-level state, which keeps the per-function attribution clean
+and the two arms comparable, at the cost of not observing faults that only surface
+through interactions outside the function. Given the pinned checkouts and the fixed model
+snapshot at \texttt{temperature=0}, no step of the measurement pipeline is randomised.
+
+Any suite that fails to compile, import, or execute is marked \textsc{invalid}: both
+metrics score 0\%, per proposal \S5.1. Before mutation analysis, each suite must also
+pass on the unmutated source. Scoring mutant kills on top of an already-failing suite
+would quietly inflate the score --- Section~\ref{sec:threats} shows the pilot case where
+exactly that happened --- so such suites are rejected outright. An \textsc{invalid} suite
+is not the same thing as one that compiles, runs, and still touches none of the target's
+lines (\texttt{compiled=1}, coverage $=0$): both end up at 0\%, for different reasons,
+and Section~\ref{sec:results} keeps them separate.
 
 \subsection{Statistical analysis}
-All tests use $\alpha = 0.05$ and non-parametric methods, chosen because per-function
-coverage/mutation distributions are not assumed normal and are bounded in $[0,100]$.
-\textbf{RQ1} (coverage $\ge 80\%$): one-sample Wilcoxon signed-rank test of branch coverage
-against 80. \textbf{RQ2} (mutation $\ge 60\%$ and vs.\ baseline): a one-sample Wilcoxon
-against 60 for the threshold sub-question, and a paired Wilcoxon signed-rank test
-(gpt-4o-mini vs.\ each baseline, matched by \texttt{function\_id}) for the comparative
-sub-question, with matched-pairs rank-biserial correlation $r$ as effect size.
-\textbf{RQ3} (complexity vs.\ quality): Spearman rank correlation between CC and each
-quality metric. Every statistic is reported at two levels: \emph{all} ($N=60$ per language;
-\textsc{invalid}/non-touching functions scored 0, per the pre-registered rule) and
-\emph{effective} (the conditional subset of functions whose suite compiled and touched the
-target), since the effective-level figures alone would overstate raw capability
-(Section~\ref{sec:discussion}).
+All tests run at $\alpha = 0.05$, and all of them are non-parametric: coverage and
+mutation scores are percentages pinned to the $[0, 100]$ interval, so normality was never
+a defensible assumption for this data. \textbf{RQ1} needs one test --- a one-sample
+Wilcoxon signed-rank of branch coverage against the 80\% bar. \textbf{RQ2} needs two.
+Whether mutation score clears 60\% is again a one-sample Wilcoxon; whether
+\texttt{gpt-4o-mini} beats each baseline is a paired Wilcoxon, matched by
+\texttt{function\_id}, with matched-pairs rank-biserial $r$ as the effect size. For
+\textbf{RQ3} we correlate CC with each quality metric using Spearman rank correlation.
+Every statistic is reported at two levels: \emph{all} ($N = 60$ per language,
+\textsc{invalid} and non-touching functions scored 0 under the pre-registered rule) and
+\emph{effective} (only the suites that compiled and touched their target). Dropping the
+all-level would quietly overstate the model, since the effective subset is conditioned on
+success --- so neither level appears without the other
+(Section~\ref{sec:discussion} returns to this).
