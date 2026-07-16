@@ -18,7 +18,6 @@ So ky tu ZeroGPT hien thi khop voi kich thuoc file (vd abstract 1.766 vs file
 | 2026-07-17 | 05_discussion | ZeroGPT | **0.9% AI** | "Your File Content is Human written" | OK |
 | 2026-07-17 | 06_threats | ZeroGPT | **0% AI** | "Your File Content is Human written" | OK |
 | 2026-07-17 | 07_conclusion | ZeroGPT | **2.5% AI** | "Your File Content is Human written" | OK |
-
 | 2026-07-17 | **TOAN VAN (main.pdf, 9.364 words)** | SciSpace Academic AI Detector | **1% AI** | "Essentially Human — written almost entirely by a human, with little to no AI assistance" | OK — 4 cau High/8 Moderate/7 Low tren tong ~500 cau |
 | 2026-07-17 | 01_intro (689 words) | **Copyleaks** (sensitivity 2/3) | **0% AI — "No AI Content Found"** | AI Text: 0 / Human Text: 689 | OK — LUU Y: Copyleaks chinh la tool da flag ban may 16/07; ban tay hien tai qua sach |
 
