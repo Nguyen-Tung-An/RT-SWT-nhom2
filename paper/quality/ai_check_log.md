@@ -19,7 +19,13 @@ So ky tu ZeroGPT hien thi khop voi kich thuoc file (vd abstract 1.766 vs file
 | 2026-07-17 | 06_threats | ZeroGPT | **0% AI** | "Your File Content is Human written" | OK |
 | 2026-07-17 | 07_conclusion | ZeroGPT | **2.5% AI** | "Your File Content is Human written" | OK |
 
-**KET QUA TONG: 8/8 section "Human written", dai 0%–5.3% AI (ZeroGPT, 17/07).**
+| 2026-07-17 | **TOAN VAN (main.pdf, 9.364 words)** | SciSpace Academic AI Detector | **1% AI** | "Essentially Human — written almost entirely by a human, with little to no AI assistance" | OK — 4 cau High/8 Moderate/7 Low tren tong ~500 cau |
+
+**KET QUA TONG: 8/8 section "Human written" (ZeroGPT, 0%–5.3%) + toan van 1%
+"Essentially Human" (SciSpace) — HAI detector doc lap cung ket luan, 17/07.**
+SciSpace scan truc tiep file main.pdf 11 trang (9.364 words / 58.905 chars) —
+khop ban PDF cuoi da commit. Co the "Download PDF report" tu SciSpace de luu
+lam minh chung chi tiet (chi ro tung cau bi danh dau).
 Doi chieu so ky tu tung lan scan khop kich thuoc file detector_input (vd discussion
 12.522 vs file 12.702; threats 6.602 vs 6.695; conclusion 4.753 vs 4.822) — xac nhan
 toan bo scan dung ban cuoi (ban build PDF 11 trang).
