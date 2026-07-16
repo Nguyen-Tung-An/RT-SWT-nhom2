@@ -5,30 +5,30 @@
 
 \subsection{LLM-based test generation on curated benchmarks}
 A large share of recent work reports strong results for GPT-4-class models on curated,
-self-contained benchmarks. Wang et al.\ (2025) report GPT-4o reaching 98.65\% line and
-97.16\% branch coverage on TestEval (Python, LeetCode-style problems); Kumar et al.\ (2025)
+self-contained benchmarks. Wang et al.\ \cite{wang2025testeval} report GPT-4o reaching 98.65\% line and
+97.16\% branch coverage on TestEval (Python, LeetCode-style problems); Kumar et al.\ \cite{kumar2025empirical}
 report 99.05\% branch coverage for a mix of Gemini/GPT-4o/Claude-3.5 on HumanEval-Java; Lira
-et al.\ (2025) report a 90.69\% hit rate for Gemini~1.5-Pro with source and docstring
+et al.\ \cite{lira2025evaluating} report a 90.69\% hit rate for Gemini~1.5-Pro with source and docstring
 context on HumanEval. These benchmarks share two properties directly relevant to our
 design: functions are short, single-file, and largely self-contained (no real project
-context to resolve), and complexity is not controlled or reported. Chudic and Çal{\i}kl{\i}
-(2026) and Jasti et al.\ (2026) similarly report high coverage on HumanEval/ClassEval-style
+context to resolve), and complexity is not controlled or reported. Chudic and \c{C}al{\i}kl{\i}
+\cite{chudic2026enhancement} and Jasti et al.\ \cite{jasti2026feedback} similarly report high coverage on HumanEval/ClassEval-style
 problems. This class of result motivates the first half of our GAP statement (GAP-T): high
 performance on curated, low-complexity problems does not establish how the same models
 behave on medium-complexity, real-project code.
 
 \subsection{Degradation on real-world code}
 A second, smaller cluster measures LLM test generation directly on real projects and
-reports substantially weaker results. Haratian et al.\ (2026) evaluate GPT-4o on 353 real
+reports substantially weaker results. Haratian et al.\ \cite{haratian2026praware} evaluate GPT-4o on 353 real
 Java pull requests and report a 63\% compilation-error rate and only 13\% fail-to-pass
-effectiveness (vs.\ 36\% for EvoSuite on the same PRs). Sapozhnikov et al.\ (2024) report
+effectiveness (vs.\ 36\% for EvoSuite on the same PRs). Sapozhnikov et al.\ \cite{sapozhnikov2024empirical} report
 that over 50\% of ChatGPT-generated Java tests are malformed or non-compiling, attributing
-this partly to prompt-size limits forcing incomplete context. Zhang et al.\ (2024, arXiv
-2409.17561 / TestBench) report Java compile-error rates of 47.9--55.9\% across CodeLlama,
-GPT-3.5, and GPT-4 on nine open-source projects. Konstantinou et al.\ (2026) find that a
+this partly to prompt-size limits forcing incomplete context. Zhang et al.\ \cite{zhang2024testbench}
+(TestBench) report Java compile-error rates of 47.9--55.9\% across CodeLlama,
+GPT-3.5, and GPT-4 on nine open-source projects. Konstantinou et al.\ \cite{konstantinou2026evaluating} find that a
 plain GPT-4o-mini pipeline produces many non-compiling/non-passing tests across six Java
 projects, with mutation score falling to 33.82\% --- notably the same model we evaluate.
-Jain and Le Goues (2025) report a mutation score of only 33.8\% for GPT-4o on TestGenEval
+Jain and Le Goues \cite{jain2025testgeneval} report a mutation score of only 33.8\% for GPT-4o on TestGenEval
 (Python), despite an 84.3\% pass@1. Our Java \textsc{invalid}-or-no-touch rate (91.7\%) and
 Python \textsc{invalid} rate (46.7\%) are more severe than most of these figures, which we
 attribute to two compounding factors largely absent from the cited studies: (i) we measure
@@ -41,14 +41,14 @@ best-case capability.
 
 \subsection{Automated (non-LLM) baselines}
 Search-based and random test generation give us a non-LLM point of comparison. EvoSuite
-uses a genetic-algorithm search over test suites and is widely used as an SBST baseline in
-this literature (e.g.\ Ouédraogo et al., 2025; Gu et al., 2025; Broide et al., 2026, all on
-Defects4J); Randoop instead performs feedback-directed random testing. Both are deterministic
+\cite{fraser2011evosuite} uses a genetic-algorithm search over test suites and is widely used as an SBST baseline in
+this literature (e.g.\ Ouédraogo et al.\ \cite{ouedraogo2025prompt}; Gu et al.\ \cite{gu2025template}; Broide et al.\ \cite{broide2026evogpt}, all on
+Defects4J); Randoop \cite{pacheco2007randoop} instead performs feedback-directed random testing. Both are deterministic
 in their \emph{approach} (not in the tests they emit) and do not depend on natural-language
 prompting, so their coverage/mutation numbers are not subject to the compile-time failure
-modes we observe for the LLM. On the Python side, Pynguin is the closest analogue to
+modes we observe for the LLM. On the Python side, Pynguin \cite{lukasczyk2022pynguin} is the closest analogue to
 EvoSuite, using the DYNAMOSA many-objective search algorithm; it is used as a baseline or
-point of comparison in, e.g., Wang et al.\ (2026) and Konstantinou et al.\ (2025), typically
+point of comparison in, e.g., Wang et al.\ \cite{wang2026testdecision} and Konstantinou et al.\ \cite{konstantinou2025yate}, typically
 alongside or against LLM-based approaches. We use EvoSuite and Randoop (Java) and Pynguin
 (Python) as our own baselines (amendments~v1.1/v1.2), under an equal generation-time budget
 per function/module rather than an equal number of LLM calls, since the two families of tool
@@ -58,14 +58,14 @@ are not naturally comparable on a per-call basis.
 A substantial part of the literature is explicitly organised around \emph{fixing} the
 weaknesses that plain one-shot/zero-shot prompting exhibits. Feedback/repair loops --- fed
 compiler or test-failure output back to the model and iterated --- are the most common
-technique (e.g.\ Zeng et al., 2026's Logic-CoT vs.\ ChatUniTest; Xue et al., 2025's
-description-guided repair; Gu et al., 2025's template-based repair with an LLM fallback).
+technique (e.g.\ Zeng et al.'s Logic-CoT \cite{zeng2026logic} vs.\ ChatUniTest; Xue et al.'s
+description-guided repair \cite{xue2025distinct}; Gu et al.'s template-based repair with an LLM fallback \cite{gu2025template}).
 Retrieval-augmented approaches supply real API signatures or class skeletons instead of raw
 source text, directly targeting the wrong-target/hallucinated-signature failure mode we
-observe in our own Java results (Section~\ref{sec:discussion}); Liu et al.\ (2025) use
-call-graph context for this purpose, and Konstantinou et al.\ (2025)'s HITS combines
-call-graph and generation history. Best-of-$N$ sampling (generate several candidates, keep
-the one that compiles) is used by, e.g., Silva et al.\ (2025) across a large panel of models.
+observe in our own Java results (Section~\ref{sec:discussion}); Liu et al.\ \cite{liu2025typeaware} use
+call-graph context for this purpose, and Konstantinou et al.\ \cite{konstantinou2025yate} combine
+call-graph and generation-history context. Best-of-$N$ sampling (generate several candidates, keep
+the one that compiles) is used by, e.g., Silva et al.\ \cite{silva2025comparative} across a large panel of models.
 All of these techniques share one property: they leave the strict single-call, single-sample
 setting that our RQ1--RQ3 are designed to isolate. We deliberately do \emph{not} adopt them,
 because our goal is to measure the native, unassisted capability of one-shot prompting on
@@ -76,8 +76,8 @@ model.
 \subsection{Coverage vs.\ mutation score as a validity concern}
 Several studies explicitly warn that coverage alone overstates test quality, which motivates
 our GAP-M and our choice to report both metrics under paired statistical tests rather than
-coverage alone. Dakhela et al.\ (2023) and Antal et al.\ (2025) both report a gap between
-syntactic/coverage success and semantic correctness; Jain and Le Goues (2025)'s 84.3\%
+coverage alone. Dakhela et al.\ \cite{dakhela2023} and Antal et al.\ \cite{antal2025leveraging} both report a gap between
+syntactic/coverage success and semantic correctness; Jain and Le Goues \cite{jain2025testgeneval}'s 84.3\%
 pass@1 alongside a 33.8\% mutation score is a direct instance of the same pattern we
 reproduce on our own data (\texttt{JA-020}: 60\% branch coverage, 0\% mutation score;
 Section~\ref{sec:discussion}). Few of the surveyed papers combine branch coverage and
