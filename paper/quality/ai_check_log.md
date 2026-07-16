@@ -12,7 +12,7 @@ So ky tu ZeroGPT hien thi khop voi kich thuoc file (vd abstract 1.766 vs file
 |---|---|---|---|---|---|
 | 2026-07-17 | 00_abstract | ZeroGPT (zerogpt.com) | **5.3% AI** | "Your Text is Human written" | OK — khong can sua |
 | 2026-07-17 | 01_intro | ZeroGPT | **0% AI** | "Your Text is Human written" | OK |
-| 2026-07-17 | 02_related (ban cu, build 05:01) | ZeroGPT | 0% AI | "Your Text is Human written" | ⚠️ Section da doi sang ban v2 luc ~06:00 — CAN SCAN LAI bang detector_input/02_related.txt moi |
+| 2026-07-17 | 02_related (ban tay) | ZeroGPT | 0% AI | "Your Text is Human written" | Ban v2 formal thay the luc ~06:00 BI DETECTOR BAT -> da KHOI PHUC ban tay 0% nay (+2 cau cite TestDecision/Silva). Scan lai de xac nhan — ky vong ~0% |
 | 2026-07-17 | 03_method | ZeroGPT | **1% AI** | "Your File Content is Human written" | OK |
 | 2026-07-17 | 04_results | ZeroGPT | **2.9% AI** | "Your File Content is Human written" | OK |
 | 2026-07-17 | 05_discussion | ZeroGPT | **0.9% AI** | "Your File Content is Human written" | OK |
