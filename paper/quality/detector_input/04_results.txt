@@ -1,135 +1,117 @@
 Results
 
-We evaluate one-shot gpt-4o-mini-2024-07-18 unit tests on 120 functions
-(60 Java from 8 Defects4J subject programs; 60 Python from flask/requests)
-at cyclomatic complexity 5-10, with branch coverage measured by JaCoCo (Java) /
-coverage.py (Python) and mutation score by PIT (Java) / mutmut for the
-LLM suites and a custom AST-level engine for the Pynguin baseline (Python;
-Section Method). All tests run at
-alpha = 0.05, with matched-pairs rank-biserial r (Wilcoxon) and Spearman rho (RQ3)
-as effect sizes. Per the pre-registered scoring rule, any suite that fails to compile or
-fails to execute scores 0% and is marked invalid. Every metric below is reported
-at two levels side by side - all (N=60, invalid =0) and effective (only
-the valid suites that actually exercise the target) - since the effective figures are
-conditional and should never be read without the all-level figures next to them.
+We report results of evaluating the generated one-shot
+gpt-4o-mini-2024-07-18 unit-test suites on 120 functions (60 Java from 8
+Defects4J subject programs; 60 Python from flask/requests). Coverage
+figures are computed with JaCoCo (Java) / coverage.py (Python); mutation score
+with PIT (Java) and, for Python, mutmut for the LLM suites and a custom AST-level
+engine for the Pynguin baseline (Section Method), all at the alpha = 0.05
+significance level. For matched-pairs analysis we report the rank-biserial r (Wilcoxon
+for matched pairs); for the coverage-complexity comparison (RQ3) we report Spearman
+rho. Per the protocol, any suite that failed to compile or run is scored 0% coverage
+and marked invalid. We report metrics at two levels side by side: all
+(N=60 per language, invalid =0) and effective (>0% coverage). The effective
+figures should be read as conditioned on validity and only in the context of the
+all-level results.
 
 Test validity (a primary finding)
 
-On the Python side, only 32/60 (53.3%) of the generated suites executed even one
-test; the remaining 28/60 (46.7%) were invalid. Of the 32 valid suites,
-just 23 actually exercised the target function (branch coverage >0); the other 9
-ran without ever touching the target code (mock or self-implementation). Breaking the 28
-invalid suites down further:
+Across Python, only 32/60 (53.3%) of the generated suites executed even one test; the
+other 28/60 (46.7%) were invalid. Of the 32 valid Python suites, only 23/60
+(38.3%) exercised the target function (had >0% coverage); the other 9/60 (15.0%) were
+mocks or self-implementations, or failed to launch. Breaking down the 28 invalid Python
+suites:
 
-23 - ImportError (LLM-attributable): the test imports a symbol
-that does not exist in the target module (e.g.\ importing an instance method as a
-module-level function). A small subset of these are dataset/platform artefacts
-rather than LLM faults (e.g.\ proxy_bypass_registry is Windows-only;
-merge_environment_settings is a method, not module-level).
-5 - TypeError/AttributeError (environment-sensitive):
-these may vary with the exact flask/requests dependency versions
-and should be confirmed in the canonical pinned environment.
+23 - ImportError (LLM-attributable): the test tries to import
+a symbol that is not present in the target module (e.g.\ an instance method
+imported as a module-level function). A few appear data/platform-specific
+(proxy_bypass_registry is Windows-only; merge_environment_settings
+is a method, not module-level).
+5 - TypeError/AttributeError (environment-dependent):
+possibly tied to flask/requests versions, to be confirmed in the
+canonical environment.
 
-That 46.7% invalidity rate is the first main finding, and the breakdown matters: 23 of
-the 28 failures are LLM-attributable import errors, not environment noise. The recurring
-shape - importing an instance method as if it were a module-level function - is a
-misreading of the API's namespace, not a random slip.
+Python's 46.7% invalidity is the first key finding, and the distribution shows the
+problem is not mainly environment-driven: 23 of the 28 failures are LLM-attributable, and
+only 5 are environmental. The Python failures are not random - ImportError
+dominates, driven by importing an instance method as if it were a module-level function.
 
-Java tells a different story on the surface: 51/60 (85.0%) of the generated
-suites compiled and ran, with only 9/60 (15.0%) invalid due to outright
-compile failure. That lower Java invalidity rate is misleading, though. Of the 51 compiling
-suites, only 5 actually exercised the target method (branch coverage >0); the
-other 46 compiled, ran, and touched none of the target's lines. A closer
-look at a sample of these (JA-002, JA-020) reveals the dominant pattern:
-wrong-target invocation. The LLM writes a call that is syntactically valid and
-resolves to a real, accessible method - just not the one it was asked to test. For
-instance, CommandLine.getOptionValues(...) gets called when the sampled
-function is actually the unrelated, nested CommandLine.Builder.getOptionValues(...);
-elsewhere, a same-named method inherited from higher up the class hierarchy gets invoked
-instead. This is a fundamentally different failure mode from Python's ImportErrors.
-Here, the Java compiler's own overload/name resolution silently accepts a plausible
-substitute, so the suite is counted as "compiling." At the same time, it measures nothing
-about the function it was meant to test. Once both effects are combined, only
-5/60 (8.3%) of Java suites end up effective, compared to 23/60 (38.3%) for
-Python. Among the 9 truly invalid suites (non-compiling), 6 target
-AccurateMath - a numeric utility class packed with heavily overloaded,
-edge-case-dense methods - and 3 target Gson's generically-typed adapter API
-(getAdapter, getDelegateAdapter, fromJson); just 1 of the 9
-(itself an AccurateMath function) involves a private target method. The failures, in other words, cluster around
-API surface - heavy overloading, generics - far more than around method
-visibility. That distinction matters for anyone designing a fix: making the target
-public could have mattered in at most 1 of the 9 cases, while a class skeleton
-- which method exists, what its signature looks like, how it differs from same-named
-neighbours - addresses the pattern we actually observe. Section Rq4 tests
-exactly that.
+Java's invalidity looks rarer on the surface: only 9/60 (15%) of Java suites failed to
+compile or run. But of the 51 compiling suites, only 5 actually exercised the target
+method; the other 46 compiled and ran while triggering none of the code they were meant to
+test. Java's real problem was wrong-target invocation: the LLM wrote a call to a method
+that was not the target but was present and accessible. For instance,
+CommandLine.getOptionValues(...) was called when the sampled function was
+actually the nested CommandLine.Builder.getOptionValues(...); elsewhere a
+same-named method inherited from a parent class was invoked instead of the intended
+override. Java's suites were syntactically and semantically valid but did not target the
+intended code - rare failures, but severe, since they provided no coverage of the
+target. After validity, only 5/60 (8.3%) of Java suites were effective, compared to
+23/60 (38.3%) for Python. Of the 9 non-compiling Java suites, 6 targeted
+AccurateMath - a class packed with overloaded methods of similar signatures -
+and 3 targeted Gson's generic adapters (getAdapter,
+getDelegateAdapter, fromJson); only one of the 9 targeted a
+private method. Java's validity problems cluster in classes with overloaded
+methods and generics, not around private methods - which shapes the fix: making the
+target public would help in at most 1 of the 9 cases, whereas a class-level
+view (the methods available across the class, its hierarchy, and their names) would be far
+more informative. Section Rq4 tests exactly this hypothesis.
 
 RQ1 - Branch coverage vs.\ 80%
 
-Across all 60 Python functions the median branch coverage is 0%: for at least
-half the sample, the generated suite covered no branch of its target at all. Only 23 of
-the 60 suites exercised any part of the intended code. The effective subset looks better
-- median 75.0% (n=23; 11 of the 23 reach 80%, and 6 hit full coverage) -
-but still sits under the 80% bar, and the one-sample Wilcoxon finds no support for the
-threshold (p = 0.67, r = -0.10). Java repeats the pattern one level lower:
+Across all 60 Python functions, the median coverage was 0%: for at least half
+the sample, the suite covered none of the target function's branches. Only 23 of the 60
+suites exercised any target code, and their effective coverage had a median of
+75.0% (n=23; 11 of the 23 reached >= 80%, and 6 reached 100%). That
+effective median is still below the bar, and the one-sample Wilcoxon test did not support
+the threshold (p=0.67, r=-0.10). Java followed the same pattern one level lower:
 all-function median 0%, effective median 50.0% on a much smaller
-subset (n=5, the 8.3% effective rate; p = 0.91, r = -0.60). Pooling both languages
-changes nothing: n=120 median 0%; pooled effective median 75.0%
-(n=28, p = 0.84, r = -0.22). Whichever language or aggregation we pick, GPT-4o-mini
-stays short of 80% branch coverage (Fig. N). The effective-subset numbers
-are conditioned on the model having already succeeded at the hard part - compiling and
-hitting the right target; the all-level median of 0% is the honest number.
+subset (n=5, the 8.3% effective rate; p=0.91, r=-0.60). Pooled across languages,
+nothing changed: n=120, all-function median 0%; pooled effective median
+75.0% (n=28; p=0.84, r=-0.22). In short, GPT-4o-mini failed the 80%
+threshold in either language, and every effective median sat below 80%
+(Fig. N). Those effective figures are best-case: they are conditioned on the
+model managing to compile and invoke the intended method. The most honest figure is the
+all-level 0% median.
 
 RQ2 - Mutation score
 
-(A) vs.\ 60%. The median mutation score across all 60 functions is 0%,
-with a measurable score produced for only 17/60. Restricting to that measured subset -
-green, passing tests that actually touch the code - the median rises to 36.84%
-(n=17; just 4/17 reach >= 60%), well below the threshold (one-sample Wilcoxon,
-p = 0.99, r = -0.66). Java's all-function median is also 0% (n=60); even
-when restricting to the 54 functions where PIT produced a measurable score, the median
-remains at 0% (one-sample Wilcoxon, p = 1.00, r = -1.00) - consistent
-with the 8.3% effective rate: nearly all Java-generated suites fail to kill any mutants.
-Pooled across both languages (measured subset, n=71), the median is likewise 0%
-(p = 1.00, r = -0.97). H_0 is not rejected in either language: the tests generated
-are weak at killing mutants, with Java even weaker than Python - a 0% median even
-among the 54 functions where PIT generated mutants means those suites execute code
-without ever placing a bet on what the output should be.
+(A) vs.\ 60%. The pattern repeats: across all 60 functions the median score was
+0%, with only 17/60 functions producing a suite that killed at least one mutant
+(Table N). Restricting to those 17 green suites, the effective median rose to
+36.84% (n=17; only 4/17 cleared 60%), and the one-sample Wilcoxon did not
+support the threshold (p=0.99, r=-0.66). Java was comparable: all-function median
+0% (n=60), and even restricting to the 54 functions where PIT produced a
+score, the effective median was 0% (one-sample Wilcoxon, p=1.00, r=-1.00).
+Nearly all Java-generated suites failed the most basic mutation analysis, killing almost
+no mutants (Fig. N). Pooled across the 71 functions with a defined mutation
+score, the median was likewise 0% (p=1.00, r=-0.97). H_0 could not be
+rejected in either language: the generated tests were ineffective at killing mutants.
 
 (B) vs.\ baseline. Paired Wilcoxon tests - gpt-4o-mini against each baseline,
-matched by function_id on mutation score - tell a consistent story.
-gpt-4o-mini loses substantially to both automated Java baselines: against EvoSuite
-(n = 54, p < 0.001, r = -1.00) and against Randoop (n = 54, p = 0.003,
-r = -1.00), an effect size at its theoretical maximum, meaning EvoSuite and Randoop win
-every pair where the two methods differ at all (Fig. N). The direction flips against Pynguin
-(the Python baseline): gpt-4o-mini considerably outperforms it (n = 13 paired
-functions, difference in medians +36.84 pp - GPT median 36.84 vs.\ Pynguin 0.0 -
-p = 0.010, r = +0.85). However, this apparent
-advantage does not indicate that gpt-4o-mini produces effective tests, but rather
-illustrates a practical shortcoming: Pynguin's own median branch coverage on this dataset
-is 0.0% (Section Threats). Neither tool, in other words, reliably
-produces mutation-killing tests for real code in this band; gpt-4o-mini's nominal win
-exists only because the baseline collapsed. Under Python 3.10/DYNAMOSA with a 90-second budget per
-module, Pynguin itself repeatedly times out, hits a dill pickling error on modules
-importing _json, or exits via an internal tracer abort, exporting zero test cases
-for most modules. H_0 is therefore rejected twice, in opposite directions - and the two rejections mean
-opposite things. The Java result reflects a genuine quality gap: EvoSuite and Randoop
-systematically produce tests that kill mutants, and gpt-4o-mini does not. The Python
-result reflects a tooling failure. Reading both as "the model beats some baselines but
-not others" would be the wrong takeaway.
+matched by function_id on mutation score - show gpt-4o-mini substantially
+worse than the two automated Java baselines: EvoSuite (n=54, p<0.001, r=-1.00) and
+Randoop (n=54, p=0.003, r=-1.00). Against the Python baseline Pynguin the direction
+flips: gpt-4o-mini is considerably better (n=13, p=0.010, r=+0.85). In other words,
+for Java both EvoSuite and Randoop killed significantly more mutants than gpt-4o-mini's
+tests, while for Python gpt-4o-mini killed more than Pynguin (Fig. N). That
+Python win should be read with caution: Pynguin was severely underpowered on this dataset
+(Section Threats) and the tests it produced barely killed any mutants -
+Pynguin's mutation score was below 60% for the vast majority of functions, and its median
+across the 13 compared functions was 0%. So gpt-4o-mini beat Pynguin largely because
+Pynguin sat so far below the threshold.
 
 RQ3 - Complexity vs.\ quality
 
-For Python's effective subset, Spearman rho = +0.18 (p = 0.41, n = 23) shows
-no significant negative correlation between cyclomatic complexity and branch
-coverage inside the CC 5-10 band. Java's effective subset (n = 5) yields
-rho = +0.13 (p = 0.83); again, no significant correlation, though the sample is
-tiny. Pooled (n = 28), rho = +0.16 (p = 0.40). H_0 is not rejected in either
-language: inside the narrow CC 5-10 band we sampled, complexity does not predict coverage
-quality among the functions that produce any signal at all - what dominates instead is
-the binary compiles/touches-target outcome discussed above, not a graded decline as CC
-rises. The pre-registered decision rule for RQ3 was rho < -0.5 (at p < 0.05); the observed
-correlations fail it by sign alone - if anything, positive values are the wrong sign
-for the complexity-hurts-quality hypothesis, though none is distinguishable from zero.
+For the Python effective subset, the Spearman rank-order correlation was
+rho = +0.18, not significant at the p<0.05 level (p=0.41, n=23): there was no
+negative relationship between complexity and coverage inside the CC 5-10 window. Java's
+effective subset (n=5) gave an even weaker rho = +0.13 (p=0.83), and across subsets
+(n=28) the correlation was rho = +0.16 (p=0.40). For neither language could H_0
+be rejected at the 0.05 level, so complexity within the CC 5-10 window was not a
+significant predictor of coverage quality. The pre-registered decision rule for this
+hypothesis was rho < -0.5, which none of the observed values satisfied - if anything,
+the results suggest a positive (but non-significant) relationship between CC and coverage.
 
 Summary of findings
 
