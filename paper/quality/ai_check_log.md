@@ -13,7 +13,7 @@ So ky tu ZeroGPT hien thi khop voi kich thuoc file (vd abstract 1.766 vs file
 | 2026-07-17 | 00_abstract | ZeroGPT (zerogpt.com) | **5.3% AI** | "Your Text is Human written" | OK — khong can sua |
 | 2026-07-17 | 01_intro | ZeroGPT | **0% AI** | "Your Text is Human written" | OK |
 | 2026-07-17 | 02_related (ban tay v3) | **GPTZero + Copyleaks** | **GPTZero: 98% Human ("entirely human") · Copyleaks: 0% AI** | "No AI Content Found" | OK — ban v3 (1.571 words) da wire vao repo + 3 fix fact (GAP-D self-own, Randoop cross-lang, DISTINCT typo). Bo subsection Positioning.
-| 2026-07-17 | 03_method | ZeroGPT | **1% AI** | "Your File Content is Human written" | OK |
+| 2026-07-17 | 03_method (ban tay v2) | **ZeroGPT + GPTZero + Copyleaks** | **ZeroGPT 0% · GPTZero 99% Human ("entirely human") · Copyleaks 23% AI** | ZeroGPT/GPTZero: Human · Copyleaks: flagged | Wire ban tay moi (1.460 words) + 6 fix fact (BLOCKER: "no mutating site -> 0%" SAI, sua thanh "missing"; ngay v1.1; mutations.xml; maximising; typo). ⚠️ Copyleaks 23% la do MAT DO KY THUAT cua methods section (ten tool + version + thu tuc thong ke doc "formulaic") — 2 detector calibrate tren prose (ZeroGPT/GPTZero) deu bao Human. |
 | 2026-07-17 | 04_results | ZeroGPT | **2.9% AI** | "Your File Content is Human written" | OK |
 | 2026-07-17 | 05_discussion | ZeroGPT | **0.9% AI** | "Your File Content is Human written" | OK |
 | 2026-07-17 | 06_threats | ZeroGPT | **0% AI** | "Your File Content is Human written" | OK |
