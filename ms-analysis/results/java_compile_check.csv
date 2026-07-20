@@ -1,4 +1,16 @@
 func_id,repo,compiles,error_type,detail
+JA-001,JodaOrg/joda-time,0,sai-kieu,DateTimeComparatorTest_JA_001.TestLimit cannot be 
+JA-009,JodaOrg/joda-time,0,sai-kieu,MockProvider cannot be converted to Provider
+JA-011,JodaOrg/joda-time,1,,
+JA-019,JodaOrg/joda-time,1,,
+JA-021,JodaOrg/joda-time,0,truy-cap-private,ALL_INSTANCE
+JA-029,JodaOrg/joda-time,0,sai-constructor,DateTimeComparator
+JA-031,JodaOrg/joda-time,1,,
+JA-039,JodaOrg/joda-time,0,khac,no suitable method found for thenReturn(DurationFi
+JA-041,JodaOrg/joda-time,0,khac,cannot find symbol
+JA-049,JodaOrg/joda-time,1,,
+JA-051,JodaOrg/joda-time,1,,
+JA-059,JodaOrg/joda-time,1,,
 JA-002,apache/commons-cli,0,overload-nhap-nhang,getOptionValues
 JA-010,apache/commons-cli,0,overload-nhap-nhang,getParsedOptionValues
 JA-012,apache/commons-cli,0,khac,getMatchingLongOptions(String) has private access 
@@ -11,3 +23,39 @@ JA-042,apache/commons-cli,0,khac,cannot find symbol
 JA-050,apache/commons-cli,0,khac,"appendOption(StringBuilder,Option,boolean) has pri"
 JA-052,apache/commons-cli,0,khac,cannot find symbol
 JA-060,apache/commons-cli,1,,
+JA-003,apache/commons-collections,0,khac,cannot find symbol
+JA-013,apache/commons-collections,1,,
+JA-023,apache/commons-collections,0,khac,cannot find symbol
+JA-033,apache/commons-collections,1,,
+JA-043,apache/commons-collections,0,khac,cannot find symbol
+JA-053,apache/commons-collections,0,khac,cannot find symbol
+JA-004,apache/commons-csv,0,sai-constructor,CSVFormat
+JA-014,apache/commons-csv,0,sai-kieu,char cannot be converted to Integer
+JA-024,apache/commons-csv,0,sai-constructor,Lexer
+JA-034,apache/commons-csv,0,khac,non-static method trim(String) cannot be reference
+JA-044,apache/commons-csv,1,,
+JA-054,apache/commons-csv,0,khac,cannot inherit from final ExtendedBufferedReader
+JA-005,apache/commons-math,,chua-build,
+JA-015,apache/commons-math,,chua-build,
+JA-025,apache/commons-math,,chua-build,
+JA-035,apache/commons-math,,chua-build,
+JA-045,apache/commons-math,,chua-build,
+JA-055,apache/commons-math,,chua-build,
+JA-006,google/gson,,chua-build,
+JA-016,google/gson,,chua-build,
+JA-026,google/gson,,chua-build,
+JA-036,google/gson,,chua-build,
+JA-046,google/gson,,chua-build,
+JA-056,google/gson,,chua-build,
+JA-007,jfree/jfreechart,1,,
+JA-017,jfree/jfreechart,0,khac,cannot find symbol
+JA-027,jfree/jfreechart,0,khac,cannot find symbol
+JA-037,jfree/jfreechart,0,khac,no suitable constructor found for JFreeChart(no ar
+JA-047,jfree/jfreechart,0,khac,cannot find symbol
+JA-057,jfree/jfreechart,0,truy-cap-private,largeFont
+JA-008,jhy/jsoup,0,khac,cannot find symbol
+JA-018,jhy/jsoup,0,khac,openStream(Path) has private access in DataUtil
+JA-028,jhy/jsoup,0,sai-kieu,Constructor is not a functional interface
+JA-038,jhy/jsoup,1,,
+JA-048,jhy/jsoup,0,khac,cannot find symbol
+JA-058,jhy/jsoup,0,thieu-package,Connection
