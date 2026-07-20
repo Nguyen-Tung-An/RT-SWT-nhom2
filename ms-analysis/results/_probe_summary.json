@@ -1,0 +1,54 @@
+{
+ "PY-036": {
+  "prompt_has_evidence": true,
+  "changed": true,
+  "old_imports": [
+   "import pytest",
+   "import requests",
+   "from requests.exceptions import ChunkedEncodingError, ContentDecodingError, RequestsSSLError",
+   "from urllib3.exceptions import ProtocolError, DecodeError",
+   "from socket import timeout as ReadTimeoutError",
+   "import ssl"
+  ],
+  "new_imports": [
+   "import pytest",
+   "import requests",
+   "from requests.exceptions import ChunkedEncodingError, ContentDecodingError, SSLError",
+   "from urllib3.exceptions import ProtocolError, DecodeError",
+   "from socket import timeout as ReadTimeoutError",
+   "import ssl"
+  ]
+ },
+ "PY-009": {
+  "prompt_has_evidence": true,
+  "changed": true,
+  "old_imports": [
+   "import pytest",
+   "from flask.cli import run_command",
+   "from flask import Flask",
+   "from werkzeug.serving import run_simple",
+   "from unittest.mock import patch"
+  ],
+  "new_imports": [
+   "import pytest",
+   "from flask.cli import run_command",
+   "from flask import Flask",
+   "from werkzeug.serving import run_simple",
+   "from unittest.mock import patch"
+  ]
+ },
+ "PY-015": {
+  "prompt_has_evidence": true,
+  "changed": true,
+  "old_imports": [
+   "import pytest",
+   "from flask import Flask, session",
+   "from flask.helpers import get_flashed_messages"
+  ],
+  "new_imports": [
+   "import pytest",
+   "from flask import Flask, session",
+   "from flask.helpers import get_flashed_messages"
+  ]
+ }
+}

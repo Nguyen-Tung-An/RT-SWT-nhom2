@@ -212,6 +212,13 @@ def build(err: str, rec: dict) -> str:
         if "KHONG truy cap duoc" not in d:
             ev.append("### Doi tuong dich trong moi truong that:\n" + d)
 
+    # Vi du THAT tu bo test cua chinh du an — bat cac quy uoc ma chu ky ham
+    # khong the hien (context can thiet, cach invoke, fixture phai dung).
+    ex = real_examples(fname)
+    if ex:
+        ev.append("### Cach chinh bo test cua du an goi API nay (code that, dang chay duoc):\n"
+                  + "\n\n".join(f"```python\n{e}\n```" for e in ex))
+
     if not ev:
         return ""
     return ("\n### Bang chung do duoc tu moi truong that (KHONG phai suy doan) ###\n"
@@ -221,3 +228,49 @@ def build(err: str, rec: dict) -> str:
 if __name__ == "__main__":
     import sys
     print(build(sys.stdin.read(), {"qualname": "", "module_or_package": "", "func_name": ""}))
+
+
+# ------------------------------------------------- vi du that tu test cua du an
+TEST_ROOTS = [
+    os.path.join(REPO, "data", "raw", "flask", "tests"),
+    os.path.join(REPO, "data", "raw", "requests", "tests"),
+]
+
+
+def real_examples(func_name: str, max_ex: int = 2, max_lines: int = 30) -> list[str]:
+    """Trich ham test THAT trong bo test cua chinh du an co goi `func_name`.
+
+    Day la bang chung manh nhat va van hoan toan do duoc: khong phai model doan
+    cach dung API, ma la cach cac tac gia thu vien THUC SU goi no trong test cua ho.
+    Bat duoc nhung quy uoc ma chu ky ham khong the hien (vd: `run_command` phai goi
+    qua CliRunner, `get_flashed_messages` phai o trong request context).
+    """
+    if not func_name or not re.fullmatch(r"[A-Za-z_]\w*", func_name):
+        return []
+    # Khong doi phai co dau `(`: nhieu API duoc dung gian tiep (vd `run_command`
+    # chi xuat hien qua CliRunner().invoke(run_command, ...) hoac ten lenh "run").
+    rx = re.compile(rf"\b{re.escape(func_name)}\b")
+    out = []
+    for root in TEST_ROOTS:
+        for dirpath, _, files in os.walk(root):
+            for fn in sorted(files):
+                if not fn.startswith("test_") or not fn.endswith(".py"):
+                    continue
+                p = os.path.join(dirpath, fn)
+                try:
+                    src = open(p, encoding="utf-8", errors="replace").read()
+                    tree = ast.parse(src)
+                except Exception:
+                    continue
+                lines = src.splitlines()
+                for node in ast.walk(tree):
+                    if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                        continue
+                    if not node.name.startswith("test"):
+                        continue
+                    seg = "\n".join(lines[node.lineno - 1:node.end_lineno])
+                    if rx.search(seg) and len(seg.splitlines()) <= max_lines:
+                        out.append(f"# tu {fn}\n{seg}")
+                        if len(out) >= max_ex:
+                            return out
+    return out
