@@ -36,10 +36,15 @@ problem is not mainly environment-driven: 23 of the 28 failures are LLM-attribut
 only 5 are environmental. The Python failures are not random --- \texttt{ImportError}
 dominates, driven by importing an instance method as if it were a module-level function.
 
-Java's invalidity looks rarer on the surface: only 9/60 (15\%) of Java suites failed to
-compile or run. But of the 51 compiling suites, only 5 actually exercised the target
-method; the other 46 compiled and ran while triggering none of the code they were meant to
-test. Java's real problem was wrong-target invocation: the LLM wrote a call to a method
+Java's invalidity looks rarer on the surface: only 9/60 (15\%) of Java suites were scored
+\textsc{invalid} by our pipeline. That figure understates the problem, and a post-hoc audit
+(Section~\ref{sec:threats}) shows why: the \texttt{compiled} flag was inferred from a
+function's presence in the JaCoCo report rather than measured, and JaCoCo lists every class
+in a project whether or not it was ever loaded. Compiling each suite directly with
+\texttt{javac} against the project classpath gives 17/60; the remaining 43 fail to compile,
+most often on ambiguous overloads or on targets that are \texttt{private}. Either way the
+downstream conclusion is unchanged, because it rests on the effective count: only 5 suites
+actually exercised the target method. Java's real problem was wrong-target invocation: the LLM wrote a call to a method
 that was not the target but was present and accessible. For instance,
 \texttt{CommandLine.getOptionValues(\ldots)} was called when the sampled function was
 actually the nested \texttt{CommandLine.Builder.getOptionValues(\ldots)}; elsewhere a

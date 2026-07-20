@@ -86,9 +86,10 @@ so as not to interfere with the confirmatory $N=120$ analysis. The idea came onl
 had seen the $N=120$ results, so it sits outside the pre-registered RQ1--RQ3 and is
 reported separately, to avoid HARKing.
 
-\textbf{Java.} The compile rate stays the same (51/60 in both arms), but the effective
-rate --- suites that touch the target --- more than doubles: 11/60 (18.3\%) with context
-versus 5/60 (8.3\%) without. Paired by function, 7/60 improve, 1/60 regresses, and 52/60
+\textbf{Java.} The number of suites our pipeline scored as compiling stays the same (51/60
+in both arms; see Section~\ref{sec:threats} for why that flag overstates the true compile
+rate), but the effective rate --- suites that touch the target --- more than doubles:
+11/60 (18.3\%) with context versus 5/60 (8.3\%) without. Paired by function, 7/60 improve, 1/60 regresses, and 52/60
 stay the same; a one-sided Wilcoxon test barely misses significance at $\alpha=0.05$, but
 7 favourable pairs against 1 unfavourable is a noticeable trend, and the effect size among
 the non-tied pairs is moderate-to-large. Mutation score does not improve at all ($n=48$

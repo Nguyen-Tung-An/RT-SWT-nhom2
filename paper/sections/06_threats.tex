@@ -1,8 +1,9 @@
 \section{Threats to Validity}\label{sec:threats}
 
 \subsection{Construct Validity}
-Our measurement procedures reported false successes three times during the experiment,
-before the pipeline was hardened. First, mutation scores of 100\% turned up for suites
+Our measurement procedures reported false successes four times during the experiment.
+Three were caught and fixed before the run; the fourth we found only in a post-submission
+audit, and we report it here rather than leave the affected number standing. First, mutation scores of 100\% turned up for suites
 that had \emph{failed} on the unmutated code: every mutant was trivially ``killed''
 because the suite was already broken. We made a green-on-original check mandatory before
 any mutation analysis, so a suite that fails on the baseline source is scored
@@ -12,7 +13,19 @@ zero test files on disk, so the pipeline now checks for the generated file direc
 than trusting the exit code. Third, JaCoCo silently reported 0\% coverage for EvoSuite
 tests, because EvoSuite's separate instrumenting classloader changes class identity
 underneath it; disabling \texttt{separateClassLoader} during measurement fixed the
-attribution.
+attribution. Fourth, and found too late to change the pipeline, the Java
+\texttt{compiled} flag never measured compilation: it was set for every function whose
+line range appeared in the JaCoCo report, and JaCoCo enumerates every class in a project
+regardless of whether it was loaded. A class that was never touched still yields
+\texttt{cb=0}, which the parser records as 0\% coverage with \texttt{compiled=1}.
+Recompiling each suite directly --- first with \texttt{javac} against the project
+classpath, then confirmed with \texttt{mvn test-compile} on sampled functions from two
+repositories --- gives 17/60 rather than 51/60. The failures concentrate on ambiguous
+overloads and on targets declared \texttt{private}, of which the sample contains 17. This
+does not move any hypothesis test, because RQ1--RQ3 are computed from coverage and
+mutation scores rather than from the flag, and the effective count of 5/60 is unaffected;
+but it means the Java validity rate reported in Section~\ref{sec:results} should be read
+as an upper bound.
 
 One further construct threat: the two Python arms use different scoring instruments ---
 \texttt{mutmut} for the \texttt{gpt-4o-mini} suites and our own AST parser for the Pynguin
@@ -85,15 +98,20 @@ Python dataset stayed at 0.0\% (Section~\ref{sec:results}).
 
 A late audit of that 0.0\% figure shows it blends two distinct causes, and we report the
 distinction rather than leave it implicit. For the largest modules Pynguin produced no
-output at all within its 90-second budget --- \texttt{flask/app.py} (1625 LOC) and
-\texttt{flask/cli.py} (1127 LOC) among them --- and that failure tracks module size rather
-than function complexity: every module of 385 LOC or fewer yielded a measurable suite,
-every module of 682 LOC or more yielded none. Since our sampling unit is the function
-while Pynguin operates on whole modules, functions drawn from very large files handed the
-baseline a task it could not finish in budget; scoring those as 0\% is defensible under
-the pre-registered rule, but it is a statement about applicability, not about the quality
-of the tests Pynguin writes. A second group is more troubling: there, Pynguin did produce
-a working suite --- it self-reports 40\% coverage on \texttt{requests.adapters} --- but our
+output at all --- \texttt{flask/app.py} (1625 LOC) and \texttt{flask/cli.py} (1127 LOC)
+among them. We first attributed this to the 90-second budget, since the failure tracks
+module size: every module of 385 LOC or fewer yielded a measurable suite, every module of
+682 LOC or more yielded none. Re-running with the budget raised to 306\,s refuted that
+explanation. Pynguin exits after a few seconds with an empty \texttt{stdout} and
+\texttt{rc=2}: its worker process serialises module state with \texttt{dill} and dies on
+C-extension type objects that cannot be resolved by name (\texttt{\_ctypes.\_CData} for
+these two modules, \texttt{\_json.Scanner} for \texttt{flask/helpers.py}). Module size and
+the true cause travel together here because larger Flask modules pull in more such
+imports. Disabling the master--worker split lets the search run, so scoring these
+functions as 0\% is a statement about tool applicability on this dataset, not about the
+quality of the tests Pynguin writes. A second group is more troubling: there, Pynguin did
+produce a working suite --- our own harness measures 70.0\% branch coverage on
+\texttt{requests.adapters} once the suite is scored per test --- but our
 green-on-original check runs against the whole module suite, so one failing test zeroed
 every function in that module. Restricted to the 12 functions whose module cleared the
 gate, Pynguin's median branch coverage is 40.0\%, not 0.0\%. This is the same
