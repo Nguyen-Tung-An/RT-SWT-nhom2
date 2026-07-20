@@ -37,6 +37,8 @@ import subprocess
 import sys
 import tempfile
 
+import greencheck
+
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 PY = sys.executable
 MAX_MUTANTS = 20
@@ -161,20 +163,18 @@ def measure_module(mod_file, rows, test_path):
         tf = os.path.join(wd, os.path.basename(test_path))
         shutil.copy(test_path, tf)
 
-        # 1) GREEN-CHECK tren ban goc — suite dung chung, phai pass het
-        try:
-            r = run([PY, "-m", "pytest", "-q", "-p", "no:cacheprovider", tf], wd)
-        except subprocess.TimeoutExpired:
-            print(f"  !! green-check TIMEOUT cho {mod_file}")
+        # 1) GREEN-CHECK theo TUNG TEST — truoc day 1 test hong zero CA MODULE
+        all_nodes, green, mode = greencheck.green_nodes(tf, wd)
+        if not green:
+            print(f"  !! RED-ON-ORIGINAL {mod_file} ({mode}, 0/{len(all_nodes)} test xanh)")
             return results
-        if r.returncode != 0:
-            tail = "\n".join(l for l in (r.stdout or "").splitlines() if l.strip())[-300:]
-            print(f"  !! RED-ON-ORIGINAL {mod_file}:\n{tail}")
-            return results
+        if mode == "per-test":
+            print(f"  .. {mod_file}: giu {len(green)}/{len(all_nodes)} test xanh")
+        sel = greencheck.pytest_args(tf, green, all_nodes)
 
         # 2) BRANCH COVERAGE toan module (1 lan), cat theo tung ham sau
         run([PY, "-m", "coverage", "run", "--branch", f"--include={mod_file}",
-             "-m", "pytest", "-q", "-p", "no:cacheprovider", tf], wd)
+             "-m", "pytest", "-q", "-p", "no:cacheprovider", *sel], wd)
         run([PY, "-m", "coverage", "json", "-o", "cov.json"], wd)
         cj = os.path.join(wd, "cov.json")
         cov_json = json.load(open(cj)) if os.path.exists(cj) else {"files": {}}
@@ -199,7 +199,7 @@ def measure_module(mod_file, rows, test_path):
                 for m in muts:
                     open(mod_file, "w", encoding="utf-8", newline="\n").write(m)
                     try:
-                        rr = run([PY, "-m", "pytest", "-q", "-p", "no:cacheprovider", tf], wd, timeout=90)
+                        rr = run([PY, "-m", "pytest", "-q", "-p", "no:cacheprovider", *sel], wd, timeout=90)
                         if rr.returncode != 0:
                             killed += 1
                     except subprocess.TimeoutExpired:

@@ -31,6 +31,8 @@ import subprocess
 import sys
 import tempfile
 
+import greencheck
+
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 PY = sys.executable
 MAX_MUTANTS = 30
@@ -129,19 +131,18 @@ def measure_one(row, test_src):
         tf = os.path.join(wd, "test_gen.py")
         open(tf, "w", encoding="utf-8").write(test_src.lstrip("﻿"))
 
-        # 1) GREEN-CHECK tren ban goc
-        try:
-            r = run([PY, "-m", "pytest", "-q", "-p", "no:cacheprovider", tf], wd)
-        except subprocess.TimeoutExpired:
+        # 1) GREEN-CHECK theo TUNG TEST (khong con all-or-nothing)
+        all_nodes, green, mode = greencheck.green_nodes(tf, wd)
+        if not green:
+            print(f"{row['func_id']}: RED-ON-ORIGINAL ({mode}, 0/{len(all_nodes)} test xanh)")
             return {"branch_coverage": 0.0, "mutation_score": 0.0, "compiled": 0}
-        if r.returncode != 0:
-            tail = "\n".join(l for l in (r.stdout or "").splitlines() if l.strip())[-300:]
-            print(f"{row['func_id']}: RED-ON-ORIGINAL\n{tail}")
-            return {"branch_coverage": 0.0, "mutation_score": 0.0, "compiled": 0}
+        if mode == "per-test":
+            print(f"{row['func_id']}: giu {len(green)}/{len(all_nodes)} test xanh")
+        sel = greencheck.pytest_args(tf, green, all_nodes)
 
-        # 2) BRANCH COVERAGE trong khoang dong cua ham
+        # 2) BRANCH COVERAGE trong khoang dong cua ham (chi tren tap xanh)
         run([PY, "-m", "coverage", "run", "--branch", f"--include={mod_file}",
-             "-m", "pytest", "-q", "-p", "no:cacheprovider", tf], wd)
+             "-m", "pytest", "-q", "-p", "no:cacheprovider", *sel], wd)
         run([PY, "-m", "coverage", "json", "-o", "cov.json"], wd)
         bc = None
         cj = os.path.join(wd, "cov.json")
@@ -159,7 +160,7 @@ def measure_one(row, test_src):
             for m in muts:
                 open(mod_file, "w", encoding="utf-8", newline="\n").write(m)
                 try:
-                    r = run([PY, "-m", "pytest", "-q", "-p", "no:cacheprovider", tf], wd, timeout=60)
+                    r = run([PY, "-m", "pytest", "-q", "-p", "no:cacheprovider", *sel], wd, timeout=60)
                     if r.returncode != 0:
                         killed += 1
                 except subprocess.TimeoutExpired:
@@ -167,7 +168,8 @@ def measure_one(row, test_src):
         finally:
             open(mod_file, "wb").write(original_bytes)
         ms = round(killed / len(muts) * 100, 2) if muts else 0.0
-        return {"branch_coverage": bc, "mutation_score": ms, "compiled": 1}
+        return {"branch_coverage": bc, "mutation_score": ms, "compiled": 1,
+                "tests_total": len(all_nodes), "tests_green": len(green)}
 
 
 def main() -> int:
