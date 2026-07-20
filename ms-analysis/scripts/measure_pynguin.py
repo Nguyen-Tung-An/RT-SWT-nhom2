@@ -41,6 +41,13 @@ import greencheck
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 PY = sys.executable
+# Interpreter rieng cho giai doan SINH. Hai giai doan can moi truong nguoc nhau:
+#   sinh — Pynguin tu nap module qua --project-path. Neu package DA pip install thi
+#          worker process cua no chet (requests.adapters: sinh duoc 28 test khi chua cai,
+#          nhung "Could not restart worker process" khi da cai).
+#   do   — suite lam `import requests.adapters`, BAT BUOC package phai import duoc.
+# Nen tach bang HAI INTERPRETER thay vi cai/go qua lai giua chung.
+PYNGUIN_PY = PY
 MAX_MUTANTS = 20
 PYTEST_TIMEOUT = 120
 
@@ -167,7 +174,7 @@ def gen_pynguin_suite(project, mod, search_time, work_root, module_path=None):
     out_dir = os.path.join(work_root, "pynguin_out_" + mod.replace(".", "_"))
     shutil.rmtree(out_dir, ignore_errors=True)
     os.makedirs(out_dir, exist_ok=True)
-    cmd = [PY, "-m", "pynguin", "--project-path", project, "--output-path", out_dir,
+    cmd = [PYNGUIN_PY, "-m", "pynguin", "--project-path", project, "--output-path", out_dir,
            "--module-name", mod, "--maximum-search-time", str(search_time)]
     os.makedirs(LOG_DIR, exist_ok=True)
     log_path = os.path.join(LOG_DIR, mod.replace(".", "_") + ".log")
@@ -275,8 +282,20 @@ def main():
     ap.add_argument("--csv", default=os.path.join("data", "full_ground_truth.csv"))
     ap.add_argument("--out", default=os.path.join("ms-analysis", "results", "metrics_full.csv"))
     ap.add_argument("--search-time", type=int, default=90, help="giay Pynguin duoc tim moi module")
+    ap.add_argument("--gen-only", action="store_true",
+                    help="chi SINH suite va luu lai, bo qua giai doan do")
+    ap.add_argument("--pynguin-python", default="",
+                    help="interpreter chay Pynguin (venv KHONG cai flask/requests)")
+    ap.add_argument("--use-saved", action="store_true",
+                    help="do lai suite da luu trong generated_tests/pynguin thay vi sinh moi "
+                         "(tach giai doan sinh khoi giai doan do — xem ghi chu o main)")
     ap.add_argument("--files", default="", help="loc theo file (phay), vd flask/src/flask/logging.py — de test truoc khi chay full")
     args = ap.parse_args()
+
+    global PYNGUIN_PY
+    if args.pynguin_python:
+        PYNGUIN_PY = args.pynguin_python
+        print(f"Giai doan SINH dung: {PYNGUIN_PY}")
 
     if os.environ.get("PYNGUIN_DANGER_AWARE") != "1":
         print("LOI: can PYNGUIN_DANGER_AWARE=1 (Pynguin thuc thi code that cua module).")
@@ -308,13 +327,29 @@ def main():
                                     "compiled": 0, "note": "module-file-missing"})
             continue
         try:
-            test_path = gen_pynguin_suite(project, mod, args.search_time, work_root, module_path=mod_file)
+            # --use-saved: TACH giai doan sinh khoi giai doan do.
+            # Ly do (audit sau bao ve): hai giai doan doi hoi moi truong NGUOC NHAU.
+            #   sinh  — Pynguin tu tim module qua --project-path; neu package DA duoc pip
+            #           install thi worker process cua no chet (xem audit-pynguin-0pct.md)
+            #   do    — suite sinh ra lam `import requests.adapters`, BAT BUOC package
+            #           phai import duoc
+            # Harness cu lam ca hai trong CUNG moi truong da cai -> tu pha giai doan sinh.
+            saved = os.path.join(SAVE_DIR, "test_" + mod.replace(".", "_") + ".py")
+            if args.use_saved and os.path.exists(saved):
+                print(f"  .. dung suite da luu: {saved}")
+                test_path = saved
+            else:
+                test_path = gen_pynguin_suite(project, mod, args.search_time, work_root,
+                                              module_path=mod_file)
             if not test_path:
                 for r in rows:
                     all_results.append({"function_id": r["func_id"], "language": "python", "cc": r["cc"],
                                         "method": "pynguin", "branch_coverage": 0, "mutation_score": "",
                                         "compiled": 0, "note": "pynguin-no-output"})
                 save_rows(out_csv, "pynguin", all_results)
+                continue
+            if args.gen_only:
+                print("  (--gen-only) da sinh xong, bo qua do.")
                 continue
             res = measure_module(mod_file, rows, test_path)
             for r in rows:
