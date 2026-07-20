@@ -135,23 +135,65 @@ def branch_cov_in_range(cov_json, mod_file, lo, hi):
     return None
 
 
-def gen_pynguin_suite(project, mod, search_time, work_root):
-    """Chay Pynguin 1 lan cho ca module, tra ve duong dan file test sinh ra (hoac None)."""
+SAVE_DIR = os.path.join(REPO_ROOT, "generated_tests", "pynguin", "python")
+LOG_DIR = os.path.join(REPO_ROOT, "pynguin-report", "run-logs")
+SEC_PER_200_LOC = 90          # budget co so
+MAX_SEARCH_TIME = 900         # tran an toan
+
+
+def scaled_budget(module_path, base=SEC_PER_200_LOC):
+    """Budget ti le kich thuoc module.
+
+    Audit sau bao ve: Pynguin that bai HOAN TOAN tren module lon (flask/app.py 1625 LOC,
+    flask/cli.py 1127 LOC) trong khi moi module <=385 LOC deu cho suite do duoc. Budget
+    90s co dinh khong du cho file lon -> nang theo LOC de baseline duoc doi xu cong bang.
+    """
+    try:
+        loc = sum(1 for _ in open(module_path, encoding="utf-8", errors="replace"))
+    except OSError:
+        return base
+    return max(base, min(MAX_SEARCH_TIME, int(base * (loc / 200.0))))
+
+
+def gen_pynguin_suite(project, mod, search_time, work_root, module_path=None):
+    """Chay Pynguin 1 lan cho ca module, tra ve duong dan file test sinh ra (hoac None).
+
+    Khac ban cu: (1) budget scale theo LOC, (2) LUU suite + log ra repo de lan sau chi
+    can do lai, khong phai sinh lai (truoc day sinh vao temp dir roi mat -> thu muc
+    generated_tests/pynguin trong 0 file, khong the tai kiem chung).
+    """
+    if module_path:
+        search_time = scaled_budget(module_path)
     out_dir = os.path.join(work_root, "pynguin_out_" + mod.replace(".", "_"))
     shutil.rmtree(out_dir, ignore_errors=True)
     os.makedirs(out_dir, exist_ok=True)
     cmd = [PY, "-m", "pynguin", "--project-path", project, "--output-path", out_dir,
            "--module-name", mod, "--maximum-search-time", str(search_time)]
+    os.makedirs(LOG_DIR, exist_ok=True)
+    log_path = os.path.join(LOG_DIR, mod.replace(".", "_") + ".log")
     try:
         r = run(cmd, REPO_ROOT, timeout=search_time + 120, env={"PYNGUIN_DANGER_AWARE": "1"})
     except subprocess.TimeoutExpired:
-        print(f"  !! pynguin TIMEOUT cho {mod}")
+        with open(log_path, "w", encoding="utf-8") as fh:
+            fh.write(f"TIMEOUT sau {search_time + 120}s\ncmd: {' '.join(cmd)}\n")
+        print(f"  !! pynguin TIMEOUT cho {mod} (budget {search_time}s)")
         return None
+
+    with open(log_path, "w", encoding="utf-8") as fh:
+        fh.write(f"cmd: {' '.join(cmd)}\nrc={r.returncode}\n\n[stdout]\n{r.stdout}\n"
+                 f"[stderr]\n{r.stderr}\n")
+
     tests = glob.glob(os.path.join(out_dir, "test_*.py"))
     if not tests:
         tail = "\n".join(l for l in (r.stdout + r.stderr).splitlines() if l.strip())[-400:]
-        print(f"  !! pynguin khong sinh test cho {mod} (rc={r.returncode}): {tail}")
+        print(f"  !! pynguin khong sinh test cho {mod} (rc={r.returncode}, "
+              f"budget {search_time}s) — log: {log_path}\n{tail}")
         return None
+
+    os.makedirs(SAVE_DIR, exist_ok=True)
+    saved = os.path.join(SAVE_DIR, "test_" + mod.replace(".", "_") + ".py")
+    shutil.copy(tests[0], saved)
+    print(f"  .. {mod}: budget {search_time}s, suite luu tai {saved}")
     return tests[0]
 
 
@@ -215,7 +257,7 @@ def measure_module(mod_file, rows, test_path):
 
 
 def save_rows(out_csv, method, new_rows):
-    fields = ["function_id", "language", "cc", "method", "branch_coverage", "mutation_score", "compiled"]
+    fields = ["function_id", "language", "cc", "method", "branch_coverage", "mutation_score", "compiled", "note"]
     old = []
     if os.path.exists(out_csv):
         with open(out_csv, encoding="utf-8-sig") as f:
@@ -262,14 +304,16 @@ def main():
             print(f"  !! khong thay {mod_file}, bo qua")
             for r in rows:
                 all_results.append({"function_id": r["func_id"], "language": "python", "cc": r["cc"],
-                                    "method": "pynguin", "branch_coverage": 0, "mutation_score": 0, "compiled": 0})
+                                    "method": "pynguin", "branch_coverage": 0, "mutation_score": "",
+                                    "compiled": 0, "note": "module-file-missing"})
             continue
         try:
-            test_path = gen_pynguin_suite(project, mod, args.search_time, work_root)
+            test_path = gen_pynguin_suite(project, mod, args.search_time, work_root, module_path=mod_file)
             if not test_path:
                 for r in rows:
                     all_results.append({"function_id": r["func_id"], "language": "python", "cc": r["cc"],
-                                        "method": "pynguin", "branch_coverage": 0, "mutation_score": 0, "compiled": 0})
+                                        "method": "pynguin", "branch_coverage": 0, "mutation_score": "",
+                                        "compiled": 0, "note": "pynguin-no-output"})
                 save_rows(out_csv, "pynguin", all_results)
                 continue
             res = measure_module(mod_file, rows, test_path)
