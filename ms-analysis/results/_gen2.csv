@@ -1,0 +1,8 @@
+function_id,language,cc,method,branch_coverage,mutation_score,compiled,note
+PY-017,python,6,pynguin,0,,0,pynguin-no-output
+PY-026,python,7,pynguin,0,,0,pynguin-no-output
+PY-055,python,5,pynguin,0,,0,pynguin-no-output
+PY-056,python,5,pynguin,0,,0,pynguin-no-output
+PY-018,python,6,pynguin,0,,0,pynguin-no-output
+PY-019,python,6,pynguin,0,,0,pynguin-no-output
+PY-057,python,5,pynguin,0,,0,pynguin-no-output

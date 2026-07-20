@@ -294,7 +294,11 @@ def main():
 
     global PYNGUIN_PY
     if args.pynguin_python:
-        PYNGUIN_PY = args.pynguin_python
+        # tuyet doi hoa: subprocess tren Windows khong giai duoc duong dan tuong doi
+        PYNGUIN_PY = os.path.abspath(args.pynguin_python)
+        if not os.path.exists(PYNGUIN_PY):
+            print(f"LOI: khong thay interpreter {PYNGUIN_PY}")
+            return 1
         print(f"Giai doan SINH dung: {PYNGUIN_PY}")
 
     if os.environ.get("PYNGUIN_DANGER_AWARE") != "1":
