@@ -88,12 +88,13 @@ def sweep(label: str, d: str, pattern):
 
 if __name__ == "__main__":
     which = sys.argv[1] if len(sys.argv) > 1 else "v2"
-    if which == "v2":
-        rows = sweep("V2 (prompt moi)", os.path.join(REPO, "generated_tests", "gpt4o_v2", "python"),
-                     lambda f: f.replace("test_", "").replace(".py", "").upper().replace("_", "-"))
+    dirs = {"v1": "gpt4o", "v2": "gpt4o_v2", "v3": "gpt4o_v3"}
+    d = os.path.join(REPO, "generated_tests", dirs[which], "python")
+    if which == "v1":
+        rows = sweep("V1 (bai bao)", d, lambda f: f.replace("test_", "").replace(".py", ""))
     else:
-        rows = sweep("V1 (bai bao)", os.path.join(REPO, "generated_tests", "gpt4o", "python"),
-                     lambda f: f.replace("test_", "").replace(".py", ""))
+        rows = sweep(f"{which.upper()}", d,
+                     lambda f: f.replace("test_", "").replace(".py", "").upper().replace("_", "-"))
     with open(os.path.join(REPO, "ms-analysis", "results", f"why_fail_{which}.csv"),
               "w", encoding="utf-8", newline="") as fh:
         w = csv.writer(fh)
