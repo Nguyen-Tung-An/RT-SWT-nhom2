@@ -59,6 +59,22 @@ def repo_dir(source_repo: str) -> str:
     return os.path.join(REPO, "data", "raw", source_repo.split("/")[-1])
 
 
+def module_dir(rec: dict) -> str:
+    """Thu muc Maven THAT chua ham nay.
+
+    commons-math va gson la du an DA MODULE: goc khong co target/classes, module con moi
+    co (commons-math-core, gson/extras...). Suy tu duong dan file — doan truoc 'src/main/java'
+    chinh la thu muc module — thay vi mac dinh lay goc repo.
+    """
+    f = rec["file"].replace("\\", "/")
+    i = f.find("/src/main/java/")
+    if i < 0:
+        return repo_dir(rec["source_repo"])
+    j = f.find("raw/")
+    rel = f[j + 4:i] if j >= 0 else f[:i]
+    return os.path.join(REPO, "data", "raw", rel)
+
+
 def build_classpath(rd: str) -> str | None:
     """Lay classpath 1 lan/repo. Uu tien cache de chay lai cho nhanh."""
     cache = os.path.join(rd, "target", "_cp.txt")
@@ -96,11 +112,11 @@ def main() -> int:
 
     by_repo: dict[str, list[dict]] = {}
     for r in rows:
-        by_repo.setdefault(r["source_repo"], []).append(r)
+        by_repo.setdefault(module_dir(r) + "|" + r["source_repo"], []).append(r)
 
     results = []
-    for src_repo, rs in sorted(by_repo.items()):
-        rd = repo_dir(src_repo)
+    for key, rs in sorted(by_repo.items()):
+        rd, src_repo = key.split("|", 1)
         classes = os.path.join(rd, "target", "classes")
         if not os.path.isdir(classes):
             print(f"!! {src_repo}: chua build (khong co target/classes) — bo qua {len(rs)} ham")
