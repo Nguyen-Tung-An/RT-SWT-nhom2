@@ -1,0 +1,61 @@
+func_id,cause,detail,n_pass,n_fail
+PY-001,1-import-sai-ten,RequestRedirect khong co trong werkzeug.exceptions,0,0
+PY-002,1-import-sai-ten,update_template_context khong co trong flask.app,0,0
+PY-003,1-import-sai-ten,full_dispatch_request khong co trong flask.app,0,0
+PY-004,z-khac,est_PY-004.py::test_locate_app_with_invalid_app_name - flask.cli.NoAp... 5 failed in 0.39s,0,5
+PY-005,2-thieu-module,dotenv,2,2
+PY-006,5-sai-chu-ky-goi,module() missing required argument 'name' (pos 1),0,9
+PY-007,1-import-sai-ten,get_command khong co trong flask.cli,0,0
+PY-008,1-import-sai-ten,parse_args khong co trong flask.cli,0,0
+PY-009,5-sai-chu-ky-goi,Command.main() takes from 1 to 6 positional arguments but 10 were give,0,6
+PY-010,z-khac,".py::test_shell_command_with_interactive_hook - NameError: ... 2 failed, 1 passed in 0.34s",1,2
+PY-011,1-import-sai-ten,handle_exception khong co trong flask.app,0,0
+PY-012,4-thuoc-tinh-khong-ton-tai,Flask.blueprint,0,3
+PY-013,8-assert-sai,ky vong sai,4,4
+PY-014,1-import-sai-ten,convert khong co trong flask.cli,0,0
+PY-015,7-runtime-khac,Cannot nest client invocations,0,6
+PY-016,OK-xanh,6 test pass,6,0
+PY-017,5-sai-chu-ky-goi,App.__init__() missing 1 required positional argument: 'import_name',0,0
+PY-018,1-import-sai-ten,_merge_blueprint_funcs khong co trong flask.sansio.blueprints,0,0
+PY-019,8-assert-sai,ky vong sai,4,1
+PY-020,1-import-sai-ten,_get_exc_class_and_code khong co trong flask.sansio.scaffold,0,0
+PY-021,1-import-sai-ten,create_url_adapter khong co trong flask.app,0,0
+PY-022,1-import-sai-ten,handle_user_exception khong co trong flask.app,0,0
+PY-023,5-sai-chu-ky-goi,Config.__init__() missing 1 required positional argument: 'root_path',0,0
+PY-024,7-runtime-khac,"Cannot pop this context (<AppContext 2017354276128 of test_PY-024>), i",1,4
+PY-025,1-import-sai-ten,_prepare_response_obj khong co trong flask.json.provider,0,0
+PY-026,1-import-sai-ten,_find_error_handler khong co trong flask.sansio.app,0,0
+PY-027,1-import-sai-ten,open khong co trong flask.testing,0,0
+PY-028,8-assert-sai,ky vong sai,2,3
+PY-029,8-assert-sai,ky vong sai,4,1
+PY-030,4-thuoc-tinh-khong-ton-tai,_thread._local.pos,1,3
+PY-031,7-runtime-khac,"Cannot pop this context (<AppContext 2365484078208 of test_PY-031>), i",0,5
+PY-032,1-import-sai-ten,wsgi_app khong co trong flask.app,0,0
+PY-033,1-import-sai-ten,load_app khong co trong flask.cli,0,0
+PY-034,8-assert-sai,ky vong sai,0,6
+PY-035,4-thuoc-tinh-khong-ton-tai,Morsel.domain,0,0
+PY-036,5-sai-chu-ky-goi,mock_response.<locals>.<lambda>() got multiple values for argument 'de,1,6
+PY-037,OK-xanh,6 test pass,6,0
+PY-038,8-assert-sai,ky vong sai,6,3
+PY-039,OK-xanh,5 test pass,5,0
+PY-040,5-sai-chu-ky-goi,Can't instantiate abstract class Parameter with abstract methods _pars,0,5
+PY-041,8-assert-sai,ky vong sai,1,3
+PY-042,z-khac,".py::test_find_no_duplicates_multiple_cookies_same_domain_path 1 failed, 4 passed in 0.26s",4,1
+PY-043,4-thuoc-tinh-khong-ton-tai,NoneType.read,0,5
+PY-044,1-import-sai-ten,merge_environment_settings khong co trong requests.sessions,0,0
+PY-045,z-khac,"5.py::test_proxy_bypass_registry_pattern_match - StopIteration 2 failed, 5 passed in 0.33s",5,2
+PY-046,1-import-sai-ten,AppContext khong co trong flask,0,0
+PY-047,8-assert-sai,ky vong sai,4,1
+PY-048,5-sai-chu-ky-goi,Client.__init__() got an unexpected keyword argument 'base_url',0,6
+PY-049,OK-xanh,9 test pass,9,0
+PY-050,z-khac,"D test_PY-050.py::test_from_file_binary_mode - KeyError: 'key' 2 failed, 3 passed in 0.37s",3,2
+PY-051,5-sai-chu-ky-goi,Config.__init__() missing 1 required positional argument: 'root_path',0,0
+PY-052,1-import-sai-ten,register khong co trong flask.json.tag,0,0
+PY-053,1-import-sai-ten,_untag_scan khong co trong flask.json.tag,0,0
+PY-054,8-assert-sai,ky vong sai,4,1
+PY-055,5-sai-chu-ky-goi,App.__init__() missing 1 required positional argument: 'import_name',0,0
+PY-056,1-import-sai-ten,handle_url_build_error khong co trong flask.sansio.app,0,0
+PY-057,4-thuoc-tinh-khong-ton-tai,Blueprint.app,0,5
+PY-058,8-assert-sai,ky vong sai,0,5
+PY-059,4-thuoc-tinh-khong-ton-tai,MockSession.permanent,2,4
+PY-060,1-import-sai-ten,_get_source_explained khong co trong flask.templating,0,0

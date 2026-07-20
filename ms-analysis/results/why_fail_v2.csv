@@ -1,0 +1,61 @@
+func_id,cause,detail,n_pass,n_fail
+PY-001,1-import-sai-ten,RequestRedirect khong co trong werkzeug.exceptions,0,0
+PY-002,3-gan-thuoc-tinh-chi-doc,has_request,0,5
+PY-003,7-runtime-khac,There is no request in this context.,0,4
+PY-004,8-assert-sai,ky vong sai,3,4
+PY-005,2-thieu-module,dotenv,2,3
+PY-006,4-thuoc-tinh-khong-ton-tai,str.name,8,1
+PY-007,8-assert-sai,ky vong sai,0,4
+PY-008,4-thuoc-tinh-khong-ton-tai,NoneType.load_dotenv_defaults,1,4
+PY-009,5-sai-chu-ky-goi,Command.main() takes from 1 to 6 positional arguments but 10 were give,0,5
+PY-010,z-khac,".py::test_shell_command_with_readline_import - NameError: n... 2 failed, 2 passed in 0.32s",2,2
+PY-011,4-thuoc-tinh-khong-ton-tai,NoneType.request,1,3
+PY-012,7-runtime-khac,There is no request in this context.,0,4
+PY-013,8-assert-sai,ky vong sai,1,6
+PY-014,5-sai-chu-ky-goi,"expected str, bytes or os.PathLike object, not SSLContext",1,5
+PY-015,7-runtime-khac,There is no request in this context.,0,6
+PY-016,OK-xanh,6 test pass,6,0
+PY-017,5-sai-chu-ky-goi,App.__init__() missing 1 required positional argument: 'import_name',0,0
+PY-018,6-thieu-ngu-canh-flask,Working outside of application context.,1,7
+PY-019,5-sai-chu-ky-goi,Blueprint.__init__() missing 1 required positional argument: 'import_n,0,0
+PY-020,5-sai-chu-ky-goi,"TypeError() is an instance, not a class. Handlers can only be register",6,1
+PY-021,4-thuoc-tinh-khong-ton-tai,MapAdapter.url_for,1,4
+PY-022,7-runtime-khac,There is no request in this context.,1,3
+PY-023,5-sai-chu-ky-goi,Config.__init__() missing 1 required positional argument: 'root_path',0,0
+PY-024,7-runtime-khac,"Cannot pop this context (<AppContext 2022160965376 of test_py_024>), i",3,2
+PY-025,5-sai-chu-ky-goi,JSONProvider.__init__() missing 1 required positional argument: 'app',0,0
+PY-026,5-sai-chu-ky-goi,App.__init__() missing 1 required positional argument: 'import_name',0,0
+PY-027,4-thuoc-tinh-khong-ton-tai,FlaskClient._get_current_object,4,2
+PY-028,8-assert-sai,ky vong sai,4,1
+PY-029,8-assert-sai,ky vong sai,6,1
+PY-030,4-thuoc-tinh-khong-ton-tai,_thread._local.pos,1,4
+PY-031,7-runtime-khac,There is no request in this context.,0,5
+PY-032,8-assert-sai,ky vong sai,0,4
+PY-033,8-assert-sai,ky vong sai,4,2
+PY-034,8-assert-sai,ky vong sai,0,5
+PY-035,8-assert-sai,ky vong sai,5,2
+PY-036,1-import-sai-ten,RequestsSSLError khong co trong requests.exceptions,0,0
+PY-037,OK-xanh,8 test pass,8,0
+PY-038,8-assert-sai,ky vong sai,7,1
+PY-039,OK-xanh,6 test pass,6,0
+PY-040,5-sai-chu-ky-goi,Context.__init__() got an unexpected keyword argument 'params',0,0
+PY-041,8-assert-sai,ky vong sai,5,1
+PY-042,4-thuoc-tinh-khong-ton-tai,RequestsCookieJar.make_cookie,3,5
+PY-043,4-thuoc-tinh-khong-ton-tai,NoneType.read,0,8
+PY-044,z-khac,".py::TestMergeEnvironmentSettings::test_merge_with_invalid_url 1 failed, 8 passed in 0.28s",8,1
+PY-045,8-assert-sai,ky vong sai,5,1
+PY-046,1-import-sai-ten,AppContext khong co trong flask,0,0
+PY-047,8-assert-sai,ky vong sai,7,1
+PY-048,8-assert-sai,ky vong sai,2,6
+PY-049,OK-xanh,10 test pass,10,0
+PY-050,5-sai-chu-ky-goi,Config.__init__() missing 1 required positional argument: 'root_path',0,0
+PY-051,5-sai-chu-ky-goi,Config.__init__() missing 1 required positional argument: 'root_path',0,0
+PY-052,8-assert-sai,ky vong sai,2,5
+PY-053,OK-xanh,7 test pass,7,0
+PY-054,8-assert-sai,ky vong sai,2,4
+PY-055,5-sai-chu-ky-goi,App.__init__() missing 1 required positional argument: 'import_name',0,0
+PY-056,5-sai-chu-ky-goi,App.__init__() missing 1 required positional argument: 'import_name',0,0
+PY-057,5-sai-chu-ky-goi,BlueprintSetupState.__init__() missing 2 required positional arguments,0,0
+PY-058,8-assert-sai,ky vong sai,0,5
+PY-059,4-thuoc-tinh-khong-ton-tai,MockSession.permanent,2,5
+PY-060,5-sai-chu-ky-goi,DispatchingJinjaLoader.__init__() missing 1 required positional argume,0,0
