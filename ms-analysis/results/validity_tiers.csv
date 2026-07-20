@@ -1,0 +1,61 @@
+function_id,language,tier,tier_label,tests_passed,tests_failed,branch_coverage,note
+PY-001,python,0,T0 khong chay duoc,0,0,0.0,invalid:ImportError
+PY-002,python,0,T0 khong chay duoc,0,0,0.0,invalid:ImportError
+PY-003,python,0,T0 khong chay duoc,0,0,0.0,invalid:ImportError
+PY-004,python,1,T1 co test chay (= 'compiled' cua bai bao),0,5,66.67,ok
+PY-005,python,3,T3 co test XANH va CHAM ham dich,3,1,50.0,ok
+PY-006,python,1,T1 co test chay (= 'compiled' cua bai bao),0,9,50.0,ok
+PY-007,python,0,T0 khong chay duoc,0,0,0.0,invalid:ImportError
+PY-008,python,0,T0 khong chay duoc,0,0,0.0,invalid:ImportError
+PY-009,python,1,T1 co test chay (= 'compiled' cua bai bao),0,6,0.0,ok-no-touch
+PY-010,python,2,T2 co test XANH,1,2,0.0,ok-no-touch
+PY-011,python,0,T0 khong chay duoc,0,0,0.0,invalid:ImportError
+PY-012,python,1,T1 co test chay (= 'compiled' cua bai bao),0,3,20.0,ok
+PY-013,python,3,T3 co test XANH va CHAM ham dich,4,4,87.5,ok
+PY-014,python,0,T0 khong chay duoc,0,0,0.0,invalid:ImportError
+PY-015,python,1,T1 co test chay (= 'compiled' cua bai bao),0,6,0.0,ok-no-touch
+PY-016,python,3,T3 co test XANH va CHAM ham dich,6,0,100.0,ok
+PY-017,python,0,T0 khong chay duoc,0,0,0.0,invalid:TypeError
+PY-018,python,0,T0 khong chay duoc,0,0,0.0,invalid:ImportError
+PY-019,python,3,T3 co test XANH va CHAM ham dich,4,1,75.0,ok
+PY-020,python,0,T0 khong chay duoc,0,0,0.0,invalid:ImportError
+PY-021,python,0,T0 khong chay duoc,0,0,0.0,invalid:ImportError
+PY-022,python,0,T0 khong chay duoc,0,0,0.0,invalid:ImportError
+PY-023,python,0,T0 khong chay duoc,0,0,0.0,invalid:TypeError
+PY-024,python,3,T3 co test XANH va CHAM ham dich,1,4,70.0,ok
+PY-025,python,0,T0 khong chay duoc,0,0,0.0,invalid:ImportError
+PY-026,python,0,T0 khong chay duoc,0,0,0.0,invalid:ImportError
+PY-027,python,0,T0 khong chay duoc,0,0,0.0,invalid:ImportError
+PY-028,python,3,T3 co test XANH va CHAM ham dich,2,3,91.67,ok
+PY-029,python,3,T3 co test XANH va CHAM ham dich,4,1,90.0,ok
+PY-030,python,3,T3 co test XANH va CHAM ham dich,1,3,20.0,ok
+PY-031,python,1,T1 co test chay (= 'compiled' cua bai bao),0,5,0.0,ok-no-touch
+PY-032,python,0,T0 khong chay duoc,0,0,0.0,invalid:ImportError
+PY-033,python,0,T0 khong chay duoc,0,0,0.0,invalid:ImportError
+PY-034,python,1,T1 co test chay (= 'compiled' cua bai bao),0,6,100.0,ok
+PY-035,python,0,T0 khong chay duoc,0,0,0.0,invalid:AttributeError
+PY-036,python,2,T2 co test XANH,1,6,0.0,ok-no-touch
+PY-037,python,3,T3 co test XANH va CHAM ham dich,6,0,75.0,ok
+PY-038,python,3,T3 co test XANH va CHAM ham dich,6,3,100.0,ok
+PY-039,python,3,T3 co test XANH va CHAM ham dich,5,0,90.0,ok
+PY-040,python,1,T1 co test chay (= 'compiled' cua bai bao),0,5,0.0,ok-no-touch
+PY-041,python,3,T3 co test XANH va CHAM ham dich,1,3,70.0,ok
+PY-042,python,3,T3 co test XANH va CHAM ham dich,4,1,75.0,ok
+PY-043,python,1,T1 co test chay (= 'compiled' cua bai bao),0,5,0.0,ok-no-touch
+PY-044,python,0,T0 khong chay duoc,0,0,0.0,invalid:ImportError
+PY-045,python,0,T0 khong chay duoc,0,0,0.0,invalid:ImportError
+PY-046,python,0,T0 khong chay duoc,0,0,0.0,invalid:ImportError
+PY-047,python,3,T3 co test XANH va CHAM ham dich,4,1,62.5,ok
+PY-048,python,1,T1 co test chay (= 'compiled' cua bai bao),0,6,0.0,ok-no-touch
+PY-049,python,3,T3 co test XANH va CHAM ham dich,9,0,100.0,ok
+PY-050,python,3,T3 co test XANH va CHAM ham dich,3,2,100.0,ok
+PY-051,python,0,T0 khong chay duoc,0,0,0.0,invalid:TypeError
+PY-052,python,0,T0 khong chay duoc,0,0,0.0,invalid:ImportError
+PY-053,python,0,T0 khong chay duoc,0,0,0.0,invalid:ImportError
+PY-054,python,3,T3 co test XANH va CHAM ham dich,4,1,83.33,ok
+PY-055,python,0,T0 khong chay duoc,0,0,0.0,invalid:TypeError
+PY-056,python,0,T0 khong chay duoc,0,0,0.0,invalid:ImportError
+PY-057,python,1,T1 co test chay (= 'compiled' cua bai bao),0,5,0.0,ok-no-touch
+PY-058,python,1,T1 co test chay (= 'compiled' cua bai bao),0,5,25.0,ok
+PY-059,python,3,T3 co test XANH va CHAM ham dich,2,4,100.0,ok
+PY-060,python,0,T0 khong chay duoc,0,0,0.0,invalid:ImportError

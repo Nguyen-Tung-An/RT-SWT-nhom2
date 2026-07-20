@@ -1,0 +1,13 @@
+func_id,repo,compiles,error_type,detail
+JA-002,apache/commons-cli,0,overload-nhap-nhang,getOptionValues
+JA-010,apache/commons-cli,0,overload-nhap-nhang,getParsedOptionValues
+JA-012,apache/commons-cli,0,khac,getMatchingLongOptions(String) has private access 
+JA-020,apache/commons-cli,0,sai-constructor,OptionGroup
+JA-022,apache/commons-cli,0,khac,cannot find symbol
+JA-030,apache/commons-cli,0,khac,cannot find symbol
+JA-032,apache/commons-cli,0,khac,isLongOption(String) has private access in Default
+JA-040,apache/commons-cli,0,khac,cannot find symbol
+JA-042,apache/commons-cli,0,khac,cannot find symbol
+JA-050,apache/commons-cli,0,khac,"appendOption(StringBuilder,Option,boolean) has pri"
+JA-052,apache/commons-cli,0,khac,cannot find symbol
+JA-060,apache/commons-cli,1,,
