@@ -81,6 +81,25 @@ invocations only --- the version most Pynguin releases are validated against. Th
 adjustment touches none of the pre-registered metrics, thresholds, datasets, or models,
 and was applied uniformly across all Pynguin measurements before any data were collected,
 which is why it is not an amendment. Even with the fix, Pynguin's median coverage on the
-Python dataset stayed at 0.0\% (Section~\ref{sec:results}), which we read as a genuine, if
-weak, finding about the tool's real-world difficulty on these modules rather than a
-leftover environment defect.
+Python dataset stayed at 0.0\% (Section~\ref{sec:results}).
+
+A late audit of that 0.0\% figure shows it blends two distinct causes, and we report the
+distinction rather than leave it implicit. For the largest modules Pynguin produced no
+output at all within its 90-second budget --- \texttt{flask/app.py} (1625 LOC) and
+\texttt{flask/cli.py} (1127 LOC) among them --- and that failure tracks module size rather
+than function complexity: every module of 385 LOC or fewer yielded a measurable suite,
+every module of 682 LOC or more yielded none. Since our sampling unit is the function
+while Pynguin operates on whole modules, functions drawn from very large files handed the
+baseline a task it could not finish in budget; scoring those as 0\% is defensible under
+the pre-registered rule, but it is a statement about applicability, not about the quality
+of the tests Pynguin writes. A second group is more troubling: there, Pynguin did produce
+a working suite --- it self-reports 40\% coverage on \texttt{requests.adapters} --- but our
+green-on-original check runs against the whole module suite, so one failing test zeroed
+every function in that module. Restricted to the 12 functions whose module cleared the
+gate, Pynguin's median branch coverage is 40.0\%, not 0.0\%. This is the same
+all-or-nothing artefact we describe for the Python LLM arm in Section~\ref{sec:rq4}, and
+we had not applied that insight to the baseline. It does not change the RQ1--RQ3
+conclusions, which concern \texttt{gpt-4o-mini} rather than Pynguin, but it does mean the
+RQ2-B Python comparison should be read as gpt-4o-mini against a baseline that our own
+harness partly suppressed. Re-measuring Pynguin with a per-function gate is the first item
+of our errata.
