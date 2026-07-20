@@ -1,0 +1,332 @@
+{
+ "PY-009": {
+  "qualname": "run_command",
+  "module": "flask.cli",
+  "range": [
+   935,
+   993
+  ],
+  "tests": [
+   {
+    "node": "test_run_command_success",
+    "passed": false,
+    "lines_touched": 1
+   },
+   {
+    "node": "test_run_command_with_reload",
+    "passed": false,
+    "lines_touched": 1
+   },
+   {
+    "node": "test_run_command_with_debugger",
+    "passed": false,
+    "lines_touched": 1
+   },
+   {
+    "node": "test_run_command_with_ssl",
+    "passed": false,
+    "lines_touched": 1
+   },
+   {
+    "node": "test_run_command_load_app_exception",
+    "passed": false,
+    "lines_touched": 1
+   },
+   {
+    "node": "test_run_command_reload_exception",
+    "passed": false,
+    "lines_touched": 1
+   }
+  ]
+ },
+ "PY-010": {
+  "qualname": "shell_command",
+  "module": "flask.cli",
+  "range": [
+   1001,
+   1045
+  ],
+  "tests": [
+   {
+    "node": "test_shell_command_no_startup",
+    "passed": true,
+    "lines_touched": 1
+   },
+   {
+    "node": "test_shell_command_with_startup",
+    "passed": false,
+    "lines_touched": 1
+   },
+   {
+    "node": "test_shell_command_with_interactive_hook",
+    "passed": false,
+    "lines_touched": 1
+   }
+  ]
+ },
+ "PY-015": {
+  "qualname": "get_flashed_messages",
+  "module": "flask.helpers",
+  "range": [
+   360,
+   399
+  ],
+  "tests": [
+   {
+    "node": "test_get_flashed_messages_no_flashes",
+    "passed": false,
+    "lines_touched": 1
+   },
+   {
+    "node": "test_get_flashed_messages_with_flashes",
+    "passed": false,
+    "lines_touched": 1
+   },
+   {
+    "node": "test_get_flashed_messages_with_categories",
+    "passed": false,
+    "lines_touched": 1
+   },
+   {
+    "node": "test_get_flashed_messages_with_category_filter",
+    "passed": false,
+    "lines_touched": 1
+   },
+   {
+    "node": "test_get_flashed_messages_with_category_filter_no_match",
+    "passed": false,
+    "lines_touched": 1
+   },
+   {
+    "node": "test_get_flashed_messages_with_categories_and_filter",
+    "passed": false,
+    "lines_touched": 1
+   }
+  ]
+ },
+ "PY-031": {
+  "qualname": "Flask.preprocess_request",
+  "module": "flask.app",
+  "range": [
+   1366,
+   1392
+  ],
+  "tests": [
+   {
+    "node": "test_preprocess_request_no_preprocessors",
+    "passed": false,
+    "lines_touched": 1
+   },
+   {
+    "node": "test_preprocess_request_with_url_value_preprocessor",
+    "passed": false,
+    "lines_touched": 0
+   },
+   {
+    "node": "test_preprocess_request_with_before_request_func",
+    "passed": false,
+    "lines_touched": 1
+   },
+   {
+    "node": "test_preprocess_request_with_multiple_before_request_funcs",
+    "passed": false,
+    "lines_touched": 1
+   },
+   {
+    "node": "test_preprocess_request_with_url_value_preprocessor_and_before_request_func",
+    "passed": false,
+    "lines_touched": 1
+   }
+  ]
+ },
+ "PY-036": {
+  "qualname": "Response.iter_content.generate",
+  "module": "requests.models",
+  "range": [
+   935,
+   956
+  ],
+  "tests": [
+   {
+    "node": "test_generate_with_stream",
+    "passed": false,
+    "lines_touched": 0
+   },
+   {
+    "node": "test_generate_with_read",
+    "passed": false,
+    "lines_touched": 0
+   },
+   {
+    "node": "test_generate_empty",
+    "passed": true,
+    "lines_touched": 0
+   },
+   {
+    "node": "test_generate_with_protocol_error",
+    "passed": false,
+    "lines_touched": 0
+   },
+   {
+    "node": "test_generate_with_decode_error",
+    "passed": false,
+    "lines_touched": 0
+   },
+   {
+    "node": "test_generate_with_read_timeout_error",
+    "passed": false,
+    "lines_touched": 0
+   },
+   {
+    "node": "test_generate_with_ssl_error",
+    "passed": false,
+    "lines_touched": 0
+   }
+  ]
+ },
+ "PY-040": {
+  "qualname": "_validate_key",
+  "module": "flask.cli",
+  "range": [
+   828,
+   864
+  ],
+  "tests": [
+   {
+    "node": "test_validate_key_adhoc",
+    "passed": false,
+    "lines_touched": 1
+   },
+   {
+    "node": "test_validate_key_ssl_context",
+    "passed": false,
+    "lines_touched": 1
+   },
+   {
+    "node": "test_validate_key_no_cert",
+    "passed": false,
+    "lines_touched": 0
+   },
+   {
+    "node": "test_validate_key_required_when_cert",
+    "passed": false,
+    "lines_touched": 0
+   },
+   {
+    "node": "test_validate_key_success",
+    "passed": false,
+    "lines_touched": 0
+   }
+  ]
+ },
+ "PY-043": {
+  "qualname": "Response.iter_lines",
+  "module": "requests.models",
+  "range": [
+   994,
+   1032
+  ],
+  "tests": [
+   {
+    "node": "test_iter_lines_default",
+    "passed": false,
+    "lines_touched": 3
+   },
+   {
+    "node": "test_iter_lines_with_delimiter",
+    "passed": false,
+    "lines_touched": 3
+   },
+   {
+    "node": "test_iter_lines_with_pending",
+    "passed": false,
+    "lines_touched": 3
+   },
+   {
+    "node": "test_iter_lines_empty",
+    "passed": false,
+    "lines_touched": 3
+   },
+   {
+    "node": "test_iter_lines_with_unicode",
+    "passed": false,
+    "lines_touched": 3
+   }
+  ]
+ },
+ "PY-048": {
+  "qualname": "EnvironBuilder.__init__",
+  "module": "flask.testing",
+  "range": [
+   49,
+   86
+  ],
+  "tests": [
+   {
+    "node": "test_init_with_base_url",
+    "passed": false,
+    "lines_touched": 1
+   },
+   {
+    "node": "test_init_with_subdomain",
+    "passed": false,
+    "lines_touched": 1
+   },
+   {
+    "node": "test_init_with_url_scheme",
+    "passed": false,
+    "lines_touched": 1
+   },
+   {
+    "node": "test_init_with_path_and_no_base_url",
+    "passed": false,
+    "lines_touched": 1
+   },
+   {
+    "node": "test_init_with_invalid_combination",
+    "passed": false,
+    "lines_touched": 1
+   },
+   {
+    "node": "test_init_with_empty_path",
+    "passed": false,
+    "lines_touched": 1
+   }
+  ]
+ },
+ "PY-057": {
+  "qualname": "BlueprintSetupState.add_url_rule",
+  "module": "flask.sansio.blueprints",
+  "range": [
+   87,
+   116
+  ],
+  "tests": [
+   {
+    "node": "test_add_url_rule_with_rule",
+    "passed": false,
+    "lines_touched": 1
+   },
+   {
+    "node": "test_add_url_rule_with_empty_rule",
+    "passed": false,
+    "lines_touched": 1
+   },
+   {
+    "node": "test_add_url_rule_with_none_endpoint",
+    "passed": false,
+    "lines_touched": 1
+   },
+   {
+    "node": "test_add_url_rule_with_subdomain",
+    "passed": false,
+    "lines_touched": 1
+   },
+   {
+    "node": "test_add_url_rule_with_defaults",
+    "passed": false,
+    "lines_touched": 1
+   }
+  ]
+ }
+}
