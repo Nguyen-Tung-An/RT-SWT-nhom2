@@ -33,7 +33,8 @@ for p in (os.path.join(REPO, "data", "raw", "flask", "src"),
     if p not in sys.path:
         sys.path.insert(0, p)
 
-NEW_COLS = ["ctor_signature", "ctor_snippet", "ctor_verified", "needs_context", "ctor_note"]
+NEW_COLS = ["ctor_signature", "ctor_snippet", "ctor_verified", "needs_context", "ctor_note",
+            "ctor_class", "ctor_module"]
 
 # Gia tri mau theo TEN tham so — thu tu quan trong, khop tu cu the den chung chung.
 # Chi la UNG VIEN; moi ung vien deu phai qua buoc thuc thi that o duoi.
@@ -158,7 +159,18 @@ def main() -> int:
                 if g2:
                     sig, snippet, good = s2, snip2, True
                     detail = f"dung lop con cu the {sub_mod}.{sub.__name__} ({d2})"
+                    # GHI LAI lop/module CU THE. Thieu hai truong nay o ban truoc khien
+                    # prompt tu mau thuan: khoi Target noi 'Declaring class: App' va
+                    # 'from flask.sansio.app import App' nhung dong receiver lai la
+                    # 'Flask(...)' khong giai thich -> model theo tin hieu da so va dung
+                    # App (lop truu tuong) -> AttributeError: App.default_config.
+                    # Dung loai loi 'dac ta muc tieu tu mau thuan' ma du an nay dang di sua.
+                    r["ctor_class"], r["ctor_module"] = sub.__name__, sub_mod
                     break
+        r.setdefault("ctor_class", "")
+        r.setdefault("ctor_module", "")
+        if good and not r["ctor_class"]:
+            r["ctor_class"], r["ctor_module"] = cls_name, mod_name
         r["ctor_signature"] = sig
         r["ctor_snippet"] = snippet if good else ""
         r["ctor_verified"] = "yes" if good else "no"

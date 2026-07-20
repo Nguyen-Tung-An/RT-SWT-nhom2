@@ -82,6 +82,16 @@ def target_spec(rec: dict) -> str:
             if rec.get("ctor_signature"):
                 lines.append(f"Constructor            : __init__{rec['ctor_signature']}")
             if rec.get("ctor_verified") == "yes" and rec.get("ctor_snippet"):
+                # Neu doan dung doi tuong dung LOP KHAC voi lop khai bao (lop khai bao
+                # truu tuong), phai NOI RO va cho import — neu khong khoi Target tu mau
+                # thuan: 'Declaring class: App' + 'from ... import App' vs 'Flask(...)'.
+                # Model se theo tin hieu da so va dung lop truu tuong.
+                cc, cm = rec.get("ctor_class", ""), rec.get("ctor_module", "")
+                if cc and cc != rec["class_path"].split(".")[-1]:
+                    lines.append(
+                        f"NOTE: {rec['class_path']} is ABSTRACT and cannot be instantiated "
+                        f"directly. Use the concrete subclass {cm}.{cc}, which inherits the "
+                        f"target method. Import it with: from {cm} import {cc}")
                 lines.append(f"WORKING receiver       : {rec['ctor_snippet']}")
                 lines.append("The line above is VERIFIED to construct successfully - use it "
                              "verbatim to build the receiver instead of inventing one.")
@@ -99,7 +109,14 @@ def target_spec(rec: dict) -> str:
                     "        <call the target here>")
         else:
             lines.append("This is a module-level function; import it directly.")
-    lines.append(f"How to reach it        : {rec['import_hint']}")
+    # import_hint duoc sinh cho LOP KHAI BAO. Khi phai dung lop con cu the, hint cu tro
+    # thanh mau thuan cuoi cung trong khoi Target -> ghi de.
+    cc, cm = rec.get("ctor_class", ""), rec.get("ctor_module", "")
+    if cc and rec.get("class_path") and cc != rec["class_path"].split(".")[-1]:
+        lines.append(f"How to reach it        : from {cm} import {cc}  # concrete subclass; "
+                     f"construct it, then call instance.{name}(...)")
+    else:
+        lines.append(f"How to reach it        : {rec['import_hint']}")
     return "\n".join(lines)
 
 

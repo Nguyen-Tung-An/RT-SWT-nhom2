@@ -1,9 +1,9 @@
 func_id,cause,detail,n_pass,n_fail
 PY-001,1-import-sai-ten,RequestRedirect khong co trong werkzeug.exceptions,0,0
-PY-002,7-runtime-khac,"Cannot pop this context (<AppContext 2325861020336 of test_app, GET 'h",0,4
+PY-002,7-runtime-khac,"Cannot pop this context (<AppContext 1924821135856 of test_app, GET 'h",0,4
 PY-003,7-runtime-khac,There is no request in this context.,0,4
 PY-004,8-assert-sai,ky vong sai,4,1
-PY-005,z-khac,".py::test_env_file_callback_with_value - click.exceptions.B... 1 failed, 4 passed in 0.27s",4,1
+PY-005,z-khac,".py::test_env_file_callback_with_value - click.exceptions.B... 1 failed, 4 passed in 0.28s",4,1
 PY-006,4-thuoc-tinh-khong-ton-tai,FlaskGroup.extra,3,3
 PY-007,1-import-sai-ten,NoAppException khong co trong click.exceptions,0,0
 PY-008,4-thuoc-tinh-khong-ton-tai,NoneType.load_dotenv_defaults,0,5
@@ -15,16 +15,16 @@ PY-013,8-assert-sai,ky vong sai,3,3
 PY-014,5-sai-chu-ky-goi,Can't instantiate abstract class Parameter with abstract methods _pars,0,5
 PY-015,7-runtime-khac,Cannot nest client invocations,0,7
 PY-016,OK-xanh,6 test pass,6,0
-PY-017,4-thuoc-tinh-khong-ton-tai,App.default_config,0,0
+PY-017,OK-xanh,6 test pass,6,0
 PY-018,8-assert-sai,ky vong sai,1,7
 PY-019,5-sai-chu-ky-goi,Blueprint.add_url_rule() got multiple values for argument 'view_func',1,4
-PY-020,z-khac,est_py_020.py::TestGetExcClassAndCode::test_non_exception_class - Nam... 5 failed in 0.28s,0,5
+PY-020,z-khac,est_py_020.py::TestGetExcClassAndCode::test_non_exception_class - Nam... 5 failed in 0.24s,0,5
 PY-021,4-thuoc-tinh-khong-ton-tai,MapAdapter.host,1,5
 PY-022,7-runtime-khac,There is no request in this context.,2,4
-PY-023,z-khac,".py::TestConfigFromPrefixedEnv::test_load_empty_prefix - Ke... 2 failed, 6 passed in 0.30s",6,2
+PY-023,z-khac,".py::TestConfigFromPrefixedEnv::test_load_empty_prefix - Ke... 2 failed, 6 passed in 0.25s",6,2
 PY-024,5-sai-chu-ky-goi,"expected an instance of Token, got 'token'",6,0
 PY-025,5-sai-chu-ky-goi,"app.json.response() takes either args or kwargs, not both",4,1
-PY-026,4-thuoc-tinh-khong-ton-tai,App.default_config,0,0
+PY-026,5-sai-chu-ky-goi,TestFindErrorHandler.test_find_error_handler_specific_exception.<local,1,4
 PY-027,8-assert-sai,ky vong sai,3,3
 PY-028,8-assert-sai,ky vong sai,3,2
 PY-029,8-assert-sai,ky vong sai,6,1
@@ -55,7 +55,7 @@ PY-053,OK-xanh,7 test pass,7,0
 PY-054,8-assert-sai,ky vong sai,6,2
 PY-055,OK-xanh,5 test pass,5,0
 PY-056,1-import-sai-ten,BuildError khong co trong werkzeug.exceptions,0,0
-PY-057,z-khac,".py::test_add_url_rule_with_no_rule - ValueError: URL rule ... 1 failed, 4 passed in 0.33s",4,1
+PY-057,z-khac,".py::test_add_url_rule_with_no_rule - ValueError: URL rule ... 1 failed, 4 passed in 0.28s",4,1
 PY-058,8-assert-sai,ky vong sai,0,6
 PY-059,4-thuoc-tinh-khong-ton-tai,MockSession.permanent,1,5
-PY-060,z-khac,"atchingJinjaLoader::test_get_source_explained_multiple_loaders 2 failed, 2 passed in 0.25s",2,2
+PY-060,z-khac,"atchingJinjaLoader::test_get_source_explained_multiple_loaders 2 failed, 2 passed in 0.24s",2,2
