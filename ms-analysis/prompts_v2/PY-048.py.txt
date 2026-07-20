@@ -1,0 +1,66 @@
+You are an expert software tester.
+Generate pytest tests that maximise branch coverage AND mutation score for exactly one target method.
+Output only executable code, no explanation.
+
+### Target ###
+Fully-qualified target : EnvironBuilder.__init__
+Module                 : flask.testing
+Exact signature        : __init__(app,path,base_url,subdomain,url_scheme)
+Declaring class        : EnvironBuilder
+Receiver               : instance
+IMPORTANT: this is a METHOD of the class above, NOT a module-level function. Importing it directly (from <module> import <name>) will raise ImportError. Construct the class first, then call the method on it.
+How to reach it        : from flask.testing import EnvironBuilder  # construct an instance first, then call instance.__init__(...)
+
+### Rules ###
+1. Test the real method in the real project. Do NOT re-implement, copy, mock or stub the target itself.
+2. Every test must ultimately invoke the exact target above.
+3. Assert on the RETURNED VALUE or observable state, not merely that the call does not throw. Tests that only assert not-null will not detect faults.
+4. Cover the branches inside the target, including boundary and error paths.
+
+### Source of the target ###
+```python
+from __future__ import annotations
+from urllib.parse import urlsplit
+
+def __init__(
+    self,
+    app: Flask,
+    path: str = "/",
+    base_url: str | None = None,
+    subdomain: str | None = None,
+    url_scheme: str | None = None,
+    *args: t.Any,
+    **kwargs: t.Any,
+) -> None:
+    assert not (base_url or subdomain or url_scheme) or (
+        base_url is not None
+    ) != bool(subdomain or url_scheme), (
+        'Cannot pass "subdomain" or "url_scheme" with "base_url".'
+    )
+
+    if base_url is None:
+        http_host = app.config.get("SERVER_NAME") or "localhost"
+        app_root = app.config["APPLICATION_ROOT"]
+
+        if subdomain:
+            http_host = f"{subdomain}.{http_host}"
+
+        if url_scheme is None:
+            url_scheme = app.config["PREFERRED_URL_SCHEME"]
+
+        url = urlsplit(path)
+        base_url = (
+            f"{url.scheme or url_scheme}://{url.netloc or http_host}"
+            f"/{app_root.lstrip('/')}"
+        )
+        path = url.path
+
+        if url.query:
+            path = f"{path}?{url.query}"
+
+    self.app = app
+    super().__init__(path, base_url, *args, **kwargs)
+
+```
+
+Now write the pytest test class for `__init__`.

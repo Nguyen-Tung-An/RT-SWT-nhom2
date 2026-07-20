@@ -1,0 +1,58 @@
+You are an expert software tester.
+Generate JUnit 5 tests that maximise branch coverage AND mutation score for exactly one target method.
+Output only executable code, no explanation.
+
+### Target ###
+Fully-qualified target : org.joda.time.DateTimeComparator.compare
+Declaring class        : DateTimeComparator
+Package                : org.joda.time
+Exact signature        : compare(Object,Object)
+Modifier               : public, instance
+IMPORTANT: this class may declare several overloads with the same name. You must call the one matching the exact signature above.
+How to reach it        : import org.joda.time.DateTimeComparator;  // construct DateTimeComparator, then instance.compare(Object, Object)
+
+### Rules ###
+1. Test the real method in the real project. Do NOT re-implement, copy, mock or stub the target itself.
+2. Every test must ultimately invoke the exact target above.
+3. Assert on the RETURNED VALUE or observable state, not merely that the call does not throw. Tests that only assert not-null will not detect faults.
+4. Cover the branches inside the target, including boundary and error paths.
+
+### Source of the target ###
+```java
+    public int compare(Object lhsObj, Object rhsObj) {
+        InstantConverter conv = ConverterManager.getInstance().getInstantConverter(lhsObj);
+        Chronology lhsChrono = conv.getChronology(lhsObj, (Chronology) null);
+        long lhsMillis = conv.getInstantMillis(lhsObj, lhsChrono);
+        
+        // handle null==null and other cases where objects are the same
+        // but only do this after checking the input is valid
+        if (lhsObj == rhsObj) {
+            return 0;
+        }
+        
+        conv = ConverterManager.getInstance().getInstantConverter(rhsObj);
+        Chronology rhsChrono = conv.getChronology(rhsObj, (Chronology) null);
+        long rhsMillis = conv.getInstantMillis(rhsObj, rhsChrono);
+
+        if (iLowerLimit != null) {
+            lhsMillis = iLowerLimit.getField(lhsChrono).roundFloor(lhsMillis);
+            rhsMillis = iLowerLimit.getField(rhsChrono).roundFloor(rhsMillis);
+        }
+
+        if (iUpperLimit != null) {
+            lhsMillis = iUpperLimit.getField(lhsChrono).remainder(lhsMillis);
+            rhsMillis = iUpperLimit.getField(rhsChrono).remainder(rhsMillis);
+        }
+
+        if (lhsMillis < rhsMillis) {
+            return -1;
+        } else if (lhsMillis > rhsMillis) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+
+```
+
+Now write the JUnit 5 test class for `compare`.

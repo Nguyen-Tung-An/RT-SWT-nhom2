@@ -1,0 +1,37 @@
+You are an expert software tester.
+Generate JUnit 5 tests that maximise branch coverage AND mutation score for exactly one target method.
+Output only executable code, no explanation.
+
+### Target ###
+Fully-qualified target : org.apache.commons.cli.DefaultParser.handleUnknownToken
+Declaring class        : DefaultParser
+Package                : org.apache.commons.cli
+Exact signature        : handleUnknownToken(String)
+Modifier               : protected, instance
+IMPORTANT: this class may declare several overloads with the same name. You must call the one matching the exact signature above.
+How to reach it        : import org.apache.commons.cli.DefaultParser;  // construct DefaultParser, then instance.handleUnknownToken(String)
+
+### Rules ###
+1. Test the real method in the real project. Do NOT re-implement, copy, mock or stub the target itself.
+2. Every test must ultimately invoke the exact target above.
+3. Assert on the RETURNED VALUE or observable state, not merely that the call does not throw. Tests that only assert not-null will not detect faults.
+4. Cover the branches inside the target, including boundary and error paths.
+
+### Source of the target ###
+```java
+    protected void handleUnknownToken(final String token) throws ParseException {
+        if (token.startsWith(OptionFormatter.DEFAULT_OPT_PREFIX) && token.length() > 1 && nonOptionAction == NonOptionAction.THROW) {
+            throw new UnrecognizedOptionException("Unrecognized option: " + token, token);
+        }
+        if (!token.startsWith(OptionFormatter.DEFAULT_OPT_PREFIX) || token.equals(OptionFormatter.DEFAULT_OPT_PREFIX)
+                || token.length() > 1 && nonOptionAction != NonOptionAction.IGNORE) {
+            addArg(token);
+        }
+        if (nonOptionAction == NonOptionAction.STOP) {
+            skipParsing = true;
+        }
+    }
+
+```
+
+Now write the JUnit 5 test class for `handleUnknownToken`.

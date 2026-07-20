@@ -1,0 +1,45 @@
+You are an expert software tester.
+Generate JUnit 5 tests that maximise branch coverage AND mutation score for exactly one target method.
+Output only executable code, no explanation.
+
+### Target ###
+Fully-qualified target : org.apache.commons.cli.HelpFormatter.appendOptionGroup
+Declaring class        : HelpFormatter
+Package                : org.apache.commons.cli
+Exact signature        : appendOptionGroup(StringBuilder,OptionGroup)
+Modifier               : private, instance
+IMPORTANT: this class may declare several overloads with the same name. You must call the one matching the exact signature above.
+How to reach it        : import org.apache.commons.cli.HelpFormatter;  // construct HelpFormatter, then instance.appendOptionGroup(StringBuilder, OptionGroup)
+
+### Rules ###
+1. Test the real method in the real project. Do NOT re-implement, copy, mock or stub the target itself.
+2. Every test must ultimately invoke the exact target above.
+3. Assert on the RETURNED VALUE or observable state, not merely that the call does not throw. Tests that only assert not-null will not detect faults.
+4. Cover the branches inside the target, including boundary and error paths.
+
+### Source of the target ###
+```java
+    private void appendOptionGroup(final StringBuilder buff, final OptionGroup optionGroup) {
+        if (!optionGroup.isRequired()) {
+            buff.append("[");
+        }
+        final List<Option> optList = new ArrayList<>(optionGroup.getOptions());
+        if (getOptionComparator() != null) {
+            Collections.sort(optList, getOptionComparator());
+        }
+        // for each option in the OptionGroup
+        for (final Iterator<Option> it = optList.iterator(); it.hasNext();) {
+            // whether the option is required or not is handled at group level
+            appendOption(buff, it.next(), true);
+            if (it.hasNext()) {
+                buff.append(AbstractHelpFormatter.DEFAULT_OPTION_GROUP_SEPARATOR);
+            }
+        }
+        if (!optionGroup.isRequired()) {
+            buff.append("]");
+        }
+    }
+
+```
+
+Now write the JUnit 5 test class for `appendOptionGroup`.

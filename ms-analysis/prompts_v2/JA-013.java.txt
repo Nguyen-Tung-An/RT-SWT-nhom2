@@ -1,0 +1,39 @@
+You are an expert software tester.
+Generate JUnit 5 tests that maximise branch coverage AND mutation score for exactly one target method.
+Output only executable code, no explanation.
+
+### Target ###
+Fully-qualified target : org.apache.commons.collections4.ArrayStack.search
+Declaring class        : ArrayStack
+Package                : org.apache.commons.collections4
+Exact signature        : search(Object)
+Modifier               : public, instance
+IMPORTANT: this class may declare several overloads with the same name. You must call the one matching the exact signature above.
+How to reach it        : import org.apache.commons.collections4.ArrayStack;  // construct ArrayStack, then instance.search(Object)
+
+### Rules ###
+1. Test the real method in the real project. Do NOT re-implement, copy, mock or stub the target itself.
+2. Every test must ultimately invoke the exact target above.
+3. Assert on the RETURNED VALUE or observable state, not merely that the call does not throw. Tests that only assert not-null will not detect faults.
+4. Cover the branches inside the target, including boundary and error paths.
+
+### Source of the target ###
+```java
+    public int search(final Object object) {
+        int i = size() - 1;        // Current index
+        int n = 1;                 // Current distance
+        while (i >= 0) {
+            final Object current = get(i);
+            if (object == null && current == null ||
+                object != null && object.equals(current)) {
+                return n;
+            }
+            i--;
+            n++;
+        }
+        return -1;
+    }
+
+```
+
+Now write the JUnit 5 test class for `search`.

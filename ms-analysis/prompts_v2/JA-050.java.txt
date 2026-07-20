@@ -1,0 +1,44 @@
+You are an expert software tester.
+Generate JUnit 5 tests that maximise branch coverage AND mutation score for exactly one target method.
+Output only executable code, no explanation.
+
+### Target ###
+Fully-qualified target : org.apache.commons.cli.HelpFormatter.appendOption
+Declaring class        : HelpFormatter
+Package                : org.apache.commons.cli
+Exact signature        : appendOption(StringBuilder,Option,boolean)
+Modifier               : private, instance
+IMPORTANT: this class may declare several overloads with the same name. You must call the one matching the exact signature above.
+How to reach it        : import org.apache.commons.cli.HelpFormatter;  // construct HelpFormatter, then instance.appendOption(StringBuilder, Option, boolean)
+
+### Rules ###
+1. Test the real method in the real project. Do NOT re-implement, copy, mock or stub the target itself.
+2. Every test must ultimately invoke the exact target above.
+3. Assert on the RETURNED VALUE or observable state, not merely that the call does not throw. Tests that only assert not-null will not detect faults.
+4. Cover the branches inside the target, including boundary and error paths.
+
+### Source of the target ###
+```java
+    private void appendOption(final StringBuilder buff, final Option option, final boolean required) {
+        if (!required) {
+            buff.append("[");
+        }
+        if (option.getOpt() != null) {
+            buff.append(OptionFormatter.DEFAULT_OPT_PREFIX).append(option.getOpt());
+        } else {
+            buff.append(OptionFormatter.DEFAULT_LONG_OPT_PREFIX).append(option.getLongOpt());
+        }
+        // if the Option has a value and a non blank argname
+        if (option.hasArg() && (option.getArgName() == null || !option.getArgName().isEmpty())) {
+            buff.append(option.getOpt() == null ? longOptSeparator : " ");
+            buff.append("<").append(option.getArgName() != null ? option.getArgName() : getArgName()).append(">");
+        }
+        // if the Option is not a required option
+        if (!required) {
+            buff.append("]");
+        }
+    }
+
+```
+
+Now write the JUnit 5 test class for `appendOption`.

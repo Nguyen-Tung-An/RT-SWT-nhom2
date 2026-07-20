@@ -1,0 +1,57 @@
+You are an expert software tester.
+Generate JUnit 5 tests that maximise branch coverage AND mutation score for exactly one target method.
+Output only executable code, no explanation.
+
+### Target ###
+Fully-qualified target : org.apache.commons.csv.Lexer.parseSimpleToken
+Declaring class        : Lexer
+Package                : org.apache.commons.csv
+Exact signature        : parseSimpleToken(Token,int)
+Modifier               : private, instance
+IMPORTANT: this class may declare several overloads with the same name. You must call the one matching the exact signature above.
+How to reach it        : import org.apache.commons.csv.Lexer;  // construct Lexer, then instance.parseSimpleToken(Token, int)
+
+### Rules ###
+1. Test the real method in the real project. Do NOT re-implement, copy, mock or stub the target itself.
+2. Every test must ultimately invoke the exact target above.
+3. Assert on the RETURNED VALUE or observable state, not merely that the call does not throw. Tests that only assert not-null will not detect faults.
+4. Cover the branches inside the target, including boundary and error paths.
+
+### Source of the target ###
+```java
+    private Token parseSimpleToken(final Token token, final int ch) throws IOException {
+        // Faster to use while(true)+break than while(token.type == INVALID)
+        int cur = ch;
+        while (true) {
+            if (readEndOfLine(cur)) {
+                token.type = Token.Type.EORECORD;
+                break;
+            }
+            if (isEndOfFile(cur)) {
+                token.type = Token.Type.EOF;
+                token.isReady = true; // There is data at EOF
+                break;
+            }
+            if (isDelimiter(cur)) {
+                token.type = Token.Type.TOKEN;
+                break;
+            }
+            // continue
+            if (isEscape(cur)) {
+                appendNextEscapedCharacterToToken(token);
+            } else {
+                token.content.append((char) cur);
+            }
+            cur = reader.read(); // continue
+        }
+
+        if (ignoreSurroundingSpaces) {
+            trimTrailingSpaces(token.content);
+        }
+
+        return token;
+    }
+
+```
+
+Now write the JUnit 5 test class for `parseSimpleToken`.

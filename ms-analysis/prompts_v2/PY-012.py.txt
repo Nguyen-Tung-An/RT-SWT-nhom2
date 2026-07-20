@@ -1,0 +1,53 @@
+You are an expert software tester.
+Generate pytest tests that maximise branch coverage AND mutation score for exactly one target method.
+Output only executable code, no explanation.
+
+### Target ###
+Fully-qualified target : Flask.process_response
+Module                 : flask.app
+Exact signature        : process_response(ctx,response)
+Declaring class        : Flask
+Receiver               : instance
+IMPORTANT: this is a METHOD of the class above, NOT a module-level function. Importing it directly (from <module> import <name>) will raise ImportError. Construct the class first, then call the method on it.
+How to reach it        : from flask.app import Flask  # construct an instance first, then call instance.process_response(...)
+
+### Rules ###
+1. Test the real method in the real project. Do NOT re-implement, copy, mock or stub the target itself.
+2. Every test must ultimately invoke the exact target above.
+3. Assert on the RETURNED VALUE or observable state, not merely that the call does not throw. Tests that only assert not-null will not detect faults.
+4. Cover the branches inside the target, including boundary and error paths.
+
+### Source of the target ###
+```python
+from __future__ import annotations
+from itertools import chain
+
+def process_response(self, ctx: AppContext, response: Response) -> Response:
+    """Can be overridden in order to modify the response object
+    before it's sent to the WSGI server.  By default this will
+    call all the :meth:`after_request` decorated functions.
+
+    .. versionchanged:: 0.5
+       As of Flask 0.5 the functions registered for after request
+       execution are called in reverse order of registration.
+
+    :param response: a :attr:`response_class` object.
+    :return: a new response object or the same, has to be an
+             instance of :attr:`response_class`.
+    """
+    for func in ctx._after_request_functions:
+        response = self.ensure_sync(func)(response)
+
+    for name in chain(ctx.request.blueprints, (None,)):
+        if name in self.after_request_funcs:
+            for func in reversed(self.after_request_funcs[name]):
+                response = self.ensure_sync(func)(response)
+
+    if not self.session_interface.is_null_session(ctx._get_session()):
+        self.session_interface.save_session(self, ctx._get_session(), response)
+
+    return response
+
+```
+
+Now write the pytest test class for `process_response`.

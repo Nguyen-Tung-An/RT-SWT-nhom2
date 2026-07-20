@@ -1,0 +1,58 @@
+You are an expert software tester.
+Generate pytest tests that maximise branch coverage AND mutation score for exactly one target method.
+Output only executable code, no explanation.
+
+### Target ###
+Fully-qualified target : Flask.handle_user_exception
+Module                 : flask.app
+Exact signature        : handle_user_exception(ctx,e)
+Declaring class        : Flask
+Receiver               : instance
+IMPORTANT: this is a METHOD of the class above, NOT a module-level function. Importing it directly (from <module> import <name>) will raise ImportError. Construct the class first, then call the method on it.
+How to reach it        : from flask.app import Flask  # construct an instance first, then call instance.handle_user_exception(...)
+
+### Rules ###
+1. Test the real method in the real project. Do NOT re-implement, copy, mock or stub the target itself.
+2. Every test must ultimately invoke the exact target above.
+3. Assert on the RETURNED VALUE or observable state, not merely that the call does not throw. Tests that only assert not-null will not detect faults.
+4. Cover the branches inside the target, including boundary and error paths.
+
+### Source of the target ###
+```python
+from __future__ import annotations
+
+def handle_user_exception(
+    self, ctx: AppContext, e: Exception
+) -> HTTPException | ft.ResponseReturnValue:
+    """This method is called whenever an exception occurs that
+    should be handled. A special case is :class:`~werkzeug
+    .exceptions.HTTPException` which is forwarded to the
+    :meth:`handle_http_exception` method. This function will either
+    return a response value or reraise the exception with the same
+    traceback.
+
+    .. versionchanged:: 1.0
+        Key errors raised from request data like ``form`` show the
+        bad key in debug mode rather than a generic bad request
+        message.
+
+    .. versionadded:: 0.7
+    """
+    if isinstance(e, BadRequestKeyError) and (
+        self.debug or self.config["TRAP_BAD_REQUEST_ERRORS"]
+    ):
+        e.show_exception = True
+
+    if isinstance(e, HTTPException) and not self.trap_http_exception(e):
+        return self.handle_http_exception(ctx, e)
+
+    handler = self._find_error_handler(e, ctx.request.blueprints)
+
+    if handler is None:
+        raise
+
+    return self.ensure_sync(handler)(e)  # type: ignore[no-any-return]
+
+```
+
+Now write the pytest test class for `handle_user_exception`.

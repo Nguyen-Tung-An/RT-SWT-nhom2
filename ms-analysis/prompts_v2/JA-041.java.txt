@@ -1,0 +1,68 @@
+You are an expert software tester.
+Generate JUnit 5 tests that maximise branch coverage AND mutation score for exactly one target method.
+Output only executable code, no explanation.
+
+### Target ###
+Fully-qualified target : org.joda.time.DateTimeZone.getDefaultProvider
+Declaring class        : DateTimeZone
+Package                : org.joda.time
+Exact signature        : getDefaultProvider()
+Modifier               : private, static
+How to reach it        : import org.joda.time.DateTimeZone;  // call DateTimeZone.getDefaultProvider()
+
+### Rules ###
+1. Test the real method in the real project. Do NOT re-implement, copy, mock or stub the target itself.
+2. Every test must ultimately invoke the exact target above.
+3. Assert on the RETURNED VALUE or observable state, not merely that the call does not throw. Tests that only assert not-null will not detect faults.
+4. Cover the branches inside the target, including boundary and error paths.
+
+### Source of the target ###
+```java
+    private static Provider getDefaultProvider() {
+        // approach 1
+        try {
+            String providerClass = System.getProperty("org.joda.time.DateTimeZone.Provider");
+            if (providerClass != null) {
+                try {
+                    // do not initialize the class until the type has been checked
+                    Class<?> cls = Class.forName(providerClass, false, DateTimeZone.class.getClassLoader());
+                    if (!Provider.class.isAssignableFrom(cls)) {
+                        throw new IllegalArgumentException("System property referred to class that does not implement " + Provider.class);
+                    }
+                    Provider provider = cls.asSubclass(Provider.class).getConstructor().newInstance();
+                    return validateProvider(provider);
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        } catch (SecurityException ex) {
+            // ignored
+        }
+        // approach 2
+        try {
+            String dataFolder = System.getProperty("org.joda.time.DateTimeZone.Folder");
+            if (dataFolder != null) {
+                try {
+                    Provider provider = new ZoneInfoProvider(new File(dataFolder));
+                    return validateProvider(provider);
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        } catch (SecurityException ex) {
+            // ignored
+        }
+        // approach 3
+        try {
+            Provider provider = new ZoneInfoProvider(DEFAULT_TZ_DATA_PATH);
+            return validateProvider(provider);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        // approach 4
+        return new UTCProvider();
+    }
+
+```
+
+Now write the JUnit 5 test class for `getDefaultProvider`.

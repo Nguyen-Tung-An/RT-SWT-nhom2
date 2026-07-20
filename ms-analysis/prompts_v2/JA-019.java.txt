@@ -1,0 +1,41 @@
+You are an expert software tester.
+Generate JUnit 5 tests that maximise branch coverage AND mutation score for exactly one target method.
+Output only executable code, no explanation.
+
+### Target ###
+Fully-qualified target : org.joda.time.DateTimeUtils.isContiguous
+Declaring class        : DateTimeUtils
+Package                : org.joda.time
+Exact signature        : isContiguous(ReadablePartial)
+Modifier               : public, static
+IMPORTANT: this class may declare several overloads with the same name. You must call the one matching the exact signature above.
+How to reach it        : import org.joda.time.DateTimeUtils;  // call DateTimeUtils.isContiguous(ReadablePartial)
+
+### Rules ###
+1. Test the real method in the real project. Do NOT re-implement, copy, mock or stub the target itself.
+2. Every test must ultimately invoke the exact target above.
+3. Assert on the RETURNED VALUE or observable state, not merely that the call does not throw. Tests that only assert not-null will not detect faults.
+4. Cover the branches inside the target, including boundary and error paths.
+
+### Source of the target ###
+```java
+    public static final boolean isContiguous(ReadablePartial partial) {
+        if (partial == null) {
+            throw new IllegalArgumentException("Partial must not be null");
+        }
+        DurationFieldType lastType = null;
+        for (int i = 0; i < partial.size(); i++) {
+            DateTimeField loopField = partial.getField(i);
+            if (i > 0) {
+                if (loopField.getRangeDurationField() == null || loopField.getRangeDurationField().getType() != lastType) {
+                    return false;
+                }
+            }
+            lastType = loopField.getDurationField().getType();
+        }
+        return true;
+    }
+
+```
+
+Now write the JUnit 5 test class for `isContiguous`.

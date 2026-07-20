@@ -1,0 +1,37 @@
+You are an expert software tester.
+Generate JUnit 5 tests that maximise branch coverage AND mutation score for exactly one target method.
+Output only executable code, no explanation.
+
+### Target ###
+Fully-qualified target : org.joda.time.DateTimeComparator.getInstance
+Declaring class        : DateTimeComparator
+Package                : org.joda.time
+Exact signature        : getInstance(DateTimeFieldType,DateTimeFieldType)
+Modifier               : public, static
+IMPORTANT: this class may declare several overloads with the same name. You must call the one matching the exact signature above.
+How to reach it        : import org.joda.time.DateTimeComparator;  // call DateTimeComparator.getInstance(DateTimeFieldType, DateTimeFieldType)
+
+### Rules ###
+1. Test the real method in the real project. Do NOT re-implement, copy, mock or stub the target itself.
+2. Every test must ultimately invoke the exact target above.
+3. Assert on the RETURNED VALUE or observable state, not merely that the call does not throw. Tests that only assert not-null will not detect faults.
+4. Cover the branches inside the target, including boundary and error paths.
+
+### Source of the target ###
+```java
+    public static DateTimeComparator getInstance(DateTimeFieldType lowerLimit, DateTimeFieldType upperLimit) {
+        if (lowerLimit == null && upperLimit == null) {
+            return ALL_INSTANCE;
+        }
+        if (lowerLimit == DateTimeFieldType.dayOfYear() && upperLimit == null) {
+            return DATE_INSTANCE;
+        }
+        if (lowerLimit == null && upperLimit == DateTimeFieldType.dayOfYear()) {
+            return TIME_INSTANCE;
+        }
+        return new DateTimeComparator(lowerLimit, upperLimit);
+    }
+
+```
+
+Now write the JUnit 5 test class for `getInstance`.

@@ -1,0 +1,60 @@
+You are an expert software tester.
+Generate JUnit 5 tests that maximise branch coverage AND mutation score for exactly one target method.
+Output only executable code, no explanation.
+
+### Target ###
+Fully-qualified target : org.jfree.chart.StandardChartTheme.applyToTitle
+Declaring class        : StandardChartTheme
+Package                : org.jfree.chart
+Exact signature        : applyToTitle(Title)
+Modifier               : protected, instance
+IMPORTANT: this class may declare several overloads with the same name. You must call the one matching the exact signature above.
+How to reach it        : import org.jfree.chart.StandardChartTheme;  // construct StandardChartTheme, then instance.applyToTitle(Title)
+
+### Rules ###
+1. Test the real method in the real project. Do NOT re-implement, copy, mock or stub the target itself.
+2. Every test must ultimately invoke the exact target above.
+3. Assert on the RETURNED VALUE or observable state, not merely that the call does not throw. Tests that only assert not-null will not detect faults.
+4. Cover the branches inside the target, including boundary and error paths.
+
+### Source of the target ###
+```java
+    protected void applyToTitle(Title title) {
+        if (title instanceof TextTitle) {
+            TextTitle tt = (TextTitle) title;
+            tt.setFont(this.largeFont);
+            tt.setPaint(this.subtitlePaint);
+        }
+        else if (title instanceof LegendTitle) {
+            LegendTitle lt = (LegendTitle) title;
+            if (lt.getBackgroundPaint() != null) {
+                lt.setBackgroundPaint(this.legendBackgroundPaint);
+            }
+            lt.setItemFont(this.regularFont);
+            lt.setItemPaint(this.legendItemPaint);
+            if (lt.getWrapper() != null) {
+                applyToBlockContainer(lt.getWrapper());
+            }
+        }
+        else if (title instanceof PaintScaleLegend) {
+            PaintScaleLegend psl = (PaintScaleLegend) title;
+            psl.setBackgroundPaint(this.legendBackgroundPaint);
+            ValueAxis axis = psl.getAxis();
+            if (axis != null) {
+                applyToValueAxis(axis);
+            }
+        }
+        else if (title instanceof CompositeTitle) {
+            CompositeTitle ct = (CompositeTitle) title;
+            BlockContainer bc = ct.getContainer();
+            for (Block b: bc.getBlocks()) {
+                if (b instanceof Title) {
+                    applyToTitle((Title) b);
+                }
+            }
+        }
+    }
+
+```
+
+Now write the JUnit 5 test class for `applyToTitle`.

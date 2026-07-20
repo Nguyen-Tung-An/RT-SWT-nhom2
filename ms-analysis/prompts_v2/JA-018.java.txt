@@ -1,0 +1,41 @@
+You are an expert software tester.
+Generate JUnit 5 tests that maximise branch coverage AND mutation score for exactly one target method.
+Output only executable code, no explanation.
+
+### Target ###
+Fully-qualified target : org.jsoup.helper.DataUtil.openStream
+Declaring class        : DataUtil
+Package                : org.jsoup.helper
+Exact signature        : openStream(Path)
+Modifier               : private, static
+IMPORTANT: this class may declare several overloads with the same name. You must call the one matching the exact signature above.
+How to reach it        : import org.jsoup.helper.DataUtil;  // call DataUtil.openStream(Path)
+
+### Rules ###
+1. Test the real method in the real project. Do NOT re-implement, copy, mock or stub the target itself.
+2. Every test must ultimately invoke the exact target above.
+3. Assert on the RETURNED VALUE or observable state, not merely that the call does not throw. Tests that only assert not-null will not detect faults.
+4. Cover the branches inside the target, including boundary and error paths.
+
+### Source of the target ###
+```java
+    private static ControllableInputStream openStream(Path path) throws IOException {
+        final SeekableByteChannel byteChannel = Files.newByteChannel(path);
+        InputStream stream = Channels.newInputStream(byteChannel);
+        String name = Normalizer.lowerCase(path.getFileName().toString());
+        if (name.endsWith(".gz") || name.endsWith(".z")) {
+            try {
+                final boolean zipped = (stream.read() == 0x1f && stream.read() == 0x8b); // gzip magic bytes
+                byteChannel.position(0); // reset to start of file
+                if (zipped) stream = new GZIPInputStream(stream);
+            } catch (IOException e) {
+                stream.close(); // error during our first read; close the stream and cascade close byteChannel
+                throw e;
+            }
+        }
+        return ControllableInputStream.wrap(stream, 0);
+    }
+
+```
+
+Now write the JUnit 5 test class for `openStream`.

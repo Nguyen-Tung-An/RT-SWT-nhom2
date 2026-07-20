@@ -1,0 +1,62 @@
+You are an expert software tester.
+Generate pytest tests that maximise branch coverage AND mutation score for exactly one target method.
+Output only executable code, no explanation.
+
+### Target ###
+Fully-qualified target : _urllib3_request_context
+Module                 : requests.adapters
+Exact signature        : _urllib3_request_context(request,verify,client_cert,poolmanager)
+This is a module-level function; import it directly.
+How to reach it        : from requests.adapters import _urllib3_request_context
+
+### Rules ###
+1. Test the real method in the real project. Do NOT re-implement, copy, mock or stub the target itself.
+2. Every test must ultimately invoke the exact target above.
+3. Assert on the RETURNED VALUE or observable state, not merely that the call does not throw. Tests that only assert not-null will not detect faults.
+4. Cover the branches inside the target, including boundary and error paths.
+
+### Source of the target ###
+```python
+from __future__ import annotations
+import os
+from urllib.parse import urlparse
+
+def _urllib3_request_context(
+    request: PreparedRequest,
+    verify: bool | str | None,
+    client_cert: tuple[str, str] | str | None,
+    poolmanager: PoolManager,
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    host_params: dict[str, Any] = {}
+    pool_kwargs: dict[str, Any] = {}
+    parsed_request_url = urlparse(request.url)
+    scheme = parsed_request_url.scheme.lower()
+    port = parsed_request_url.port
+
+    cert_reqs = "CERT_REQUIRED"
+    if verify is False:
+        cert_reqs = "CERT_NONE"
+    elif isinstance(verify, str):
+        if not os.path.isdir(verify):
+            pool_kwargs["ca_certs"] = verify
+        else:
+            pool_kwargs["ca_cert_dir"] = verify
+    pool_kwargs["cert_reqs"] = cert_reqs
+    if client_cert is not None:
+        if isinstance(client_cert, tuple) and len(client_cert) == 2:
+            pool_kwargs["cert_file"] = client_cert[0]
+            pool_kwargs["key_file"] = client_cert[1]
+        else:
+            # According to our docs, we allow users to specify just the client
+            # cert path
+            pool_kwargs["cert_file"] = client_cert
+    host_params = {
+        "scheme": scheme,
+        "host": parsed_request_url.hostname,
+        "port": port,
+    }
+    return host_params, pool_kwargs
+
+```
+
+Now write the pytest test class for `_urllib3_request_context`.

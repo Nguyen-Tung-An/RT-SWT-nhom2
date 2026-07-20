@@ -1,0 +1,69 @@
+You are an expert software tester.
+Generate JUnit 5 tests that maximise branch coverage AND mutation score for exactly one target method.
+Output only executable code, no explanation.
+
+### Target ###
+Fully-qualified target : org.joda.time.Interval.parseWithOffset
+Declaring class        : Interval
+Package                : org.joda.time
+Exact signature        : parseWithOffset(String)
+Modifier               : public, static
+IMPORTANT: this class may declare several overloads with the same name. You must call the one matching the exact signature above.
+How to reach it        : import org.joda.time.Interval;  // call Interval.parseWithOffset(String)
+
+### Rules ###
+1. Test the real method in the real project. Do NOT re-implement, copy, mock or stub the target itself.
+2. Every test must ultimately invoke the exact target above.
+3. Assert on the RETURNED VALUE or observable state, not merely that the call does not throw. Tests that only assert not-null will not detect faults.
+4. Cover the branches inside the target, including boundary and error paths.
+
+### Source of the target ###
+```java
+    public static Interval parseWithOffset(String str) {
+        int separator = str.indexOf('/');
+        if (separator < 0) {
+            throw new IllegalArgumentException("Format requires a '/' separator: " + str);
+        }
+        String leftStr = str.substring(0, separator);
+        if (leftStr.length() <= 0) {
+            throw new IllegalArgumentException("Format invalid: " + str);
+        }
+        String rightStr = str.substring(separator + 1);
+        if (rightStr.length() <= 0) {
+            throw new IllegalArgumentException("Format invalid: " + str);
+        }
+
+        DateTimeFormatter dateTimeParser = ISODateTimeFormat.dateTimeParser().withOffsetParsed();
+        PeriodFormatter periodParser = ISOPeriodFormat.standard();
+        DateTime start = null;
+        Period period = null;
+        
+        // before slash
+        char c = leftStr.charAt(0);
+        if (c == 'P' || c == 'p') {
+            period = periodParser.withParseType(PeriodType.standard()).parsePeriod(leftStr);
+        } else {
+            start = dateTimeParser.parseDateTime(leftStr);
+        }
+        
+        // after slash
+        c = rightStr.charAt(0);
+        if (c == 'P' || c == 'p') {
+            if (period != null) {
+                throw new IllegalArgumentException("Interval composed of two durations: " + str);
+            }
+            period = periodParser.withParseType(PeriodType.standard()).parsePeriod(rightStr);
+            return new Interval(start, period);
+        } else {
+            DateTime end = dateTimeParser.parseDateTime(rightStr);
+            if (period != null) {
+                return new Interval(period, end);
+            } else {
+                return new Interval(start, end);
+            }
+        }
+    }
+
+```
+
+Now write the JUnit 5 test class for `parseWithOffset`.

@@ -1,0 +1,89 @@
+You are an expert software tester.
+Generate JUnit 5 tests that maximise branch coverage AND mutation score for exactly one target method.
+Output only executable code, no explanation.
+
+### Target ###
+Fully-qualified target : org.apache.commons.math4.core.jdkmath.AccurateMath.cosh
+Declaring class        : AccurateMath
+Package                : org.apache.commons.math4.core.jdkmath
+Exact signature        : cosh(double)
+Modifier               : public, static
+IMPORTANT: this class may declare several overloads with the same name. You must call the one matching the exact signature above.
+How to reach it        : import org.apache.commons.math4.core.jdkmath.AccurateMath;  // call AccurateMath.cosh(double)
+
+### Rules ###
+1. Test the real method in the real project. Do NOT re-implement, copy, mock or stub the target itself.
+2. Every test must ultimately invoke the exact target above.
+3. Assert on the RETURNED VALUE or observable state, not merely that the call does not throw. Tests that only assert not-null will not detect faults.
+4. Cover the branches inside the target, including boundary and error paths.
+
+### Source of the target ###
+```java
+    public static double cosh(double x) {
+        if (Double.isNaN(x)) {
+            return x;
+        }
+
+        // cosh[z] = (exp(z) + exp(-z))/2
+
+        // for numbers with magnitude 20 or so,
+        // exp(-z) can be ignored in comparison with exp(z)
+
+        if (x > 20) {
+            if (x >= LOG_MAX_VALUE) {
+                // Avoid overflow (MATH-905).
+                final double t = exp(0.5 * x);
+                return (0.5 * t) * t;
+            } else {
+                return 0.5 * exp(x);
+            }
+        } else if (x < -20) {
+            if (x <= -LOG_MAX_VALUE) {
+                // Avoid overflow (MATH-905).
+                final double t = exp(-0.5 * x);
+                return (0.5 * t) * t;
+            } else {
+                return 0.5 * exp(-x);
+            }
+        }
+
+        final double[] hiPrec = new double[2];
+        if (x < 0.0) {
+            x = -x;
+        }
+        exp(x, 0.0, hiPrec);
+
+        double ya = hiPrec[0] + hiPrec[1];
+        double yb = -(ya - hiPrec[0] - hiPrec[1]);
+
+        double temp = ya * HEX_40000000;
+        double yaa = ya + temp - temp;
+        double yab = ya - yaa;
+
+        // recip = 1/y
+        double recip = 1.0 / ya;
+        temp = recip * HEX_40000000;
+        double recipa = recip + temp - temp;
+        double recipb = recip - recipa;
+
+        // Correct for rounding in division
+        recipb += (1.0 - yaa * recipa - yaa * recipb - yab * recipa - yab * recipb) * recip;
+        // Account for yb
+        recipb += -yb * recip * recip;
+
+        // y = y + 1/y
+        temp = ya + recipa;
+        yb += -(temp - ya - recipa);
+        ya = temp;
+        temp = ya + recipb;
+        yb += -(temp - ya - recipb);
+        ya = temp;
+
+        double result = ya + yb;
+        result *= 0.5;
+        return result;
+    }
+
+```
+
+Now write the JUnit 5 test class for `cosh`.

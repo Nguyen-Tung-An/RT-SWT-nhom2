@@ -1,0 +1,44 @@
+You are an expert software tester.
+Generate JUnit 5 tests that maximise branch coverage AND mutation score for exactly one target method.
+Output only executable code, no explanation.
+
+### Target ###
+Fully-qualified target : org.jsoup.helper.RequestDispatch.get
+Declaring class        : RequestDispatch
+Package                : org.jsoup.helper
+Exact signature        : get(Request,Response)
+Modifier               : package-private, static
+IMPORTANT: this class may declare several overloads with the same name. You must call the one matching the exact signature above.
+How to reach it        : import org.jsoup.helper.RequestDispatch;  // call RequestDispatch.get(Request, Response)
+
+### Rules ###
+1. Test the real method in the real project. Do NOT re-implement, copy, mock or stub the target itself.
+2. Every test must ultimately invoke the exact target above.
+3. Assert on the RETURNED VALUE or observable state, not merely that the call does not throw. Tests that only assert not-null will not detect faults.
+4. Cover the branches inside the target, including boundary and error paths.
+
+### Source of the target ###
+```java
+    static RequestExecutor get(Request request, @Nullable Response previousResponse) {
+        boolean useHttpClient = Boolean.parseBoolean(System.getProperty(SharedConstants.UseHttpClient, "true"));
+
+        if (request.sslSocketFactory() != null) // downgrade if a socket factory is set, as it can't be supplied to the HttpClient
+            useHttpClient = false;
+        Proxy proxy = request.proxy();
+        if (proxy != null && proxy.type() == Proxy.Type.SOCKS) // HttpClient doesn't support SOCKS proxies
+            useHttpClient = false;
+
+        if (useHttpClient && clientConstructor != null) {
+            try {
+                return clientConstructor.newInstance(request, previousResponse);
+            } catch (Exception e) {
+                return new UrlConnectionExecutor(request, previousResponse);
+            }
+        } else {
+            return new UrlConnectionExecutor(request, previousResponse);
+        }
+    }
+
+```
+
+Now write the JUnit 5 test class for `get`.

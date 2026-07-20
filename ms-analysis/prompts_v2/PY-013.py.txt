@@ -1,0 +1,54 @@
+You are an expert software tester.
+Generate pytest tests that maximise branch coverage AND mutation score for exactly one target method.
+Output only executable code, no explanation.
+
+### Target ###
+Fully-qualified target : prepare_import
+Module                 : flask.cli
+Exact signature        : prepare_import(path)
+This is a module-level function; import it directly.
+How to reach it        : from flask.cli import prepare_import
+
+### Rules ###
+1. Test the real method in the real project. Do NOT re-implement, copy, mock or stub the target itself.
+2. Every test must ultimately invoke the exact target above.
+3. Assert on the RETURNED VALUE or observable state, not merely that the call does not throw. Tests that only assert not-null will not detect faults.
+4. Cover the branches inside the target, including boundary and error paths.
+
+### Source of the target ###
+```python
+from __future__ import annotations
+import os
+import sys
+
+def prepare_import(path: str) -> str:
+    """Given a filename this will try to calculate the python path, add it
+    to the search path and return the actual module name that is expected.
+    """
+    path = os.path.realpath(path)
+
+    fname, ext = os.path.splitext(path)
+    if ext == ".py":
+        path = fname
+
+    if os.path.basename(path) == "__init__":
+        path = os.path.dirname(path)
+
+    module_name = []
+
+    # move up until outside package structure (no __init__.py)
+    while True:
+        path, name = os.path.split(path)
+        module_name.append(name)
+
+        if not os.path.exists(os.path.join(path, "__init__.py")):
+            break
+
+    if sys.path[0] != path:
+        sys.path.insert(0, path)
+
+    return ".".join(module_name[::-1])
+
+```
+
+Now write the pytest test class for `prepare_import`.

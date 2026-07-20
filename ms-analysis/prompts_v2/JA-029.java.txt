@@ -1,0 +1,35 @@
+You are an expert software tester.
+Generate JUnit 5 tests that maximise branch coverage AND mutation score for exactly one target method.
+Output only executable code, no explanation.
+
+### Target ###
+Fully-qualified target : org.joda.time.DateTimeComparator.equals
+Declaring class        : DateTimeComparator
+Package                : org.joda.time
+Exact signature        : equals(Object)
+Modifier               : public, instance
+IMPORTANT: this class may declare several overloads with the same name. You must call the one matching the exact signature above.
+How to reach it        : import org.joda.time.DateTimeComparator;  // construct DateTimeComparator, then instance.equals(Object)
+
+### Rules ###
+1. Test the real method in the real project. Do NOT re-implement, copy, mock or stub the target itself.
+2. Every test must ultimately invoke the exact target above.
+3. Assert on the RETURNED VALUE or observable state, not merely that the call does not throw. Tests that only assert not-null will not detect faults.
+4. Cover the branches inside the target, including boundary and error paths.
+
+### Source of the target ###
+```java
+    public boolean equals(Object object) {
+        if (object instanceof DateTimeComparator) {
+            DateTimeComparator other = (DateTimeComparator) object;
+            return (iLowerLimit == other.getLowerLimit() ||
+                    (iLowerLimit != null && iLowerLimit.equals(other.getLowerLimit()))) &&
+                   (iUpperLimit == other.getUpperLimit() ||
+                    (iUpperLimit != null && iUpperLimit.equals(other.getUpperLimit())));
+        }
+        return false;
+    }
+
+```
+
+Now write the JUnit 5 test class for `equals`.

@@ -1,0 +1,40 @@
+You are an expert software tester.
+Generate JUnit 5 tests that maximise branch coverage AND mutation score for exactly one target method.
+Output only executable code, no explanation.
+
+### Target ###
+Fully-qualified target : org.apache.commons.csv.CSVFormat.isDelimiter
+Declaring class        : CSVFormat
+Package                : org.apache.commons.csv
+Exact signature        : isDelimiter(char,CharSequence,int,char,int)
+Modifier               : private, instance
+IMPORTANT: this class may declare several overloads with the same name. You must call the one matching the exact signature above.
+How to reach it        : import org.apache.commons.csv.CSVFormat;  // construct CSVFormat, then instance.isDelimiter(char, CharSequence, int, char, int)
+
+### Rules ###
+1. Test the real method in the real project. Do NOT re-implement, copy, mock or stub the target itself.
+2. Every test must ultimately invoke the exact target above.
+3. Assert on the RETURNED VALUE or observable state, not merely that the call does not throw. Tests that only assert not-null will not detect faults.
+4. Cover the branches inside the target, including boundary and error paths.
+
+### Source of the target ###
+```java
+    private boolean isDelimiter(final char ch0, final CharSequence charSeq, final int startIndex, final char[] delimiter, final int delimiterLength) {
+        if (ch0 != delimiter[0]) {
+            return false;
+        }
+        final int len = charSeq.length();
+        if (startIndex + delimiterLength > len) {
+            return false;
+        }
+        for (int i = 1; i < delimiterLength; i++) {
+            if (charSeq.charAt(startIndex + i) != delimiter[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+```
+
+Now write the JUnit 5 test class for `isDelimiter`.

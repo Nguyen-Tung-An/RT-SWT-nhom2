@@ -1,0 +1,46 @@
+You are an expert software tester.
+Generate JUnit 5 tests that maximise branch coverage AND mutation score for exactly one target method.
+Output only executable code, no explanation.
+
+### Target ###
+Fully-qualified target : org.joda.time.Period.fieldDifference
+Declaring class        : Period
+Package                : org.joda.time
+Exact signature        : fieldDifference(ReadablePartial,ReadablePartial)
+Modifier               : public, static
+IMPORTANT: this class may declare several overloads with the same name. You must call the one matching the exact signature above.
+How to reach it        : import org.joda.time.Period;  // call Period.fieldDifference(ReadablePartial, ReadablePartial)
+
+### Rules ###
+1. Test the real method in the real project. Do NOT re-implement, copy, mock or stub the target itself.
+2. Every test must ultimately invoke the exact target above.
+3. Assert on the RETURNED VALUE or observable state, not merely that the call does not throw. Tests that only assert not-null will not detect faults.
+4. Cover the branches inside the target, including boundary and error paths.
+
+### Source of the target ###
+```java
+    public static Period fieldDifference(ReadablePartial start, ReadablePartial end) {
+        if (start == null || end == null) {
+            throw new IllegalArgumentException("ReadablePartial objects must not be null");
+        }
+        if (start.size() != end.size()) {
+            throw new IllegalArgumentException("ReadablePartial objects must have the same set of fields");
+        }
+        DurationFieldType[] types = new DurationFieldType[start.size()];
+        int[] values = new int[start.size()];
+        for (int i = 0, isize = start.size(); i < isize; i++) {
+            if (start.getFieldType(i) != end.getFieldType(i)) {
+                throw new IllegalArgumentException("ReadablePartial objects must have the same set of fields");
+            }
+            types[i] = start.getFieldType(i).getDurationType();
+            if (i > 0 && types[i - 1].equals(types[i])) {
+                throw new IllegalArgumentException("ReadablePartial objects must not have overlapping fields");
+            }
+            values[i] = end.getValue(i) - start.getValue(i);
+        }
+        return new Period(values, PeriodType.forFields(types));
+    }
+
+```
+
+Now write the JUnit 5 test class for `fieldDifference`.

@@ -1,0 +1,41 @@
+You are an expert software tester.
+Generate JUnit 5 tests that maximise branch coverage AND mutation score for exactly one target method.
+Output only executable code, no explanation.
+
+### Target ###
+Fully-qualified target : org.apache.commons.cli.DefaultParser.isLongOption
+Declaring class        : DefaultParser
+Package                : org.apache.commons.cli
+Exact signature        : isLongOption(String)
+Modifier               : private, instance
+IMPORTANT: this class may declare several overloads with the same name. You must call the one matching the exact signature above.
+How to reach it        : import org.apache.commons.cli.DefaultParser;  // construct DefaultParser, then instance.isLongOption(String)
+
+### Rules ###
+1. Test the real method in the real project. Do NOT re-implement, copy, mock or stub the target itself.
+2. Every test must ultimately invoke the exact target above.
+3. Assert on the RETURNED VALUE or observable state, not merely that the call does not throw. Tests that only assert not-null will not detect faults.
+4. Cover the branches inside the target, including boundary and error paths.
+
+### Source of the target ###
+```java
+    private boolean isLongOption(final String token) {
+        if (token == null || !token.startsWith(OptionFormatter.DEFAULT_OPT_PREFIX) || token.length() == 1) {
+            return false;
+        }
+        final int pos = indexOfEqual(token);
+        final String t = pos == -1 ? token : token.substring(0, pos);
+        if (!getMatchingLongOptions(t).isEmpty()) {
+            // long or partial long options (--L, -L, --L=V, -L=V, --l, --l=V)
+            return true;
+        }
+        if (getLongPrefix(token) != null && !token.startsWith(OptionFormatter.DEFAULT_LONG_OPT_PREFIX)) {
+            // -LV
+            return true;
+        }
+        return false;
+    }
+
+```
+
+Now write the JUnit 5 test class for `isLongOption`.

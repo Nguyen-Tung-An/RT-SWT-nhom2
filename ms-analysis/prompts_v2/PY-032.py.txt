@@ -1,0 +1,79 @@
+You are an expert software tester.
+Generate pytest tests that maximise branch coverage AND mutation score for exactly one target method.
+Output only executable code, no explanation.
+
+### Target ###
+Fully-qualified target : Flask.wsgi_app
+Module                 : flask.app
+Exact signature        : wsgi_app(environ,start_response)
+Declaring class        : Flask
+Receiver               : instance
+IMPORTANT: this is a METHOD of the class above, NOT a module-level function. Importing it directly (from <module> import <name>) will raise ImportError. Construct the class first, then call the method on it.
+How to reach it        : from flask.app import Flask  # construct an instance first, then call instance.wsgi_app(...)
+
+### Rules ###
+1. Test the real method in the real project. Do NOT re-implement, copy, mock or stub the target itself.
+2. Every test must ultimately invoke the exact target above.
+3. Assert on the RETURNED VALUE or observable state, not merely that the call does not throw. Tests that only assert not-null will not detect faults.
+4. Cover the branches inside the target, including boundary and error paths.
+
+### Source of the target ###
+```python
+from __future__ import annotations
+import sys
+
+def wsgi_app(
+    self, environ: WSGIEnvironment, start_response: StartResponse
+) -> cabc.Iterable[bytes]:
+    """The actual WSGI application. This is not implemented in
+    :meth:`__call__` so that middlewares can be applied without
+    losing a reference to the app object. Instead of doing this::
+
+        app = MyMiddleware(app)
+
+    It's a better idea to do this instead::
+
+        app.wsgi_app = MyMiddleware(app.wsgi_app)
+
+    Then you still have the original application object around and
+    can continue to call methods on it.
+
+    .. versionchanged:: 0.7
+        Teardown events for the request and app contexts are called
+        even if an unhandled error occurs. Other events may not be
+        called depending on when an error occurs during dispatch.
+
+    :param environ: A WSGI environment.
+    :param start_response: A callable accepting a status code,
+        a list of headers, and an optional exception context to
+        start the response.
+    """
+    ctx = self.request_context(environ)
+    error: BaseException | None = None
+    try:
+        try:
+            ctx.push()
+            response = self.full_dispatch_request(ctx)
+        except Exception as e:
+            error = e
+            response = self.handle_exception(ctx, e)
+        except:
+            error = sys.exc_info()[1]
+            raise
+        return response(environ, start_response)
+    finally:
+        if "werkzeug.debug.preserve_context" in environ:
+            environ["werkzeug.debug.preserve_context"](ctx)
+
+        if (
+            error is not None
+            and self.should_ignore_error is not None
+            and self.should_ignore_error(error)
+        ):
+            error = None
+
+        ctx.pop(error)
+
+```
+
+Now write the pytest test class for `wsgi_app`.

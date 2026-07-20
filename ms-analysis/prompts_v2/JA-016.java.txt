@@ -1,0 +1,65 @@
+You are an expert software tester.
+Generate JUnit 5 tests that maximise branch coverage AND mutation score for exactly one target method.
+Output only executable code, no explanation.
+
+### Target ###
+Fully-qualified target : com.google.gson.typeadapters.UtcDateTypeAdapter.format
+Declaring class        : UtcDateTypeAdapter
+Package                : com.google.gson.typeadapters
+Exact signature        : format(Date,boolean,TimeZone)
+Modifier               : private, static
+IMPORTANT: this class may declare several overloads with the same name. You must call the one matching the exact signature above.
+How to reach it        : import com.google.gson.typeadapters.UtcDateTypeAdapter;  // call UtcDateTypeAdapter.format(Date, boolean, TimeZone)
+
+### Rules ###
+1. Test the real method in the real project. Do NOT re-implement, copy, mock or stub the target itself.
+2. Every test must ultimately invoke the exact target above.
+3. Assert on the RETURNED VALUE or observable state, not merely that the call does not throw. Tests that only assert not-null will not detect faults.
+4. Cover the branches inside the target, including boundary and error paths.
+
+### Source of the target ###
+```java
+  private static String format(Date date, boolean millis, TimeZone tz) {
+    Calendar calendar = new GregorianCalendar(tz, Locale.US);
+    calendar.setTime(date);
+
+    // estimate capacity of buffer as close as we can (yeah, that's pedantic ;)
+    int capacity = "yyyy-MM-ddThh:mm:ss".length();
+    capacity += millis ? ".sss".length() : 0;
+    capacity += tz.getRawOffset() == 0 ? "Z".length() : "+hh:mm".length();
+    StringBuilder formatted = new StringBuilder(capacity);
+
+    padInt(formatted, calendar.get(Calendar.YEAR), "yyyy".length());
+    formatted.append('-');
+    padInt(formatted, calendar.get(Calendar.MONTH) + 1, "MM".length());
+    formatted.append('-');
+    padInt(formatted, calendar.get(Calendar.DAY_OF_MONTH), "dd".length());
+    formatted.append('T');
+    padInt(formatted, calendar.get(Calendar.HOUR_OF_DAY), "hh".length());
+    formatted.append(':');
+    padInt(formatted, calendar.get(Calendar.MINUTE), "mm".length());
+    formatted.append(':');
+    padInt(formatted, calendar.get(Calendar.SECOND), "ss".length());
+    if (millis) {
+      formatted.append('.');
+      padInt(formatted, calendar.get(Calendar.MILLISECOND), "sss".length());
+    }
+
+    int offset = tz.getOffset(calendar.getTimeInMillis());
+    if (offset != 0) {
+      int hours = Math.abs((offset / (60 * 1000)) / 60);
+      int minutes = Math.abs((offset / (60 * 1000)) % 60);
+      formatted.append(offset < 0 ? '-' : '+');
+      padInt(formatted, hours, "hh".length());
+      formatted.append(':');
+      padInt(formatted, minutes, "mm".length());
+    } else {
+      formatted.append('Z');
+    }
+
+    return formatted.toString();
+  }
+
+```
+
+Now write the JUnit 5 test class for `format`.

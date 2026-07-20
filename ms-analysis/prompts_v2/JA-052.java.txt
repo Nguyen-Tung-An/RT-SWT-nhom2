@@ -1,0 +1,49 @@
+You are an expert software tester.
+Generate JUnit 5 tests that maximise branch coverage AND mutation score for exactly one target method.
+Output only executable code, no explanation.
+
+### Target ###
+Fully-qualified target : org.apache.commons.cli.PatternOptionBuilder.getValueType
+Declaring class        : PatternOptionBuilder
+Package                : org.apache.commons.cli
+Exact signature        : getValueType(char)
+Modifier               : public, static
+IMPORTANT: this class may declare several overloads with the same name. You must call the one matching the exact signature above.
+How to reach it        : import org.apache.commons.cli.PatternOptionBuilder;  // call PatternOptionBuilder.getValueType(char)
+
+### Rules ###
+1. Test the real method in the real project. Do NOT re-implement, copy, mock or stub the target itself.
+2. Every test must ultimately invoke the exact target above.
+3. Assert on the RETURNED VALUE or observable state, not merely that the call does not throw. Tests that only assert not-null will not detect faults.
+4. Cover the branches inside the target, including boundary and error paths.
+
+### Source of the target ###
+```java
+    public static Class<?> getValueType(final char ch) {
+        switch (ch) {
+        case '@':
+            return OBJECT_VALUE;
+        case ':':
+            return STRING_VALUE;
+        case '%':
+            return NUMBER_VALUE;
+        case '+':
+            return CLASS_VALUE;
+        case '#':
+            return DATE_VALUE;
+        case '<':
+            return EXISTING_FILE_VALUE;
+        case '>':
+            return FILE_VALUE;
+        case '*':
+            return FILES_VALUE;
+        case '/':
+            return URL_VALUE;
+        }
+
+        return null;
+    }
+
+```
+
+Now write the JUnit 5 test class for `getValueType`.

@@ -1,0 +1,75 @@
+You are an expert software tester.
+Generate JUnit 5 tests that maximise branch coverage AND mutation score for exactly one target method.
+Output only executable code, no explanation.
+
+### Target ###
+Fully-qualified target : com.google.gson.Gson.fromJson
+Declaring class        : Gson
+Package                : com.google.gson
+Exact signature        : fromJson(JsonReader,TypeToken)
+Modifier               : public, instance
+IMPORTANT: this class may declare several overloads with the same name. You must call the one matching the exact signature above.
+How to reach it        : import com.google.gson.Gson;  // construct Gson, then instance.fromJson(JsonReader, TypeToken)
+
+### Rules ###
+1. Test the real method in the real project. Do NOT re-implement, copy, mock or stub the target itself.
+2. Every test must ultimately invoke the exact target above.
+3. Assert on the RETURNED VALUE or observable state, not merely that the call does not throw. Tests that only assert not-null will not detect faults.
+4. Cover the branches inside the target, including boundary and error paths.
+
+### Source of the target ###
+```java
+  public <T> T fromJson(JsonReader reader, TypeToken<T> typeOfT)
+      throws JsonIOException, JsonSyntaxException {
+    boolean isEmpty = true;
+    Strictness oldStrictness = reader.getStrictness();
+
+    if (this.strictness != null) {
+      reader.setStrictness(this.strictness);
+    } else if (reader.getStrictness() == Strictness.LEGACY_STRICT) {
+      // For backward compatibility change to LENIENT if reader has default strictness LEGACY_STRICT
+      reader.setStrictness(Strictness.LENIENT);
+    }
+
+    try {
+      JsonToken unused = reader.peek();
+      isEmpty = false;
+      TypeAdapter<T> typeAdapter = getAdapter(typeOfT);
+      T object = typeAdapter.read(reader);
+      Class<?> expectedTypeWrapped = Primitives.wrap(typeOfT.getRawType());
+      if (object != null && !expectedTypeWrapped.isInstance(object)) {
+        throw new ClassCastException(
+            "Type adapter '"
+                + typeAdapter
+                + "' returned wrong type; requested "
+                + typeOfT.getRawType()
+                + " but got instance of "
+                + object.getClass()
+                + "\nVerify that the adapter was registered for the correct type.");
+      }
+      return object;
+    } catch (EOFException e) {
+      /*
+       * For compatibility with JSON 1.5 and earlier, we return null for empty
+       * documents instead of throwing.
+       */
+      if (isEmpty) {
+        return null;
+      }
+      throw new JsonSyntaxException(e);
+    } catch (IllegalStateException e) {
+      throw new JsonSyntaxException(e);
+    } catch (IOException e) {
+      // TODO(inder): Figure out whether it is indeed right to rethrow this as JsonSyntaxException
+      throw new JsonSyntaxException(e);
+    } catch (AssertionError e) {
+      throw new AssertionError(
+          "AssertionError (GSON " + GsonBuildConfig.VERSION + "): " + e.getMessage(), e);
+    } finally {
+      reader.setStrictness(oldStrictness);
+    }
+  }
+
+```
+
+Now write the JUnit 5 test class for `fromJson`.

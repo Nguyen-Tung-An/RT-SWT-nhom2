@@ -1,0 +1,62 @@
+You are an expert software tester.
+Generate pytest tests that maximise branch coverage AND mutation score for exactly one target method.
+Output only executable code, no explanation.
+
+### Target ###
+Fully-qualified target : CertParamType.convert
+Module                 : flask.cli
+Exact signature        : convert(value,param,ctx)
+Declaring class        : CertParamType
+Receiver               : instance
+IMPORTANT: this is a METHOD of the class above, NOT a module-level function. Importing it directly (from <module> import <name>) will raise ImportError. Construct the class first, then call the method on it.
+How to reach it        : from flask.cli import CertParamType  # construct an instance first, then call instance.convert(...)
+
+### Rules ###
+1. Test the real method in the real project. Do NOT re-implement, copy, mock or stub the target itself.
+2. Every test must ultimately invoke the exact target above.
+3. Assert on the RETURNED VALUE or observable state, not merely that the call does not throw. Tests that only assert not-null will not detect faults.
+4. Cover the branches inside the target, including boundary and error paths.
+
+### Source of the target ###
+```python
+from __future__ import annotations
+
+def convert(
+    self, value: t.Any, param: click.Parameter | None, ctx: click.Context | None
+) -> t.Any:
+    try:
+        import ssl
+    except ImportError:
+        raise click.BadParameter(
+            'Using "--cert" requires Python to be compiled with SSL support.',
+            ctx,
+            param,
+        ) from None
+
+    try:
+        return self.path_type(value, param, ctx)
+    except click.BadParameter:
+        value = click.STRING(value, param, ctx).lower()  # type: ignore[union-attr]
+
+        if value == "adhoc":
+            try:
+                import cryptography  # noqa: F401
+            except ImportError:
+                raise click.BadParameter(
+                    "Using ad-hoc certificates requires the cryptography library.",
+                    ctx,
+                    param,
+                ) from None
+
+            return value
+
+        obj = import_string(value, silent=True)
+
+        if isinstance(obj, ssl.SSLContext):
+            return obj
+
+        raise
+
+```
+
+Now write the pytest test class for `convert`.

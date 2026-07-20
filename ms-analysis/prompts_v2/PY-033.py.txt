@@ -1,0 +1,68 @@
+You are an expert software tester.
+Generate pytest tests that maximise branch coverage AND mutation score for exactly one target method.
+Output only executable code, no explanation.
+
+### Target ###
+Fully-qualified target : ScriptInfo.load_app
+Module                 : flask.cli
+Exact signature        : load_app()
+Declaring class        : ScriptInfo
+Receiver               : instance
+IMPORTANT: this is a METHOD of the class above, NOT a module-level function. Importing it directly (from <module> import <name>) will raise ImportError. Construct the class first, then call the method on it.
+How to reach it        : from flask.cli import ScriptInfo  # construct an instance first, then call instance.load_app(...)
+
+### Rules ###
+1. Test the real method in the real project. Do NOT re-implement, copy, mock or stub the target itself.
+2. Every test must ultimately invoke the exact target above.
+3. Assert on the RETURNED VALUE or observable state, not merely that the call does not throw. Tests that only assert not-null will not detect faults.
+4. Cover the branches inside the target, including boundary and error paths.
+
+### Source of the target ###
+```python
+from __future__ import annotations
+import re
+
+def load_app(self) -> Flask:
+    """Loads the Flask app (if not yet loaded) and returns it.  Calling
+    this multiple times will just result in the already loaded app to
+    be returned.
+    """
+    if self._loaded_app is not None:
+        return self._loaded_app
+    app: Flask | None = None
+    if self.create_app is not None:
+        app = self.create_app()
+    else:
+        if self.app_import_path:
+            path, name = (
+                re.split(r":(?![\\/])", self.app_import_path, maxsplit=1) + [None]
+            )[:2]
+            import_name = prepare_import(path)
+            app = locate_app(import_name, name)
+        else:
+            for path in ("wsgi.py", "app.py"):
+                import_name = prepare_import(path)
+                app = locate_app(import_name, None, raise_if_not_found=False)
+
+                if app is not None:
+                    break
+
+    if app is None:
+        raise NoAppException(
+            "Could not locate a Flask application. Use the"
+            " 'flask --app' option, 'FLASK_APP' environment"
+            " variable, or a 'wsgi.py' or 'app.py' file in the"
+            " current directory."
+        )
+
+    if self.set_debug_flag:
+        # Update the app's debug flag through the descriptor so that
+        # other values repopulate as well.
+        app.debug = get_debug_flag()
+
+    self._loaded_app = app
+    return app
+
+```
+
+Now write the pytest test class for `load_app`.

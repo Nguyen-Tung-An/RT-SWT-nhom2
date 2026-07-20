@@ -1,0 +1,48 @@
+You are an expert software tester.
+Generate JUnit 5 tests that maximise branch coverage AND mutation score for exactly one target method.
+Output only executable code, no explanation.
+
+### Target ###
+Fully-qualified target : org.jsoup.examples.HtmlToPlainText.main
+Declaring class        : HtmlToPlainText
+Package                : org.jsoup.examples
+Exact signature        : main(String...)
+Modifier               : public, static
+IMPORTANT: this class may declare several overloads with the same name. You must call the one matching the exact signature above.
+How to reach it        : import org.jsoup.examples.HtmlToPlainText;  // call HtmlToPlainText.main(String...)
+
+### Rules ###
+1. Test the real method in the real project. Do NOT re-implement, copy, mock or stub the target itself.
+2. Every test must ultimately invoke the exact target above.
+3. Assert on the RETURNED VALUE or observable state, not merely that the call does not throw. Tests that only assert not-null will not detect faults.
+4. Cover the branches inside the target, including boundary and error paths.
+
+### Source of the target ###
+```java
+    public static void main(String... args) throws IOException {
+        Validate.isTrue(args.length == 1 || args.length == 2, "usage: java -jar jsoup-examples.jar url [selector]");
+        final String url = args[0];
+        final String selector = args.length == 2 ? args[1] : null;
+
+        // fetch the specified URL and parse to a HTML DOM:
+        Connection session = Jsoup.newSession() // .newSession creates a session to maintain settings and cookies across multiple requests
+            .userAgent(userAgent)
+            .timeout(timeout);
+        Document doc = session.newRequest(url).get(); // .get executes a GET request, and parses the result
+
+        if (selector != null) {
+            Elements elements = doc.select(selector); // get each element that matches the CSS selector
+            elements = trimParents(elements); // trim out elements that descend from a previously seen element
+            for (Element element : elements) {
+                String plainText = getPlainText(element); // format that element to plain text
+                System.out.println(plainText);
+            }
+        } else { // format the whole doc
+            String plainText = getPlainText(doc);
+            System.out.println(plainText);
+        }
+    }
+
+```
+
+Now write the JUnit 5 test class for `main`.

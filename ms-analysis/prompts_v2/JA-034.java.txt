@@ -1,0 +1,41 @@
+You are an expert software tester.
+Generate JUnit 5 tests that maximise branch coverage AND mutation score for exactly one target method.
+Output only executable code, no explanation.
+
+### Target ###
+Fully-qualified target : org.apache.commons.csv.CSVFormat.trim
+Declaring class        : CSVFormat
+Package                : org.apache.commons.csv
+Exact signature        : trim(CharSequence)
+Modifier               : package-private, static
+IMPORTANT: this class may declare several overloads with the same name. You must call the one matching the exact signature above.
+How to reach it        : import org.apache.commons.csv.CSVFormat;  // call CSVFormat.trim(CharSequence)
+
+### Rules ###
+1. Test the real method in the real project. Do NOT re-implement, copy, mock or stub the target itself.
+2. Every test must ultimately invoke the exact target above.
+3. Assert on the RETURNED VALUE or observable state, not merely that the call does not throw. Tests that only assert not-null will not detect faults.
+4. Cover the branches inside the target, including boundary and error paths.
+
+### Source of the target ###
+```java
+    static CharSequence trim(final CharSequence charSequence) {
+        if (charSequence instanceof String) {
+            return ((String) charSequence).trim();
+        }
+        final int count = charSequence.length();
+        int len = count;
+        int pos = 0;
+
+        while (pos < len && isTrimChar(charSequence, pos)) {
+            pos++;
+        }
+        while (pos < len && isTrimChar(charSequence, len - 1)) {
+            len--;
+        }
+        return pos > 0 || len < count ? charSequence.subSequence(pos, len) : charSequence;
+    }
+
+```
+
+Now write the JUnit 5 test class for `trim`.

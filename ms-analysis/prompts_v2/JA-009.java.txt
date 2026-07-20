@@ -1,0 +1,38 @@
+You are an expert software tester.
+Generate JUnit 5 tests that maximise branch coverage AND mutation score for exactly one target method.
+Output only executable code, no explanation.
+
+### Target ###
+Fully-qualified target : org.joda.time.DateTimeZone.validateProvider
+Declaring class        : DateTimeZone
+Package                : org.joda.time
+Exact signature        : validateProvider(Provider)
+Modifier               : private, static
+IMPORTANT: this class may declare several overloads with the same name. You must call the one matching the exact signature above.
+How to reach it        : import org.joda.time.DateTimeZone;  // call DateTimeZone.validateProvider(Provider)
+
+### Rules ###
+1. Test the real method in the real project. Do NOT re-implement, copy, mock or stub the target itself.
+2. Every test must ultimately invoke the exact target above.
+3. Assert on the RETURNED VALUE or observable state, not merely that the call does not throw. Tests that only assert not-null will not detect faults.
+4. Cover the branches inside the target, including boundary and error paths.
+
+### Source of the target ###
+```java
+    private static Provider validateProvider(Provider provider) {
+        Set<String> ids = provider.getAvailableIDs();
+        if (ids == null || ids.size() == 0) {
+            throw new IllegalArgumentException("The provider doesn't have any available ids");
+        }
+        if (!ids.contains("UTC")) {
+            throw new IllegalArgumentException("The provider doesn't support UTC");
+        }
+        if (!UTC.equals(provider.getZone("UTC"))) {
+            throw new IllegalArgumentException("Invalid UTC zone provided");
+        }
+        return provider;
+    }
+
+```
+
+Now write the JUnit 5 test class for `validateProvider`.

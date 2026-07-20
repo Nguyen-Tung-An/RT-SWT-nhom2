@@ -1,0 +1,53 @@
+You are an expert software tester.
+Generate pytest tests that maximise branch coverage AND mutation score for exactly one target method.
+Output only executable code, no explanation.
+
+### Target ###
+Fully-qualified target : FlaskGroup.get_command
+Module                 : flask.cli
+Exact signature        : get_command(ctx,name)
+Declaring class        : FlaskGroup
+Receiver               : instance
+IMPORTANT: this is a METHOD of the class above, NOT a module-level function. Importing it directly (from <module> import <name>) will raise ImportError. Construct the class first, then call the method on it.
+How to reach it        : from flask.cli import FlaskGroup  # construct an instance first, then call instance.get_command(...)
+
+### Rules ###
+1. Test the real method in the real project. Do NOT re-implement, copy, mock or stub the target itself.
+2. Every test must ultimately invoke the exact target above.
+3. Assert on the RETURNED VALUE or observable state, not merely that the call does not throw. Tests that only assert not-null will not detect faults.
+4. Cover the branches inside the target, including boundary and error paths.
+
+### Source of the target ###
+```python
+from __future__ import annotations
+
+def get_command(self, ctx: click.Context, name: str) -> click.Command | None:
+    self._load_plugin_commands()
+    # Look up built-in and plugin commands, which should be
+    # available even if the app fails to load.
+    rv = super().get_command(ctx, name)
+
+    if rv is not None:
+        return rv
+
+    info = ctx.ensure_object(ScriptInfo)
+
+    # Look up commands provided by the app, showing an error and
+    # continuing if the app couldn't be loaded.
+    try:
+        app = info.load_app()
+    except NoAppException as e:
+        click.secho(f"Error: {e.format_message()}\n", err=True, fg="red")
+        return None
+
+    # Push an app context for the loaded app unless it is already
+    # active somehow. This makes the context available to parameter
+    # and command callbacks without needing @with_appcontext.
+    if not current_app or current_app._get_current_object() is not app:
+        ctx.with_resource(app.app_context())
+
+    return app.cli.get_command(ctx, name)
+
+```
+
+Now write the pytest test class for `get_command`.

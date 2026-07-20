@@ -1,0 +1,69 @@
+You are an expert software tester.
+Generate pytest tests that maximise branch coverage AND mutation score for exactly one target method.
+Output only executable code, no explanation.
+
+### Target ###
+Fully-qualified target : Scaffold._get_exc_class_and_code
+Module                 : flask.sansio.scaffold
+Exact signature        : _get_exc_class_and_code(exc_class_or_code)
+Declaring class        : Scaffold
+Receiver               : staticmethod
+IMPORTANT: this is a METHOD of the class above, NOT a module-level function. Importing it directly (from <module> import <name>) will raise ImportError. Construct the class first, then call the method on it.
+How to reach it        : from flask.sansio.scaffold import Scaffold  # then call Scaffold._get_exc_class_and_code(...)
+
+### Rules ###
+1. Test the real method in the real project. Do NOT re-implement, copy, mock or stub the target itself.
+2. Every test must ultimately invoke the exact target above.
+3. Assert on the RETURNED VALUE or observable state, not merely that the call does not throw. Tests that only assert not-null will not detect faults.
+4. Cover the branches inside the target, including boundary and error paths.
+
+### Source of the target ###
+```python
+from __future__ import annotations
+
+def _get_exc_class_and_code(
+    exc_class_or_code: type[Exception] | int,
+) -> tuple[type[Exception], int | None]:
+    """Get the exception class being handled. For HTTP status codes
+    or ``HTTPException`` subclasses, return both the exception and
+    status code.
+
+    :param exc_class_or_code: Any exception class, or an HTTP status
+        code as an integer.
+    """
+    exc_class: type[Exception]
+
+    if isinstance(exc_class_or_code, int):
+        try:
+            exc_class = default_exceptions[exc_class_or_code]
+        except KeyError:
+            raise ValueError(
+                f"'{exc_class_or_code}' is not a recognized HTTP"
+                " error code. Use a subclass of HTTPException with"
+                " that code instead."
+            ) from None
+    else:
+        exc_class = exc_class_or_code
+
+    if isinstance(exc_class, Exception):
+        raise TypeError(
+            f"{exc_class!r} is an instance, not a class. Handlers"
+            " can only be registered for Exception classes or HTTP"
+            " error codes."
+        )
+
+    if not issubclass(exc_class, Exception):
+        raise ValueError(
+            f"'{exc_class.__name__}' is not a subclass of Exception."
+            " Handlers can only be registered for Exception classes"
+            " or HTTP error codes."
+        )
+
+    if issubclass(exc_class, HTTPException):
+        return exc_class, exc_class.code
+    else:
+        return exc_class, None
+
+```
+
+Now write the pytest test class for `_get_exc_class_and_code`.

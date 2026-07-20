@@ -1,0 +1,53 @@
+You are an expert software tester.
+Generate JUnit 5 tests that maximise branch coverage AND mutation score for exactly one target method.
+Output only executable code, no explanation.
+
+### Target ###
+Fully-qualified target : org.jsoup.examples.HtmlToPlainText.FormattingVisitor.append
+Declaring class        : HtmlToPlainText.FormattingVisitor
+Package                : org.jsoup.examples
+Exact signature        : append(String)
+Modifier               : private, instance
+IMPORTANT: this class may declare several overloads with the same name. You must call the one matching the exact signature above.
+IMPORTANT: the target is a NESTED class. Call it as HtmlToPlainText.FormattingVisitor.append(...), not via the outer class.
+How to reach it        : import org.jsoup.examples.HtmlToPlainText;  // TARGET IS NESTED: HtmlToPlainText.FormattingVisitor.append(String) — NOT HtmlToPlainText.append(String)
+
+### Rules ###
+1. Test the real method in the real project. Do NOT re-implement, copy, mock or stub the target itself.
+2. Every test must ultimately invoke the exact target above.
+3. Assert on the RETURNED VALUE or observable state, not merely that the call does not throw. Tests that only assert not-null will not detect faults.
+4. Cover the branches inside the target, including boundary and error paths.
+
+### Source of the target ###
+```java
+        private void append(String text) {
+            if (text.startsWith("\n"))
+                width = 0; // reset counter if starts with a newline. only from formats above, not in natural text
+            if (text.equals(" ") &&
+                    (accum.length() == 0 || StringUtil.in(accum.substring(accum.length() - 1), " ", "\n")))
+                return; // don't accumulate long runs of empty spaces
+
+            if (text.length() + width > maxWidth) { // won't fit, needs to wrap
+                String[] words = text.split("\\s+");
+                for (int i = 0; i < words.length; i++) {
+                    String word = words[i];
+                    boolean last = i == words.length - 1;
+                    if (!last) // insert a space if not the last word
+                        word = word + " ";
+                    if (word.length() + width > maxWidth) { // wrap and reset counter
+                        accum.append("\n").append(word);
+                        width = word.length();
+                    } else {
+                        accum.append(word);
+                        width += word.length();
+                    }
+                }
+            } else { // fits as is, without need to wrap text
+                accum.append(text);
+                width += text.length();
+            }
+        }
+
+```
+
+Now write the JUnit 5 test class for `append`.

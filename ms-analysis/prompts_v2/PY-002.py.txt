@@ -1,0 +1,58 @@
+You are an expert software tester.
+Generate pytest tests that maximise branch coverage AND mutation score for exactly one target method.
+Output only executable code, no explanation.
+
+### Target ###
+Fully-qualified target : Flask.update_template_context
+Module                 : flask.app
+Exact signature        : update_template_context(ctx,context)
+Declaring class        : Flask
+Receiver               : instance
+IMPORTANT: this is a METHOD of the class above, NOT a module-level function. Importing it directly (from <module> import <name>) will raise ImportError. Construct the class first, then call the method on it.
+How to reach it        : from flask.app import Flask  # construct an instance first, then call instance.update_template_context(...)
+
+### Rules ###
+1. Test the real method in the real project. Do NOT re-implement, copy, mock or stub the target itself.
+2. Every test must ultimately invoke the exact target above.
+3. Assert on the RETURNED VALUE or observable state, not merely that the call does not throw. Tests that only assert not-null will not detect faults.
+4. Cover the branches inside the target, including boundary and error paths.
+
+### Source of the target ###
+```python
+from __future__ import annotations
+import typing as t
+from itertools import chain
+
+def update_template_context(
+    self, ctx: AppContext, context: dict[str, t.Any]
+) -> None:
+    """Update the template context with some commonly used variables.
+    This injects request, session, config and g into the template
+    context as well as everything template context processors want
+    to inject.  Note that the as of Flask 0.6, the original values
+    in the context will not be overridden if a context processor
+    decides to return a value with the same key.
+
+    :param context: the context as a dictionary that is updated in place
+                    to add extra variables.
+    """
+    names: t.Iterable[str | None] = (None,)
+
+    # A template may be rendered outside a request context.
+    if ctx.has_request:
+        names = chain(names, reversed(ctx.request.blueprints))
+
+    # The values passed to render_template take precedence. Keep a
+    # copy to re-apply after all context functions.
+    orig_ctx = context.copy()
+
+    for name in names:
+        if name in self.template_context_processors:
+            for func in self.template_context_processors[name]:
+                context.update(self.ensure_sync(func)())
+
+    context.update(orig_ctx)
+
+```
+
+Now write the pytest test class for `update_template_context`.

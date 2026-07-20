@@ -1,0 +1,62 @@
+You are an expert software tester.
+Generate pytest tests that maximise branch coverage AND mutation score for exactly one target method.
+Output only executable code, no explanation.
+
+### Target ###
+Fully-qualified target : _validate_key
+Module                 : flask.cli
+Exact signature        : _validate_key(ctx,param,value)
+This is a module-level function; import it directly.
+How to reach it        : from flask.cli import _validate_key
+
+### Rules ###
+1. Test the real method in the real project. Do NOT re-implement, copy, mock or stub the target itself.
+2. Every test must ultimately invoke the exact target above.
+3. Assert on the RETURNED VALUE or observable state, not merely that the call does not throw. Tests that only assert not-null will not detect faults.
+4. Cover the branches inside the target, including boundary and error paths.
+
+### Source of the target ###
+```python
+from __future__ import annotations
+
+def _validate_key(ctx: click.Context, param: click.Parameter, value: t.Any) -> t.Any:
+    """The ``--key`` option must be specified when ``--cert`` is a file.
+    Modifies the ``cert`` param to be a ``(cert, key)`` pair if needed.
+    """
+    cert = ctx.params.get("cert")
+    is_adhoc = cert == "adhoc"
+
+    try:
+        import ssl
+    except ImportError:
+        is_context = False
+    else:
+        is_context = isinstance(cert, ssl.SSLContext)
+
+    if value is not None:
+        if is_adhoc:
+            raise click.BadParameter(
+                'When "--cert" is "adhoc", "--key" is not used.', ctx, param
+            )
+
+        if is_context:
+            raise click.BadParameter(
+                'When "--cert" is an SSLContext object, "--key" is not used.',
+                ctx,
+                param,
+            )
+
+        if not cert:
+            raise click.BadParameter('"--cert" must also be specified.', ctx, param)
+
+        ctx.params["cert"] = cert, value
+
+    else:
+        if cert and not (is_adhoc or is_context):
+            raise click.BadParameter('Required when using "--cert".', ctx, param)
+
+    return value
+
+```
+
+Now write the pytest test class for `_validate_key`.

@@ -1,0 +1,55 @@
+You are an expert software tester.
+Generate JUnit 5 tests that maximise branch coverage AND mutation score for exactly one target method.
+Output only executable code, no explanation.
+
+### Target ###
+Fully-qualified target : org.apache.commons.collections4.CollectionUtils.size
+Declaring class        : CollectionUtils
+Package                : org.apache.commons.collections4
+Exact signature        : size(Object)
+Modifier               : public, static
+IMPORTANT: this class may declare several overloads with the same name. You must call the one matching the exact signature above.
+How to reach it        : import org.apache.commons.collections4.CollectionUtils;  // call CollectionUtils.size(Object)
+
+### Rules ###
+1. Test the real method in the real project. Do NOT re-implement, copy, mock or stub the target itself.
+2. Every test must ultimately invoke the exact target above.
+3. Assert on the RETURNED VALUE or observable state, not merely that the call does not throw. Tests that only assert not-null will not detect faults.
+4. Cover the branches inside the target, including boundary and error paths.
+
+### Source of the target ###
+```java
+    public static int size(final Object object) {
+        if (object == null) {
+            return 0;
+        }
+        int total = 0;
+        if (object instanceof Map<?, ?>) {
+            total = ((Map<?, ?>) object).size();
+        } else if (object instanceof Collection<?>) {
+            total = ((Collection<?>) object).size();
+        } else if (object instanceof Iterable<?>) {
+            total = IterableUtils.size((Iterable<?>) object);
+        } else if (object instanceof Object[]) {
+            total = ((Object[]) object).length;
+        } else if (object instanceof Iterator<?>) {
+            total = IteratorUtils.size((Iterator<?>) object);
+        } else if (object instanceof Enumeration<?>) {
+            final Enumeration<?> it = (Enumeration<?>) object;
+            while (it.hasMoreElements()) {
+                total++;
+                it.nextElement();
+            }
+        } else {
+            try {
+                total = Array.getLength(object);
+            } catch (final IllegalArgumentException ex) {
+                throw new IllegalArgumentException("Unsupported object type: " + object.getClass().getName());
+            }
+        }
+        return total;
+    }
+
+```
+
+Now write the JUnit 5 test class for `size`.

@@ -1,0 +1,51 @@
+You are an expert software tester.
+Generate JUnit 5 tests that maximise branch coverage AND mutation score for exactly one target method.
+Output only executable code, no explanation.
+
+### Target ###
+Fully-qualified target : com.google.gson.typeadapters.UtcDateTypeAdapter.parseInt
+Declaring class        : UtcDateTypeAdapter
+Package                : com.google.gson.typeadapters
+Exact signature        : parseInt(String,int,int)
+Modifier               : private, static
+IMPORTANT: this class may declare several overloads with the same name. You must call the one matching the exact signature above.
+How to reach it        : import com.google.gson.typeadapters.UtcDateTypeAdapter;  // call UtcDateTypeAdapter.parseInt(String, int, int)
+
+### Rules ###
+1. Test the real method in the real project. Do NOT re-implement, copy, mock or stub the target itself.
+2. Every test must ultimately invoke the exact target above.
+3. Assert on the RETURNED VALUE or observable state, not merely that the call does not throw. Tests that only assert not-null will not detect faults.
+4. Cover the branches inside the target, including boundary and error paths.
+
+### Source of the target ###
+```java
+  private static int parseInt(String value, int beginIndex, int endIndex)
+      throws NumberFormatException {
+    if (beginIndex < 0 || endIndex > value.length() || beginIndex > endIndex) {
+      throw new NumberFormatException(value);
+    }
+    // use same logic as in Integer.parseInt() but less generic we're not supporting negative values
+    int i = beginIndex;
+    int result = 0;
+    int digit;
+    if (i < endIndex) {
+      digit = Character.digit(value.charAt(i++), 10);
+      if (digit < 0) {
+        throw new NumberFormatException("Invalid number: " + value);
+      }
+      result = -digit;
+    }
+    while (i < endIndex) {
+      digit = Character.digit(value.charAt(i++), 10);
+      if (digit < 0) {
+        throw new NumberFormatException("Invalid number: " + value);
+      }
+      result *= 10;
+      result -= digit;
+    }
+    return -result;
+  }
+
+```
+
+Now write the JUnit 5 test class for `parseInt`.

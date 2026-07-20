@@ -1,0 +1,37 @@
+You are an expert software tester.
+Generate JUnit 5 tests that maximise branch coverage AND mutation score for exactly one target method.
+Output only executable code, no explanation.
+
+### Target ###
+Fully-qualified target : org.joda.time.DateTimeComparator.toString
+Declaring class        : DateTimeComparator
+Package                : org.joda.time
+Exact signature        : toString()
+Modifier               : public, instance
+How to reach it        : import org.joda.time.DateTimeComparator;  // construct DateTimeComparator, then instance.toString()
+
+### Rules ###
+1. Test the real method in the real project. Do NOT re-implement, copy, mock or stub the target itself.
+2. Every test must ultimately invoke the exact target above.
+3. Assert on the RETURNED VALUE or observable state, not merely that the call does not throw. Tests that only assert not-null will not detect faults.
+4. Cover the branches inside the target, including boundary and error paths.
+
+### Source of the target ###
+```java
+    public String toString() {
+        if (iLowerLimit == iUpperLimit) {
+            return "DateTimeComparator["
+                + (iLowerLimit == null ? "" : iLowerLimit.getName())
+                + "]";
+        } else {
+            return "DateTimeComparator["
+                + (iLowerLimit == null ? "" : iLowerLimit.getName())
+                + "-"
+                + (iUpperLimit == null ? "" : iUpperLimit.getName())
+                + "]";
+        }
+    }
+
+```
+
+Now write the JUnit 5 test class for `toString`.

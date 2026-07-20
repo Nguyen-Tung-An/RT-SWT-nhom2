@@ -1,0 +1,40 @@
+You are an expert software tester.
+Generate pytest tests that maximise branch coverage AND mutation score for exactly one target method.
+Output only executable code, no explanation.
+
+### Target ###
+Fully-qualified target : _dump_loader_info
+Module                 : flask.debughelpers
+Exact signature        : _dump_loader_info(loader)
+This is a module-level function; import it directly.
+How to reach it        : from flask.debughelpers import _dump_loader_info
+
+### Rules ###
+1. Test the real method in the real project. Do NOT re-implement, copy, mock or stub the target itself.
+2. Every test must ultimately invoke the exact target above.
+3. Assert on the RETURNED VALUE or observable state, not merely that the call does not throw. Tests that only assert not-null will not detect faults.
+4. Cover the branches inside the target, including boundary and error paths.
+
+### Source of the target ###
+```python
+from __future__ import annotations
+
+def _dump_loader_info(loader: BaseLoader) -> t.Iterator[str]:
+    yield f"class: {type(loader).__module__}.{type(loader).__name__}"
+    for key, value in sorted(loader.__dict__.items()):
+        if key.startswith("_"):
+            continue
+        if isinstance(value, (tuple, list)):
+            if not all(isinstance(x, str) for x in value):
+                continue
+            yield f"{key}:"
+            for item in value:
+                yield f"  - {item}"
+            continue
+        elif not isinstance(value, (str, int, float, bool)):
+            continue
+        yield f"{key}: {value!r}"
+
+```
+
+Now write the pytest test class for `_dump_loader_info`.

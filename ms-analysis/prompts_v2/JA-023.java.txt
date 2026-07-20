@@ -1,0 +1,50 @@
+You are an expert software tester.
+Generate JUnit 5 tests that maximise branch coverage AND mutation score for exactly one target method.
+Output only executable code, no explanation.
+
+### Target ###
+Fully-qualified target : org.apache.commons.collections4.CollectionUtils.collate
+Declaring class        : CollectionUtils
+Package                : org.apache.commons.collections4
+Exact signature        : collate(Iterable,Iterable,Comparator,boolean)
+Modifier               : public, static
+IMPORTANT: this class may declare several overloads with the same name. You must call the one matching the exact signature above.
+How to reach it        : import org.apache.commons.collections4.CollectionUtils;  // call CollectionUtils.collate(Iterable, Iterable, Comparator, boolean)
+
+### Rules ###
+1. Test the real method in the real project. Do NOT re-implement, copy, mock or stub the target itself.
+2. Every test must ultimately invoke the exact target above.
+3. Assert on the RETURNED VALUE or observable state, not merely that the call does not throw. Tests that only assert not-null will not detect faults.
+4. Cover the branches inside the target, including boundary and error paths.
+
+### Source of the target ###
+```java
+    public static <O> List<O> collate(final Iterable<? extends O> iterableA, final Iterable<? extends O> iterableB,
+                                      final Comparator<? super O> comparator, final boolean includeDuplicates) {
+        Objects.requireNonNull(iterableA, "iterableA");
+        Objects.requireNonNull(iterableB, "iterableB");
+        Objects.requireNonNull(comparator, "comparator");
+        // if both Iterables are a Collection, we can estimate the size
+        final int totalSize = iterableA instanceof Collection<?> && iterableB instanceof Collection<?> ?
+                Math.max(1, ((Collection<?>) iterableA).size() + ((Collection<?>) iterableB).size()) : 10;
+
+        final Iterator<O> iterator = new CollatingIterator<>(comparator, iterableA.iterator(), iterableB.iterator());
+        if (includeDuplicates) {
+            return IteratorUtils.toList(iterator, totalSize);
+        }
+        final ArrayList<O> mergedList = new ArrayList<>(totalSize);
+        O lastItem = null;
+        while (iterator.hasNext()) {
+            final O item = iterator.next();
+            if (lastItem == null || !lastItem.equals(item)) {
+                mergedList.add(item);
+            }
+            lastItem = item;
+        }
+        mergedList.trimToSize();
+        return mergedList;
+    }
+
+```
+
+Now write the JUnit 5 test class for `collate`.

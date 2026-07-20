@@ -1,0 +1,39 @@
+You are an expert software tester.
+Generate JUnit 5 tests that maximise branch coverage AND mutation score for exactly one target method.
+Output only executable code, no explanation.
+
+### Target ###
+Fully-qualified target : com.google.gson.typeadapters.PostConstructAdapterFactory.create
+Declaring class        : PostConstructAdapterFactory
+Package                : com.google.gson.typeadapters
+Exact signature        : create(Gson,TypeToken)
+Modifier               : public, instance
+IMPORTANT: this class may declare several overloads with the same name. You must call the one matching the exact signature above.
+How to reach it        : import com.google.gson.typeadapters.PostConstructAdapterFactory;  // construct PostConstructAdapterFactory, then instance.create(Gson, TypeToken)
+
+### Rules ###
+1. Test the real method in the real project. Do NOT re-implement, copy, mock or stub the target itself.
+2. Every test must ultimately invoke the exact target above.
+3. Assert on the RETURNED VALUE or observable state, not merely that the call does not throw. Tests that only assert not-null will not detect faults.
+4. Cover the branches inside the target, including boundary and error paths.
+
+### Source of the target ###
+```java
+  public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+    for (Class<?> t = type.getRawType();
+        (t != Object.class) && (t.getSuperclass() != null);
+        t = t.getSuperclass()) {
+      for (Method m : t.getDeclaredMethods()) {
+        if (m.isAnnotationPresent(PostConstruct.class)) {
+          m.setAccessible(true);
+          TypeAdapter<T> delegate = gson.getDelegateAdapter(this, type);
+          return new PostConstructAdapter<>(delegate, m);
+        }
+      }
+    }
+    return null;
+  }
+
+```
+
+Now write the JUnit 5 test class for `create`.

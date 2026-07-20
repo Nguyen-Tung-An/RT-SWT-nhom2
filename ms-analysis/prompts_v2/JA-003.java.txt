@@ -1,0 +1,37 @@
+You are an expert software tester.
+Generate JUnit 5 tests that maximise branch coverage AND mutation score for exactly one target method.
+Output only executable code, no explanation.
+
+### Target ###
+Fully-qualified target : org.apache.commons.collections4.CollectionUtils.filter
+Declaring class        : CollectionUtils
+Package                : org.apache.commons.collections4
+Exact signature        : filter(Iterable,Predicate)
+Modifier               : public, static
+IMPORTANT: this class may declare several overloads with the same name. You must call the one matching the exact signature above.
+How to reach it        : import org.apache.commons.collections4.CollectionUtils;  // call CollectionUtils.filter(Iterable, Predicate)
+
+### Rules ###
+1. Test the real method in the real project. Do NOT re-implement, copy, mock or stub the target itself.
+2. Every test must ultimately invoke the exact target above.
+3. Assert on the RETURNED VALUE or observable state, not merely that the call does not throw. Tests that only assert not-null will not detect faults.
+4. Cover the branches inside the target, including boundary and error paths.
+
+### Source of the target ###
+```java
+    public static <T> boolean filter(final Iterable<T> collection, final Predicate<? super T> predicate) {
+        boolean result = false;
+        if (collection != null && predicate != null) {
+            for (final Iterator<T> it = collection.iterator(); it.hasNext();) {
+                if (!predicate.test(it.next())) {
+                    it.remove();
+                    result = true;
+                }
+            }
+        }
+        return result;
+    }
+
+```
+
+Now write the JUnit 5 test class for `filter`.

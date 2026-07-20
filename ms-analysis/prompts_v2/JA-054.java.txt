@@ -1,0 +1,36 @@
+You are an expert software tester.
+Generate JUnit 5 tests that maximise branch coverage AND mutation score for exactly one target method.
+Output only executable code, no explanation.
+
+### Target ###
+Fully-qualified target : org.apache.commons.csv.ExtendedBufferedReader.read
+Declaring class        : ExtendedBufferedReader
+Package                : org.apache.commons.csv
+Exact signature        : read()
+Modifier               : public, instance
+How to reach it        : import org.apache.commons.csv.ExtendedBufferedReader;  // construct ExtendedBufferedReader, then instance.read()
+
+### Rules ###
+1. Test the real method in the real project. Do NOT re-implement, copy, mock or stub the target itself.
+2. Every test must ultimately invoke the exact target above.
+3. Assert on the RETURNED VALUE or observable state, not merely that the call does not throw. Tests that only assert not-null will not detect faults.
+4. Cover the branches inside the target, including boundary and error paths.
+
+### Source of the target ###
+```java
+    public int read() throws IOException {
+        final int current = super.read();
+        if (current == CR || current == LF && lastChar != CR || current == EOF && lastChar != CR && lastChar != LF && lastChar != EOF) {
+            lineNumber++;
+        }
+        if (encoder != null && current != EOF) {
+            this.bytesRead += getEncodedCharLength(current);
+        }
+        lastChar = current;
+        position++;
+        return lastChar;
+    }
+
+```
+
+Now write the JUnit 5 test class for `read`.

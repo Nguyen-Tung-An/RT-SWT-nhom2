@@ -1,0 +1,55 @@
+You are an expert software tester.
+Generate JUnit 5 tests that maximise branch coverage AND mutation score for exactly one target method.
+Output only executable code, no explanation.
+
+### Target ###
+Fully-qualified target : com.google.gson.Gson.getDelegateAdapter
+Declaring class        : Gson
+Package                : com.google.gson
+Exact signature        : getDelegateAdapter(TypeAdapterFactory,TypeToken)
+Modifier               : public, instance
+IMPORTANT: this class may declare several overloads with the same name. You must call the one matching the exact signature above.
+How to reach it        : import com.google.gson.Gson;  // construct Gson, then instance.getDelegateAdapter(TypeAdapterFactory, TypeToken)
+
+### Rules ###
+1. Test the real method in the real project. Do NOT re-implement, copy, mock or stub the target itself.
+2. Every test must ultimately invoke the exact target above.
+3. Assert on the RETURNED VALUE or observable state, not merely that the call does not throw. Tests that only assert not-null will not detect faults.
+4. Cover the branches inside the target, including boundary and error paths.
+
+### Source of the target ###
+```java
+  public <T> TypeAdapter<T> getDelegateAdapter(TypeAdapterFactory skipPast, TypeToken<T> type) {
+    Objects.requireNonNull(skipPast, "skipPast must not be null");
+    Objects.requireNonNull(type, "type must not be null");
+
+    if (jsonAdapterFactory.isClassJsonAdapterFactory(type, skipPast)) {
+      skipPast = jsonAdapterFactory;
+    }
+
+    boolean skipPastFound = false;
+    for (TypeAdapterFactory factory : factories) {
+      if (!skipPastFound) {
+        if (factory == skipPast) {
+          skipPastFound = true;
+        }
+        continue;
+      }
+
+      TypeAdapter<T> candidate = factory.create(this, type);
+      if (candidate != null) {
+        return candidate;
+      }
+    }
+
+    if (skipPastFound) {
+      throw new IllegalArgumentException("GSON cannot serialize or deserialize " + type);
+    } else {
+      // Probably a factory from @JsonAdapter on a field
+      return getAdapter(type);
+    }
+  }
+
+```
+
+Now write the JUnit 5 test class for `getDelegateAdapter`.

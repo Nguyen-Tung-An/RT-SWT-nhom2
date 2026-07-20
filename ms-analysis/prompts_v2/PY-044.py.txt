@@ -1,0 +1,66 @@
+You are an expert software tester.
+Generate pytest tests that maximise branch coverage AND mutation score for exactly one target method.
+Output only executable code, no explanation.
+
+### Target ###
+Fully-qualified target : Session.merge_environment_settings
+Module                 : requests.sessions
+Exact signature        : merge_environment_settings(url,proxies,stream,verify,cert)
+Declaring class        : Session
+Receiver               : instance
+IMPORTANT: this is a METHOD of the class above, NOT a module-level function. Importing it directly (from <module> import <name>) will raise ImportError. Construct the class first, then call the method on it.
+How to reach it        : from requests.sessions import Session  # construct an instance first, then call instance.merge_environment_settings(...)
+
+### Rules ###
+1. Test the real method in the real project. Do NOT re-implement, copy, mock or stub the target itself.
+2. Every test must ultimately invoke the exact target above.
+3. Assert on the RETURNED VALUE or observable state, not merely that the call does not throw. Tests that only assert not-null will not detect faults.
+4. Cover the branches inside the target, including boundary and error paths.
+
+### Source of the target ###
+```python
+from __future__ import annotations
+import os
+
+def merge_environment_settings(
+    self,
+    url: str,
+    proxies: dict[str, str] | None,
+    stream: bool | None,
+    verify: _t.VerifyType | None,
+    cert: _t.CertType,
+) -> dict[str, Any]:
+    """
+    Check the environment and merge it with some settings.
+
+    :rtype: dict
+    """
+    # Gather clues from the surrounding environment.
+    if self.trust_env:
+        # Set environment's proxies.
+        no_proxy = proxies.get("no_proxy") if proxies is not None else None
+        env_proxies = get_environ_proxies(url, no_proxy=no_proxy)
+        if proxies is not None:
+            for k, v in env_proxies.items():
+                proxies.setdefault(k, v)
+
+        # Look for requests environment configuration
+        # and be compatible with cURL.
+        if verify is True or verify is None:
+            verify = (
+                os.environ.get("REQUESTS_CA_BUNDLE")
+                or os.environ.get("CURL_CA_BUNDLE")
+                or verify
+            )
+
+    # Merge all the kwargs.
+    proxies = merge_setting(proxies, self.proxies)
+    stream = merge_setting(stream, self.stream)
+    verify = merge_setting(verify, self.verify)
+    cert = merge_setting(cert, self.cert)
+
+    return {"proxies": proxies, "stream": stream, "verify": verify, "cert": cert}
+
+```
+
+Now write the pytest test class for `merge_environment_settings`.

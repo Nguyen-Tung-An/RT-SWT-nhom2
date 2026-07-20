@@ -1,0 +1,47 @@
+You are an expert software tester.
+Generate JUnit 5 tests that maximise branch coverage AND mutation score for exactly one target method.
+Output only executable code, no explanation.
+
+### Target ###
+Fully-qualified target : org.apache.commons.collections4.ArrayUtils.indexOf
+Declaring class        : ArrayUtils
+Package                : org.apache.commons.collections4
+Exact signature        : indexOf(Object,Object,int)
+Modifier               : package-private, static
+IMPORTANT: this class may declare several overloads with the same name. You must call the one matching the exact signature above.
+How to reach it        : import org.apache.commons.collections4.ArrayUtils;  // call ArrayUtils.indexOf(Object, Object, int)
+
+### Rules ###
+1. Test the real method in the real project. Do NOT re-implement, copy, mock or stub the target itself.
+2. Every test must ultimately invoke the exact target above.
+3. Assert on the RETURNED VALUE or observable state, not merely that the call does not throw. Tests that only assert not-null will not detect faults.
+4. Cover the branches inside the target, including boundary and error paths.
+
+### Source of the target ###
+```java
+    static int indexOf(final Object[] array, final Object objectToFind, int startIndex) {
+        if (array == null) {
+            return CollectionUtils.INDEX_NOT_FOUND;
+        }
+        if (startIndex < 0) {
+            startIndex = 0;
+        }
+        if (objectToFind == null) {
+            for (int i = startIndex; i < array.length; i++) {
+                if (array[i] == null) {
+                    return i;
+                }
+            }
+        } else {
+            for (int i = startIndex; i < array.length; i++) {
+                if (objectToFind.equals(array[i])) {
+                    return i;
+                }
+            }
+        }
+        return CollectionUtils.INDEX_NOT_FOUND;
+    }
+
+```
+
+Now write the JUnit 5 test class for `indexOf`.

@@ -1,0 +1,40 @@
+You are an expert software tester.
+Generate JUnit 5 tests that maximise branch coverage AND mutation score for exactly one target method.
+Output only executable code, no explanation.
+
+### Target ###
+Fully-qualified target : org.apache.commons.cli.DefaultParser.handleConcatenatedOptions
+Declaring class        : DefaultParser
+Package                : org.apache.commons.cli
+Exact signature        : handleConcatenatedOptions(String)
+Modifier               : protected, instance
+IMPORTANT: this class may declare several overloads with the same name. You must call the one matching the exact signature above.
+How to reach it        : import org.apache.commons.cli.DefaultParser;  // construct DefaultParser, then instance.handleConcatenatedOptions(String)
+
+### Rules ###
+1. Test the real method in the real project. Do NOT re-implement, copy, mock or stub the target itself.
+2. Every test must ultimately invoke the exact target above.
+3. Assert on the RETURNED VALUE or observable state, not merely that the call does not throw. Tests that only assert not-null will not detect faults.
+4. Cover the branches inside the target, including boundary and error paths.
+
+### Source of the target ###
+```java
+    protected void handleConcatenatedOptions(final String token) throws ParseException {
+        for (int i = 1; i < token.length(); i++) {
+            final String ch = String.valueOf(token.charAt(i));
+            if (!options.hasOption(ch)) {
+                handleUnknownToken(nonOptionAction == NonOptionAction.STOP && i > 1 ? token.substring(i) : token);
+                break;
+            }
+            handleOption(options.getOption(ch));
+            if (currentOption != null && token.length() != i + 1) {
+                // add the trail as an argument of the option
+                currentOption.processValue(stripLeadingAndTrailingQuotesDefaultOff(token.substring(i + 1)));
+                break;
+            }
+        }
+    }
+
+```
+
+Now write the JUnit 5 test class for `handleConcatenatedOptions`.

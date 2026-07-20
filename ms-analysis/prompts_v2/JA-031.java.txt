@@ -1,0 +1,51 @@
+You are an expert software tester.
+Generate JUnit 5 tests that maximise branch coverage AND mutation score for exactly one target method.
+Output only executable code, no explanation.
+
+### Target ###
+Fully-qualified target : org.joda.time.DateTimeZone.getDefault
+Declaring class        : DateTimeZone
+Package                : org.joda.time
+Exact signature        : getDefault()
+Modifier               : public, static
+How to reach it        : import org.joda.time.DateTimeZone;  // call DateTimeZone.getDefault()
+
+### Rules ###
+1. Test the real method in the real project. Do NOT re-implement, copy, mock or stub the target itself.
+2. Every test must ultimately invoke the exact target above.
+3. Assert on the RETURNED VALUE or observable state, not merely that the call does not throw. Tests that only assert not-null will not detect faults.
+4. Cover the branches inside the target, including boundary and error paths.
+
+### Source of the target ###
+```java
+    public static DateTimeZone getDefault() {
+        DateTimeZone zone = cDefault.get();
+        if (zone == null) {
+            try {
+                try {
+                    String id = System.getProperty("org.joda.time.DateTimeZone.Timezone");
+                    if (id != null) {  // null check avoids stack overflow
+                        zone = forID(id);
+                    }
+                } catch (RuntimeException ex) {
+                    // ignored
+                }
+                if (zone == null) {
+                    zone = forTimeZone(TimeZone.getDefault());
+                }
+            } catch (IllegalArgumentException ex) {
+                // ignored
+            }
+            if (zone == null) {
+                zone = UTC;
+            }
+            if (!cDefault.compareAndSet(null, zone)) {
+                zone = cDefault.get();
+            }
+        }
+        return zone;
+    }
+
+```
+
+Now write the JUnit 5 test class for `getDefault`.
