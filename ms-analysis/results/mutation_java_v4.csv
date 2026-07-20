@@ -1,0 +1,9 @@
+func_id,visibility,n_test,n_mutant,n_killed,mutation_score,note
+JA-001,,0,0,0,,test khong bien dich duoc
+JA-002,,0,0,0,,test khong bien dich duoc
+JA-003,,0,0,0,,test khong bien dich duoc
+JA-004,,0,0,0,,test khong bien dich duoc
+JA-005,,9,20,16,80.0,
+JA-006,,0,0,0,,test khong bien dich duoc
+JA-007,,0,0,0,,test khong bien dich duoc
+JA-008,,0,0,0,,khong co test nao chay

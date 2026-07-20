@@ -1,0 +1,13 @@
+func_id,nguyen_nhan_goc,pass_v3,pass_sau_r2,pass_sau_r3_bang_chung,cuu_duoc,ban_tot_nhat
+PY-001,"1-module-sai (symbol co that, sai module)",0,0,4,1,gpt4o_v3r3e
+PY-008,5-collaborator-None (ctx.obj),0,0,0,0,
+PY-009,4-dich-la-click.Command khong phai ham,0,0,0,0,
+PY-011,3-thieu-request-context,0,0,1,1,gpt4o_v3r3e
+PY-014,2-lop-truu-tuong (click.Parameter),0,0,1,1,gpt4o_v3r3e
+PY-015,3-client-da-active (nest invocation),0,0,0,0,
+PY-032,6-ky-vong-sai (tra ClosingIterator),0,0,0,0,
+PY-036,1-module-sai (bi danh cuc bo trong nguon),0,0,0,0,
+PY-040,2-sai-kwarg-ctor (click.Context params=),0,0,5,1,gpt4o_v3r3e
+PY-043,5-collaborator-None (response.raw),0,0,0,0,
+PY-044,6-ky-vong-sai (proxies/stream),0,0,2,1,gpt4o_v3r3e
+PY-058,6-ky-vong-sai + phu thuoc moi truong (sys.prefix),0,0,0,0,
