@@ -1,0 +1,44 @@
+func_id,n_error,verdict,detail
+JA-001,21,khong-phai-symbol,
+JA-002,2,BIA RA (khong tim thay o dau),setDeprecated
+JA-003,6,BIA RA (khong tim thay o dau),SetOperationCardinalityHelper
+JA-004,7,khong-phai-symbol,
+JA-006,7,THIEU IMPORT (symbol co that),"PostConstruct,TypeAdapter"
+JA-008,1,THIEU IMPORT (symbol co that),assertThrows
+JA-009,7,THIEU IMPORT (symbol co that),Provider
+JA-010,8,BIA RA (khong tim thay o dau),setValues
+JA-012,10,khong-phai-symbol,
+JA-014,8,khong-phai-symbol,
+JA-016,6,khong-phai-symbol,
+JA-017,1,THIEU IMPORT (symbol co that),Map
+JA-018,5,khong-phai-symbol,
+JA-020,8,khong-phai-symbol,
+JA-021,3,khong-phai-symbol,
+JA-022,3,BIA RA (khong tim thay o dau),"NonOptionAction,setOptions"
+JA-023,7,BIA RA (khong tim thay o dau),SetOperationCardinalityHelper
+JA-024,13,khong-phai-symbol,
+JA-026,11,THIEU IMPORT (symbol co that),TypeToken
+JA-027,18,THIEU IMPORT (symbol co that),"HorizontalAlignment,Size2D,VerticalAlignment"
+JA-028,17,THIEU IMPORT (symbol co that),"Request,Response"
+JA-029,5,khong-phai-symbol,
+JA-030,2,BIA RA (khong tim thay o dau),NonOptionAction
+JA-032,10,khong-phai-symbol,
+JA-034,4,khong-phai-symbol,
+JA-036,7,khong-phai-symbol,
+JA-037,46,THIEU IMPORT (symbol co that),Title
+JA-039,10,khong-phai-symbol,
+JA-040,2,BIA RA (khong tim thay o dau),OptionComparator
+JA-041,14,hon hop,"co:Provider,ZoneInfoProvider | bia:SomeCustomProvider"
+JA-042,9,BIA RA (khong tim thay o dau),"NonOptionAction,isSkipParsing"
+JA-043,9,BIA RA (khong tim thay o dau),SetOperationCardinalityHelper
+JA-045,8,khong-phai-symbol,
+JA-046,12,THIEU IMPORT (symbol co that),TypeToken
+JA-047,8,THIEU IMPORT (symbol co that),"BasicStroke,Color"
+JA-048,2,BIA RA (khong tim thay o dau),FormattingVisitor
+JA-050,6,khong-phai-symbol,
+JA-052,9,BIA RA (khong tim thay o dau),"CLASS_VALUE,DATE_VALUE,EXISTING_FILE_VALUE,NUMBER_VALUE,OBJE"
+JA-053,9,BIA RA (khong tim thay o dau),SetOperationCardinalityHelper
+JA-054,18,BIA RA (khong tim thay o dau),"CR,EOF,LF"
+JA-056,21,THIEU IMPORT (symbol co that),"JsonReader,JsonToken,TypeToken"
+JA-057,52,hon hop,"co:Font,LegendTitle,TextTitle | bia:Paint"
+JA-058,13,hon hop,"co:assertThrows | bia:body,implWritePost"

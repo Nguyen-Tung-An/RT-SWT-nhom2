@@ -1,0 +1,740 @@
+{
+ "JA-001": {
+  "n_error": 21,
+  "symbols": [],
+  "text": "C:\\Users\\qhung\\AppData\\Local\\Temp\\tmpnkgajyr0\\org\\joda\\time\\DateTimeComparatorTest_JA_001.java:22: error: constructor DateTimeComparator in class DateTimeComparator cannot be applied to given types;\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpnkgajyr0\\org\\joda\\time\\DateTimeComparatorTest_JA_001.java:23: error: iLowerLimit has private access in DateTimeComparator\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpnkgajyr0\\org\\joda\\time\\DateTimeComparatorTest_JA_001.java:23: error: incompatible types: DateTimeComparatorTest_JA_001.TestLimit cannot be converted to DateTimeFieldType\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpnkgajyr0\\org\\joda\\time\\DateTimeComparatorTest_JA_001.java:24: error: iUpperLimit has private access in DateTimeComparator\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpnkgajyr0\\org\\joda\\time\\DateTimeComparatorTest_JA_001.java:24: error: incompatible types: DateTimeComparatorTest_JA_001.TestLimit cannot be converted to DateTimeFieldType\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpnkgajyr0\\org\\joda\\time\\DateTimeComparatorTest_JA_001.java:30: error: constructor DateTimeComparator in class DateTimeComparator cannot be applied to given types;\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpnkgajyr0\\org\\joda\\time\\DateTimeCo"
+ },
+ "JA-002": {
+  "n_error": 2,
+  "symbols": [
+   [
+    "method",
+    "setDeprecated"
+   ]
+  ],
+  "text": "C:\\Users\\qhung\\AppData\\Local\\Temp\\tmp2kwz99mk\\org\\apache\\commons\\cli\\CommandLineTest_JA_002.java:12: error: reference to getOptionValues is ambiguous\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmp2kwz99mk\\org\\apache\\commons\\cli\\CommandLineTest_JA_002.java:53: error: cannot find symbol\n  symbol:   method setDeprecated(boolean)"
+ },
+ "JA-003": {
+  "n_error": 6,
+  "symbols": [
+   [
+    "variable",
+    "SetOperationCardinalityHelper"
+   ],
+   [
+    "variable",
+    "SetOperationCardinalityHelper"
+   ],
+   [
+    "variable",
+    "SetOperationCardinalityHelper"
+   ],
+   [
+    "variable",
+    "SetOperationCardinalityHelper"
+   ],
+   [
+    "variable",
+    "SetOperationCardinalityHelper"
+   ],
+   [
+    "variable",
+    "SetOperationCardinalityHelper"
+   ]
+  ],
+  "text": "C:\\Users\\qhung\\AppData\\Local\\Temp\\tmp7hhs8_yx\\org\\apache\\commons\\collections4\\SetOperationCardinalityHelperTest_JA_003.java:17: error: cannot find symbol\n  symbol:   variable SetOperationCardinalityHelper\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmp7hhs8_yx\\org\\apache\\commons\\collections4\\SetOperationCardinalityHelperTest_JA_003.java:24: error: cannot find symbol\n  symbol:   variable SetOperationCardinalityHelper\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmp7hhs8_yx\\org\\apache\\commons\\collections4\\SetOperationCardinalityHelperTest_JA_003.java:31: error: cannot find symbol\n  symbol:   variable SetOperationCardinalityHelper\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmp7hhs8_yx\\org\\apache\\commons\\collections4\\SetOperationCardinalityHelperTest_JA_003.java:40: error: cannot find symbol\n  symbol:   variable SetOperationCardinalityHelper\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmp7hhs8_yx\\org\\apache\\commons\\collections4\\SetOperationCardinalityHelperTest_JA_003.java:50: error: cannot find symbol\n  symbol:   variable SetOperationCardinalityHelper\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmp7hhs8_yx\\org\\apache\\commons\\collections4\\SetOperationCardinalityHelperTest_JA_003.java:61: error: cannot find symbol\n  symbol:   variable "
+ },
+ "JA-004": {
+  "n_error": 7,
+  "symbols": [],
+  "text": "C:\\Users\\qhung\\AppData\\Local\\Temp\\tmpddrfhkvx\\org\\apache\\commons\\csv\\CSVFormatTest_JA_004.java:8: error: constructor CSVFormat in class CSVFormat cannot be applied to given types;\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpddrfhkvx\\org\\apache\\commons\\csv\\CSVFormatTest_JA_004.java:13: error: isDelimiter(char,CharSequence,int,char[],int) has private access in CSVFormat\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpddrfhkvx\\org\\apache\\commons\\csv\\CSVFormatTest_JA_004.java:19: error: isDelimiter(char,CharSequence,int,char[],int) has private access in CSVFormat\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpddrfhkvx\\org\\apache\\commons\\csv\\CSVFormatTest_JA_004.java:25: error: isDelimiter(char,CharSequence,int,char[],int) has private access in CSVFormat\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpddrfhkvx\\org\\apache\\commons\\csv\\CSVFormatTest_JA_004.java:31: error: isDelimiter(char,CharSequence,int,char[],int) has private access in CSVFormat\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpddrfhkvx\\org\\apache\\commons\\csv\\CSVFormatTest_JA_004.java:37: error: isDelimiter(char,CharSequence,int,char[],int) has private access in CSVFormat\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpddrfhkvx\\org\\apache\\commons\\csv\\CSVFormatTest_JA_004.java:43: e"
+ },
+ "JA-006": {
+  "n_error": 7,
+  "symbols": [
+   [
+    "class",
+    "PostConstruct"
+   ],
+   [
+    "class",
+    "TypeAdapter"
+   ],
+   [
+    "class",
+    "TypeAdapter"
+   ],
+   [
+    "class",
+    "PostConstruct"
+   ],
+   [
+    "class",
+    "TypeAdapter"
+   ],
+   [
+    "class",
+    "PostConstruct"
+   ]
+  ],
+  "text": "C:\\Users\\qhung\\AppData\\Local\\Temp\\tmpwyzr3qva\\com\\google\\gson\\typeadapters\\PostConstructAdapterFactoryTest_JA_006.java:19: error: cannot find symbol\n  symbol:   class PostConstruct\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpwyzr3qva\\com\\google\\gson\\typeadapters\\PostConstructAdapterFactoryTest_JA_006.java:26: error: cannot find symbol\n  symbol:   class TypeAdapter\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpwyzr3qva\\com\\google\\gson\\typeadapters\\PostConstructAdapterFactoryTest_JA_006.java:37: error: cannot find symbol\n  symbol:   class TypeAdapter\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpwyzr3qva\\com\\google\\gson\\typeadapters\\PostConstructAdapterFactoryTest_JA_006.java:44: error: cannot find symbol\n  symbol:   class PostConstruct\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpwyzr3qva\\com\\google\\gson\\typeadapters\\PostConstructAdapterFactoryTest_JA_006.java:55: error: cannot find symbol\n  symbol:   class TypeAdapter\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpwyzr3qva\\com\\google\\gson\\typeadapters\\PostConstructAdapterFactoryTest_JA_006.java:66: error: cannot find symbol\n  symbol:   class PostConstruct\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpwyzr3qva\\com\\google\\gson\\typeadapters\\PostConstructAdapterFactoryTest_JA_006.java:7"
+ },
+ "JA-008": {
+  "n_error": 1,
+  "symbols": [
+   [
+    "method",
+    "assertThrows"
+   ]
+  ],
+  "text": "C:\\Users\\qhung\\AppData\\Local\\Temp\\tmp1k6suh9t\\org\\jsoup\\examples\\HtmlToPlainTextTest_JA_008.java:53: error: cannot find symbol\n  symbol:   method assertThrows(Class<IllegalArgumentException>,()->{ Html[...]s); })"
+ },
+ "JA-009": {
+  "n_error": 7,
+  "symbols": [
+   [
+    "class",
+    "Provider"
+   ]
+  ],
+  "text": "C:\\Users\\qhung\\AppData\\Local\\Temp\\tmpjonm_lj2\\org\\joda\\time\\DateTimeZoneTest_JA_009.java:12: error: cannot find symbol\n  symbol:   class Provider\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpjonm_lj2\\org\\joda\\time\\DateTimeZoneTest_JA_009.java:21: error: method does not override or implement a method from a supertype\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpjonm_lj2\\org\\joda\\time\\DateTimeZoneTest_JA_009.java:26: error: method does not override or implement a method from a supertype\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpjonm_lj2\\org\\joda\\time\\DateTimeZoneTest_JA_009.java:36: error: incompatible types: MockProvider cannot be converted to Provider\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpjonm_lj2\\org\\joda\\time\\DateTimeZoneTest_JA_009.java:46: error: incompatible types: MockProvider cannot be converted to Provider\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpjonm_lj2\\org\\joda\\time\\DateTimeZoneTest_JA_009.java:56: error: incompatible types: MockProvider cannot be converted to Provider\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpjonm_lj2\\org\\joda\\time\\DateTimeZoneTest_JA_009.java:65: error: incompatible types: MockProvider cannot be converted to Provider"
+ },
+ "JA-010": {
+  "n_error": 8,
+  "symbols": [
+   [
+    "method",
+    "setValues"
+   ],
+   [
+    "method",
+    "setValues"
+   ],
+   [
+    "method",
+    "setValues"
+   ]
+  ],
+  "text": "C:\\Users\\qhung\\AppData\\Local\\Temp\\tmpwo6bd_77\\org\\apache\\commons\\cli\\CommandLineTest_JA_010.java:13: error: reference to getParsedOptionValues is ambiguous\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpwo6bd_77\\org\\apache\\commons\\cli\\CommandLineTest_JA_010.java:20: error: incompatible types: Class<String> cannot be converted to String\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpwo6bd_77\\org\\apache\\commons\\cli\\CommandLineTest_JA_010.java:29: error: incompatible types: Class<String> cannot be converted to String\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpwo6bd_77\\org\\apache\\commons\\cli\\CommandLineTest_JA_010.java:30: error: cannot find symbol\n  symbol:   method setValues(String[])\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpwo6bd_77\\org\\apache\\commons\\cli\\CommandLineTest_JA_010.java:39: error: incompatible types: Class<Integer> cannot be converted to String\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpwo6bd_77\\org\\apache\\commons\\cli\\CommandLineTest_JA_010.java:41: error: cannot find symbol\n  symbol:   method setValues(String[])\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpwo6bd_77\\org\\apache\\commons\\cli\\CommandLineTest_JA_010.java:50: error: incompatible types: Class<Integer> cannot be converted to String\nC:\\Users\\qhung\\AppData"
+ },
+ "JA-012": {
+  "n_error": 10,
+  "symbols": [],
+  "text": "C:\\Users\\qhung\\AppData\\Local\\Temp\\tmpymk9_auv\\org\\apache\\commons\\cli\\DefaultParserTest_JA_012.java:15: error: getMatchingLongOptions(String) has private access in DefaultParser\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpymk9_auv\\org\\apache\\commons\\cli\\DefaultParserTest_JA_012.java:18: error: handleLongOptionWithEqual(String) has private access in DefaultParser\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpymk9_auv\\org\\apache\\commons\\cli\\DefaultParserTest_JA_012.java:26: error: getMatchingLongOptions(String) has private access in DefaultParser\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpymk9_auv\\org\\apache\\commons\\cli\\DefaultParserTest_JA_012.java:30: error: handleLongOptionWithEqual(String) has private access in DefaultParser\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpymk9_auv\\org\\apache\\commons\\cli\\DefaultParserTest_JA_012.java:39: error: getMatchingLongOptions(String) has private access in DefaultParser\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpymk9_auv\\org\\apache\\commons\\cli\\DefaultParserTest_JA_012.java:42: error: handleOption(Option) has private access in DefaultParser\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpymk9_auv\\org\\apache\\commons\\cli\\DefaultParserTest_JA_012.java:45: error: handleLongOptionWithEqual(String"
+ },
+ "JA-014": {
+  "n_error": 8,
+  "symbols": [],
+  "text": "C:\\Users\\qhung\\AppData\\Local\\Temp\\tmpx3kvhcyc\\org\\apache\\commons\\csv\\CSVFormatTest_JA_014.java:23: error: method printWithQuotes in class CSVFormat cannot be applied to given types;\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpx3kvhcyc\\org\\apache\\commons\\csv\\CSVFormatTest_JA_014.java:25: error: no suitable method found for printWithEscapes(Reader,StringWriter)\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpx3kvhcyc\\org\\apache\\commons\\csv\\CSVFormatTest_JA_014.java:37: error: incompatible types: char cannot be converted to Integer\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpx3kvhcyc\\org\\apache\\commons\\csv\\CSVFormatTest_JA_014.java:40: error: method printWithQuotes in class CSVFormat cannot be applied to given types;\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpx3kvhcyc\\org\\apache\\commons\\csv\\CSVFormatTest_JA_014.java:54: error: incompatible types: char cannot be converted to Integer\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpx3kvhcyc\\org\\apache\\commons\\csv\\CSVFormatTest_JA_014.java:57: error: method printWithQuotes in class CSVFormat cannot be applied to given types;\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpx3kvhcyc\\org\\apache\\commons\\csv\\CSVFormatTest_JA_014.java:71: error: incompatible types: char cannot be converted to Int"
+ },
+ "JA-016": {
+  "n_error": 6,
+  "symbols": [],
+  "text": "C:\\Users\\qhung\\AppData\\Local\\Temp\\tmp5648oms0\\com\\google\\gson\\typeadapters\\UtcDateTypeAdapterTest_JA_016.java:18: error: format(Date,boolean,TimeZone) has private access in UtcDateTypeAdapter\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmp5648oms0\\com\\google\\gson\\typeadapters\\UtcDateTypeAdapterTest_JA_016.java:26: error: format(Date,boolean,TimeZone) has private access in UtcDateTypeAdapter\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmp5648oms0\\com\\google\\gson\\typeadapters\\UtcDateTypeAdapterTest_JA_016.java:34: error: format(Date,boolean,TimeZone) has private access in UtcDateTypeAdapter\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmp5648oms0\\com\\google\\gson\\typeadapters\\UtcDateTypeAdapterTest_JA_016.java:42: error: format(Date,boolean,TimeZone) has private access in UtcDateTypeAdapter\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmp5648oms0\\com\\google\\gson\\typeadapters\\UtcDateTypeAdapterTest_JA_016.java:50: error: format(Date,boolean,TimeZone) has private access in UtcDateTypeAdapter\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmp5648oms0\\com\\google\\gson\\typeadapters\\UtcDateTypeAdapterTest_JA_016.java:58: error: format(Date,boolean,TimeZone) has private access in UtcDateTypeAdapter"
+ },
+ "JA-017": {
+  "n_error": 1,
+  "symbols": [
+   [
+    "class",
+    "Map"
+   ]
+  ],
+  "text": "C:\\Users\\qhung\\AppData\\Local\\Temp\\tmp3y6uo59w\\org\\jfree\\chart\\KeyTest_JA_017.java:23: error: cannot find symbol\n  symbol:   class Map"
+ },
+ "JA-018": {
+  "n_error": 5,
+  "symbols": [],
+  "text": "C:\\Users\\qhung\\AppData\\Local\\Temp\\tmpncz66y6h\\org\\jsoup\\helper\\DataUtilTest_JA_018.java:18: error: openStream(Path) has private access in DataUtil\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpncz66y6h\\org\\jsoup\\helper\\DataUtilTest_JA_018.java:24: error: openStream(Path) has private access in DataUtil\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpncz66y6h\\org\\jsoup\\helper\\DataUtilTest_JA_018.java:30: error: openStream(Path) has private access in DataUtil\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpncz66y6h\\org\\jsoup\\helper\\DataUtilTest_JA_018.java:36: error: openStream(Path) has private access in DataUtil\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpncz66y6h\\org\\jsoup\\helper\\DataUtilTest_JA_018.java:42: error: openStream(Path) has private access in DataUtil"
+ },
+ "JA-020": {
+  "n_error": 8,
+  "symbols": [],
+  "text": "C:\\Users\\qhung\\AppData\\Local\\Temp\\tmpqzwt1e3n\\org\\apache\\commons\\cli\\HelpFormatterTest_JA_020.java:13: error: constructor OptionGroup in class OptionGroup cannot be applied to given types;\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpqzwt1e3n\\org\\apache\\commons\\cli\\HelpFormatterTest_JA_020.java:15: error: appendOptionGroup(StringBuilder,OptionGroup) has private access in HelpFormatter\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpqzwt1e3n\\org\\apache\\commons\\cli\\HelpFormatterTest_JA_020.java:22: error: constructor OptionGroup in class OptionGroup cannot be applied to given types;\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpqzwt1e3n\\org\\apache\\commons\\cli\\HelpFormatterTest_JA_020.java:24: error: appendOptionGroup(StringBuilder,OptionGroup) has private access in HelpFormatter\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpqzwt1e3n\\org\\apache\\commons\\cli\\HelpFormatterTest_JA_020.java:31: error: constructor OptionGroup in class OptionGroup cannot be applied to given types;\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpqzwt1e3n\\org\\apache\\commons\\cli\\HelpFormatterTest_JA_020.java:33: error: appendOptionGroup(StringBuilder,OptionGroup) has private access in HelpFormatter\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpqzwt1e3n\\org\\apache\\com"
+ },
+ "JA-021": {
+  "n_error": 3,
+  "symbols": [],
+  "text": "C:\\Users\\qhung\\AppData\\Local\\Temp\\tmpugfvy832\\org\\joda\\time\\DateTimeComparatorTest_JA_021.java:11: error: ALL_INSTANCE has private access in DateTimeComparator\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpugfvy832\\org\\joda\\time\\DateTimeComparatorTest_JA_021.java:17: error: DATE_INSTANCE has private access in DateTimeComparator\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpugfvy832\\org\\joda\\time\\DateTimeComparatorTest_JA_021.java:23: error: TIME_INSTANCE has private access in DateTimeComparator"
+ },
+ "JA-022": {
+  "n_error": 3,
+  "symbols": [
+   [
+    "class",
+    "NonOptionAction"
+   ],
+   [
+    "variable",
+    "NonOptionAction"
+   ],
+   [
+    "method",
+    "setOptions"
+   ]
+  ],
+  "text": "C:\\Users\\qhung\\AppData\\Local\\Temp\\tmpp9fx2ouw\\org\\apache\\commons\\cli\\DefaultParserTest_JA_022.java:10: error: cannot find symbol\n  symbol:   class NonOptionAction\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpp9fx2ouw\\org\\apache\\commons\\cli\\DefaultParserTest_JA_022.java:16: error: cannot find symbol\n  symbol:   variable NonOptionAction\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpp9fx2ouw\\org\\apache\\commons\\cli\\DefaultParserTest_JA_022.java:17: error: cannot find symbol\n  symbol:   method setOptions(Options)"
+ },
+ "JA-023": {
+  "n_error": 7,
+  "symbols": [
+   [
+    "variable",
+    "SetOperationCardinalityHelper"
+   ],
+   [
+    "variable",
+    "SetOperationCardinalityHelper"
+   ],
+   [
+    "variable",
+    "SetOperationCardinalityHelper"
+   ],
+   [
+    "variable",
+    "SetOperationCardinalityHelper"
+   ],
+   [
+    "variable",
+    "SetOperationCardinalityHelper"
+   ],
+   [
+    "variable",
+    "SetOperationCardinalityHelper"
+   ]
+  ],
+  "text": "C:\\Users\\qhung\\AppData\\Local\\Temp\\tmpj14vuqp2\\org\\apache\\commons\\collections4\\SetOperationCardinalityHelperTest_JA_023.java:17: error: cannot find symbol\n  symbol:   variable SetOperationCardinalityHelper\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpj14vuqp2\\org\\apache\\commons\\collections4\\SetOperationCardinalityHelperTest_JA_023.java:27: error: cannot find symbol\n  symbol:   variable SetOperationCardinalityHelper\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpj14vuqp2\\org\\apache\\commons\\collections4\\SetOperationCardinalityHelperTest_JA_023.java:37: error: cannot find symbol\n  symbol:   variable SetOperationCardinalityHelper\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpj14vuqp2\\org\\apache\\commons\\collections4\\SetOperationCardinalityHelperTest_JA_023.java:47: error: cannot find symbol\n  symbol:   variable SetOperationCardinalityHelper\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpj14vuqp2\\org\\apache\\commons\\collections4\\SetOperationCardinalityHelperTest_JA_023.java:57: error: cannot find symbol\n  symbol:   variable SetOperationCardinalityHelper\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpj14vuqp2\\org\\apache\\commons\\collections4\\SetOperationCardinalityHelperTest_JA_023.java:67: error: cannot find symbol\n  symbol:   variable "
+ },
+ "JA-024": {
+  "n_error": 13,
+  "symbols": [],
+  "text": "C:\\Users\\qhung\\AppData\\Local\\Temp\\tmpnp84uu8v\\org\\apache\\commons\\csv\\LexerTest_JA_024.java:13: error: constructor Lexer in class Lexer cannot be applied to given types;\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpnp84uu8v\\org\\apache\\commons\\csv\\LexerTest_JA_024.java:15: error: parseSimpleToken(Token,int) has private access in Lexer\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpnp84uu8v\\org\\apache\\commons\\csv\\LexerTest_JA_024.java:22: error: constructor Lexer in class Lexer cannot be applied to given types;\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpnp84uu8v\\org\\apache\\commons\\csv\\LexerTest_JA_024.java:24: error: parseSimpleToken(Token,int) has private access in Lexer\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpnp84uu8v\\org\\apache\\commons\\csv\\LexerTest_JA_024.java:32: error: constructor Lexer in class Lexer cannot be applied to given types;\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpnp84uu8v\\org\\apache\\commons\\csv\\LexerTest_JA_024.java:34: error: parseSimpleToken(Token,int) has private access in Lexer\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpnp84uu8v\\org\\apache\\commons\\csv\\LexerTest_JA_024.java:41: error: constructor Lexer in class Lexer cannot be applied to given types;\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpnp84uu8v\\org\\"
+ },
+ "JA-026": {
+  "n_error": 11,
+  "symbols": [
+   [
+    "class",
+    "TypeToken"
+   ],
+   [
+    "variable",
+    "TypeToken"
+   ],
+   [
+    "class",
+    "TypeToken"
+   ],
+   [
+    "variable",
+    "TypeToken"
+   ],
+   [
+    "class",
+    "TypeToken"
+   ],
+   [
+    "variable",
+    "TypeToken"
+   ]
+  ],
+  "text": "C:\\Users\\qhung\\AppData\\Local\\Temp\\tmpwzrq3yil\\com\\google\\gson\\GsonTest_JA_026.java:12: error: cannot find symbol\n  symbol:   class TypeToken\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpwzrq3yil\\com\\google\\gson\\GsonTest_JA_026.java:12: error: cannot find symbol\n  symbol:   variable TypeToken\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpwzrq3yil\\com\\google\\gson\\GsonTest_JA_026.java:33: error: cannot find symbol\n  symbol:   class TypeToken\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpwzrq3yil\\com\\google\\gson\\GsonTest_JA_026.java:33: error: cannot find symbol\n  symbol:   variable TypeToken\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpwzrq3yil\\com\\google\\gson\\GsonTest_JA_026.java:34: error: jsonAdapterFactory has private access in Gson\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpwzrq3yil\\com\\google\\gson\\GsonTest_JA_026.java:50: error: cannot find symbol\n  symbol:   class TypeToken\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpwzrq3yil\\com\\google\\gson\\GsonTest_JA_026.java:50: error: cannot find symbol\n  symbol:   variable TypeToken\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpwzrq3yil\\com\\google\\gson\\GsonTest_JA_026.java:51: error: jsonAdapterFactory has private access in Gson\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpwzrq3yil\\com\\google\\gson\\Gso"
+ },
+ "JA-027": {
+  "n_error": 18,
+  "symbols": [
+   [
+    "class",
+    "Size2D"
+   ],
+   [
+    "class",
+    "Size2D"
+   ],
+   [
+    "variable",
+    "HorizontalAlignment"
+   ],
+   [
+    "variable",
+    "VerticalAlignment"
+   ],
+   [
+    "class",
+    "Size2D"
+   ],
+   [
+    "class",
+    "Size2D"
+   ]
+  ],
+  "text": "C:\\Users\\qhung\\AppData\\Local\\Temp\\tmpc3ojs487\\org\\jfree\\chart\\JFreeChartTest_JA_027.java:13: error: cannot find symbol\n  symbol:   class Size2D\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpc3ojs487\\org\\jfree\\chart\\JFreeChartTest_JA_027.java:13: error: cannot find symbol\n  symbol:   class Size2D\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpc3ojs487\\org\\jfree\\chart\\JFreeChartTest_JA_027.java:15: error: cannot find symbol\n  symbol:   variable HorizontalAlignment\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpc3ojs487\\org\\jfree\\chart\\JFreeChartTest_JA_027.java:15: error: cannot find symbol\n  symbol:   variable VerticalAlignment\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpc3ojs487\\org\\jfree\\chart\\JFreeChartTest_JA_027.java:24: error: cannot find symbol\n  symbol:   class Size2D\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpc3ojs487\\org\\jfree\\chart\\JFreeChartTest_JA_027.java:24: error: cannot find symbol\n  symbol:   class Size2D\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpc3ojs487\\org\\jfree\\chart\\JFreeChartTest_JA_027.java:26: error: cannot find symbol\n  symbol:   variable HorizontalAlignment\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpc3ojs487\\org\\jfree\\chart\\JFreeChartTest_JA_027.java:26: error: cannot find symbol\n  symbol:   variable Vertic"
+ },
+ "JA-028": {
+  "n_error": 17,
+  "symbols": [
+   [
+    "class",
+    "Request"
+   ],
+   [
+    "class",
+    "Request"
+   ],
+   [
+    "class",
+    "Response"
+   ],
+   [
+    "class",
+    "Response"
+   ],
+   [
+    "class",
+    "Request"
+   ],
+   [
+    "class",
+    "Request"
+   ]
+  ],
+  "text": "C:\\Users\\qhung\\AppData\\Local\\Temp\\tmpjhbopjs_\\org\\jsoup\\helper\\RequestDispatchTest_JA_028.java:16: error: cannot find symbol\n  symbol:   class Request\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpjhbopjs_\\org\\jsoup\\helper\\RequestDispatchTest_JA_028.java:16: error: cannot find symbol\n  symbol:   class Request\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpjhbopjs_\\org\\jsoup\\helper\\RequestDispatchTest_JA_028.java:17: error: cannot find symbol\n  symbol:   class Response\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpjhbopjs_\\org\\jsoup\\helper\\RequestDispatchTest_JA_028.java:17: error: cannot find symbol\n  symbol:   class Response\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpjhbopjs_\\org\\jsoup\\helper\\RequestDispatchTest_JA_028.java:28: error: cannot find symbol\n  symbol:   class Request\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpjhbopjs_\\org\\jsoup\\helper\\RequestDispatchTest_JA_028.java:28: error: cannot find symbol\n  symbol:   class Request\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpjhbopjs_\\org\\jsoup\\helper\\RequestDispatchTest_JA_028.java:29: error: cannot find symbol\n  symbol:   class Response\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpjhbopjs_\\org\\jsoup\\helper\\RequestDispatchTest_JA_028.java:29: error: cannot find symbol\n  symbol:   cla"
+ },
+ "JA-029": {
+  "n_error": 5,
+  "symbols": [],
+  "text": "C:\\Users\\qhung\\AppData\\Local\\Temp\\tmppl_ybz8h\\org\\joda\\time\\DateTimeComparatorTest_JA_029.java:8: error: constructor DateTimeComparator in class DateTimeComparator cannot be applied to given types;\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmppl_ybz8h\\org\\joda\\time\\DateTimeComparatorTest_JA_029.java:9: error: constructor DateTimeComparator in class DateTimeComparator cannot be applied to given types;\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmppl_ybz8h\\org\\joda\\time\\DateTimeComparatorTest_JA_029.java:10: error: constructor DateTimeComparator in class DateTimeComparator cannot be applied to given types;\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmppl_ybz8h\\org\\joda\\time\\DateTimeComparatorTest_JA_029.java:40: error: constructor DateTimeComparator in class DateTimeComparator cannot be applied to given types;\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmppl_ybz8h\\org\\joda\\time\\DateTimeComparatorTest_JA_029.java:46: error: constructor DateTimeComparator in class DateTimeComparator cannot be applied to given types;"
+ },
+ "JA-030": {
+  "n_error": 2,
+  "symbols": [
+   [
+    "class",
+    "NonOptionAction"
+   ],
+   [
+    "class",
+    "NonOptionAction"
+   ]
+  ],
+  "text": "C:\\Users\\qhung\\AppData\\Local\\Temp\\tmp1rjzhl0k\\org\\apache\\commons\\cli\\NonOptionActionTest_JA_030.java:8: error: cannot find symbol\n  symbol:   class NonOptionAction\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmp1rjzhl0k\\org\\apache\\commons\\cli\\NonOptionActionTest_JA_030.java:8: error: cannot find symbol\n  symbol:   class NonOptionAction"
+ },
+ "JA-032": {
+  "n_error": 10,
+  "symbols": [],
+  "text": "C:\\Users\\qhung\\AppData\\Local\\Temp\\tmpac7iaf_o\\org\\apache\\commons\\cli\\DefaultParserTest_JA_032.java:12: error: isLongOption(String) has private access in DefaultParser\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpac7iaf_o\\org\\apache\\commons\\cli\\DefaultParserTest_JA_032.java:17: error: isLongOption(String) has private access in DefaultParser\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpac7iaf_o\\org\\apache\\commons\\cli\\DefaultParserTest_JA_032.java:22: error: isLongOption(String) has private access in DefaultParser\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpac7iaf_o\\org\\apache\\commons\\cli\\DefaultParserTest_JA_032.java:27: error: isLongOption(String) has private access in DefaultParser\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpac7iaf_o\\org\\apache\\commons\\cli\\DefaultParserTest_JA_032.java:32: error: isLongOption(String) has private access in DefaultParser\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpac7iaf_o\\org\\apache\\commons\\cli\\DefaultParserTest_JA_032.java:37: error: isLongOption(String) has private access in DefaultParser\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpac7iaf_o\\org\\apache\\commons\\cli\\DefaultParserTest_JA_032.java:42: error: isLongOption(String) has private access in DefaultParser\nC:\\Users\\qhung\\AppData\\Local\\Te"
+ },
+ "JA-034": {
+  "n_error": 4,
+  "symbols": [],
+  "text": "C:\\Users\\qhung\\AppData\\Local\\Temp\\tmpspbah6az\\org\\apache\\commons\\csv\\CSVFormatTest_JA_034.java:10: error: non-static method trim(String) cannot be referenced from a static context\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpspbah6az\\org\\apache\\commons\\csv\\CSVFormatTest_JA_034.java:15: error: non-static method trim(String) cannot be referenced from a static context\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpspbah6az\\org\\apache\\commons\\csv\\CSVFormatTest_JA_034.java:20: error: non-static method trim(String) cannot be referenced from a static context\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpspbah6az\\org\\apache\\commons\\csv\\CSVFormatTest_JA_034.java:25: error: non-static method trim(String) cannot be referenced from a static context"
+ },
+ "JA-036": {
+  "n_error": 7,
+  "symbols": [],
+  "text": "C:\\Users\\qhung\\AppData\\Local\\Temp\\tmpjiogu56_\\com\\google\\gson\\typeadapters\\UtcDateTypeAdapterTest_JA_036.java:10: error: parseInt(String,int,int) has private access in UtcDateTypeAdapter\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpjiogu56_\\com\\google\\gson\\typeadapters\\UtcDateTypeAdapterTest_JA_036.java:15: error: parseInt(String,int,int) has private access in UtcDateTypeAdapter\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpjiogu56_\\com\\google\\gson\\typeadapters\\UtcDateTypeAdapterTest_JA_036.java:21: error: parseInt(String,int,int) has private access in UtcDateTypeAdapter\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpjiogu56_\\com\\google\\gson\\typeadapters\\UtcDateTypeAdapterTest_JA_036.java:28: error: parseInt(String,int,int) has private access in UtcDateTypeAdapter\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpjiogu56_\\com\\google\\gson\\typeadapters\\UtcDateTypeAdapterTest_JA_036.java:35: error: parseInt(String,int,int) has private access in UtcDateTypeAdapter\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpjiogu56_\\com\\google\\gson\\typeadapters\\UtcDateTypeAdapterTest_JA_036.java:42: error: parseInt(String,int,int) has private access in UtcDateTypeAdapter\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpjiogu56_\\com\\google\\gson\\typeadapters\\Utc"
+ },
+ "JA-037": {
+  "n_error": 46,
+  "symbols": [
+   [
+    "class",
+    "Title"
+   ],
+   [
+    "class",
+    "Title"
+   ],
+   [
+    "class",
+    "Title"
+   ],
+   [
+    "class",
+    "Title"
+   ],
+   [
+    "class",
+    "Title"
+   ],
+   [
+    "class",
+    "Title"
+   ]
+  ],
+  "text": "C:\\Users\\qhung\\AppData\\Local\\Temp\\tmp90dprt1y\\org\\jfree\\chart\\JFreeChartTest_JA_037.java:16: error: no suitable constructor found for JFreeChart(no arguments)\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmp90dprt1y\\org\\jfree\\chart\\JFreeChartTest_JA_037.java:24: error: no suitable constructor found for JFreeChart(no arguments)\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmp90dprt1y\\org\\jfree\\chart\\JFreeChartTest_JA_037.java:25: error: cannot find symbol\n  symbol:   class Title\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmp90dprt1y\\org\\jfree\\chart\\JFreeChartTest_JA_037.java:25: error: cannot find symbol\n  symbol:   class Title\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmp90dprt1y\\org\\jfree\\chart\\JFreeChartTest_JA_037.java:32: error: no suitable constructor found for JFreeChart(no arguments)\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmp90dprt1y\\org\\jfree\\chart\\JFreeChartTest_JA_037.java:33: error: cannot find symbol\n  symbol:   class Title\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmp90dprt1y\\org\\jfree\\chart\\JFreeChartTest_JA_037.java:33: error: cannot find symbol\n  symbol:   class Title\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmp90dprt1y\\org\\jfree\\chart\\JFreeChartTest_JA_037.java:41: error: no suitable constructor found for JFreeChart(no arg"
+ },
+ "JA-039": {
+  "n_error": 10,
+  "symbols": [],
+  "text": "C:\\Users\\qhung\\AppData\\Local\\Temp\\tmpj65i0tx3\\org\\joda\\time\\PeriodTest_JA_039.java:36: error: no suitable method found for thenReturn(DurationFieldType)\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpj65i0tx3\\org\\joda\\time\\PeriodTest_JA_039.java:37: error: no suitable method found for thenReturn(DurationFieldType)\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpj65i0tx3\\org\\joda\\time\\PeriodTest_JA_039.java:47: error: no suitable method found for thenReturn(DurationFieldType)\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpj65i0tx3\\org\\joda\\time\\PeriodTest_JA_039.java:48: error: no suitable method found for thenReturn(DurationFieldType)\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpj65i0tx3\\org\\joda\\time\\PeriodTest_JA_039.java:49: error: no suitable method found for thenReturn(DurationFieldType)\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpj65i0tx3\\org\\joda\\time\\PeriodTest_JA_039.java:50: error: no suitable method found for thenReturn(DurationFieldType)\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpj65i0tx3\\org\\joda\\time\\PeriodTest_JA_039.java:60: error: no suitable method found for thenReturn(DurationFieldType)\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpj65i0tx3\\org\\joda\\time\\PeriodTest_JA_039.java:61: error: no suitable method found for thenRe"
+ },
+ "JA-040": {
+  "n_error": 2,
+  "symbols": [
+   [
+    "class",
+    "OptionComparator"
+   ],
+   [
+    "class",
+    "OptionComparator"
+   ]
+  ],
+  "text": "C:\\Users\\qhung\\AppData\\Local\\Temp\\tmp2vaj25jo\\org\\apache\\commons\\cli\\OptionComparatorTest_JA_040.java:11: error: cannot find symbol\n  symbol:   class OptionComparator\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmp2vaj25jo\\org\\apache\\commons\\cli\\OptionComparatorTest_JA_040.java:11: error: cannot find symbol\n  symbol:   class OptionComparator"
+ },
+ "JA-041": {
+  "n_error": 14,
+  "symbols": [
+   [
+    "class",
+    "Provider"
+   ],
+   [
+    "class",
+    "SomeCustomProvider"
+   ],
+   [
+    "class",
+    "Provider"
+   ],
+   [
+    "class",
+    "ZoneInfoProvider"
+   ],
+   [
+    "class",
+    "Provider"
+   ],
+   [
+    "class",
+    "ZoneInfoProvider"
+   ]
+  ],
+  "text": "C:\\Users\\qhung\\AppData\\Local\\Temp\\tmphotppi8o\\org\\joda\\time\\DateTimeZoneTest_JA_041.java:11: error: cannot find symbol\n  symbol:   class Provider\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmphotppi8o\\org\\joda\\time\\DateTimeZoneTest_JA_041.java:11: error: getDefaultProvider() has private access in DateTimeZone\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmphotppi8o\\org\\joda\\time\\DateTimeZoneTest_JA_041.java:13: error: cannot find symbol\n  symbol:   class SomeCustomProvider\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmphotppi8o\\org\\joda\\time\\DateTimeZoneTest_JA_041.java:20: error: getDefaultProvider() has private access in DateTimeZone\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmphotppi8o\\org\\joda\\time\\DateTimeZoneTest_JA_041.java:28: error: cannot find symbol\n  symbol:   class Provider\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmphotppi8o\\org\\joda\\time\\DateTimeZoneTest_JA_041.java:28: error: getDefaultProvider() has private access in DateTimeZone\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmphotppi8o\\org\\joda\\time\\DateTimeZoneTest_JA_041.java:30: error: cannot find symbol\n  symbol:   class ZoneInfoProvider\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmphotppi8o\\org\\joda\\time\\DateTimeZoneTest_JA_041.java:37: error: getDefaultProvider() has priva"
+ },
+ "JA-042": {
+  "n_error": 9,
+  "symbols": [
+   [
+    "variable",
+    "NonOptionAction"
+   ],
+   [
+    "variable",
+    "NonOptionAction"
+   ],
+   [
+    "variable",
+    "NonOptionAction"
+   ],
+   [
+    "method",
+    "isSkipParsing"
+   ],
+   [
+    "variable",
+    "NonOptionAction"
+   ],
+   [
+    "variable",
+    "NonOptionAction"
+   ]
+  ],
+  "text": "C:\\Users\\qhung\\AppData\\Local\\Temp\\tmptnekm31h\\org\\apache\\commons\\cli\\DefaultParserTest_JA_042.java:12: error: cannot find symbol\n  symbol:   variable NonOptionAction\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmptnekm31h\\org\\apache\\commons\\cli\\DefaultParserTest_JA_042.java:21: error: cannot find symbol\n  symbol:   variable NonOptionAction\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmptnekm31h\\org\\apache\\commons\\cli\\DefaultParserTest_JA_042.java:28: error: cannot find symbol\n  symbol:   variable NonOptionAction\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmptnekm31h\\org\\apache\\commons\\cli\\DefaultParserTest_JA_042.java:30: error: cannot find symbol\n  symbol:   method isSkipParsing()\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmptnekm31h\\org\\apache\\commons\\cli\\DefaultParserTest_JA_042.java:35: error: cannot find symbol\n  symbol:   variable NonOptionAction\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmptnekm31h\\org\\apache\\commons\\cli\\DefaultParserTest_JA_042.java:42: error: cannot find symbol\n  symbol:   variable NonOptionAction\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmptnekm31h\\org\\apache\\commons\\cli\\DefaultParserTest_JA_042.java:44: error: cannot find symbol\n  symbol:   variable OptionFormatter\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmptne"
+ },
+ "JA-043": {
+  "n_error": 9,
+  "symbols": [
+   [
+    "variable",
+    "SetOperationCardinalityHelper"
+   ],
+   [
+    "variable",
+    "SetOperationCardinalityHelper"
+   ],
+   [
+    "variable",
+    "SetOperationCardinalityHelper"
+   ],
+   [
+    "variable",
+    "SetOperationCardinalityHelper"
+   ],
+   [
+    "variable",
+    "SetOperationCardinalityHelper"
+   ],
+   [
+    "variable",
+    "SetOperationCardinalityHelper"
+   ]
+  ],
+  "text": "C:\\Users\\qhung\\AppData\\Local\\Temp\\tmpa3yylpiq\\org\\apache\\commons\\collections4\\SetOperationCardinalityHelperTest_JA_043.java:14: error: cannot find symbol\n  symbol:   variable SetOperationCardinalityHelper\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpa3yylpiq\\org\\apache\\commons\\collections4\\SetOperationCardinalityHelperTest_JA_043.java:23: error: cannot find symbol\n  symbol:   variable SetOperationCardinalityHelper\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpa3yylpiq\\org\\apache\\commons\\collections4\\SetOperationCardinalityHelperTest_JA_043.java:29: error: cannot find symbol\n  symbol:   variable SetOperationCardinalityHelper\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpa3yylpiq\\org\\apache\\commons\\collections4\\SetOperationCardinalityHelperTest_JA_043.java:36: error: cannot find symbol\n  symbol:   variable SetOperationCardinalityHelper\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpa3yylpiq\\org\\apache\\commons\\collections4\\SetOperationCardinalityHelperTest_JA_043.java:42: error: cannot find symbol\n  symbol:   variable SetOperationCardinalityHelper\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpa3yylpiq\\org\\apache\\commons\\collections4\\SetOperationCardinalityHelperTest_JA_043.java:50: error: cannot find symbol\n  symbol:   variable "
+ },
+ "JA-045": {
+  "n_error": 8,
+  "symbols": [],
+  "text": "C:\\Users\\qhung\\AppData\\Local\\Temp\\tmphwdpzytu\\org\\apache\\commons\\math4\\core\\jdkmath\\AccurateMathTest_JA_045.java:11: error: method expm1 in class AccurateMath cannot be applied to given types;\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmphwdpzytu\\org\\apache\\commons\\math4\\core\\jdkmath\\AccurateMathTest_JA_045.java:17: error: method expm1 in class AccurateMath cannot be applied to given types;\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmphwdpzytu\\org\\apache\\commons\\math4\\core\\jdkmath\\AccurateMathTest_JA_045.java:23: error: method expm1 in class AccurateMath cannot be applied to given types;\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmphwdpzytu\\org\\apache\\commons\\math4\\core\\jdkmath\\AccurateMathTest_JA_045.java:29: error: method expm1 in class AccurateMath cannot be applied to given types;\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmphwdpzytu\\org\\apache\\commons\\math4\\core\\jdkmath\\AccurateMathTest_JA_045.java:35: error: method expm1 in class AccurateMath cannot be applied to given types;\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmphwdpzytu\\org\\apache\\commons\\math4\\core\\jdkmath\\AccurateMathTest_JA_045.java:41: error: method expm1 in class AccurateMath cannot be applied to given types;\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmphwdpz"
+ },
+ "JA-046": {
+  "n_error": 12,
+  "symbols": [
+   [
+    "class",
+    "TypeToken"
+   ],
+   [
+    "variable",
+    "TypeToken"
+   ],
+   [
+    "class",
+    "TypeToken"
+   ],
+   [
+    "variable",
+    "TypeToken"
+   ],
+   [
+    "class",
+    "TypeToken"
+   ],
+   [
+    "variable",
+    "TypeToken"
+   ]
+  ],
+  "text": "C:\\Users\\qhung\\AppData\\Local\\Temp\\tmphkf7gq_d\\com\\google\\gson\\GsonTest_JA_046.java:12: error: reference to getAdapter is ambiguous\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmphkf7gq_d\\com\\google\\gson\\GsonTest_JA_046.java:18: error: cannot find symbol\n  symbol:   class TypeToken\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmphkf7gq_d\\com\\google\\gson\\GsonTest_JA_046.java:18: error: cannot find symbol\n  symbol:   variable TypeToken\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmphkf7gq_d\\com\\google\\gson\\GsonTest_JA_046.java:20: error: typeTokenCache has private access in Gson\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmphkf7gq_d\\com\\google\\gson\\GsonTest_JA_046.java:28: error: cannot find symbol\n  symbol:   class TypeToken\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmphkf7gq_d\\com\\google\\gson\\GsonTest_JA_046.java:28: error: cannot find symbol\n  symbol:   variable TypeToken\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmphkf7gq_d\\com\\google\\gson\\GsonTest_JA_046.java:41: error: cannot find symbol\n  symbol:   class TypeToken\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmphkf7gq_d\\com\\google\\gson\\GsonTest_JA_046.java:41: error: cannot find symbol\n  symbol:   variable TypeToken\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmphkf7gq_d\\com\\google\\gson\\GsonTest_JA_046."
+ },
+ "JA-047": {
+  "n_error": 8,
+  "symbols": [
+   [
+    "variable",
+    "Color"
+   ],
+   [
+    "variable",
+    "Color"
+   ],
+   [
+    "class",
+    "BasicStroke"
+   ],
+   [
+    "class",
+    "BasicStroke"
+   ],
+   [
+    "variable",
+    "Color"
+   ],
+   [
+    "class",
+    "BasicStroke"
+   ]
+  ],
+  "text": "C:\\Users\\qhung\\AppData\\Local\\Temp\\tmp95494164\\org\\jfree\\chart\\annotations\\CategoryLineAnnotationTest_JA_047.java:50: error: cannot find symbol\n  symbol:   variable Color\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmp95494164\\org\\jfree\\chart\\annotations\\CategoryLineAnnotationTest_JA_047.java:51: error: cannot find symbol\n  symbol:   variable Color\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmp95494164\\org\\jfree\\chart\\annotations\\CategoryLineAnnotationTest_JA_047.java:57: error: cannot find symbol\n  symbol:   class BasicStroke\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmp95494164\\org\\jfree\\chart\\annotations\\CategoryLineAnnotationTest_JA_047.java:58: error: cannot find symbol\n  symbol:   class BasicStroke\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmp95494164\\org\\jfree\\chart\\annotations\\CategoryLineAnnotationTest_JA_047.java:64: error: cannot find symbol\n  symbol:   variable Color\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmp95494164\\org\\jfree\\chart\\annotations\\CategoryLineAnnotationTest_JA_047.java:64: error: cannot find symbol\n  symbol:   class BasicStroke\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmp95494164\\org\\jfree\\chart\\annotations\\CategoryLineAnnotationTest_JA_047.java:65: error: cannot find symbol\n  symbol:   variable Color\nC"
+ },
+ "JA-048": {
+  "n_error": 2,
+  "symbols": [
+   [
+    "class",
+    "FormattingVisitor"
+   ],
+   [
+    "class",
+    "FormattingVisitor"
+   ]
+  ],
+  "text": "C:\\Users\\qhung\\AppData\\Local\\Temp\\tmpymkduxe5\\org\\jsoup\\examples\\FormattingVisitorTest_JA_048.java:7: error: cannot find symbol\n  symbol:   class FormattingVisitor\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpymkduxe5\\org\\jsoup\\examples\\FormattingVisitorTest_JA_048.java:7: error: cannot find symbol\n  symbol:   class FormattingVisitor"
+ },
+ "JA-050": {
+  "n_error": 6,
+  "symbols": [],
+  "text": "C:\\Users\\qhung\\AppData\\Local\\Temp\\tmp3un0ygdh\\org\\apache\\commons\\cli\\HelpFormatterTest_JA_050.java:14: error: appendOption(StringBuilder,Option,boolean) has private access in HelpFormatter\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmp3un0ygdh\\org\\apache\\commons\\cli\\HelpFormatterTest_JA_050.java:24: error: appendOption(StringBuilder,Option,boolean) has private access in HelpFormatter\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmp3un0ygdh\\org\\apache\\commons\\cli\\HelpFormatterTest_JA_050.java:33: error: appendOption(StringBuilder,Option,boolean) has private access in HelpFormatter\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmp3un0ygdh\\org\\apache\\commons\\cli\\HelpFormatterTest_JA_050.java:42: error: appendOption(StringBuilder,Option,boolean) has private access in HelpFormatter\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmp3un0ygdh\\org\\apache\\commons\\cli\\HelpFormatterTest_JA_050.java:52: error: appendOption(StringBuilder,Option,boolean) has private access in HelpFormatter\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmp3un0ygdh\\org\\apache\\commons\\cli\\HelpFormatterTest_JA_050.java:62: error: appendOption(StringBuilder,Option,boolean) has private access in HelpFormatter"
+ },
+ "JA-052": {
+  "n_error": 9,
+  "symbols": [
+   [
+    "variable",
+    "OBJECT_VALUE"
+   ],
+   [
+    "variable",
+    "STRING_VALUE"
+   ],
+   [
+    "variable",
+    "NUMBER_VALUE"
+   ],
+   [
+    "variable",
+    "CLASS_VALUE"
+   ],
+   [
+    "variable",
+    "DATE_VALUE"
+   ],
+   [
+    "variable",
+    "EXISTING_FILE_VALUE"
+   ]
+  ],
+  "text": "C:\\Users\\qhung\\AppData\\Local\\Temp\\tmp9psxdv3z\\org\\apache\\commons\\cli\\PatternOptionBuilderTest_JA_052.java:9: error: cannot find symbol\n  symbol:   variable OBJECT_VALUE\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmp9psxdv3z\\org\\apache\\commons\\cli\\PatternOptionBuilderTest_JA_052.java:14: error: cannot find symbol\n  symbol:   variable STRING_VALUE\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmp9psxdv3z\\org\\apache\\commons\\cli\\PatternOptionBuilderTest_JA_052.java:19: error: cannot find symbol\n  symbol:   variable NUMBER_VALUE\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmp9psxdv3z\\org\\apache\\commons\\cli\\PatternOptionBuilderTest_JA_052.java:24: error: cannot find symbol\n  symbol:   variable CLASS_VALUE\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmp9psxdv3z\\org\\apache\\commons\\cli\\PatternOptionBuilderTest_JA_052.java:29: error: cannot find symbol\n  symbol:   variable DATE_VALUE\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmp9psxdv3z\\org\\apache\\commons\\cli\\PatternOptionBuilderTest_JA_052.java:34: error: cannot find symbol\n  symbol:   variable EXISTING_FILE_VALUE\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmp9psxdv3z\\org\\apache\\commons\\cli\\PatternOptionBuilderTest_JA_052.java:39: error: cannot find symbol\n  symbol:   variable FILE_VALUE\nC:\\Users\\"
+ },
+ "JA-053": {
+  "n_error": 9,
+  "symbols": [
+   [
+    "variable",
+    "SetOperationCardinalityHelper"
+   ],
+   [
+    "variable",
+    "SetOperationCardinalityHelper"
+   ],
+   [
+    "variable",
+    "SetOperationCardinalityHelper"
+   ],
+   [
+    "variable",
+    "SetOperationCardinalityHelper"
+   ],
+   [
+    "variable",
+    "SetOperationCardinalityHelper"
+   ],
+   [
+    "variable",
+    "SetOperationCardinalityHelper"
+   ]
+  ],
+  "text": "C:\\Users\\qhung\\AppData\\Local\\Temp\\tmpuhrx9a4a\\org\\apache\\commons\\collections4\\SetOperationCardinalityHelperTest_JA_053.java:13: error: cannot find symbol\n  symbol:   variable SetOperationCardinalityHelper\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpuhrx9a4a\\org\\apache\\commons\\collections4\\SetOperationCardinalityHelperTest_JA_053.java:21: error: cannot find symbol\n  symbol:   variable SetOperationCardinalityHelper\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpuhrx9a4a\\org\\apache\\commons\\collections4\\SetOperationCardinalityHelperTest_JA_053.java:27: error: cannot find symbol\n  symbol:   variable SetOperationCardinalityHelper\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpuhrx9a4a\\org\\apache\\commons\\collections4\\SetOperationCardinalityHelperTest_JA_053.java:33: error: cannot find symbol\n  symbol:   variable SetOperationCardinalityHelper\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpuhrx9a4a\\org\\apache\\commons\\collections4\\SetOperationCardinalityHelperTest_JA_053.java:39: error: cannot find symbol\n  symbol:   variable SetOperationCardinalityHelper\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpuhrx9a4a\\org\\apache\\commons\\collections4\\SetOperationCardinalityHelperTest_JA_053.java:45: error: cannot find symbol\n  symbol:   variable "
+ },
+ "JA-054": {
+  "n_error": 18,
+  "symbols": [
+   [
+    "variable",
+    "EOF"
+   ],
+   [
+    "variable",
+    "CR"
+   ],
+   [
+    "variable",
+    "CR"
+   ],
+   [
+    "variable",
+    "LF"
+   ],
+   [
+    "variable",
+    "LF"
+   ],
+   [
+    "variable",
+    "EOF"
+   ]
+  ],
+  "text": "C:\\Users\\qhung\\AppData\\Local\\Temp\\tmpy4a_5v9a\\org\\apache\\commons\\csv\\ExtendedBufferedReaderTest_JA_054.java:9: error: cannot inherit from final ExtendedBufferedReader\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpy4a_5v9a\\org\\apache\\commons\\csv\\ExtendedBufferedReaderTest_JA_054.java:23: error: cannot find symbol\n  symbol:   variable EOF\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpy4a_5v9a\\org\\apache\\commons\\csv\\ExtendedBufferedReaderTest_JA_054.java:29: error: cannot find symbol\n  symbol:   variable CR\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpy4a_5v9a\\org\\apache\\commons\\csv\\ExtendedBufferedReaderTest_JA_054.java:30: error: cannot find symbol\n  symbol:   variable CR\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpy4a_5v9a\\org\\apache\\commons\\csv\\ExtendedBufferedReaderTest_JA_054.java:35: error: cannot find symbol\n  symbol:   variable LF\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpy4a_5v9a\\org\\apache\\commons\\csv\\ExtendedBufferedReaderTest_JA_054.java:36: error: cannot find symbol\n  symbol:   variable LF\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpy4a_5v9a\\org\\apache\\commons\\csv\\ExtendedBufferedReaderTest_JA_054.java:41: error: cannot find symbol\n  symbol:   variable EOF\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpy4a_5v9a\\org\\apache\\co"
+ },
+ "JA-056": {
+  "n_error": 21,
+  "symbols": [
+   [
+    "class",
+    "JsonReader"
+   ],
+   [
+    "class",
+    "JsonReader"
+   ],
+   [
+    "class",
+    "TypeToken"
+   ],
+   [
+    "class",
+    "JsonReader"
+   ],
+   [
+    "class",
+    "JsonReader"
+   ],
+   [
+    "variable",
+    "JsonToken"
+   ]
+  ],
+  "text": "C:\\Users\\qhung\\AppData\\Local\\Temp\\tmpu6usz_ls\\com\\google\\gson\\GsonTest_JA_056.java:14: error: cannot find symbol\n  symbol:   class JsonReader\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpu6usz_ls\\com\\google\\gson\\GsonTest_JA_056.java:14: error: cannot find symbol\n  symbol:   class JsonReader\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpu6usz_ls\\com\\google\\gson\\GsonTest_JA_056.java:19: error: cannot find symbol\n  symbol:   class TypeToken\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpu6usz_ls\\com\\google\\gson\\GsonTest_JA_056.java:24: error: cannot find symbol\n  symbol:   class JsonReader\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpu6usz_ls\\com\\google\\gson\\GsonTest_JA_056.java:24: error: cannot find symbol\n  symbol:   class JsonReader\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpu6usz_ls\\com\\google\\gson\\GsonTest_JA_056.java:26: error: cannot find symbol\n  symbol:   variable JsonToken\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpu6usz_ls\\com\\google\\gson\\GsonTest_JA_056.java:31: error: cannot find symbol\n  symbol:   class TypeToken\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpu6usz_ls\\com\\google\\gson\\GsonTest_JA_056.java:33: error: cannot find symbol\n  symbol:   class TypeToken\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpu6usz_ls\\com\\google\\gson\\Gso"
+ },
+ "JA-057": {
+  "n_error": 52,
+  "symbols": [
+   [
+    "class",
+    "TextTitle"
+   ],
+   [
+    "class",
+    "TextTitle"
+   ],
+   [
+    "class",
+    "Font"
+   ],
+   [
+    "class",
+    "Paint"
+   ],
+   [
+    "class",
+    "LegendTitle"
+   ],
+   [
+    "class",
+    "LegendTitle"
+   ]
+  ],
+  "text": "C:\\Users\\qhung\\AppData\\Local\\Temp\\tmpqctfa120\\org\\jfree\\chart\\StandardChartThemeTest_JA_057.java:10: error: no suitable constructor found for StandardChartTheme(no arguments)\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpqctfa120\\org\\jfree\\chart\\StandardChartThemeTest_JA_057.java:11: error: cannot find symbol\n  symbol:   class TextTitle\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpqctfa120\\org\\jfree\\chart\\StandardChartThemeTest_JA_057.java:11: error: cannot find symbol\n  symbol:   class TextTitle\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpqctfa120\\org\\jfree\\chart\\StandardChartThemeTest_JA_057.java:12: error: largeFont has private access in StandardChartTheme\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpqctfa120\\org\\jfree\\chart\\StandardChartThemeTest_JA_057.java:12: error: cannot find symbol\n  symbol:   class Font\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpqctfa120\\org\\jfree\\chart\\StandardChartThemeTest_JA_057.java:13: error: subtitlePaint has private access in StandardChartTheme\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpqctfa120\\org\\jfree\\chart\\StandardChartThemeTest_JA_057.java:13: error: cannot find symbol\n  symbol:   class Paint\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpqctfa120\\org\\jfree\\chart\\StandardChartThemeTest_JA_057."
+ },
+ "JA-058": {
+  "n_error": 13,
+  "symbols": [
+   [
+    "method",
+    "implWritePost"
+   ],
+   [
+    "method",
+    "body"
+   ],
+   [
+    "method",
+    "implWritePost"
+   ],
+   [
+    "method",
+    "implWritePost"
+   ],
+   [
+    "method",
+    "body"
+   ],
+   [
+    "method",
+    "assertThrows"
+   ]
+  ],
+  "text": "C:\\Users\\qhung\\AppData\\Local\\Temp\\tmpdfa5n990\\org\\jsoup\\helper\\HttpConnectionTest_JA_058.java:25: error: package Connection does not exist\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpdfa5n990\\org\\jsoup\\helper\\HttpConnectionTest_JA_058.java:26: error: package Connection does not exist\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpdfa5n990\\org\\jsoup\\helper\\HttpConnectionTest_JA_058.java:26: error: package Connection does not exist\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpdfa5n990\\org\\jsoup\\helper\\HttpConnectionTest_JA_058.java:36: error: cannot find symbol\n  symbol:   method implWritePost(Request,BufferedWriter,ByteArrayOutputStream)\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpdfa5n990\\org\\jsoup\\helper\\HttpConnectionTest_JA_058.java:53: error: cannot find symbol\n  symbol:   method body()\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpdfa5n990\\org\\jsoup\\helper\\HttpConnectionTest_JA_058.java:55: error: cannot find symbol\n  symbol:   method implWritePost(Request,BufferedWriter,ByteArrayOutputStream)\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpdfa5n990\\org\\jsoup\\helper\\HttpConnectionTest_JA_058.java:67: error: package Connection does not exist\nC:\\Users\\qhung\\AppData\\Local\\Temp\\tmpdfa5n990\\org\\jsoup\\helper\\HttpConnectionTest_JA_058"
+ }
+}
