@@ -1,0 +1,61 @@
+func_id,repo,compiles,error_type,detail
+JA-002,apache/commons-cli,0,overload-nhap-nhang,getOptionValues
+JA-010,apache/commons-cli,0,overload-nhap-nhang,getParsedOptionValues
+JA-012,apache/commons-cli,1,,
+JA-020,apache/commons-cli,0,khac,cannot find symbol
+JA-022,apache/commons-cli,1,,
+JA-030,apache/commons-cli,1,,
+JA-032,apache/commons-cli,0,khac,illegal start of expression
+JA-040,apache/commons-cli,1,,
+JA-042,apache/commons-cli,0,khac,cannot find symbol
+JA-050,apache/commons-cli,0,khac,cannot find symbol
+JA-052,apache/commons-cli,1,,
+JA-060,apache/commons-cli,1,,
+JA-003,apache/commons-collections,0,sai-tham-so,filter
+JA-013,apache/commons-collections,1,,
+JA-023,apache/commons-collections,1,,
+JA-033,apache/commons-collections,1,,
+JA-043,apache/commons-collections,0,overload-nhap-nhang,get
+JA-053,apache/commons-collections,1,,
+JA-004,apache/commons-csv,0,sai-constructor,Builder
+JA-014,apache/commons-csv,0,khac,cannot find symbol
+JA-024,apache/commons-csv,0,khac,no suitable constructor found for ExtendedBuffered
+JA-034,apache/commons-csv,1,,
+JA-044,apache/commons-csv,1,,
+JA-054,apache/commons-csv,0,truy-cap-private,lineNumber
+JA-005,apache/commons-math,1,,
+JA-015,apache/commons-math,1,,
+JA-025,apache/commons-math,1,,
+JA-035,apache/commons-math,1,,
+JA-045,apache/commons-math,0,khac,"no suitable method found for assertEquals(double,O"
+JA-055,apache/commons-math,1,,
+JA-006,google/gson,0,khac,cannot find symbol
+JA-016,google/gson,1,,
+JA-036,google/gson,1,,
+JA-026,google/gson,0,khac,cannot find symbol
+JA-046,google/gson,0,overload-nhap-nhang,getAdapter
+JA-056,google/gson,1,,
+JA-007,jfree/jfreechart,0,khac,cannot find symbol
+JA-017,jfree/jfreechart,1,,
+JA-027,jfree/jfreechart,0,khac,cannot find symbol
+JA-037,jfree/jfreechart,0,thieu-override,
+JA-047,jfree/jfreechart,0,thieu-override,
+JA-057,jfree/jfreechart,0,truy-cap-private,largeFont
+JA-001,JodaOrg/joda-time,0,khac,"DateTimeComparator(DateTimeFieldType,DateTimeField"
+JA-009,JodaOrg/joda-time,0,khac,cannot find symbol
+JA-011,JodaOrg/joda-time,0,khac,"DateTimeComparator(DateTimeFieldType,DateTimeField"
+JA-019,JodaOrg/joda-time,0,thieu-override,
+JA-021,JodaOrg/joda-time,0,truy-cap-private,ALL_INSTANCE
+JA-029,JodaOrg/joda-time,0,khac,"DateTimeComparator(DateTimeFieldType,DateTimeField"
+JA-031,JodaOrg/joda-time,1,,
+JA-039,JodaOrg/joda-time,0,thieu-override,
+JA-041,JodaOrg/joda-time,0,khac,cannot find symbol
+JA-049,JodaOrg/joda-time,0,khac,DateTimeZone is abstract; cannot be instantiated
+JA-051,JodaOrg/joda-time,0,khac,DateTimeZone is abstract; cannot be instantiated
+JA-059,JodaOrg/joda-time,1,,
+JA-008,jhy/jsoup,1,,
+JA-018,jhy/jsoup,0,khac,cannot find symbol
+JA-028,jhy/jsoup,0,thieu-package,Proxy
+JA-038,jhy/jsoup,1,,
+JA-048,jhy/jsoup,0,truy-cap-private,FormattingVisitor
+JA-058,jhy/jsoup,0,truy-cap-private,data

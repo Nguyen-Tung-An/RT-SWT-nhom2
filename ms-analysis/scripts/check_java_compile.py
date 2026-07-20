@@ -30,7 +30,11 @@ import tempfile
 REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 GT = os.path.join(REPO, "data", "full_ground_truth.csv")
 GEN = os.path.join(REPO, "generated_tests", "gpt4o", "java")
-OUT = os.path.join(REPO, "ms-analysis", "results", "java_compile_check.csv")
+GEN_ENV = os.environ.get("JAVA_TEST_DIR")
+if GEN_ENV:
+    GEN = os.path.join(REPO, GEN_ENV)
+OUT = os.path.join(REPO, "ms-analysis", "results",
+                   os.environ.get("JAVA_OUT", "java_compile_check.csv"))
 
 ERR_PATTERNS = [
     (r"reference to (\w+) is ambiguous", "overload-nhap-nhang"),
