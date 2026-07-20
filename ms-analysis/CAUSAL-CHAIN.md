@@ -138,7 +138,11 @@ Truyền dẫn T2→T4: +27 → **+10** (37%).
 | Tầng | v1 | v4 |
 |---|---:|---:|
 | T1 biên dịch | 17 | 25 (**21** trừ reflection) |
-| **T4 giết mutant** | *đang đo* | *đang đo* |
+| T2 test xanh | 8 | 10 |
+| **T4 giết mutant** | **6** | **10** |
+
+T4 theo visibility — `private`: T1=4 nhưng **T4=1**. Ba ca "biên dịch được" nhờ reflection
+không giết được mutant nào.
 
 ### Đối chiếu với bài báo
 
@@ -147,7 +151,7 @@ Truyền dẫn T2→T4: +27 → **+10** (37%).
 | Java "compiled" | 51/60 (85%) | **17/60 (28%)** | Cờ gán cứng |
 | Python "valid" | 32/60 (53%) | **18/60 (30%)** T3 | "chạy" ≠ "hợp lệ" |
 | Python mutation>0 | 15/60 | 13/60 (đo lại) | khớp |
-| Java mutation>0 | **1/60** | *đang đo* | — |
+| Java mutation>0 | **1/60** (PIT) | **6/60** (động cơ riêng, cùng test v1) | Hai động cơ khác nhau, **không so chéo được** |
 
 **Hướng kết luận của bài báo được củng cố** — chất lượng test còn *thấp hơn* báo cáo.
 Chỉ các con số cụ thể phải sửa.

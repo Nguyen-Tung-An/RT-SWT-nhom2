@@ -99,10 +99,25 @@ Tỷ lệ truyền dẫn T2→T4: **+27 chỉ thành +10** — 37%.
 
 | Tầng | v1 | v4 |
 |---|---:|---:|
+| T2 test xanh trên bản gốc | 8 | 10 |
 | T1 biên dịch được | 17 | 25 (**21** nếu trừ phần dựa reflection) |
-| T4 giết được mutant | *đang đo* | *đang đo* |
+| **T4 giết được mutant** | **6** | **10** |
 
-Con số T4 duy nhất đang có là **1/60**, lấy từ dữ liệu bài báo qua PIT.
+Phân tầng T4 theo visibility:
+
+| | n | v1 | v4 |
+|---|---:|---:|---:|
+| `public` | 35 | 6 | 8 |
+| `protected` | 4 | 0 | 0 |
+| `package-private` | 4 | 0 | 1 |
+| `private` | 17 | 0 | **1** |
+
+**Nhóm `private`: T1 đạt 4 nhưng T4 chỉ 1.** Ba trong bốn ca "biên dịch được" nhờ reflection
+**không giết được mutant nào** — xác nhận đúng cảnh báo rằng T1 với reflection là chỉ số rỗng.
+
+> ⚠️ Bài báo báo Java `mutation>0` = **1/60** (dùng PIT). Đo lại **cùng bộ test v1** bằng
+> động cơ đột biến riêng cho **6/60**. Chênh 6 lần — hai động cơ sinh mutant khác nhau nên
+> **không so sánh chéo được**. Chỉ so v1↔v4 trong cùng động cơ.
 
 ## Chạy lại
 
