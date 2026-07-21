@@ -1,0 +1,7 @@
+cmd: F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\Scripts\python.exe -m pynguin --project-path F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\data\raw\flask\src --output-path F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\ms-analysis\results\_pynguin_work\pynguin_out_flask_json_provider --module-name flask.json.provider --maximum-search-time 96
+rc=0
+
+[stdout]
+
+[stderr]
+

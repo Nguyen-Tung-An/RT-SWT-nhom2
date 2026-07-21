@@ -247,3 +247,12 @@ Thumbs.db
 # Large files (thêm nếu data > 100MB)
 # data/raw/
 .venv-pynguin-gen/
+
+# rac tam thoi phien audit sau bao ve
+generated_tests/gpt4o_smoke/
+generated_tests/gpt4o_v4rep/
+generated_tests/gpt4o_v3r1/
+generated_tests/gpt4o_v3r1c/
+generated_tests/gpt4o_v3r3e/
+ms-analysis/results/_*.csv
+ms-analysis/results/_*.json

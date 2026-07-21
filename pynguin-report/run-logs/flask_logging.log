@@ -1,0 +1,128 @@
+cmd: F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\Scripts\python.exe -m pynguin --project-path F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\data\raw\flask\src --output-path F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\ms-analysis\results\_pynguin_work\pynguin_out_flask_logging --module-name flask.logging --maximum-search-time 90
+rc=0
+
+[stdout]
+
+[stderr]
+Experienced timeout from test-case execution
+Suppressed exception in subprocess: Working outside of request context.
+
+Attempted to use functionality that expected an active HTTP request. See the
+documentation on request context for more information.
+Error during receiving results from subprocess
+Experienced timeout from test-case execution
+Suppressed exception in subprocess: Working outside of request context.
+
+Attempted to use functionality that expected an active HTTP request. See the
+documentation on request context for more information.
+Error during receiving results from subprocess
+Experienced timeout from test-case execution
+Suppressed exception in subprocess: Working outside of request context.
+
+Attempted to use functionality that expected an active HTTP request. See the
+documentation on request context for more information.
+Error during receiving results from subprocess
+Experienced timeout from test-case execution
+Suppressed exception in subprocess: Working outside of request context.
+
+Attempted to use functionality that expected an active HTTP request. See the
+documentation on request context for more information.
+Error during receiving results from subprocess
+Experienced timeout from test-case execution
+Suppressed exception in subprocess: Working outside of request context.
+
+Attempted to use functionality that expected an active HTTP request. See the
+documentation on request context for more information.
+Error during receiving results from subprocess
+Experienced timeout from test-case execution
+Suppressed exception in subprocess: Working outside of request context.
+
+Attempted to use functionality that expected an active HTTP request. See the
+documentation on request context for more information.
+Error during receiving results from subprocess
+Experienced timeout from test-case execution
+Suppressed exception in subprocess: Working outside of request context.
+
+Attempted to use functionality that expected an active HTTP request. See the
+documentation on request context for more information.
+Error during receiving results from subprocess
+Experienced timeout from test-case execution
+Suppressed exception in subprocess: Working outside of request context.
+
+Attempted to use functionality that expected an active HTTP request. See the
+documentation on request context for more information.
+Error during receiving results from subprocess
+Experienced timeout from test-case execution
+Suppressed exception in subprocess: Working outside of request context.
+
+Attempted to use functionality that expected an active HTTP request. See the
+documentation on request context for more information.
+Error during receiving results from subprocess
+Experienced timeout from test-case execution
+Suppressed exception in subprocess: Working outside of request context.
+
+Attempted to use functionality that expected an active HTTP request. See the
+documentation on request context for more information.
+Error during receiving results from subprocess
+Experienced timeout from test-case execution
+Suppressed exception in subprocess: Working outside of request context.
+
+Attempted to use functionality that expected an active HTTP request. See the
+documentation on request context for more information.
+Error during receiving results from subprocess
+Experienced timeout from test-case execution
+Suppressed exception in subprocess: Working outside of request context.
+
+Attempted to use functionality that expected an active HTTP request. See the
+documentation on request context for more information.
+Error during receiving results from subprocess
+Experienced timeout from test-case execution
+Suppressed exception in subprocess: Working outside of request context.
+
+Attempted to use functionality that expected an active HTTP request. See the
+documentation on request context for more information.
+Error during receiving results from subprocess
+Experienced timeout from test-case execution
+Suppressed exception in subprocess: Working outside of request context.
+
+Attempted to use functionality that expected an active HTTP request. See the
+documentation on request context for more information.
+Error during receiving results from subprocess
+Experienced timeout from test-case execution
+Suppressed exception in subprocess: Working outside of request context.
+
+Attempted to use functionality that expected an active HTTP request. See the
+documentation on request context for more information.
+Error during receiving results from subprocess
+Experienced timeout from test-case execution
+Suppressed exception in subprocess: Working outside of request context.
+
+Attempted to use functionality that expected an active HTTP request. See the
+documentation on request context for more information.
+Error during receiving results from subprocess
+Experienced timeout from test-case execution
+Suppressed exception in subprocess: Working outside of request context.
+
+Attempted to use functionality that expected an active HTTP request. See the
+documentation on request context for more information.
+Error during receiving results from subprocess
+Experienced timeout from test-case execution
+Suppressed exception in subprocess: Working outside of request context.
+
+Attempted to use functionality that expected an active HTTP request. See the
+documentation on request context for more information.
+Error during receiving results from subprocess
+Experienced timeout from test-case execution
+Suppressed exception in subprocess: Working outside of request context.
+
+Attempted to use functionality that expected an active HTTP request. See the
+documentation on request context for more information.
+Error during receiving results from subprocess
+Experienced timeout from test-case execution
+Suppressed exception in subprocess: Working outside of request context.
+
+Attempted to use functionality that expected an active HTTP request. See the
+documentation on request context for more information.
+Error during receiving results from subprocess
+Experienced timeout from test-case execution
+

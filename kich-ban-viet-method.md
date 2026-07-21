@@ -119,3 +119,115 @@ Quy trình nhóm đã định sẵn: **viết → tự review → chạy detecto
 - [ ] Phúc: đọc + xác nhận mục 3.3b, 3.4
 - [ ] Cập nhật dòng "NGUOI VIET" đầu file sau khi cả 3 xác nhận
 - [ ] Chạy AI-detector theo đúng quy trình nhóm đã áp dụng cho các phần khác
+
+---
+
+## Phân tích phương pháp viết theo RBL-5a & RBL-5b (bổ sung 2026-07-20)
+
+Phần dưới đây tổng hợp và phân tích kỹ hai tài liệu gốc của học phần —
+**RBL-5a_Report-and-Present.pdf** (16 trang, hướng dẫn viết paper + slide) và
+**RBL-5b_AI-Writing-Check.pdf** (6 trang, hướng dẫn kiểm tra dấu hiệu AI) — để làm
+căn cứ chính thức cho quy trình viết/xác nhận `03_method.tex` ở trên. Quy trình 5 bước
+đã mô tả ở mục "Cách viết cụ thể" phía trên chính là áp dụng cụ thể của RBL-5b Phần 4;
+phần này giải thích rõ TẠI SAO quy trình đó đúng chuẩn, để 3 người (Lộc/Hải/Phúc) có
+thể tự áp dụng tương tự cho các mục khác (không chỉ Method) nếu cần.
+
+### A. RBL-5a — Phương pháp viết từng phần của paper
+
+**1. Nguyên tắc chung xuyên suốt mọi section:** viết THEO SỐ LIỆU, không viết theo
+cảm tính. Mọi câu tuyên bố (claim) đều phải có 1 trong 2: (a) một con số cụ thể lấy
+từ `full_analysis.ipynb`/`summary_8lib.csv`, hoặc (b) một `\cite{}` trỏ tới paper gốc.
+Không có câu nào "lửng" kiểu "kết quả khá tốt" hay "hiệu quả rõ rệt" mà không kèm số.
+
+**2. Cấu trúc bắt buộc theo từng section** (tóm tắt từ RBL-5a):
+
+| Section | Cấu trúc | Điểm mấu chốt áp dụng cho nhóm mình |
+|---|---|---|
+| Abstract (~150 từ) | 5 câu: Context → Gap → Method → Results (có số + p-value + effect size) → Implication | Viết **sau cùng**, sau khi có đủ `summary_8lib.csv`; câu Results phải có N, p, effect size — không chỉ "promising" |
+| §1 Introduction (~1 trang) | 5 đoạn: vấn đề thực tế → state of the art → GAP → contribution (dạng bullet 3 ý) → cấu trúc paper | Đoạn 3 (GAP) phải nêu đúng: "chưa có nghiên cứu nào đo cả branch coverage lẫn mutation score cho GPT-4o-mini trên cả Java lẫn Python với cùng 1 pipeline" — đây là GAP thật của nhóm |
+| §2 Related Work | Viết theo **theme** (2–3 nhóm chủ đề, mỗi nhóm 4–6 paper), KHÔNG liệt kê "Smith (2023) did X. Jones (2024) did Y." | Nhóm theo: (A) LLM cho test generation, (B) Search-based testing (EvoSuite/Pynguin), kết thúc bằng câu positioning "Unlike prior work, ..." |
+| §3 Methodology (~1.5–2 trang) | 3.1 Dataset, 3.2 Pipeline, 3.3 Metrics, 3.4 Statistical Analysis Plan — mục tiêu: **người đọc tự reproduce được** | Đây chính là file `03_method.tex` — bảng phân công ở trên đã đúng tinh thần "ai chạy thực nghiệm thì người đó viết/xác nhận" |
+| §4 Results (~1–1.5 trang) | Trả lời từng RQ theo thứ tự, chỉ báo cáo số liệu, KHÔNG bàn luận (để dành cho §5) | Luôn ghi N thực tế sau khi loại invalid, p-value chính xác (không chỉ "p<0.05"), effect size bắt buộc |
+| §5 Discussion (~1 trang) | 5.1 giải thích finding, 5.2 so sánh prior work, 5.3 implications | Nếu H0 không bị reject (kết quả âm tính) — không xin lỗi, phân tích tại sao, đây vẫn là contribution hợp lệ |
+| §6 Threats to Validity | 4 loại: Internal / External / Construct / Conclusion, mỗi loại 1–2 bullet, mỗi threat = mô tả + mitigation ĐÃ LÀM (không phải dự định) | 2 lỗi hạ tầng Lộc đã sửa (PIT timeout, jacoco.xml tái sử dụng nhầm) là ví dụ mitigation thật, nên đưa vào Construct Validity ở đây, không lặp lại ở Method |
+| §7 Conclusion (~0.5 trang) | Tóm tắt từng RQ (1–2 câu, kèm số) → contribution nổi bật nhất → future work cụ thể (không viết "cần nghiên cứu thêm") | |
+
+**3. Quy tắc trích dẫn theo từng section** (RBL-5a): §1 đoạn 1–2 cite paper nền tảng,
+đoạn 3 (GAP) cite paper gần nhất nhưng còn thiếu; §2 cite toàn bộ theo theme; §3 cite
+nguồn dataset/metric/statistical test (không cite bài giới thiệu thư viện như sklearn);
+§4 gần như không cite; §5 chỉ cite khi so sánh trực tiếp số liệu; §6 hầu như không cite
+(là nhận xét của chính nhóm); §7 chỉ cite khi gợi ý future work theo hướng đã có paper.
+
+**4. Ví dụ BAD vs GOOD (RBL-5a, áp dụng được ngay cho Abstract/§1 của nhóm):**
+- BAD: *"We conducted experiments and the results show that our approach is effective
+  and promising."* — không N, không metric, không số liệu.
+- GOOD: *"We apply GPT-4o mini to 200 Java functions ... GPT-4o mini achieves median
+  mutation score 61.3% vs EvoSuite 48.7% (p=0.003, Cliff's δ=0.41, medium)."*
+  → Nhóm mình viết theo mẫu này với số liệu thật từ `summary_8lib.csv` (N=60/ngôn ngữ,
+  Wilcoxon, rank-biserial r).
+
+### B. RBL-5b — Phương pháp kiểm tra & viết lại để tránh dấu hiệu AI
+
+**1. Phân biệt 2 loại kiểm tra — phải làm CẢ HAI, không thay thế nhau:**
+
+| | AI Writing Check | Plagiarism Check |
+|---|---|---|
+| Kiểm tra gì | Văn bản có phải AI tạo ra không | Văn bản có sao chép từ nguồn khác không |
+| Công cụ | SciSpace, ZeroGPT, GPTZero, Copyleaks (AI detector) | Turnitin, iThenticate, Copyleaks (plagiarism) |
+| Vi phạm khi | Nộp nguyên văn AI viết | Copy-paste không cite đúng, hoặc có cite nhưng không paraphrase (vẫn tính đạo văn — phải để trong `"..."` nếu trích nguyên văn) |
+
+**2. Ngưỡng đọc kết quả % AI** (trung bình ≥ 2 công cụ): <20% = tốt; 20–50% = cần
+viết lại đoạn bị highlight; >50% ở bất kỳ section nào = viết lại toàn bộ section đó.
+RBL-5b nhấn mạnh: không có ngưỡng tuyệt đối vì công cụ detect không hoàn hảo — quan
+trọng hơn là tự kiểm tra dấu hiệu văn phong (mục 3 dưới đây).
+
+**3. Dấu hiệu AI cần tránh — nhóm nên tự rà trước khi chạy detector:**
+- *Văn phong (2A):* mở đầu sáo rỗng ("In the rapidly evolving landscape..."), tính từ
+  thổi phồng (groundbreaking/remarkable — thay bằng số: "tăng F1 12pp"), liệt kê máy
+  móc "Firstly...Secondly...Thirdly", kết luận chung chung, hedging quá mức ("It is
+  worth noting that..."), so sánh mơ hồ không cụ thể ("While A has advantages...").
+- *Cấu trúc câu (2B):* bị động lặp lại ("It was found that..." → đổi "Our results
+  show..."), câu quá dài và trau chuốt quá mức (cắt thành 2 câu ngắn), transition
+  cứng nhắc "Furthermore/Moreover/Additionally" mở đầu mọi câu, số mơ hồ ("a
+  significant portion" → "63% of").
+- *Nội dung (2C):* claim không có citation (grep "shown that"/"research suggests"),
+  số liệu không trace được về `full_analysis.ipynb`/`summary_8lib.csv`, related work
+  mô tả sai so với abstract gốc, future work quá chung chung.
+
+**4. Quy trình 4 bước viết lại 1 đoạn bị nghi AI** (RBL-5b Phần 4 — chính là gốc của
+"Bước 1" trong quy trình 5 bước ở mục "Cách viết cụ thể" phía trên):
+1. Đọc và hiểu đoạn đó muốn nói gì → tóm tắt bằng 1 câu đơn giản.
+2. Bỏ hẳn đoạn AI, viết lại từ tóm tắt đó — **không nhìn lại đoạn cũ khi viết**.
+3. Thêm số liệu/paper cụ thể cho mỗi claim còn mơ hồ.
+4. Đọc lại — nghe có tự nhiên như mình nói chuyện không? Nếu không, viết lại thêm lần nữa.
+
+Ví dụ RBL-5b cho thấy rất rõ hiệu quả: câu AI *"It is widely acknowledged that the
+quality of bug reports plays a crucial role..."* được viết lại thành *"Poor-quality bug
+reports account for 40% of reopened issues [Chaparro 2017]. Key deficits include
+missing steps-to-reproduce (S2R)..."* — từ câu chung chung sang câu có số + citation cụ thể.
+
+**5. Quy trình tự-check trước khi nộp** (RBL-5b Phần 3, áp dụng cho từng section paper):
+chạy AI detector theo section (không dán cả bài) → đọc to bằng "tester test" (câu này
+có thật sự do mình nghĩ ra không, hay chỉ là pattern AI?) → kiểm tra citation density
+theo đúng bảng ở mục A.3 → kiểm tra mọi số trong §4/Abstract/§5 khớp nhau và trace được
+về file kết quả gốc. Ghi lại theo đúng template `ai_check_log.md`:
+`| ngày | section | công cụ | % | hành động |`.
+
+### C. Kết nối với quy trình 5 bước đã áp dụng ở `03_method.tex` (mục phía trên)
+
+Quy trình 5 bước "viết → tự review → chạy detector → ghi kết quả + hành động" ở mục
+"Cách viết cụ thể" của Lộc chính là ghép **RBL-5a mục A.3 (kiểm tra số liệu/citation
+theo đúng section)** với **RBL-5b mục B.4–B.5 (viết lại từ trí nhớ + chạy detector +
+log kết quả)**. Điểm cần lưu ý khi 3 người áp dụng cho các mục còn lại:
+- Bước "viết lại từ trí nhớ" (RBL-5b) không được đổi số liệu/tên repo/ngưỡng — chỉ đổi
+  cách diễn đạt (đúng nguyên tắc Bước 2 của quy trình 5 bước, và đúng "Bước 4: Kiểm tra
+  số liệu" của RBL-5b).
+- Mỗi threat/mitigation nêu ở §6 nên lấy từ chính RBL-5a (4 loại Internal/External/
+  Construct/Conclusion) thay vì tự nghĩ ra loại khác.
+- Khi ghi log vào `ai_check_log.md`, dùng đúng cột theo template RBL-5b (`ZeroGPT % |
+  SciSpace % | Đoạn cần viết lại | Đã sửa`) để nhất quán với các section khác đã ghi.
+
+---
+*Nguồn: RBL-5a_Report-and-Present.pdf và RBL-5b_AI-Writing-Check.pdf
+(© L.T.Q.Chi — SWT301 Research-Based Learning, FPT University). Tổng hợp lại để dùng
+nội bộ nhóm, không sao chép/phân phối lại ngoài phạm vi học phần.*

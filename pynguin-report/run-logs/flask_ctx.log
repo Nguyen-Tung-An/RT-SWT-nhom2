@@ -1,0 +1,43 @@
+cmd: F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\Scripts\python.exe -m pynguin --project-path F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\data\raw\flask\src --output-path F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\ms-analysis\results\_pynguin_work\pynguin_out_flask_ctx --module-name flask.ctx --maximum-search-time 243
+rc=2
+
+[stdout]
+[21:45:20] WARNING  Maximum search time is zero, aborting         master.py:105
+           ERROR    Could not restart worker process.             master.py:142
+
+[stderr]
+Experienced timeout from test-case execution
+Process PynguinWorker:
+Traceback (most recent call last):
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\multiprocess\process.py", line 314, in _bootstrap
+    self.run()
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\multiprocess\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\pynguin\master_worker\worker.py", line 101, in worker_main
+    return_code = run_pynguin()
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\pynguin\generator.py", line 144, in run_pynguin
+    return _run()
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\pynguin\generator.py", line 634, in _run
+    _generate_assertions(executor, generation_result, test_cluster)
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\pynguin\generator.py", line 911, in _generate_assertions
+    generator = _setup_mutation_analysis_assertion_generator(executor)
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\pynguin\generator.py", line 885, in _setup_mutation_analysis_assertion_generator
+    module_source_code = inspect.getsource(module)
+  File "C:\Users\qhung\AppData\Local\Programs\Python\Python310\lib\inspect.py", line 1139, in getsource
+    lines, lnum = getsourcelines(object)
+  File "C:\Users\qhung\AppData\Local\Programs\Python\Python310\lib\inspect.py", line 1120, in getsourcelines
+    object = unwrap(object)
+  File "C:\Users\qhung\AppData\Local\Programs\Python\Python310\lib\inspect.py", line 639, in unwrap
+    while _is_wrapper(func):
+  File "C:\Users\qhung\AppData\Local\Programs\Python\Python310\lib\inspect.py", line 630, in _is_wrapper
+    return hasattr(f, '__wrapped__')
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\data\raw\flask\src\flask\ctx.py", line 529, in __getattr__
+    import warnings
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\pynguin\instrumentation\tracer.py", line 1760, in executed_code_object
+    self._tracer.executed_code_object(code_object_id)
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\pynguin\instrumentation\tracer.py", line 1151, in wrapper
+    self.check()
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\pynguin\instrumentation\tracer.py", line 1199, in check
+    raise TracingAbortedException(
+pynguin.utils.exceptions.TracingAbortedException: The current thread shall not be executed anymore, thus I kill it.
+

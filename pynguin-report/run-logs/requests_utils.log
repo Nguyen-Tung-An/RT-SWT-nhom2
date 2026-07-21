@@ -1,0 +1,172 @@
+cmd: F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\Scripts\python.exe -m pynguin --project-path F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\data\raw\requests\src --output-path F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\ms-analysis\results\_pynguin_work\pynguin_out_requests_utils --module-name requests.utils --maximum-search-time 519
+rc=2
+
+[stdout]
+
+[stderr]
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\multiprocess\spawn.py", line 116, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\multiprocess\spawn.py", line 126, in _main
+    self = reduction.pickle.load(from_parent)
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\dill\_dill.py", line 298, in load
+    return Unpickler(file, ignore=ignore, **kwds).load()
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\dill\_dill.py", line 453, in load
+    obj = StockUnpickler.load(self)
+EOFError: Ran out of input
+Pynguin error in worker process: 
+Traceback (most recent call last):
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\pynguin\master_worker\worker.py", line 101, in worker_main
+    return_code = run_pynguin()
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\pynguin\generator.py", line 144, in run_pynguin
+    return _run()
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\pynguin\generator.py", line 614, in _run
+    generation_result = algorithm.generate_tests()
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\pynguin\ga\algorithms\dynamosaalgorithm.py", line 67, in generate_tests
+    self.evolve()
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\pynguin\ga\algorithms\dynamosaalgorithm.py", line 91, in evolve
+    fronts = self._ranking_function.compute_ranking_assignment(
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\pynguin\ga\operators\ranking.py", line 102, in compute_ranking_assignment
+    zero_front: list[C] = self._get_zero_front(solutions, uncovered_goals)
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\pynguin\ga\operators\ranking.py", line 151, in _get_zero_front
+    flag = comparator.compare(solution, best)
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\pynguin\ga\operators\comparator.py", line 123, in compare
+    value_1 = chromosome_1.get_fitness_for(self.__objective)
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\pynguin\ga\chromosome.py", line 127, in get_fitness_for
+    return self.computation_cache.get_fitness_for(fitness_function)
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\pynguin\ga\computations.py", line 597, in get_fitness_for
+    self._check_cache(
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\pynguin\ga\computations.py", line 522, in _check_cache
+    comp(only)
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\pynguin\ga\computations.py", line 533, in _compute_fitness
+    new_value = fitness_func.compute_fitness(self._chromosome)
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\pynguin\ga\coveragegoals.py", line 365, in compute_fitness
+    result = self._run_test_case_chromosome(individual)
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\pynguin\ga\computations.py", line 56, in _run_test_case_chromosome
+    individual.set_last_execution_result(self._executor.execute(individual.test_case))
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\pynguin\testcase\execution.py", line 1277, in execute
+    return next(iter(self.execute_multiple((test_case,))))
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\pynguin\testcase\execution.py", line 1385, in execute_multiple
+    process, receiving_connection = self._setup_subprocess_execution(
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\pynguin\testcase\execution.py", line 1450, in _setup_subprocess_execution
+    process.start()
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\multiprocess\process.py", line 121, in start
+    self._popen = self._Popen(self)
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\multiprocess\context.py", line 224, in _Popen
+    return _default_context.get_context().Process._Popen(process_obj)
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\multiprocess\context.py", line 336, in _Popen
+    return Popen(process_obj)
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\multiprocess\popen_spawn_win32.py", line 93, in __init__
+    reduction.dump(process_obj, to_child)
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\multiprocess\reduction.py", line 63, in dump
+    ForkingPickler(file, protocol, *args, **kwds).dump(obj)
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\dill\_dill.py", line 429, in dump
+    StockPickler.dump(self, obj)
+  File "C:\Users\qhung\AppData\Local\Programs\Python\Python310\lib\pickle.py", line 487, in dump
+    self.save(obj)
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\dill\_dill.py", line 423, in save
+    StockPickler.save(self, obj, save_persistent_id)
+  File "C:\Users\qhung\AppData\Local\Programs\Python\Python310\lib\pickle.py", line 603, in save
+    self.save_reduce(obj=obj, *rv)
+  File "C:\Users\qhung\AppData\Local\Programs\Python\Python310\lib\pickle.py", line 717, in save_reduce
+    save(state)
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\dill\_dill.py", line 423, in save
+    StockPickler.save(self, obj, save_persistent_id)
+  File "C:\Users\qhung\AppData\Local\Programs\Python\Python310\lib\pickle.py", line 560, in save
+    f(self, obj)  # Call unbound method with explicit self
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\dill\_dill.py", line 1266, in save_module_dict
+    StockPickler.save_dict(pickler, obj)
+  File "C:\Users\qhung\AppData\Local\Programs\Python\Python310\lib\pickle.py", line 972, in save_dict
+    self._batch_setitems(obj.items())
+  File "C:\Users\qhung\AppData\Local\Programs\Python\Python310\lib\pickle.py", line 998, in _batch_setitems
+    save(v)
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\dill\_dill.py", line 423, in save
+    StockPickler.save(self, obj, save_persistent_id)
+  File "C:\Users\qhung\AppData\Local\Programs\Python\Python310\lib\pickle.py", line 560, in save
+    f(self, obj)  # Call unbound method with explicit self
+  File "C:\Users\qhung\AppData\Local\Programs\Python\Python310\lib\pickle.py", line 902, in save_tuple
+    save(element)
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\dill\_dill.py", line 423, in save
+    StockPickler.save(self, obj, save_persistent_id)
+  File "C:\Users\qhung\AppData\Local\Programs\Python\Python310\lib\pickle.py", line 603, in save
+    self.save_reduce(obj=obj, *rv)
+  File "C:\Users\qhung\AppData\Local\Programs\Python\Python310\lib\pickle.py", line 717, in save_reduce
+    save(state)
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\dill\_dill.py", line 423, in save
+    StockPickler.save(self, obj, save_persistent_id)
+  File "C:\Users\qhung\AppData\Local\Programs\Python\Python310\lib\pickle.py", line 560, in save
+    f(self, obj)  # Call unbound method with explicit self
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\dill\_dill.py", line 1266, in save_module_dict
+    StockPickler.save_dict(pickler, obj)
+  File "C:\Users\qhung\AppData\Local\Programs\Python\Python310\lib\pickle.py", line 972, in save_dict
+    self._batch_setitems(obj.items())
+  File "C:\Users\qhung\AppData\Local\Programs\Python\Python310\lib\pickle.py", line 998, in _batch_setitems
+    save(v)
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\dill\_dill.py", line 423, in save
+    StockPickler.save(self, obj, save_persistent_id)
+  File "C:\Users\qhung\AppData\Local\Programs\Python\Python310\lib\pickle.py", line 560, in save
+    f(self, obj)  # Call unbound method with explicit self
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\dill\_dill.py", line 1266, in save_module_dict
+    StockPickler.save_dict(pickler, obj)
+  File "C:\Users\qhung\AppData\Local\Programs\Python\Python310\lib\pickle.py", line 972, in save_dict
+    self._batch_setitems(obj.items())
+  File "C:\Users\qhung\AppData\Local\Programs\Python\Python310\lib\pickle.py", line 998, in _batch_setitems
+    save(v)
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\dill\_dill.py", line 423, in save
+    StockPickler.save(self, obj, save_persistent_id)
+  File "C:\Users\qhung\AppData\Local\Programs\Python\Python310\lib\pickle.py", line 603, in save
+    self.save_reduce(obj=obj, *rv)
+  File "C:\Users\qhung\AppData\Local\Programs\Python\Python310\lib\pickle.py", line 717, in save_reduce
+    save(state)
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\dill\_dill.py", line 423, in save
+    StockPickler.save(self, obj, save_persistent_id)
+  File "C:\Users\qhung\AppData\Local\Programs\Python\Python310\lib\pickle.py", line 560, in save
+    f(self, obj)  # Call unbound method with explicit self
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\dill\_dill.py", line 1266, in save_module_dict
+    StockPickler.save_dict(pickler, obj)
+  File "C:\Users\qhung\AppData\Local\Programs\Python\Python310\lib\pickle.py", line 972, in save_dict
+    self._batch_setitems(obj.items())
+  File "C:\Users\qhung\AppData\Local\Programs\Python\Python310\lib\pickle.py", line 998, in _batch_setitems
+    save(v)
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\dill\_dill.py", line 423, in save
+    StockPickler.save(self, obj, save_persistent_id)
+  File "C:\Users\qhung\AppData\Local\Programs\Python\Python310\lib\pickle.py", line 603, in save
+    self.save_reduce(obj=obj, *rv)
+  File "C:\Users\qhung\AppData\Local\Programs\Python\Python310\lib\pickle.py", line 717, in save_reduce
+    save(state)
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\dill\_dill.py", line 423, in save
+    StockPickler.save(self, obj, save_persistent_id)
+  File "C:\Users\qhung\AppData\Local\Programs\Python\Python310\lib\pickle.py", line 560, in save
+    f(self, obj)  # Call unbound method with explicit self
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\dill\_dill.py", line 1266, in save_module_dict
+    StockPickler.save_dict(pickler, obj)
+  File "C:\Users\qhung\AppData\Local\Programs\Python\Python310\lib\pickle.py", line 972, in save_dict
+    self._batch_setitems(obj.items())
+  File "C:\Users\qhung\AppData\Local\Programs\Python\Python310\lib\pickle.py", line 998, in _batch_setitems
+    save(v)
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\dill\_dill.py", line 423, in save
+    StockPickler.save(self, obj, save_persistent_id)
+  File "C:\Users\qhung\AppData\Local\Programs\Python\Python310\lib\pickle.py", line 560, in save
+    f(self, obj)  # Call unbound method with explicit self
+  File "C:\Users\qhung\AppData\Local\Programs\Python\Python310\lib\pickle.py", line 902, in save_tuple
+    save(element)
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\dill\_dill.py", line 423, in save
+    StockPickler.save(self, obj, save_persistent_id)
+  File "C:\Users\qhung\AppData\Local\Programs\Python\Python310\lib\pickle.py", line 560, in save
+    f(self, obj)  # Call unbound method with explicit self
+  File "C:\Users\qhung\AppData\Local\Programs\Python\Python310\lib\pickle.py", line 887, in save_tuple
+    save(element)
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\dill\_dill.py", line 423, in save
+    StockPickler.save(self, obj, save_persistent_id)
+  File "C:\Users\qhung\AppData\Local\Programs\Python\Python310\lib\pickle.py", line 560, in save
+    f(self, obj)  # Call unbound method with explicit self
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\dill\_dill.py", line 1266, in save_module_dict
+    StockPickler.save_dict(pickler, obj)
+  File "C:\Users\qhung\AppData\Local\Programs\Python\Python310\lib\pickle.py", line 971, in save_dict
+    self.memoize(obj)
+  File "C:\Users\qhung\AppData\Local\Programs\Python\Python310\lib\pickle.py", line 511, in memoize
+    self.memo[id(obj)] = idx, obj
+MemoryError
+
+
