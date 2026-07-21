@@ -7,7 +7,7 @@ from openai import OpenAI
 # ================= CẤU HÌNH =================
 API_KEY = os.getenv("OPENAI_API_KEY")
 MODEL = "gpt-4o-mini-2024-07-18" 
-TEST_SOURCE = "gpt4o"
+TEST_SOURCE = os.environ.get("TEST_SOURCE","gpt4o")  # HELDOUT_V1
 MAX_TOKENS = 2048
 TOP_P = 1.0
 TEMPERATURE = 0.0

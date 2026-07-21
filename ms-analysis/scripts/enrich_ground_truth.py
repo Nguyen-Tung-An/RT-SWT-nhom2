@@ -22,8 +22,8 @@ import re
 import sys
 
 REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-SRC_CSV = os.path.join(REPO, "data", "full_ground_truth.csv")
-OUT_CSV = os.path.join(REPO, "data", "full_ground_truth_v2.csv")
+SRC_CSV = os.environ.get("GT_SRC", os.path.join(REPO, "data", "full_ground_truth.csv"))  # GT_SRC_ENV
+OUT_CSV = os.environ.get("GT_OUT", os.path.join(REPO, "data", "full_ground_truth_v2.csv"))
 
 NEW_COLS = ["class_path", "qualname", "is_method", "receiver_kind",
             "module_or_package", "visibility", "param_types", "import_hint", "enrich_note"]

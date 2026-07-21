@@ -25,8 +25,8 @@ import os
 import sys
 
 REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-GT_V2 = os.path.join(REPO, "data", "full_ground_truth_v2.csv")
-OUT = os.path.join(REPO, "data", "full_ground_truth_v3.csv")
+GT_V2 = os.environ.get("CTOR_SRC", os.path.join(REPO, "data", "full_ground_truth_v2.csv"))  # CTOR_SRC_ENV
+OUT = os.environ.get("CTOR_OUT", os.path.join(REPO, "data", "full_ground_truth_v3.csv"))
 
 for p in (os.path.join(REPO, "data", "raw", "flask", "src"),
           os.path.join(REPO, "data", "raw", "requests", "src")):
