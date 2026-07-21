@@ -12,41 +12,63 @@ class ExtendedBufferedReaderTest {
 
     @BeforeEach
     void setUp() {
-        StringReader stringReader = new StringReader("line1\nline2\nline3");
-        instance = new ExtendedBufferedReader(stringReader);
+        // Initialize the ExtendedBufferedReader with a StringReader
+        instance = new ExtendedBufferedReader(new StringReader("Line 1\nLine 2"));
     }
 
     @Test
-    void testGetLineNumberAfterReadingFirstLine() throws Exception {
-        instance.readLine(); // Read first line
-        assertEquals(1, instance.getLineNumber());
+    void testGetLineNumberAtEOL() {
+        // Simulate reading to the end of the first line
+        instance.readLine(); // Read "Line 1"
+        assertEquals(1, instance.getLineNumber()); // Should return 1
     }
 
     @Test
-    void testGetLineNumberAfterReadingSecondLine() throws Exception {
-        instance.readLine(); // Read first line
-        instance.readLine(); // Read second line
-        assertEquals(2, instance.getLineNumber());
+    void testGetLineNumberAtEOF() {
+        // Simulate reading to the end of the input
+        instance.readLine(); // Read "Line 1"
+        instance.readLine(); // Read "Line 2"
+        assertEquals(2, instance.getLineNumber()); // Should return 2
     }
 
     @Test
-    void testGetLineNumberAfterReadingAllLines() throws Exception {
-        instance.readLine(); // Read first line
-        instance.readLine(); // Read second line
-        instance.readLine(); // Read third line
-        assertEquals(3, instance.getLineNumber());
+    void testGetLineNumberAtStart() {
+        // At the start, line number should be 0
+        assertEquals(0, instance.getLineNumber()); // Should return 0
     }
 
     @Test
-    void testGetLineNumberBeforeAnyRead() {
-        assertEquals(0, instance.getLineNumber());
+    void testGetLineNumberAfterReadingLine() {
+        // Read a line and check line number
+        instance.readLine(); // Read "Line 1"
+        assertEquals(1, instance.getLineNumber()); // Should return 1
     }
 
     @Test
-    void testGetLineNumberAfterReset() throws Exception {
-        instance.readLine(); // Read first line
-        instance.readLine(); // Read second line
-        instance.reset(); // Reset the reader
-        assertEquals(0, instance.getLineNumber());
+    void testGetLineNumberWithUndefined() {
+        // Simulate setting lastChar to UNDEFINED
+        instance.setLastChar(ExtendedBufferedReader.UNDEFINED); // Assuming there's a method to set lastChar
+        assertEquals(1, instance.getLineNumber()); // Should return 1
+    }
+
+    @Test
+    void testGetLineNumberWithCR() {
+        // Simulate setting lastChar to CR
+        instance.setLastChar(ExtendedBufferedReader.CR); // Assuming there's a method to set lastChar
+        assertEquals(1, instance.getLineNumber()); // Should return 1
+    }
+
+    @Test
+    void testGetLineNumberWithLF() {
+        // Simulate setting lastChar to LF
+        instance.setLastChar(ExtendedBufferedReader.LF); // Assuming there's a method to set lastChar
+        assertEquals(1, instance.getLineNumber()); // Should return 1
+    }
+
+    @Test
+    void testGetLineNumberWithEOF() {
+        // Simulate setting lastChar to EOF
+        instance.setLastChar(ExtendedBufferedReader.EOF); // Assuming there's a method to set lastChar
+        assertEquals(2, instance.getLineNumber()); // Should return 2
     }
 }

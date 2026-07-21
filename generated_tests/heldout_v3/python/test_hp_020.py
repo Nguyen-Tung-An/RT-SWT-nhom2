@@ -1,55 +1,51 @@
 import pytest
 from requests.models import PreparedRequest
 
-class TestPrepareContentLength:
-    def test_empty_body(self):
+class TestPreparedRequest:
+    def test_prepare_content_length_with_non_empty_body(self):
         req = PreparedRequest()
-        result = req.prepare_content_length('')
-        assert result == 0
+        req.method = "POST"
+        req.headers = {}
+        body = "test body"
+        req.prepare_content_length(body)
+        assert req.headers["Content-Length"] == "9"
 
-    def test_none_body(self):
+    def test_prepare_content_length_with_empty_body(self):
         req = PreparedRequest()
-        result = req.prepare_content_length(None)
-        assert result == 0
+        req.method = "POST"
+        req.headers = {}
+        body = ""
+        req.prepare_content_length(body)
+        assert "Content-Length" not in req.headers
 
-    def test_string_body(self):
+    def test_prepare_content_length_with_none_body_for_post(self):
         req = PreparedRequest()
-        result = req.prepare_content_length('Hello, World!')
-        assert result == 13
+        req.method = "POST"
+        req.headers = {}
+        body = None
+        req.prepare_content_length(body)
+        assert req.headers["Content-Length"] == "0"
 
-    def test_bytes_body(self):
+    def test_prepare_content_length_with_none_body_for_get(self):
         req = PreparedRequest()
-        result = req.prepare_content_length(b'Hello, World!')
-        assert result == 13
+        req.method = "GET"
+        req.headers = {}
+        body = None
+        req.prepare_content_length(body)
+        assert "Content-Length" not in req.headers
 
-    def test_large_string_body(self):
+    def test_prepare_content_length_with_none_body_for_head(self):
         req = PreparedRequest()
-        large_body = 'A' * 10000
-        result = req.prepare_content_length(large_body)
-        assert result == 10000
+        req.method = "HEAD"
+        req.headers = {}
+        body = None
+        req.prepare_content_length(body)
+        assert "Content-Length" not in req.headers
 
-    def test_large_bytes_body(self):
+    def test_prepare_content_length_with_non_empty_body_for_head(self):
         req = PreparedRequest()
-        large_body = b'A' * 10000
-        result = req.prepare_content_length(large_body)
-        assert result == 10000
-
-    def test_integer_body(self):
-        req = PreparedRequest()
-        with pytest.raises(TypeError):
-            req.prepare_content_length(123)
-
-    def test_float_body(self):
-        req = PreparedRequest()
-        with pytest.raises(TypeError):
-            req.prepare_content_length(123.45)
-
-    def test_dict_body(self):
-        req = PreparedRequest()
-        with pytest.raises(TypeError):
-            req.prepare_content_length({'key': 'value'})
-
-    def test_list_body(self):
-        req = PreparedRequest()
-        with pytest.raises(TypeError):
-            req.prepare_content_length(['item1', 'item2'])
+        req.method = "HEAD"
+        req.headers = {}
+        body = "test body"
+        req.prepare_content_length(body)
+        assert req.headers["Content-Length"] == "9"

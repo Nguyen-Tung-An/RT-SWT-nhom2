@@ -1,55 +1,69 @@
 import org.apache.commons.collections4.list.TreeList;
+import org.apache.commons.collections4.list.TreeList.AVLNode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
-class TreeListAVLNodeBalanceTest {
-
-    private TreeList<Integer> treeList;
-    private TreeList.AVLNode<Integer> avlNode;
+class AVLNodeBalanceTest {
+    private AVLNode<Integer> node;
 
     @BeforeEach
     void setUp() {
-        treeList = new TreeList<>();
-        avlNode = treeList.new AVLNode<>(10); // Create a new AVLNode with a value
+        // Create a balanced AVL tree node for testing
+        node = new TreeList.AVLNode<>(null, null, null);
     }
 
     @Test
-    void testBalanceWhenNodeIsBalanced() {
-        avlNode.left = treeList.new AVLNode<>(5);
-        avlNode.right = treeList.new AVLNode<>(15);
-        int balanceFactor = avlNode.balance();
-        assertEquals(0, balanceFactor); // Balanced case
+    void testBalanceWhenHeightIsZero() {
+        // Test case where heightRightMinusLeft() returns 0
+        node.setLeft(new TreeList.AVLNode<>(null, null, null));
+        node.setRight(new TreeList.AVLNode<>(null, null, null));
+        assertSame(node, node.balance());
     }
 
     @Test
-    void testBalanceWhenNodeIsLeftHeavy() {
-        avlNode.left = treeList.new AVLNode<>(5);
-        avlNode.left.left = treeList.new AVLNode<>(3);
-        int balanceFactor = avlNode.balance();
-        assertEquals(2, balanceFactor); // Left heavy case
+    void testBalanceWhenHeightIsOne() {
+        // Test case where heightRightMinusLeft() returns 1
+        node.setLeft(new TreeList.AVLNode<>(null, null, null));
+        node.setRight(new TreeList.AVLNode<>(new TreeList.AVLNode<>(null, null, null), null, null));
+        assertSame(node, node.balance());
     }
 
     @Test
-    void testBalanceWhenNodeIsRightHeavy() {
-        avlNode.right = treeList.new AVLNode<>(15);
-        avlNode.right.right = treeList.new AVLNode<>(20);
-        int balanceFactor = avlNode.balance();
-        assertEquals(-2, balanceFactor); // Right heavy case
+    void testBalanceWhenHeightIsMinusOne() {
+        // Test case where heightRightMinusLeft() returns -1
+        node.setLeft(new TreeList.AVLNode<>(new TreeList.AVLNode<>(null, null, null), null, null));
+        node.setRight(new TreeList.AVLNode<>(null, null, null));
+        assertSame(node, node.balance());
     }
 
     @Test
-    void testBalanceWhenNodeHasOnlyLeftChild() {
-        avlNode.left = treeList.new AVLNode<>(5);
-        int balanceFactor = avlNode.balance();
-        assertEquals(1, balanceFactor); // Only left child
+    void testBalanceWhenHeightIsMinusTwoAndLeftChildNeedsRotation() {
+        // Test case where heightRightMinusLeft() returns -2 and left child needs rotation
+        AVLNode<Integer> leftChild = new TreeList.AVLNode<>(new TreeList.AVLNode<>(null, null, null), null, null);
+        node.setLeft(leftChild);
+        node.setRight(new TreeList.AVLNode<>(null, null, null));
+        assertNotSame(node, node.balance());
     }
 
     @Test
-    void testBalanceWhenNodeHasOnlyRightChild() {
-        avlNode.right = treeList.new AVLNode<>(15);
-        int balanceFactor = avlNode.balance();
-        assertEquals(-1, balanceFactor); // Only right child
+    void testBalanceWhenHeightIsTwoAndRightChildNeedsRotation() {
+        // Test case where heightRightMinusLeft() returns 2 and right child needs rotation
+        AVLNode<Integer> rightChild = new TreeList.AVLNode<>(null, new TreeList.AVLNode<>(null, null, null), null);
+        node.setLeft(new TreeList.AVLNode<>(null, null, null));
+        node.setRight(rightChild);
+        assertNotSame(node, node.balance());
+    }
+
+    @Test
+    void testBalanceThrowsExceptionForInconsistentTree() {
+        // Test case where heightRightMinusLeft() returns an unexpected value
+        assertThrows(IllegalStateException.class, () -> {
+            // Simulate an inconsistent state
+            node.setLeft(new TreeList.AVLNode<>(null, null, null));
+            node.setRight(new TreeList.AVLNode<>(null, null, null));
+            node.balance(); // This should throw an exception
+        });
     }
 }

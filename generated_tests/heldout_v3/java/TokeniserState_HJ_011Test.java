@@ -1,64 +1,66 @@
 import org.jsoup.parser.CharacterReader;
 import org.jsoup.parser.Tokeniser;
 import org.jsoup.parser.TokeniserState;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class TokeniserStateTest {
+    private TokeniserState tokeniserState;
+    private Tokeniser tokeniser;
+    private CharacterReader characterReader;
 
-    @Test
-    void testReadWithValidInput() {
-        Tokeniser tokeniser = new Tokeniser();
-        CharacterReader reader = new CharacterReader("valid input");
-        TokeniserState state = new TokeniserState();
-        
-        // Assuming the method returns a specific value or modifies the state
-        Object result = state.read(tokeniser, reader);
-        assertNotNull(result);
-        // Add more assertions based on expected behavior
+    @BeforeEach
+    void setUp() {
+        tokeniserState = new TokeniserState();
+        tokeniser = new Tokeniser();
     }
 
     @Test
-    void testReadWithEmptyInput() {
-        Tokeniser tokeniser = new Tokeniser();
-        CharacterReader reader = new CharacterReader("");
-        TokeniserState state = new TokeniserState();
-        
-        Object result = state.read(tokeniser, reader);
-        assertNotNull(result);
-        // Add more assertions based on expected behavior
+    void testReadWhitespace() {
+        characterReader = new CharacterReader(" ");
+        tokeniserState.read(tokeniser, characterReader);
+        assertEquals(TokeniserState.BeforeDoctypePublicIdentifier, tokeniser.getCurrentState());
     }
 
     @Test
-    void testReadWithSpecialCharacters() {
-        Tokeniser tokeniser = new Tokeniser();
-        CharacterReader reader = new CharacterReader("!@#$%^&*()");
-        TokeniserState state = new TokeniserState();
-        
-        Object result = state.read(tokeniser, reader);
-        assertNotNull(result);
-        // Add more assertions based on expected behavior
+    void testReadDoubleQuote() {
+        characterReader = new CharacterReader("\"");
+        tokeniserState.read(tokeniser, characterReader);
+        assertEquals(TokeniserState.DoctypePublicIdentifier_doubleQuoted, tokeniser.getCurrentState());
+        assertEquals("", tokeniser.getPublicId());
     }
 
     @Test
-    void testReadWithWhitespace() {
-        Tokeniser tokeniser = new Tokeniser();
-        CharacterReader reader = new CharacterReader("   ");
-        TokeniserState state = new TokeniserState();
-        
-        Object result = state.read(tokeniser, reader);
-        assertNotNull(result);
-        // Add more assertions based on expected behavior
+    void testReadSingleQuote() {
+        characterReader = new CharacterReader("'");
+        tokeniserState.read(tokeniser, characterReader);
+        assertEquals(TokeniserState.DoctypePublicIdentifier_singleQuoted, tokeniser.getCurrentState());
+        assertEquals("", tokeniser.getPublicId());
     }
 
     @Test
-    void testReadWithNullReader() {
-        Tokeniser tokeniser = new Tokeniser();
-        TokeniserState state = new TokeniserState();
-        
-        Exception exception = assertThrows(NullPointerException.class, () -> {
-            state.read(tokeniser, null);
-        });
-        assertNotNull(exception);
+    void testReadGreaterThan() {
+        characterReader = new CharacterReader(">");
+        tokeniserState.read(tokeniser, characterReader);
+        assertEquals(TokeniserState.Data, tokeniser.getCurrentState());
+        assertEquals(true, tokeniser.doctypePending.forceQuirks);
+    }
+
+    @Test
+    void testReadEOF() {
+        characterReader = new CharacterReader(CharacterReader.EOF);
+        tokeniserState.read(tokeniser, characterReader);
+        assertEquals(TokeniserState.Data, tokeniser.getCurrentState());
+        assertEquals(true, tokeniser.doctypePending.forceQuirks);
+    }
+
+    @Test
+    void testReadInvalidCharacter() {
+        characterReader = new CharacterReader("x");
+        tokeniserState.read(tokeniser, characterReader);
+        assertEquals(TokeniserState.BogusDoctype, tokeniser.getCurrentState());
+        assertEquals(true, tokeniser.doctypePending.forceQuirks);
     }
 }

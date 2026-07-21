@@ -1,43 +1,54 @@
 import pytest
 from requests.cookies import cookiejar_from_dict
 from http.cookies import SimpleCookie
+from requests.cookies import RequestsCookieJar
 
-def test_cookiejar_from_dict_empty_dict():
-    cookiejar = cookiejar_from_dict({}, None, False)
-    assert len(cookiejar) == 0
+def test_cookiejar_from_dict_with_none_dict():
+    result = cookiejar_from_dict(None)
+    assert isinstance(result, RequestsCookieJar)
+    assert len(result) == 0
+
+def test_cookiejar_from_dict_with_empty_dict():
+    result = cookiejar_from_dict({})
+    assert isinstance(result, RequestsCookieJar)
+    assert len(result) == 0
+
+def test_cookiejar_from_dict_with_single_cookie():
+    result = cookiejar_from_dict({'cookie1': 'value1'})
+    assert isinstance(result, RequestsCookieJar)
+    assert len(result) == 1
+    assert result.get('cookie1').value == 'value1'
+
+def test_cookiejar_from_dict_with_multiple_cookies():
+    result = cookiejar_from_dict({'cookie1': 'value1', 'cookie2': 'value2'})
+    assert isinstance(result, RequestsCookieJar)
+    assert len(result) == 2
+    assert result.get('cookie1').value == 'value1'
+    assert result.get('cookie2').value == 'value2'
+
+def test_cookiejar_from_dict_with_overwrite_true():
+    jar = RequestsCookieJar()
+    jar.set_cookie(create_cookie('cookie1', 'old_value'))
+    result = cookiejar_from_dict({'cookie1': 'new_value'}, jar, overwrite=True)
+    assert len(result) == 1
+    assert result.get('cookie1').value == 'new_value'
+
+def test_cookiejar_from_dict_with_overwrite_false():
+    jar = RequestsCookieJar()
+    jar.set_cookie(create_cookie('cookie1', 'old_value'))
+    result = cookiejar_from_dict({'cookie1': 'new_value'}, jar, overwrite=False)
+    assert len(result) == 1
+    assert result.get('cookie1').value == 'old_value'
 
 def test_cookiejar_from_dict_with_none_cookiejar():
-    cookie_dict = {'session_id': 'abc123'}
-    cookiejar = cookiejar_from_dict(cookie_dict, None, False)
-    assert len(cookiejar) == 1
-    assert cookiejar.get('session_id').value == 'abc123'
+    result = cookiejar_from_dict({'cookie1': 'value1'}, None)
+    assert isinstance(result, RequestsCookieJar)
+    assert len(result) == 1
+    assert result.get('cookie1').value == 'value1'
 
-def test_cookiejar_from_dict_with_existing_cookiejar():
-    cookie_dict = {'session_id': 'abc123'}
-    existing_cookiejar = SimpleCookie()
-    existing_cookiejar['session_id'] = 'xyz789'
-    cookiejar = cookiejar_from_dict(cookie_dict, existing_cookiejar, False)
-    assert len(cookiejar) == 1
-    assert cookiejar.get('session_id').value == 'abc123'
-
-def test_cookiejar_from_dict_with_overwrite():
-    cookie_dict = {'session_id': 'abc123'}
-    existing_cookiejar = SimpleCookie()
-    existing_cookiejar['session_id'] = 'xyz789'
-    cookiejar = cookiejar_from_dict(cookie_dict, existing_cookiejar, True)
-    assert len(cookiejar) == 1
-    assert cookiejar.get('session_id').value == 'abc123'
-
-def test_cookiejar_from_dict_with_invalid_cookie_dict():
-    with pytest.raises(TypeError):
-        cookiejar_from_dict(None, None, False)
-
-def test_cookiejar_from_dict_with_non_dict_cookie_dict():
-    with pytest.raises(TypeError):
-        cookiejar_from_dict([], None, False)
-
-def test_cookiejar_from_dict_with_empty_string_key():
-    cookie_dict = {'': 'empty_key'}
-    cookiejar = cookiejar_from_dict(cookie_dict, None, False)
-    assert len(cookiejar) == 1
-    assert cookiejar.get('').value == 'empty_key'
+def test_cookiejar_from_dict_with_none_cookiejar_and_overwrite():
+    jar = RequestsCookieJar()
+    jar.set_cookie(create_cookie('cookie1', 'old_value'))
+    result = cookiejar_from_dict({'cookie1': 'new_value'}, None, overwrite=True)
+    assert len(result) == 1
+    assert result.get('cookie1').value == 'new_value'

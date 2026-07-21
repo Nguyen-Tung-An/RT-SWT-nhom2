@@ -2,19 +2,17 @@ import pytest
 from requests.models import Request
 
 class TestRequestInit:
-    
     def test_init_with_default_values(self):
         req = Request()
         assert req.method is None
         assert req.url is None
-        assert req.headers is None
-        assert req.files is None
-        assert req.data is None
-        assert req.params is None
+        assert req.headers == {}
+        assert req.files == []
+        assert req.data == []
+        assert req.json is None
+        assert req.params == {}
         assert req.auth is None
         assert req.cookies is None
-        assert req.hooks is None
-        assert req.json is None
 
     def test_init_with_method_and_url(self):
         req = Request(method='GET', url='http://example.com')
@@ -27,7 +25,7 @@ class TestRequestInit:
         assert req.headers == headers
 
     def test_init_with_files(self):
-        files = {'file': ('filename.txt', b'content')}
+        files = [('file', ('filename', b'content'))]
         req = Request(files=files)
         assert req.files == files
 
@@ -54,19 +52,19 @@ class TestRequestInit:
     def test_init_with_hooks(self):
         hooks = {'response': lambda r, *args, **kwargs: r}
         req = Request(hooks=hooks)
-        assert req.hooks == hooks
+        assert 'response' in req.hooks
 
     def test_init_with_json(self):
         json_data = {'key': 'value'}
         req = Request(json=json_data)
         assert req.json == json_data
 
-    def test_init_with_all_parameters(self):
+    def test_init_with_all_params(self):
         req = Request(
             method='POST',
             url='http://example.com',
             headers={'Content-Type': 'application/json'},
-            files={'file': ('filename.txt', b'content')},
+            files=[('file', ('filename', b'content'))],
             data={'key': 'value'},
             params={'param1': 'value1'},
             auth=('user', 'pass'),
@@ -76,11 +74,11 @@ class TestRequestInit:
         )
         assert req.method == 'POST'
         assert req.url == 'http://example.com'
-        assert req.headers == {'Content-Type': 'application/json'}
-        assert req.files == {'file': ('filename.txt', b'content')}
+        assert req.headers['Content-Type'] == 'application/json'
+        assert req.files[0] == ('file', ('filename', b'content'))
         assert req.data == {'key': 'value'}
         assert req.params == {'param1': 'value1'}
         assert req.auth == ('user', 'pass')
         assert req.cookies == {'session_id': 'abc123'}
-        assert req.hooks == {'response': lambda r, *args, **kwargs: r}
+        assert 'response' in req.hooks
         assert req.json == {'key': 'value'}

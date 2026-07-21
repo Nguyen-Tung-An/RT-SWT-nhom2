@@ -1,36 +1,49 @@
 import org.apache.commons.cli.OptionValidator;
 import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class OptionValidatorTest {
 
     @Test
-    void testValidateWithValidOption() {
-        String result = OptionValidator.validate("validOption");
-        assertEquals("ExpectedResultForValidOption", result);
-    }
-
-    @Test
-    void testValidateWithEmptyString() {
-        String result = OptionValidator.validate("");
-        assertEquals("ExpectedResultForEmptyString", result);
-    }
-
-    @Test
-    void testValidateWithNull() {
+    void testValidate_NullOption() {
         String result = OptionValidator.validate(null);
-        assertEquals("ExpectedResultForNull", result);
+        assertNull(result);
     }
 
     @Test
-    void testValidateWithInvalidOption() {
-        String result = OptionValidator.validate("invalidOption");
-        assertEquals("ExpectedResultForInvalidOption", result);
+    void testValidate_EmptyOption() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            OptionValidator.validate("");
+        });
+        assertEquals("Empty option name.", exception.getMessage());
     }
 
     @Test
-    void testValidateWithWhitespace() {
-        String result = OptionValidator.validate("   ");
-        assertEquals("ExpectedResultForWhitespace", result);
+    void testValidate_InvalidFirstCharacter() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            OptionValidator.validate("1invalid");
+        });
+        assertEquals("Illegal option name '1'.", exception.getMessage());
+    }
+
+    @Test
+    void testValidate_ValidSingleCharacterOption() {
+        String result = OptionValidator.validate("a");
+        assertEquals("a", result);
+    }
+
+    @Test
+    void testValidate_ValidMultiCharacterOption() {
+        String result = OptionValidator.validate("validOption");
+        assertEquals("validOption", result);
+    }
+
+    @Test
+    void testValidate_InvalidCharacterInMultiCharacterOption() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            OptionValidator.validate("valid@Option");
+        });
+        assertEquals("The option 'valid@Option' contains an illegal character : '@'.", exception.getMessage());
     }
 }

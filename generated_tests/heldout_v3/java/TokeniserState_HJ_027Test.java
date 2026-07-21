@@ -2,63 +2,53 @@ import org.jsoup.parser.CharacterReader;
 import org.jsoup.parser.Tokeniser;
 import org.jsoup.parser.TokeniserState;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class TokeniserStateTest {
 
     @Test
-    void testReadWithValidInput() {
+    void testReadWithDash() {
         Tokeniser tokeniser = new Tokeniser();
-        CharacterReader reader = new CharacterReader("valid input");
+        CharacterReader reader = new CharacterReader("-abc");
         TokeniserState state = new TokeniserState();
-        
-        // Assuming the method returns a specific value or modifies the state
-        Object result = state.read(tokeniser, reader);
-        assertNotNull(result);
-        // Add specific assertions based on expected behavior
+        state.read(tokeniser, reader);
+        assertEquals('-', tokeniser.getLastEmittedChar());
     }
 
     @Test
-    void testReadWithEmptyInput() {
+    void testReadWithLessThan() {
+        Tokeniser tokeniser = new Tokeniser();
+        CharacterReader reader = new CharacterReader("<abc");
+        TokeniserState state = new TokeniserState();
+        state.read(tokeniser, reader);
+        assertEquals('<', tokeniser.getLastEmittedChar());
+    }
+
+    @Test
+    void testReadWithNullChar() {
+        Tokeniser tokeniser = new Tokeniser();
+        CharacterReader reader = new CharacterReader("\0abc");
+        TokeniserState state = new TokeniserState();
+        state.read(tokeniser, reader);
+        assertEquals('\uFFFD', tokeniser.getLastEmittedChar()); // Assuming replacementChar is '\uFFFD'
+    }
+
+    @Test
+    void testReadWithEOF() {
         Tokeniser tokeniser = new Tokeniser();
         CharacterReader reader = new CharacterReader("");
         TokeniserState state = new TokeniserState();
-        
-        Object result = state.read(tokeniser, reader);
-        assertNotNull(result);
-        // Add specific assertions based on expected behavior
+        state.read(tokeniser, reader);
+        assertEquals(TokeniserState.Data, tokeniser.getCurrentState()); // Assuming Data is the expected state after EOF
     }
 
     @Test
-    void testReadWithSpecialCharacters() {
+    void testReadWithDefaultCase() {
         Tokeniser tokeniser = new Tokeniser();
-        CharacterReader reader = new CharacterReader("!@#$%^&*()");
+        CharacterReader reader = new CharacterReader("abc-def<ghi");
         TokeniserState state = new TokeniserState();
-        
-        Object result = state.read(tokeniser, reader);
-        assertNotNull(result);
-        // Add specific assertions based on expected behavior
-    }
-
-    @Test
-    void testReadWithNullReader() {
-        Tokeniser tokeniser = new Tokeniser();
-        TokeniserState state = new TokeniserState();
-        
-        Exception exception = assertThrows(NullPointerException.class, () -> {
-            state.read(tokeniser, null);
-        });
-        assertEquals("CharacterReader cannot be null", exception.getMessage());
-    }
-
-    @Test
-    void testReadWithWhitespaceInput() {
-        Tokeniser tokeniser = new Tokeniser();
-        CharacterReader reader = new CharacterReader("   ");
-        TokeniserState state = new TokeniserState();
-        
-        Object result = state.read(tokeniser, reader);
-        assertNotNull(result);
-        // Add specific assertions based on expected behavior
+        state.read(tokeniser, reader);
+        assertEquals("abc", tokeniser.getLastEmittedData()); // Assuming consumeToAny emits "abc"
     }
 }

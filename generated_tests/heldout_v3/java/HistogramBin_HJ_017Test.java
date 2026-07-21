@@ -5,42 +5,49 @@ import static org.junit.jupiter.api.Assertions.*;
 class HistogramBinTest {
 
     @Test
-    void testEqualsWithSameObject() {
-        HistogramBin bin = new HistogramBin(1.0, 2.0);
-        assertTrue(bin.equals(bin), "An object should equal itself");
+    void testEquals_NullObject() {
+        HistogramBin bin1 = new HistogramBin(0.0, 1.0, 5);
+        assertFalse(bin1.equals(null));
     }
 
     @Test
-    void testEqualsWithNull() {
-        HistogramBin bin = new HistogramBin(1.0, 2.0);
-        assertFalse(bin.equals(null), "An object should not equal null");
+    void testEquals_SameInstance() {
+        HistogramBin bin1 = new HistogramBin(0.0, 1.0, 5);
+        assertTrue(bin1.equals(bin1));
     }
 
     @Test
-    void testEqualsWithDifferentClass() {
-        HistogramBin bin = new HistogramBin(1.0, 2.0);
-        String differentClassObject = "Not a HistogramBin";
-        assertFalse(bin.equals(differentClassObject), "An object should not equal an instance of a different class");
+    void testEquals_DifferentClass() {
+        HistogramBin bin1 = new HistogramBin(0.0, 1.0, 5);
+        String notABin = "Not a HistogramBin";
+        assertFalse(bin1.equals(notABin));
     }
 
     @Test
-    void testEqualsWithDifferentValues() {
-        HistogramBin bin1 = new HistogramBin(1.0, 2.0);
-        HistogramBin bin2 = new HistogramBin(2.0, 3.0);
-        assertFalse(bin1.equals(bin2), "Different HistogramBins should not be equal");
+    void testEquals_SameValues() {
+        HistogramBin bin1 = new HistogramBin(0.0, 1.0, 5);
+        HistogramBin bin2 = new HistogramBin(0.0, 1.0, 5);
+        assertTrue(bin1.equals(bin2));
     }
 
     @Test
-    void testEqualsWithSameValues() {
-        HistogramBin bin1 = new HistogramBin(1.0, 2.0);
-        HistogramBin bin2 = new HistogramBin(1.0, 2.0);
-        assertTrue(bin1.equals(bin2), "HistogramBins with the same values should be equal");
+    void testEquals_DifferentStartBoundary() {
+        HistogramBin bin1 = new HistogramBin(0.0, 1.0, 5);
+        HistogramBin bin2 = new HistogramBin(0.1, 1.0, 5);
+        assertFalse(bin1.equals(bin2));
     }
 
     @Test
-    void testEqualsWithDifferentBinCounts() {
-        HistogramBin bin1 = new HistogramBin(1.0, 2.0, 5);
-        HistogramBin bin2 = new HistogramBin(1.0, 2.0, 10);
-        assertFalse(bin1.equals(bin2), "HistogramBins with the same range but different counts should not be equal");
+    void testEquals_DifferentEndBoundary() {
+        HistogramBin bin1 = new HistogramBin(0.0, 1.0, 5);
+        HistogramBin bin2 = new HistogramBin(0.0, 1.1, 5);
+        assertFalse(bin1.equals(bin2));
+    }
+
+    @Test
+    void testEquals_DifferentCount() {
+        HistogramBin bin1 = new HistogramBin(0.0, 1.0, 5);
+        HistogramBin bin2 = new HistogramBin(0.0, 1.0, 10);
+        assertFalse(bin1.equals(bin2));
     }
 }

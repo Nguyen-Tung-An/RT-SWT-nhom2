@@ -3,47 +3,42 @@ import flask
 from flask.wrappers import Request
 
 class TestLoadFormData:
-    @pytest.fixture
-    def request(self):
-        environ = {
+    def setup_method(self):
+        self.app = flask.Flask('test_app')
+        self.environ = {
             "REQUEST_METHOD": "GET",
             "PATH_INFO": "/",
             "SERVER_NAME": "localhost",
             "SERVER_PORT": "80",
             "wsgi.url_scheme": "http"
         }
-        return Request(environ)
+        self.request = Request(environ=self.environ)
 
-    def test_load_form_data_empty(self, request):
-        app = flask.Flask('test_app')
-        with app.test_request_context('/'):
-            result = request._load_form_data()
-            assert result == {}
+    def test_load_form_data_no_files(self):
+        with self.app.test_request_context('/'):
+            self.request._load_form_data()
+            # Assert that no form data is loaded (observable state)
+            assert not self.request.form
 
-    def test_load_form_data_with_data(self, request):
-        app = flask.Flask('test_app')
-        with app.test_request_context('/'):
-            request.environ['wsgi.input'] = flask.Request(environ={"REQUEST_METHOD": "POST", "wsgi.input": b'key=value'}).environ['wsgi.input']
-            result = request._load_form_data()
-            assert result == {'key': ['value']}
+    def test_load_form_data_with_files(self):
+        with self.app.test_request_context('/'):
+            self.request.files = {'file': 'test_file'}
+            self.request._load_form_data()
+            # Assert that files are present
+            assert 'file' in self.request.files
 
-    def test_load_form_data_with_multiple_values(self, request):
-        app = flask.Flask('test_app')
-        with app.test_request_context('/'):
-            request.environ['wsgi.input'] = flask.Request(environ={"REQUEST_METHOD": "POST", "wsgi.input": b'key=value1&key=value2'}).environ['wsgi.input']
-            result = request._load_form_data()
-            assert result == {'key': ['value1', 'value2']}
+    def test_load_form_data_debug_mode(self):
+        self.app.debug = True
+        with self.app.test_request_context('/'):
+            self.request.mimetype = "application/json"
+            self.request.files = {}
+            with pytest.raises(Exception, match="KeyError"):
+                self.request._load_form_data()
 
-    def test_load_form_data_with_no_input(self, request):
-        app = flask.Flask('test_app')
-        with app.test_request_context('/'):
-            request.environ['wsgi.input'] = flask.Request(environ={"REQUEST_METHOD": "POST", "wsgi.input": b''}).environ['wsgi.input']
-            result = request._load_form_data()
-            assert result == {}
-
-    def test_load_form_data_invalid_method(self, request):
-        app = flask.Flask('test_app')
-        with app.test_request_context('/'):
-            request.environ['REQUEST_METHOD'] = 'INVALID'
-            result = request._load_form_data()
-            assert result == {}
+    def test_load_form_data_multipart(self):
+        with self.app.test_request_context('/'):
+            self.request.mimetype = "multipart/form-data"
+            self.request.files = {}
+            self.request._load_form_data()
+            # Assert that no error is raised and form data is still empty
+            assert not self.request.form

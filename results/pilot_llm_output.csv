@@ -7822,3 +7822,3302 @@ def test_get_source_explained_all_loaders_fail(app):
     with pytest.raises(TemplateNotFound):
         _get_source_explained(app.jinja_env, ""template_name"")
 ```"
+HJ-001,java,data-research/java_functions/HJ-001.java,"```java
+package org.jfree.chart.plot;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class FastScatterPlotTest {
+
+    @Test
+    void testCalculateXDataRange_NullData() {
+        assertNull(new FastScatterPlot().calculateXDataRange(null));
+    }
+
+    @Test
+    void testCalculateXDataRange_EmptyData() {
+        float[][] data = {{}};
+        assertNull(new FastScatterPlot().calculateXDataRange(data));
+    }
+
+    @Test
+    void testCalculateXDataRange_SingleValue() {
+        float[][] data = {{5.0f}};
+        Range result = new FastScatterPlot().calculateXDataRange(data);
+        assertNotNull(result);
+        assertEquals(5.0f, result.getLowerBound());
+        assertEquals(5.0f, result.getUpperBound());
+    }
+
+    @Test
+    void testCalculateXDataRange_MultipleValues() {
+        float[][] data = {{1.0f, 2.0f, 3.0f}};
+        Range result = new FastScatterPlot().calculateXDataRange(data);
+        assertNotNull(result);
+        assertEquals(1.0f, result.getLowerBound());
+        assertEquals(3.0f, result.getUpperBound());
+    }
+
+    @Test
+    void testCalculateXDataRange_NegativeValues() {
+        float[][] data = {{-3.0f, -1.0f, -2.0f}};
+        Range result = new FastScatterPlot().calculateXDataRange(data);
+        assertNotNull(result);
+        assertEquals(-3.0f, result.getLowerBound());
+        assertEquals(-1.0f, result.getUpperBound());
+    }
+
+    @Test
+    void testCalculateXDataRange_MixedValues() {
+        float[][] data = {{-1.0f, 0.0f, 1.0f}};
+        Range result = new FastScatterPlot().calculateXDataRange(data);
+        assertNotNull(result);
+        assertEquals(-1.0f, result.getLowerBound());
+        assertEquals(1.0f, result.getUpperBound());
+    }
+}
+```"
+HJ-002,java,data-research/java_functions/HJ-002.java,"```java
+package org.apache.commons.math4.legacy.linear;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class MatrixUtilsTest {
+
+    @Test
+    void testCheckSubMatrixIndex_NullSelectedRows() {
+        AnyMatrix matrix = new AnyMatrix(3, 3);
+        assertThrows(NullArgumentException.class, () -> {
+            MatrixUtils.checkSubMatrixIndex(matrix, null, new int[]{0, 1});
+        });
+    }
+
+    @Test
+    void testCheckSubMatrixIndex_NullSelectedColumns() {
+        AnyMatrix matrix = new AnyMatrix(3, 3);
+        assertThrows(NullArgumentException.class, () -> {
+            MatrixUtils.checkSubMatrixIndex(matrix, new int[]{0, 1}, null);
+        });
+    }
+
+    @Test
+    void testCheckSubMatrixIndex_EmptySelectedRows() {
+        AnyMatrix matrix = new AnyMatrix(3, 3);
+        assertThrows(NoDataException.class, () -> {
+            MatrixUtils.checkSubMatrixIndex(matrix, new int[]{}, new int[]{0, 1});
+        });
+    }
+
+    @Test
+    void testCheckSubMatrixIndex_EmptySelectedColumns() {
+        AnyMatrix matrix = new AnyMatrix(3, 3);
+        assertThrows(NoDataException.class, () -> {
+            MatrixUtils.checkSubMatrixIndex(matrix, new int[]{0, 1}, new int[]{});
+        });
+    }
+
+    @Test
+    void testCheckSubMatrixIndex_ValidIndices() {
+        AnyMatrix matrix = new AnyMatrix(3, 3);
+        assertDoesNotThrow(() -> {
+            MatrixUtils.checkSubMatrixIndex(matrix, new int[]{0, 1}, new int[]{0, 1});
+        });
+    }
+
+    @Test
+    void testCheckSubMatrixIndex_InvalidRowIndex() {
+        AnyMatrix matrix = new AnyMatrix(3, 3);
+        assertThrows(OutOfRangeException.class, () -> {
+            MatrixUtils.checkSubMatrixIndex(matrix, new int[]{3}, new int[]{0, 1});
+        });
+    }
+
+    @Test
+    void testCheckSubMatrixIndex_InvalidColumnIndex() {
+        AnyMatrix matrix = new AnyMatrix(3, 3);
+        assertThrows(OutOfRangeException.class, () -> {
+            MatrixUtils.checkSubMatrixIndex(matrix, new int[]{0, 1}, new int[]{3});
+        });
+    }
+}
+```"
+HJ-003,java,data-research/java_functions/HJ-003.java,"```java
+package org.jsoup.parser;
+
+import org.junit.jupiter.api.Test;
+import static org.mockito.Mockito.*;
+
+public class HtmlTreeBuilderStateTest {
+
+    @Test
+    void testProcess_WhitespaceToken() {
+        Token whitespaceToken = mock(Token.class);
+        when(whitespaceToken.isComment()).thenReturn(false);
+        when(whitespaceToken.isDoctype()).thenReturn(false);
+        when(isWhitespace(whitespaceToken)).thenReturn(true);
+
+        HtmlTreeBuilder tb = mock(HtmlTreeBuilder.class);
+        HtmlTreeBuilderState state = new HtmlTreeBuilderState();
+
+        boolean result = state.process(whitespaceToken, tb);
+        assertTrue(result);
+        verify(tb, never()).insertCommentNode(any());
+        verify(tb, never()).getDocument().appendChild(any());
+    }
+
+    @Test
+    void testProcess_CommentToken() {
+        Token commentToken = mock(Token.class);
+        when(commentToken.isComment()).thenReturn(true);
+        when(commentToken.isDoctype()).thenReturn(false);
+        when(isWhitespace(commentToken)).thenReturn(false);
+
+        HtmlTreeBuilder tb = mock(HtmlTreeBuilder.class);
+        HtmlTreeBuilderState state = new HtmlTreeBuilderState();
+
+        state.process(commentToken, tb);
+        verify(tb).insertCommentNode(commentToken.asComment());
+    }
+
+    @Test
+    void testProcess_DoctypeToken() {
+        Token doctypeToken = mock(Token.class);
+        when(doctypeToken.isComment()).thenReturn(false);
+        when(doctypeToken.isDoctype()).thenReturn(true);
+        when(doctypeToken.asDoctype()).thenReturn(mock(Token.Doctype.class));
+        when(isWhitespace(doctypeToken)).thenReturn(false);
+
+        HtmlTreeBuilder tb = mock(HtmlTreeBuilder.class);
+        HtmlTreeBuilderState state = new HtmlTreeBuilderState();
+
+        state.process(doctypeToken, tb);
+        verify(tb).getDocument().appendChild(any(DocumentType.class));
+        verify(tb).transition(HtmlTreeBuilderState.BeforeHtml);
+    }
+
+    @Test
+    void testProcess_OtherToken() {
+        Token otherToken = mock(Token.class);
+        when(otherToken.isComment()).thenReturn(false);
+        when(otherToken.isDoctype()).thenReturn(false);
+        when(isWhitespace(otherToken)).thenReturn(false);
+
+        HtmlTreeBuilder tb = mock(HtmlTreeBuilder.class);
+        HtmlTreeBuilderState state = new HtmlTreeBuilderState();
+
+        state.process(otherToken, tb);
+        verify(tb).getDocument().quirksMode(Document.QuirksMode.quirks);
+        verify(tb).transition(HtmlTreeBuilderState.BeforeHtml);
+        verify(tb).process(otherToken);
+    }
+}
+```"
+HJ-004,java,data-research/java_functions/HJ-004.java,"```java
+package org.joda.time.format;
+
+import org.joda.time.DateTimeField;
+import org.joda.time.DateTimeFieldType;
+import org.joda.time.format.DateTimeParserBucket;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+class FractionTest {
+
+    @Test
+    void testParseInto_ValidDigits() {
+        DateTimeParserBucket bucket = new DateTimeParserBucket(0, null);
+        Fraction fraction = new Fraction(DateTimeFieldType.millisOfSecond(), 3);
+        int result = fraction.parseInto(bucket, ""123"", 0);
+        assertEquals(3, result);
+        assertEquals(123, bucket.getSavedField(DateTimeFieldType.millisOfSecond()));
+    }
+
+    @Test
+    void testParseInto_EmptyString() {
+        DateTimeParserBucket bucket = new DateTimeParserBucket(0, null);
+        Fraction fraction = new Fraction(DateTimeFieldType.millisOfSecond(), 3);
+        int result = fraction.parseInto(bucket, """", 0);
+        assertEquals(~0, result);
+    }
+
+    @Test
+    void testParseInto_NonDigitCharacter() {
+        DateTimeParserBucket bucket = new DateTimeParserBucket(0, null);
+        Fraction fraction = new Fraction(DateTimeFieldType.millisOfSecond(), 3);
+        int result = fraction.parseInto(bucket, ""12a34"", 0);
+        assertEquals(2, result);
+        assertEquals(120, bucket.getSavedField(DateTimeFieldType.millisOfSecond()));
+    }
+
+    @Test
+    void testParseInto_ExceedsIntegerMaxValue() {
+        DateTimeParserBucket bucket = new DateTimeParserBucket(0, null);
+        Fraction fraction = new Fraction(DateTimeFieldType.millisOfSecond(), 3);
+        int result = fraction.parseInto(bucket, ""9999999999"", 0);
+        assertEquals(~0, result);
+    }
+
+    @Test
+    void testParseInto_LeadingZeros() {
+        DateTimeParserBucket bucket = new DateTimeParserBucket(0, null);
+        Fraction fraction = new Fraction(DateTimeFieldType.millisOfSecond(), 3);
+        int result = fraction.parseInto(bucket, ""000123"", 0);
+        assertEquals(6, result);
+        assertEquals(123, bucket.getSavedField(DateTimeFieldType.millisOfSecond()));
+    }
+}
+```"
+HJ-005,java,data-research/java_functions/HJ-005.java,"```java
+package com.google.gson.metrics;
+
+import com.google.gson.stream.JsonReader;
+import org.junit.jupiter.api.Test;
+
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+public class CollectionsDeserializationBenchmarkTest {
+
+    private final String json = ""[{\""longValue\"":1,\""intValue\"":2,\""booleanValue\"":true,\""stringValue\"":\""test\""},"" +
+            ""{\""longValue\"":3,\""intValue\"":4,\""booleanValue\"":false,\""stringValue\"":\""example\""}]"";
+
+    @Test
+    void testTimeCollectionsStreaming_ValidInput() throws IOException {
+        CollectionsDeserializationBenchmark benchmark = new CollectionsDeserializationBenchmark();
+        benchmark.timeCollectionsStreaming(1);
+        // Additional assertions can be added to verify the state after execution if needed
+    }
+
+    @Test
+    void testTimeCollectionsStreaming_ZeroReps() throws IOException {
+        CollectionsDeserializationBenchmark benchmark = new CollectionsDeserializationBenchmark();
+        benchmark.timeCollectionsStreaming(0);
+        // No exception should be thrown
+    }
+
+    @Test
+    void testTimeCollectionsStreaming_EmptyArray() throws IOException {
+        CollectionsDeserializationBenchmark benchmark = new CollectionsDeserializationBenchmark();
+        benchmark.timeCollectionsStreaming(1);
+        // Test with an empty JSON array
+        benchmark.json = ""[]"";
+        benchmark.timeCollectionsStreaming(1);
+        // No exception should be thrown
+    }
+
+    @Test
+    void testTimeCollectionsStreaming_InvalidJson() {
+        CollectionsDeserializationBenchmark benchmark = new CollectionsDeserializationBenchmark();
+        benchmark.json = ""[{\""longValue\"":1,\""intValue\"":2,\""booleanValue\"":true,\""stringValue\"":\""test\""},"" +
+                ""{\""unexpectedName\"":3}]""; // Invalid name to trigger IOException
+        assertThrows(IOException.class, () -> benchmark.timeCollectionsStreaming(1));
+    }
+}
+```"
+HJ-006,java,data-research/java_functions/HJ-006.java,"```java
+package org.apache.commons.cli.help;
+
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.OptionGroup;
+import org.apache.commons.cli.OptionBuilder;
+import org.junit.jupiter.api.Test;
+
+import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+public class AbstractHelpFormatterTest {
+
+    @Test
+    void testToSyntaxOptions_EmptyGroup() {
+        OptionGroup group = new OptionGroup();
+        assertEquals("""", new AbstractHelpFormatter().toSyntaxOptions(group));
+    }
+
+    @Test
+    void testToSyntaxOptions_RequiredOptions() {
+        Option option1 = OptionBuilder.withArgName(""arg1"").hasArg().create(""o1"");
+        Option option2 = OptionBuilder.withArgName(""arg2"").hasArg().create(""o2"");
+        OptionGroup group = new OptionGroup();
+        group.addOption(option1);
+        group.addOption(option2);
+        group.setRequired(true);
+        
+        String expected = ""o1 [arg1] o2 [arg2]"";
+        assertEquals(expected, new AbstractHelpFormatter().toSyntaxOptions(group));
+    }
+
+    @Test
+    void testToSyntaxOptions_OptionalOptions() {
+        Option option1 = OptionBuilder.withArgName(""arg1"").hasArg().create(""o1"");
+        Option option2 = OptionBuilder.withArgName(""arg2"").hasArg().create(""o2"");
+        OptionGroup group = new OptionGroup();
+        group.addOption(option1);
+        group.addOption(option2);
+        group.setRequired(false);
+        
+        String expected = ""o1 [arg1] o2 [arg2]"";
+        assertEquals(expected, new AbstractHelpFormatter().toSyntaxOptions(group));
+    }
+
+    @Test
+    void testToSyntaxOptions_SingleOption() {
+        Option option = OptionBuilder.withArgName(""arg"").hasArg().create(""o1"");
+        OptionGroup group = new OptionGroup();
+        group.addOption(option);
+        group.setRequired(true);
+        
+        String expected = ""o1 [arg]"";
+        assertEquals(expected, new AbstractHelpFormatter().toSyntaxOptions(group));
+    }
+}
+```"
+HJ-007,java,data-research/java_functions/HJ-007.java,"```java
+package org.apache.commons.collections4.trie;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+class TrieEntryTest {
+
+    @Test
+    void testToString_RootEntry() {
+        TrieEntry<String, String> rootEntry = new TrieEntry<>(null, null, -1);
+        assertEquals(""RootEntry(key=null [0], value=null, parent=null, left=null, right=null, predecessor=null)"", rootEntry.toString());
+    }
+
+    @Test
+    void testToString_EntryWithParent() {
+        TrieEntry<String, String> parentEntry = new TrieEntry<>(null, null, 0);
+        TrieEntry<String, String> childEntry = new TrieEntry<>(parentEntry, ""childKey"", 1);
+        assertEquals(""Entry(key=childKey [1], value=null, parent=ROOT, left=null, right=null, predecessor=null)"", childEntry.toString());
+    }
+
+    @Test
+    void testToString_EntryWithLeftAndRight() {
+        TrieEntry<String, String> leftEntry = new TrieEntry<>(null, ""leftKey"", 0);
+        TrieEntry<String, String> rightEntry = new TrieEntry<>(null, ""rightKey"", 1);
+        TrieEntry<String, String> parentEntry = new TrieEntry<>(null, ""parentKey"", 2);
+        parentEntry.left = leftEntry;
+        parentEntry.right = rightEntry;
+        assertEquals(""Entry(key=parentKey [2], value=null, parent=null, left=leftKey [0], right=rightKey [1], predecessor=null)"", parentEntry.toString());
+    }
+
+    @Test
+    void testToString_EntryWithPredecessor() {
+        TrieEntry<String, String> predecessorEntry = new TrieEntry<>(null, ""predecessorKey"", 0);
+        TrieEntry<String, String> entry = new TrieEntry<>(null, ""currentKey"", 1);
+        entry.predecessor = predecessorEntry;
+        assertEquals(""Entry(key=currentKey [1], value=null, parent=null, left=null, right=null, predecessor=predecessorKey [0])"", entry.toString());
+    }
+
+    @Test
+    void testToString_EntryWithNulls() {
+        TrieEntry<String, String> entry = new TrieEntry<>(null, ""key"", 1);
+        assertEquals(""Entry(key=key [1], value=null, parent=null, left=null, right=null, predecessor=null)"", entry.toString());
+    }
+}
+```"
+HJ-008,java,data-research/java_functions/HJ-008.java,"```java
+package org.apache.commons.csv;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class HeadersTest {
+    private final Headers headers = new Headers();
+
+    @Test
+    void testHandleNull_InputEqualsNullString_StrictQuoteMode() {
+        headers.reusableToken.isQuoted = true;
+        headers.format.setNullString(""NULL"");
+        assertNull(headers.handleNull(""NULL""));
+    }
+
+    @Test
+    void testHandleNull_InputEqualsNullString_NonStrictQuoteMode() {
+        headers.reusableToken.isQuoted = true;
+        headers.format.setNullString(""NULL"");
+        headers.setStrictQuoteMode(false);
+        assertEquals(""NULL"", headers.handleNull(""NULL""));
+    }
+
+    @Test
+    void testHandleNull_InputEqualsNullString_NonQuoted() {
+        headers.reusableToken.isQuoted = false;
+        headers.format.setNullString(""NULL"");
+        assertNull(headers.handleNull(""NULL""));
+    }
+
+    @Test
+    void testHandleNull_InputIsEmpty_NullStringIsNull_StrictQuoteMode() {
+        headers.reusableToken.isQuoted = false;
+        headers.format.setNullString(null);
+        headers.setStrictQuoteMode(true);
+        assertNull(headers.handleNull(""""));
+    }
+
+    @Test
+    void testHandleNull_InputIsEmpty_NullStringIsNull_NonStrictQuoteMode() {
+        headers.reusableToken.isQuoted = false;
+        headers.format.setNullString(null);
+        headers.setStrictQuoteMode(false);
+        assertEquals("""", headers.handleNull(""""));
+    }
+
+    @Test
+    void testHandleNull_InputIsNotNullString() {
+        headers.reusableToken.isQuoted = false;
+        headers.format.setNullString(""NULL"");
+        assertEquals(""SomeValue"", headers.handleNull(""SomeValue""));
+    }
+}
+```"
+HJ-009,java,data-research/java_functions/HJ-009.java,"```java
+package org.jfree.chart.renderer.xy;
+
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+
+import java.awt.Graphics2D;
+import java.awt.geom.Rectangle2D;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+public class XYLineAndShapeRendererTest {
+
+    @Test
+    void testDrawPrimaryLineAsPath_LastPointGood() {
+        XYItemRendererState state = Mockito.mock(XYItemRendererState.class);
+        Graphics2D g2 = Mockito.mock(Graphics2D.class);
+        XYPlot plot = Mockito.mock(XYPlot.class);
+        XYDataset dataset = Mockito.mock(XYDataset.class);
+        ValueAxis domainAxis = Mockito.mock(ValueAxis.class);
+        ValueAxis rangeAxis = Mockito.mock(ValueAxis.class);
+        Rectangle2D dataArea = new Rectangle2D.Double(0, 0, 100, 100);
+
+        Mockito.when(dataset.getXValue(0, 0)).thenReturn(1.0);
+        Mockito.when(dataset.getYValue(0, 0)).thenReturn(1.0);
+        Mockito.when(domainAxis.valueToJava2D(1.0, dataArea, RectangleEdge.BOTTOM)).thenReturn(50.0);
+        Mockito.when(rangeAxis.valueToJava2D(1.0, dataArea, RectangleEdge.LEFT)).thenReturn(50.0);
+        Mockito.when(state.isLastPointGood()).thenReturn(true);
+        Mockito.when(state.getLastItemIndex()).thenReturn(0);
+
+        XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
+        renderer.drawPrimaryLineAsPath(state, g2, plot, dataset, 0, 0, 0, domainAxis, rangeAxis, dataArea);
+
+        Mockito.verify(state).setLastPointGood(true);
+        Mockito.verify(g2).draw(Mockito.any());
+    }
+
+    @Test
+    void testDrawPrimaryLineAsPath_LastPointNotGood() {
+        XYItemRendererState state = Mockito.mock(XYItemRendererState.class);
+        Graphics2D g2 = Mockito.mock(Graphics2D.class);
+        XYPlot plot = Mockito.mock(XYPlot.class);
+        XYDataset dataset = Mockito.mock(XYDataset.class);
+        ValueAxis domainAxis = Mockito.mock(ValueAxis.class);
+        ValueAxis rangeAxis = Mockito.mock(ValueAxis.class);
+        Rectangle2D dataArea = new Rectangle2D.Double(0, 0, 100, 100);
+
+        Mockito.when(dataset.getXValue(0, 0)).thenReturn(1.0);
+        Mockito.when(dataset.getYValue(0, 0)).thenReturn(1.0);
+        Mockito.when(domainAxis.valueToJava2D(1.0, dataArea, RectangleEdge.BOTTOM)).thenReturn(Double.NaN);
+        Mockito.when(rangeAxis.valueToJava2D(1.0, dataArea, RectangleEdge.LEFT)).thenReturn(Double.NaN);
+        Mockito.when(state.isLastPointGood()).thenReturn(false);
+        Mockito.when(state.getLastItemIndex()).thenReturn(0);
+
+        XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
+        renderer.drawPrimaryLineAsPath(state, g2, plot, dataset, 0, 0, 0, domainAxis, rangeAxis, dataArea);
+
+        Mockito.verify(state).setLastPointGood(false);
+        Mockito.verify(g2, Mockito.never()).draw(Mockito.any());
+    }
+
+    @Test
+    void testDrawPrimaryLineAsPath_HorizontalOrientation() {
+        XYItemRendererState state = Mockito.mock(XYItemRendererState.class);
+        Graphics2D g2 = Mockito.mock(Graphics2D.class);
+        XYPlot plot = Mockito.mock(XYPlot.class);
+        XYDataset dataset = Mockito.mock(XYDataset.class);
+        ValueAxis domainAxis = Mockito.mock(ValueAxis.class);
+        ValueAxis rangeAxis = Mockito.mock(ValueAxis.class);
+        Rectangle2D dataArea = new Rectangle2D.Double(0, 0, 100, 100);
+
+        Mockito.when(dataset.getXValue(0, 0)).thenReturn(1.0);
+        Mockito.when(dataset.getYValue(0, 0)).thenReturn(1.0);
+        Mockito.when(domainAxis.valueToJava2D(1.0, dataArea, RectangleEdge.BOTTOM)).thenReturn(50.0);
+        Mockito.when(rangeAxis.valueToJava2D(1.0, dataArea, RectangleEdge.LEFT)).thenReturn(50.0);
+        Mockito.when(state.isLastPointGood()).thenReturn(true);
+        Mockito.when(state.getLastItemIndex()).thenReturn(0);
+        Mockito.when(plot.getOrientation()).thenReturn(PlotOrientation.HORIZONTAL);
+
+        XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
+        renderer.drawPrimaryLineAsPath(state, g2, plot, dataset, 0, 0, 0, domainAxis, rangeAxis, dataArea);
+
+        Mockito.verify(state).setLastPointGood(true);
+        Mockito.verify(g2).draw(Mockito.any());
+    }
+}
+```"
+HJ-010,java,data-research/java_functions/HJ-010.java,"```java
+package org.apache.commons.math4.legacy.core.dfp;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class DfpTest {
+
+    @Test
+    void testDfp_ZeroPositive() {
+        DfpField field = new DfpField(10); // Assuming a constructor exists
+        Dfp dfp = new Dfp(field, 0.0);
+        assertEquals(1, dfp.sign);
+        assertEquals(0, dfp.exp);
+        assertEquals(Dfp.FINITE, dfp.nans);
+    }
+
+    @Test
+    void testDfp_ZeroNegative() {
+        DfpField field = new DfpField(10); // Assuming a constructor exists
+        Dfp dfp = new Dfp(field, -0.0);
+        assertEquals(-1, dfp.sign);
+        assertEquals(0, dfp.exp);
+        assertEquals(Dfp.FINITE, dfp.nans);
+    }
+
+    @Test
+    void testDfp_Subnormal() {
+        DfpField field = new DfpField(10); // Assuming a constructor exists
+        Dfp dfp = new Dfp(field, 1e-300);
+        assertEquals(1, dfp.sign);
+        assertTrue(dfp.exp < 0); // Expecting a negative exponent for subnormal
+        assertEquals(Dfp.FINITE, dfp.nans);
+    }
+
+    @Test
+    void testDfp_InfinityPositive() {
+        DfpField field = new DfpField(10); // Assuming a constructor exists
+        Dfp dfp = new Dfp(field, Double.POSITIVE_INFINITY);
+        assertEquals(1, dfp.sign);
+        assertEquals(0, dfp.exp);
+        assertEquals(Dfp.INFINITE, dfp.nans);
+    }
+
+    @Test
+    void testDfp_InfinityNegative() {
+        DfpField field = new DfpField(10); // Assuming a constructor exists
+        Dfp dfp = new Dfp(field, Double.NEGATIVE_INFINITY);
+        assertEquals(-1, dfp.sign);
+        assertEquals(0, dfp.exp);
+        assertEquals(Dfp.INFINITE, dfp.nans);
+    }
+
+    @Test
+    void testDfp_NaN() {
+        DfpField field = new DfpField(10); // Assuming a constructor exists
+        Dfp dfp = new Dfp(field, Double.NaN);
+        assertEquals(1, dfp.sign);
+        assertEquals(0, dfp.exp);
+        assertEquals(Dfp.QNAN, dfp.nans);
+    }
+
+    @Test
+    void testDfp_Normal() {
+        DfpField field = new DfpField(10); // Assuming a constructor exists
+        Dfp dfp = new Dfp(field, 123.456);
+        assertEquals(1, dfp.sign);
+        assertTrue(dfp.exp > 0); // Expecting a positive exponent for normal
+        assertEquals(Dfp.FINITE, dfp.nans);
+    }
+}
+```"
+HJ-011,java,data-research/java_functions/HJ-011.java,"```java
+package org.jsoup.parser;
+
+import org.junit.jupiter.api.Test;
+import static org.mockito.Mockito.*;
+
+class TokeniserStateTest {
+
+    @Test
+    void testRead_TabCharacter() {
+        Tokeniser tokeniser = mock(Tokeniser.class);
+        CharacterReader reader = mock(CharacterReader.class);
+        when(reader.consume()).thenReturn('\t');
+        
+        TokeniserState state = new TokeniserState();
+        state.read(tokeniser, reader);
+        
+        verify(tokeniser).transition(TokeniserState.BeforeDoctypePublicIdentifier);
+    }
+
+    @Test
+    void testRead_NewLineCharacter() {
+        Tokeniser tokeniser = mock(Tokeniser.class);
+        CharacterReader reader = mock(CharacterReader.class);
+        when(reader.consume()).thenReturn('\n');
+        
+        TokeniserState state = new TokeniserState();
+        state.read(tokeniser, reader);
+        
+        verify(tokeniser).transition(TokeniserState.BeforeDoctypePublicIdentifier);
+    }
+
+    @Test
+    void testRead_CarriageReturnCharacter() {
+        Tokeniser tokeniser = mock(Tokeniser.class);
+        CharacterReader reader = mock(CharacterReader.class);
+        when(reader.consume()).thenReturn('\r');
+        
+        TokeniserState state = new TokeniserState();
+        state.read(tokeniser, reader);
+        
+        verify(tokeniser).transition(TokeniserState.BeforeDoctypePublicIdentifier);
+    }
+
+    @Test
+    void testRead_FormFeedCharacter() {
+        Tokeniser tokeniser = mock(Tokeniser.class);
+        CharacterReader reader = mock(CharacterReader.class);
+        when(reader.consume()).thenReturn('\f');
+        
+        TokeniserState state = new TokeniserState();
+        state.read(tokeniser, reader);
+        
+        verify(tokeniser).transition(TokeniserState.BeforeDoctypePublicIdentifier);
+    }
+
+    @Test
+    void testRead_SpaceCharacter() {
+        Tokeniser tokeniser = mock(Tokeniser.class);
+        CharacterReader reader = mock(CharacterReader.class);
+        when(reader.consume()).thenReturn(' ');
+        
+        TokeniserState state = new TokeniserState();
+        state.read(tokeniser, reader);
+        
+        verify(tokeniser).transition(TokeniserState.BeforeDoctypePublicIdentifier);
+    }
+
+    @Test
+    void testRead_DoubleQuoteCharacter() {
+        Tokeniser tokeniser = mock(Tokeniser.class);
+        CharacterReader reader = mock(CharacterReader.class);
+        when(reader.consume()).thenReturn('""');
+        
+        TokeniserState state = new TokeniserState();
+        state.read(tokeniser, reader);
+        
+        verify(tokeniser).error(state);
+        verify(tokeniser).transition(TokeniserState.DoctypePublicIdentifier_doubleQuoted);
+    }
+
+    @Test
+    void testRead_SingleQuoteCharacter() {
+        Tokeniser tokeniser = mock(Tokeniser.class);
+        CharacterReader reader = mock(CharacterReader.class);
+        when(reader.consume()).thenReturn('\'');
+        
+        TokeniserState state = new TokeniserState();
+        state.read(tokeniser, reader);
+        
+        verify(tokeniser).error(state);
+        verify(tokeniser).transition(TokeniserState.DoctypePublicIdentifier_singleQuoted);
+    }
+
+    @Test
+    void testRead_GreaterThanCharacter() {
+        Tokeniser tokeniser = mock(Tokeniser.class);
+        CharacterReader reader = mock(CharacterReader.class);
+        when(reader.consume()).thenReturn('>');
+        
+        TokeniserState state = new TokeniserState();
+        state.read(tokeniser, reader);
+        
+        verify(tokeniser).error(state);
+        verify(tokeniser).doctypePending.forceQuirks = true;
+        verify(tokeniser).emitDoctypePending();
+        verify(tokeniser).transition(TokeniserState.Data);
+    }
+
+    @Test
+    void testRead_EndOfFile() {
+        Tokeniser tokeniser = mock(Tokeniser.class);
+        CharacterReader reader = mock(CharacterReader.class);
+        when(reader.consume()).thenReturn(Tokeniser.eof);
+        
+        TokeniserState state = new TokeniserState();
+        state.read(tokeniser, reader);
+        
+        verify(tokeniser).eofError(state);
+        verify(tokeniser).doctypePending.forceQuirks = true;
+        verify(tokeniser).emitDoctypePending();
+        verify(tokeniser).transition(TokeniserState.Data);
+    }
+
+    @Test
+    void testRead_DefaultCase() {
+        Tokeniser tokeniser = mock(Tokeniser.class);
+        CharacterReader reader = mock(CharacterReader.class);
+        when(reader.consume()).thenReturn('a');
+        
+        TokeniserState state = new TokeniserState();
+        state.read(tokeniser, reader);
+        
+        verify(tokeniser).error(state);
+        verify(tokeniser).doctypePending.forceQuirks = true;
+        verify(tokeniser).transition(TokeniserState.BogusDoctype);
+    }
+}
+```"
+HJ-012,java,data-research/java_functions/HJ-012.java,"```java
+package org.joda.time.chrono;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class GJChronologyTest {
+
+    private final GJChronology gjChronology = new GJChronology();
+
+    @Test
+    void testGetDateTimeMillis_ValidDate() {
+        long result = gjChronology.getDateTimeMillis(2021, 5, 15, 10, 30, 0, 0);
+        assertTrue(result > 0);
+    }
+
+    @Test
+    void testGetDateTimeMillis_LeapYear() {
+        long result = gjChronology.getDateTimeMillis(2020, 2, 29, 12, 0, 0, 0);
+        assertTrue(result > 0);
+    }
+
+    @Test
+    void testGetDateTimeMillis_NonLeapYear_February29() {
+        assertThrows(IllegalFieldValueException.class, () -> {
+            gjChronology.getDateTimeMillis(2021, 2, 29, 12, 0, 0, 0);
+        });
+    }
+
+    @Test
+    void testGetDateTimeMillis_CutoverGap() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            gjChronology.getDateTimeMillis(1582, 10, 5, 12, 0, 0, 0);
+        });
+    }
+
+    @Test
+    void testGetDateTimeMillis_JulianDate() {
+        long result = gjChronology.getDateTimeMillis(1581, 10, 5, 12, 0, 0, 0);
+        assertTrue(result > 0);
+    }
+}
+```"
+HJ-013,java,data-research/java_functions/HJ-013.java,"```java
+package com.google.gson.internal.bind;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
+import com.google.gson.JsonPrimitive;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+public class MapTypeAdapterFactoryTest {
+
+    private final MapTypeAdapterFactory adapter = new MapTypeAdapterFactory();
+
+    @Test
+    void testKeyToString_Number() {
+        JsonElement keyElement = new JsonPrimitive(123);
+        assertEquals(""123"", adapter.keyToString(keyElement));
+    }
+
+    @Test
+    void testKeyToString_BooleanTrue() {
+        JsonElement keyElement = new JsonPrimitive(true);
+        assertEquals(""true"", adapter.keyToString(keyElement));
+    }
+
+    @Test
+    void testKeyToString_BooleanFalse() {
+        JsonElement keyElement = new JsonPrimitive(false);
+        assertEquals(""false"", adapter.keyToString(keyElement));
+    }
+
+    @Test
+    void testKeyToString_String() {
+        JsonElement keyElement = new JsonPrimitive(""test"");
+        assertEquals(""test"", adapter.keyToString(keyElement));
+    }
+
+    @Test
+    void testKeyToString_Null() {
+        JsonElement keyElement = JsonNull.INSTANCE;
+        assertEquals(""null"", adapter.keyToString(keyElement));
+    }
+
+    @Test
+    void testKeyToString_InvalidPrimitive() {
+        JsonElement keyElement = new JsonPrimitive(new Object());
+        assertThrows(AssertionError.class, () -> adapter.keyToString(keyElement));
+    }
+
+    @Test
+    void testKeyToString_NotJsonPrimitive() {
+        JsonElement keyElement = new JsonElement() {
+            @Override
+            public boolean isJsonPrimitive() {
+                return false;
+            }
+
+            @Override
+            public boolean isJsonNull() {
+                return false;
+            }
+        };
+        assertThrows(AssertionError.class, () -> adapter.keyToString(keyElement));
+    }
+}
+```"
+HJ-014,java,data-research/java_functions/HJ-014.java,"```java
+package org.apache.commons.cli.help;
+
+import org.junit.jupiter.api.Test;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
+
+import static org.mockito.Mockito.*;
+
+public class TextHelpAppendableTest {
+
+    @Test
+    void testAppendList_Ordered_NonEmpty() throws IOException {
+        TextHelpAppendable textHelpAppendable = mock(TextHelpAppendable.class);
+        doNothing().when(textHelpAppendable).appendList(true, Arrays.asList(""Item 1"", ""Item 2""));
+        
+        textHelpAppendable.appendList(true, Arrays.asList(""Item 1"", ""Item 2""));
+        
+        verify(textHelpAppendable).appendList(true, Arrays.asList(""Item 1"", ""Item 2""));
+    }
+
+    @Test
+    void testAppendList_Unordered_NonEmpty() throws IOException {
+        TextHelpAppendable textHelpAppendable = mock(TextHelpAppendable.class);
+        doNothing().when(textHelpAppendable).appendList(false, Arrays.asList(""Item A"", ""Item B""));
+        
+        textHelpAppendable.appendList(false, Arrays.asList(""Item A"", ""Item B""));
+        
+        verify(textHelpAppendable).appendList(false, Arrays.asList(""Item A"", ""Item B""));
+    }
+
+    @Test
+    void testAppendList_Empty() throws IOException {
+        TextHelpAppendable textHelpAppendable = mock(TextHelpAppendable.class);
+        doNothing().when(textHelpAppendable).appendList(true, Collections.emptyList());
+        
+        textHelpAppendable.appendList(true, Collections.emptyList());
+        
+        verify(textHelpAppendable).appendList(true, Collections.emptyList());
+    }
+
+    @Test
+    void testAppendList_Null() throws IOException {
+        TextHelpAppendable textHelpAppendable = mock(TextHelpAppendable.class);
+        doNothing().when(textHelpAppendable).appendList(true, null);
+        
+        textHelpAppendable.appendList(true, null);
+        
+        verify(textHelpAppendable).appendList(true, null);
+    }
+}
+```"
+HJ-015,java,data-research/java_functions/HJ-015.java,"```java
+package org.apache.commons.collections4.list;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+class TreeListTest {
+
+    private class TestAVLNode<E> extends AVLNode<E> {
+        TestAVLNode<E> left;
+        TestAVLNode<E> right;
+
+        TestAVLNode(E value) {
+            super(value);
+        }
+
+        @Override
+        public AVLNode<E> getLeft() {
+            return left;
+        }
+
+        @Override
+        public AVLNode<E> getRight() {
+            return right;
+        }
+
+        @Override
+        public void setLeft(AVLNode<E> left, Object obj) {
+            this.left = (TestAVLNode<E>) left;
+        }
+
+        @Override
+        public void setRight(AVLNode<E> right, Object obj) {
+            this.right = (TestAVLNode<E>) right;
+        }
+
+        @Override
+        public int heightRightMinusLeft() {
+            return (right == null ? 0 : right.height()) - (left == null ? 0 : left.height());
+        }
+
+        @Override
+        public AVLNode<E> rotateLeft() {
+            // Implement rotation logic
+            return this; // Placeholder
+        }
+
+        @Override
+        public AVLNode<E> rotateRight() {
+            // Implement rotation logic
+            return this; // Placeholder
+        }
+    }
+
+    @Test
+    void testBalance_Case1() {
+        TestAVLNode<Integer> node = new TestAVLNode<>(1);
+        node.left = new TestAVLNode<>(0);
+        node.right = new TestAVLNode<>(2);
+        assertSame(node, node.balance());
+    }
+
+    @Test
+    void testBalance_Case0() {
+        TestAVLNode<Integer> node = new TestAVLNode<>(1);
+        node.left = new TestAVLNode<>(0);
+        node.right = new TestAVLNode<>(2);
+        assertSame(node, node.balance());
+    }
+
+    @Test
+    void testBalance_CaseMinus1() {
+        TestAVLNode<Integer> node = new TestAVLNode<>(1);
+        node.left = new TestAVLNode<>(0);
+        node.right = new TestAVLNode<>(2);
+        assertSame(node, node.balance());
+    }
+
+    @Test
+    void testBalance_CaseMinus2_LeftHeavy() {
+        TestAVLNode<Integer> node = new TestAVLNode<>(1);
+        node.left = new TestAVLNode<>(0);
+        node.left.left = new TestAVLNode<>(-1);
+        assertNotNull(node.balance());
+    }
+
+    @Test
+    void testBalance_Case2_RightHeavy() {
+        TestAVLNode<Integer> node = new TestAVLNode<>(1);
+        node.right = new TestAVLNode<>(2);
+        node.right.right = new TestAVLNode<>(3);
+        assertNotNull(node.balance());
+    }
+
+    @Test
+    void testBalance_IllegalStateException() {
+        TestAVLNode<Integer> node = new TestAVLNode<>(1);
+        node.left = new TestAVLNode<>(0);
+        node.right = new TestAVLNode<>(2);
+        node.left.left = new TestAVLNode<>(-1);
+        node.right.right = new TestAVLNode<>(3);
+        assertThrows(IllegalStateException.class, node::balance);
+    }
+}
+```"
+HJ-016,java,data-research/java_functions/HJ-016.java,"```java
+package org.apache.commons.csv;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+class ExtendedBufferedReaderTest {
+
+    private class TestExtendedBufferedReader extends ExtendedBufferedReader {
+        long lastChar;
+
+        TestExtendedBufferedReader(long lastChar, long lineNumber) {
+            this.lastChar = lastChar;
+            this.lineNumber = lineNumber;
+        }
+    }
+
+    @Test
+    void testGetLineNumber_AtEOL() {
+        TestExtendedBufferedReader reader = new TestExtendedBufferedReader(CR, 5);
+        assertEquals(5, reader.getLineNumber());
+    }
+
+    @Test
+    void testGetLineNumber_AtEOF() {
+        TestExtendedBufferedReader reader = new TestExtendedBufferedReader(EOF, 10);
+        assertEquals(10, reader.getLineNumber());
+    }
+
+    @Test
+    void testGetLineNumber_AtUndefined() {
+        TestExtendedBufferedReader reader = new TestExtendedBufferedReader(UNDEFINED, 3);
+        assertEquals(3, reader.getLineNumber());
+    }
+
+    @Test
+    void testGetLineNumber_AtLF() {
+        TestExtendedBufferedReader reader = new TestExtendedBufferedReader(LF, 7);
+        assertEquals(7, reader.getLineNumber());
+    }
+
+    @Test
+    void testGetLineNumber_NotAtEOL() {
+        TestExtendedBufferedReader reader = new TestExtendedBufferedReader('A', 4);
+        assertEquals(5, reader.getLineNumber());
+    }
+}
+```"
+HJ-017,java,data-research/java_functions/HJ-017.java,"```java
+package org.jfree.data.statistics;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class HistogramBinTest {
+
+    @Test
+    void testEquals_NullObject() {
+        HistogramBin bin = new HistogramBin(0, 1, 5);
+        assertFalse(bin.equals(null));
+    }
+
+    @Test
+    void testEquals_SameInstance() {
+        HistogramBin bin = new HistogramBin(0, 1, 5);
+        assertTrue(bin.equals(bin));
+    }
+
+    @Test
+    void testEquals_DifferentClass() {
+        HistogramBin bin = new HistogramBin(0, 1, 5);
+        String notABin = ""Not a HistogramBin"";
+        assertFalse(bin.equals(notABin));
+    }
+
+    @Test
+    void testEquals_EqualBins() {
+        HistogramBin bin1 = new HistogramBin(0, 1, 5);
+        HistogramBin bin2 = new HistogramBin(0, 1, 5);
+        assertTrue(bin1.equals(bin2));
+    }
+
+    @Test
+    void testEquals_DifferentStartBoundary() {
+        HistogramBin bin1 = new HistogramBin(0, 1, 5);
+        HistogramBin bin2 = new HistogramBin(1, 1, 5);
+        assertFalse(bin1.equals(bin2));
+    }
+
+    @Test
+    void testEquals_DifferentEndBoundary() {
+        HistogramBin bin1 = new HistogramBin(0, 1, 5);
+        HistogramBin bin2 = new HistogramBin(0, 2, 5);
+        assertFalse(bin1.equals(bin2));
+    }
+
+    @Test
+    void testEquals_DifferentCount() {
+        HistogramBin bin1 = new HistogramBin(0, 1, 5);
+        HistogramBin bin2 = new HistogramBin(0, 1, 10);
+        assertFalse(bin1.equals(bin2));
+    }
+}
+```"
+HJ-018,java,data-research/java_functions/HJ-018.java,"```java
+package org.apache.commons.math4.legacy.ml.clustering;
+
+import org.apache.commons.math4.exception.NumberIsTooSmallException;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+public class MiniBatchKMeansClustererTest {
+
+    @Test
+    void testConstructor_ValidParameters() {
+        MiniBatchKMeansClusterer clusterer = new MiniBatchKMeansClusterer(3, 100, 10, 5, 5, 3, null, null, null);
+        assertNotNull(clusterer);
+    }
+
+    @Test
+    void testConstructor_BatchSizeTooSmall() {
+        Exception exception = assertThrows(NumberIsTooSmallException.class, () -> {
+            new MiniBatchKMeansClusterer(3, 100, 0, 5, 5, 3, null, null, null);
+        });
+        assertEquals(""0 < 1"", exception.getMessage());
+    }
+
+    @Test
+    void testConstructor_InitIterationsTooSmall() {
+        Exception exception = assertThrows(NumberIsTooSmallException.class, () -> {
+            new MiniBatchKMeansClusterer(3, 100, 10, 0, 5, 3, null, null, null);
+        });
+        assertEquals(""0 < 1"", exception.getMessage());
+    }
+
+    @Test
+    void testConstructor_InitBatchSizeTooSmall() {
+        Exception exception = assertThrows(NumberIsTooSmallException.class, () -> {
+            new MiniBatchKMeansClusterer(3, 100, 10, 5, 0, 3, null, null, null);
+        });
+        assertEquals(""0 < 1"", exception.getMessage());
+    }
+
+    @Test
+    void testConstructor_MaxNoImprovementTimesTooSmall() {
+        Exception exception = assertThrows(NumberIsTooSmallException.class, () -> {
+            new MiniBatchKMeansClusterer(3, 100, 10, 5, 5, 0, null, null, null);
+        });
+        assertEquals(""0 < 1"", exception.getMessage());
+    }
+}
+```"
+HJ-019,java,data-research/java_functions/HJ-019.java,"```java
+package org.jsoup.parser;
+
+import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Node;
+import org.jsoup.nodes.Attributes;
+import org.jsoup.parser.TokeniserState;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.mockito.Mockito.*;
+
+import java.util.HashMap;
+
+public class XmlTreeBuilderTest {
+    private XmlTreeBuilder xmlTreeBuilder;
+    private Element mockElement;
+    private TokeniserState mockTextState;
+
+    @BeforeEach
+    void setUp() {
+        xmlTreeBuilder = new XmlTreeBuilder();
+        mockElement = mock(Element.class);
+        mockTextState = mock(TokeniserState.class);
+    }
+
+    @Test
+    void testInitialiseParseFragment_NullContext() {
+        xmlTreeBuilder.initialiseParseFragment(null);
+        // No exception should be thrown and method should return
+    }
+
+    @Test
+    void testInitialiseParseFragment_ValidContext_NoAttributes() {
+        when(mockElement.tag()).thenReturn(mock(Tag.class));
+        when(mockElement.parents()).thenReturn(new Elements());
+        when(mockElement.attributesSize()).thenReturn(0);
+        when(mockElement.tag().textState()).thenReturn(mockTextState);
+
+        xmlTreeBuilder.initialiseParseFragment(mockElement);
+        // Verify that the tokeniser transitions to the text state
+        verify(xmlTreeBuilder.tokeniser).transition(mockTextState);
+    }
+
+    @Test
+    void testInitialiseParseFragment_ValidContext_WithAttributes() {
+        when(mockElement.tag()).thenReturn(mock(Tag.class));
+        when(mockElement.parents()).thenReturn(new Elements());
+        when(mockElement.attributesSize()).thenReturn(1);
+        when(mockElement.tag().textState()).thenReturn(mockTextState);
+        
+        Attributes mockAttributes = mock(Attributes.class);
+        when(mockElement.attributes()).thenReturn(mockAttributes);
+        
+        xmlTreeBuilder.initialiseParseFragment(mockElement);
+        // Verify that the tokeniser transitions to the text state
+        verify(xmlTreeBuilder.tokeniser).transition(mockTextState);
+        // Verify that processNamespaces is called
+        verify(xmlTreeBuilder).processNamespaces(mockAttributes, new HashMap<>());
+    }
+}
+```"
+HJ-020,java,data-research/java_functions/HJ-020.java,"```java
+package org.joda.time.tz;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class DateTimeZoneBuilderTest {
+
+    private final DateTimeZoneBuilder builder = new DateTimeZoneBuilder();
+
+    @Test
+    void testNext_InstantAtMinValue() {
+        long result = builder.next(Long.MIN_VALUE, 0, 0);
+        assertEquals(Long.MIN_VALUE, result);
+    }
+
+    @Test
+    void testNext_InstantBeforeFromYear() {
+        long result = builder.next(0, 0, 0); // Assuming iFromYear > 0
+        assertNotEquals(0, result);
+    }
+
+    @Test
+    void testNext_InstantInRange() {
+        long result = builder.next(1000000000L, 0, 0); // Assuming this is within the range
+        assertTrue(result > 1000000000L);
+    }
+
+    @Test
+    void testNext_InstantAfterToYear() {
+        long result = builder.next(2000000000L, 0, 0); // Assuming iToYear < 2000
+        assertEquals(2000000000L, result);
+    }
+
+    @Test
+    void testNext_InstantAtStartOfYear() {
+        long result = builder.next(1577836800000L, 0, 0); // January 1, 2020
+        assertNotEquals(1577836800000L, result);
+    }
+}
+```"
+HJ-021,java,data-research/java_functions/HJ-021.java,"```java
+package com.google.gson.internal.bind;
+
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonSerializer;
+import com.google.gson.reflect.TypeToken;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+class SingleTypeFactoryTest {
+
+    private static class TestSerializer implements JsonSerializer<Object> {
+        @Override
+        public Object serialize(Object src, java.lang.reflect.Type typeOfSrc, com.google.gson.JsonSerializationContext context) {
+            return null;
+        }
+    }
+
+    private static class TestDeserializer implements JsonDeserializer<Object> {
+        @Override
+        public Object deserialize(com.google.gson.JsonElement json, java.lang.reflect.Type typeOfT, com.google.gson.JsonDeserializationContext context) {
+            return null;
+        }
+    }
+
+    @Test
+    void testSingleTypeFactory_WithSerializer() {
+        SingleTypeFactory factory = new SingleTypeFactory(new TestSerializer(), TypeToken.get(Object.class), false, null);
+        assertNotNull(factory);
+    }
+
+    @Test
+    void testSingleTypeFactory_WithDeserializer() {
+        SingleTypeFactory factory = new SingleTypeFactory(new TestDeserializer(), TypeToken.get(Object.class), false, null);
+        assertNotNull(factory);
+    }
+
+    @Test
+    void testSingleTypeFactory_WithBoth() {
+        SingleTypeFactory factory = new SingleTypeFactory(new TestSerializer(), TypeToken.get(Object.class), true, Object.class);
+        assertNotNull(factory);
+    }
+
+    @Test
+    void testSingleTypeFactory_WithNeither() {
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            new SingleTypeFactory(new Object(), TypeToken.get(Object.class), false, null);
+        });
+        assertTrue(exception.getMessage().contains(""Type adapter""));
+    }
+}
+```"
+HJ-022,java,data-research/java_functions/HJ-022.java,"```java
+package org.apache.commons.cli;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class OptionValidatorTest {
+
+    @Test
+    void testValidate_NullOption() {
+        assertNull(OptionValidator.validate(null));
+    }
+
+    @Test
+    void testValidate_EmptyOption() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            OptionValidator.validate("""");
+        });
+        assertEquals(""Empty option name."", exception.getMessage());
+    }
+
+    @Test
+    void testValidate_InvalidFirstCharacter() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            OptionValidator.validate(""1invalid"");
+        });
+        assertEquals(""Illegal option name '1'."", exception.getMessage());
+    }
+
+    @Test
+    void testValidate_ValidSingleCharacterOption() {
+        assertEquals(""a"", OptionValidator.validate(""a""));
+    }
+
+    @Test
+    void testValidate_ValidMultiCharacterOption() {
+        assertEquals(""option"", OptionValidator.validate(""option""));
+    }
+
+    @Test
+    void testValidate_InvalidCharacterInMultiCharacterOption() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            OptionValidator.validate(""opt!on"");
+        });
+        assertEquals(""The option 'opt!on' contains an illegal character : '!'."", exception.getMessage());
+    }
+
+    @Test
+    void testValidate_ValidOptionWithSpecialCharacters() {
+        assertEquals(""opt-tion"", OptionValidator.validate(""opt-tion""));
+    }
+}
+```"
+HJ-023,java,data-research/java_functions/HJ-023.java,"```java
+package org.apache.commons.collections4.list;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.Iterator;
+
+class AbstractLinkedListJava21Test {
+
+    private class TestList extends AbstractLinkedListJava21<Object> {
+        @Override
+        public boolean isEmpty() {
+            return size() == 0;
+        }
+
+        @Override
+        public Iterator<Object> iterator() {
+            return new Iterator<Object>() {
+                private int index = 0;
+
+                @Override
+                public boolean hasNext() {
+                    return index < size();
+                }
+
+                @Override
+                public Object next() {
+                    return get(index++);
+                }
+            };
+        }
+
+        @Override
+        public int size() {
+            return 0; // Default size for empty list
+        }
+
+        @Override
+        public Object get(int index) {
+            return null; // Default implementation
+        }
+    }
+
+    @Test
+    void testToString_EmptyList() {
+        TestList list = new TestList();
+        assertEquals(""[]"", list.toString());
+    }
+
+    @Test
+    void testToString_SingleElement() {
+        TestList list = new TestList() {
+            @Override
+            public int size() {
+                return 1;
+            }
+
+            @Override
+            public Object get(int index) {
+                return ""element"";
+            }
+        };
+        assertEquals(""[element]"", list.toString());
+    }
+
+    @Test
+    void testToString_MultipleElements() {
+        TestList list = new TestList() {
+            private final Object[] elements = {""first"", ""second"", ""third""};
+
+            @Override
+            public int size() {
+                return elements.length;
+            }
+
+            @Override
+            public Object get(int index) {
+                return elements[index];
+            }
+        };
+        assertEquals(""[first, second, third]"", list.toString());
+    }
+
+    @Test
+    void testToString_SelfReference() {
+        TestList list = new TestList() {
+            private final Object[] elements = new Object[1];
+
+            @Override
+            public int size() {
+                return 1;
+            }
+
+            @Override
+            public Object get(int index) {
+                return this; // Self-reference
+            }
+        };
+        assertEquals(""[ (this Collection) ]"", list.toString());
+    }
+}
+```"
+HJ-024,java,data-research/java_functions/HJ-024.java,"```java
+package org.apache.commons.csv;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class CSVParserTest {
+
+    private class MockFormat {
+        private boolean trailingDelimiter;
+
+        public MockFormat(boolean trailingDelimiter) {
+            this.trailingDelimiter = trailingDelimiter;
+        }
+
+        public boolean getTrailingDelimiter() {
+            return trailingDelimiter;
+        }
+    }
+
+    private class MockReusableToken {
+        private StringBuilder content;
+        private boolean isQuoted;
+
+        public MockReusableToken(String content, boolean isQuoted) {
+            this.content = new StringBuilder(content);
+            this.isQuoted = isQuoted;
+        }
+    }
+
+    private class MockCSVParser {
+        private List<String> recordList = new ArrayList<>();
+        private MockFormat format;
+        private MockReusableToken reusableToken;
+
+        public MockCSVParser(MockFormat format, MockReusableToken reusableToken) {
+            this.format = format;
+            this.reusableToken = reusableToken;
+        }
+
+        private void addRecordValue(final boolean lastRecord) {
+            final String input = reusableToken.content.toString().trim();
+            if (lastRecord && input.isEmpty() && format.getTrailingDelimiter() && !reusableToken.isQuoted) {
+                return;
+            }
+            recordList.add(handleNull(input));
+        }
+
+        private String handleNull(String input) {
+            return input == null ? """" : input;
+        }
+
+        public List<String> getRecordList() {
+            return recordList;
+        }
+    }
+
+    @Test
+    void testAddRecordValue_EmptyInput_NotLastRecord() {
+        MockFormat format = new MockFormat(true);
+        MockReusableToken token = new MockReusableToken("""", false);
+        MockCSVParser parser = new MockCSVParser(format, token);
+        parser.addRecordValue(false);
+        assertEquals(1, parser.getRecordList().size());
+        assertEquals("""", parser.getRecordList().get(0));
+    }
+
+    @Test
+    void testAddRecordValue_EmptyInput_LastRecord_WithTrailingDelimiter() {
+        MockFormat format = new MockFormat(true);
+        MockReusableToken token = new MockReusableToken("""", false);
+        MockCSVParser parser = new MockCSVParser(format, token);
+        parser.addRecordValue(true);
+        assertEquals(0, parser.getRecordList().size());
+    }
+
+    @Test
+    void testAddRecordValue_EmptyInput_LastRecord_WithoutTrailingDelimiter() {
+        MockFormat format = new MockFormat(false);
+        MockReusableToken token = new MockReusableToken("""", false);
+        MockCSVParser parser = new MockCSVParser(format, token);
+        parser.addRecordValue(true);
+        assertEquals(1, parser.getRecordList().size());
+        assertEquals("""", parser.getRecordList().get(0));
+    }
+
+    @Test
+    void testAddRecordValue_NonEmptyInput_LastRecord() {
+        MockFormat format = new MockFormat(true);
+        MockReusableToken token = new MockReusableToken(""value"", false);
+        MockCSVParser parser = new MockCSVParser(format, token);
+        parser.addRecordValue(true);
+        assertEquals(1, parser.getRecordList().size());
+        assertEquals(""value"", parser.getRecordList().get(0));
+    }
+
+    @Test
+    void testAddRecordValue_QuotedEmptyInput_LastRecord_WithTrailingDelimiter() {
+        MockFormat format = new MockFormat(true);
+        MockReusableToken token = new MockReusableToken(""\""\"""", true);
+        MockCSVParser parser = new MockCSVParser(format, token);
+        parser.addRecordValue(true);
+        assertEquals(1, parser.getRecordList().size());
+        assertEquals(""\""\"""", parser.getRecordList().get(0));
+    }
+}
+```"
+HJ-025,java,data-research/java_functions/HJ-025.java,"```java
+package org.jfree.data.xy;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import java.util.Arrays;
+import java.util.List;
+
+public class DefaultXYZDatasetTest {
+
+    @Test
+    void testEquals_SameObject() {
+        DefaultXYZDataset dataset = new DefaultXYZDataset();
+        assertTrue(dataset.equals(dataset));
+    }
+
+    @Test
+    void testEquals_NullObject() {
+        DefaultXYZDataset dataset = new DefaultXYZDataset();
+        assertFalse(dataset.equals(null));
+    }
+
+    @Test
+    void testEquals_DifferentClass() {
+        DefaultXYZDataset dataset = new DefaultXYZDataset();
+        String notADataset = ""Not a dataset"";
+        assertFalse(dataset.equals(notADataset));
+    }
+
+    @Test
+    void testEquals_DifferentSeriesKeys() {
+        DefaultXYZDataset dataset1 = new DefaultXYZDataset();
+        DefaultXYZDataset dataset2 = new DefaultXYZDataset();
+        dataset1.seriesKeys = List.of(""Series1"");
+        dataset2.seriesKeys = List.of(""Series2"");
+        assertFalse(dataset1.equals(dataset2));
+    }
+
+    @Test
+    void testEquals_DifferentSeriesListSize() {
+        DefaultXYZDataset dataset1 = new DefaultXYZDataset();
+        DefaultXYZDataset dataset2 = new DefaultXYZDataset();
+        dataset1.seriesList = Arrays.asList(new double[][][] {{{1.0}, {2.0}, {3.0}}});
+        dataset2.seriesList = Arrays.asList(new double[][][] {{{1.0}, {2.0}, {3.0}}, {{4.0}, {5.0}, {6.0}}});
+        assertFalse(dataset1.equals(dataset2));
+    }
+
+    @Test
+    void testEquals_DifferentDataValues() {
+        DefaultXYZDataset dataset1 = new DefaultXYZDataset();
+        DefaultXYZDataset dataset2 = new DefaultXYZDataset();
+        dataset1.seriesList = Arrays.asList(new double[][][] {{{1.0}, {2.0}, {3.0}}});
+        dataset2.seriesList = Arrays.asList(new double[][][] {{{1.0}, {2.0}, {4.0}}});
+        assertFalse(dataset1.equals(dataset2));
+    }
+
+    @Test
+    void testEquals_SameData() {
+        DefaultXYZDataset dataset1 = new DefaultXYZDataset();
+        DefaultXYZDataset dataset2 = new DefaultXYZDataset();
+        dataset1.seriesKeys = List.of(""Series1"");
+        dataset1.seriesList = Arrays.asList(new double[][][] {{{1.0}, {2.0}, {3.0}}});
+        dataset2.seriesKeys = List.of(""Series1"");
+        dataset2.seriesList = Arrays.asList(new double[][][] {{{1.0}, {2.0}, {3.0}}});
+        assertTrue(dataset1.equals(dataset2));
+    }
+}
+```"
+HJ-026,java,data-research/java_functions/HJ-026.java,"```java
+package org.apache.commons.math4.legacy.analysis.polynomials;
+
+import org.apache.commons.math4.exception.DimensionMismatchException;
+import org.apache.commons.math4.exception.NullArgumentException;
+import org.apache.commons.math4.exception.NumberIsTooSmallException;
+import org.apache.commons.math4.exception.NonMonotonicSequenceException;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+public class PolynomialSplineFunctionTest {
+
+    @Test
+    void testConstructor_NullKnots() {
+        assertThrows(NullArgumentException.class, () -> {
+            new PolynomialSplineFunction(null, new PolynomialFunction[]{});
+        });
+    }
+
+    @Test
+    void testConstructor_NullPolynomials() {
+        assertThrows(NullArgumentException.class, () -> {
+            new PolynomialSplineFunction(new double[]{0, 1}, null);
+        });
+    }
+
+    @Test
+    void testConstructor_InsufficientKnots() {
+        assertThrows(NumberIsTooSmallException.class, () -> {
+            new PolynomialSplineFunction(new double[]{0}, new PolynomialFunction[]{new PolynomialFunction(new double[]{1})});
+        });
+    }
+
+    @Test
+    void testConstructor_DimensionMismatch() {
+        assertThrows(DimensionMismatchException.class, () -> {
+            new PolynomialSplineFunction(new double[]{0, 1}, new PolynomialFunction[]{new PolynomialFunction(new double[]{1}), new PolynomialFunction(new double[]{2})});
+        });
+    }
+
+    @Test
+    void testConstructor_NonMonotonicKnots() {
+        assertThrows(NonMonotonicSequenceException.class, () -> {
+            new PolynomialSplineFunction(new double[]{1, 0}, new PolynomialFunction[]{new PolynomialFunction(new double[]{1})});
+        });
+    }
+
+    @Test
+    void testConstructor_ValidInput() {
+        double[] knots = {0, 1, 2};
+        PolynomialFunction[] polynomials = {new PolynomialFunction(new double[]{1}), new PolynomialFunction(new double[]{2})};
+        PolynomialSplineFunction splineFunction = new PolynomialSplineFunction(knots, polynomials);
+        assertNotNull(splineFunction);
+    }
+}
+```"
+HJ-027,java,data-research/java_functions/HJ-027.java,"```java
+package org.jsoup.parser;
+
+import org.junit.jupiter.api.Test;
+import static org.mockito.Mockito.*;
+
+public class TokeniserStateTest {
+
+    @Test
+    void testRead_WithDash() {
+        Tokeniser tokeniser = mock(Tokeniser.class);
+        CharacterReader reader = mock(CharacterReader.class);
+        TokeniserState state = new TokeniserState();
+
+        when(reader.current()).thenReturn('-');
+        state.read(tokeniser, reader);
+
+        verify(tokeniser).emit('-');
+        verify(tokeniser).advanceTransition(TokeniserState.ScriptDataDoubleEscapedDash);
+    }
+
+    @Test
+    void testRead_WithLessThanSign() {
+        Tokeniser tokeniser = mock(Tokeniser.class);
+        CharacterReader reader = mock(CharacterReader.class);
+        TokeniserState state = new TokeniserState();
+
+        when(reader.current()).thenReturn('<');
+        state.read(tokeniser, reader);
+
+        verify(tokeniser).emit('<');
+        verify(tokeniser).advanceTransition(TokeniserState.ScriptDataDoubleEscapedLessthanSign);
+    }
+
+    @Test
+    void testRead_WithNullChar() {
+        Tokeniser tokeniser = mock(Tokeniser.class);
+        CharacterReader reader = mock(CharacterReader.class);
+        TokeniserState state = new TokeniserState();
+
+        when(reader.current()).thenReturn(TokeniserState.nullChar);
+        state.read(tokeniser, reader);
+
+        verify(tokeniser).error(state);
+        verify(reader).advance();
+        verify(tokeniser).emit(TokeniserState.replacementChar);
+    }
+
+    @Test
+    void testRead_WithEOF() {
+        Tokeniser tokeniser = mock(Tokeniser.class);
+        CharacterReader reader = mock(CharacterReader.class);
+        TokeniserState state = new TokeniserState();
+
+        when(reader.current()).thenReturn(TokeniserState.eof);
+        state.read(tokeniser, reader);
+
+        verify(tokeniser).eofError(state);
+        verify(tokeniser).transition(TokeniserState.Data);
+    }
+
+    @Test
+    void testRead_WithDefaultCase() {
+        Tokeniser tokeniser = mock(Tokeniser.class);
+        CharacterReader reader = mock(CharacterReader.class);
+        TokeniserState state = new TokeniserState();
+
+        when(reader.current()).thenReturn('a');
+        when(reader.consumeToAny('-', '<', TokeniserState.nullChar)).thenReturn(""data"");
+        state.read(tokeniser, reader);
+
+        verify(tokeniser).emit(""data"");
+    }
+}
+```"
+HJ-028,java,data-research/java_functions/HJ-028.java,"```java
+package org.joda.time;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class LocalDateTest {
+
+    @Test
+    void testCompareTo_SameInstance() {
+        LocalDate date = new LocalDate(2023, 10, 1);
+        assertEquals(0, date.compareTo(date));
+    }
+
+    @Test
+    void testCompareTo_EqualDates() {
+        LocalDate date1 = new LocalDate(2023, 10, 1);
+        LocalDate date2 = new LocalDate(2023, 10, 1);
+        assertEquals(0, date1.compareTo(date2));
+    }
+
+    @Test
+    void testCompareTo_LesserDate() {
+        LocalDate date1 = new LocalDate(2023, 10, 1);
+        LocalDate date2 = new LocalDate(2023, 10, 2);
+        assertEquals(-1, date1.compareTo(date2));
+    }
+
+    @Test
+    void testCompareTo_GreaterDate() {
+        LocalDate date1 = new LocalDate(2023, 10, 2);
+        LocalDate date2 = new LocalDate(2023, 10, 1);
+        assertEquals(1, date1.compareTo(date2));
+    }
+
+    @Test
+    void testCompareTo_DifferentChronologies() {
+        LocalDate date1 = new LocalDate(2023, 10, 1, ISOChronology.getInstance());
+        LocalDate date2 = new LocalDate(2023, 10, 1, GregorianChronology.getInstance());
+        assertNotEquals(0, date1.compareTo(date2));
+    }
+
+    @Test
+    void testCompareTo_NonLocalDate() {
+        LocalDate date = new LocalDate(2023, 10, 1);
+        assertNotEquals(0, date.compareTo(new Object()));
+    }
+}
+```"
+HJ-029,java,data-research/java_functions/HJ-029.java,"```java
+package com.google.gson.internal.bind;
+
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+class DummyTypeAdapterFactory implements TypeAdapterFactory {}
+
+class JsonAdapterAnnotationTypeAdapterFactoryTest {
+
+    private final JsonAdapterAnnotationTypeAdapterFactory factory = new JsonAdapterAnnotationTypeAdapterFactory();
+    private final TypeAdapterFactory dummyFactory = new DummyTypeAdapterFactory();
+    private final TypeAdapterFactory treeTypeClassDummyFactory = new DummyTypeAdapterFactory(); // Simulating TREE_TYPE_CLASS_DUMMY_FACTORY
+
+    @Test
+    void testIsClassJsonAdapterFactory_TreeTypeClassDummyFactory() {
+        TypeToken<Object> typeToken = TypeToken.get(Object.class);
+        assertTrue(factory.isClassJsonAdapterFactory(typeToken, treeTypeClassDummyFactory));
+    }
+
+    @Test
+    void testIsClassJsonAdapterFactory_ExistingFactory() {
+        TypeToken<Object> typeToken = TypeToken.get(Object.class);
+        // Simulate existing factory
+        factory.adapterFactoryMap.put(Object.class, dummyFactory);
+        assertTrue(factory.isClassJsonAdapterFactory(typeToken, dummyFactory));
+    }
+
+    @Test
+    void testIsClassJsonAdapterFactory_NoExistingFactory() {
+        TypeToken<Object> typeToken = TypeToken.get(Object.class);
+        assertFalse(factory.isClassJsonAdapterFactory(typeToken, dummyFactory));
+    }
+
+    @Test
+    void testIsClassJsonAdapterFactory_AnnotationPresent() {
+        TypeToken<AnnotatedClass> typeToken = TypeToken.get(AnnotatedClass.class);
+        assertTrue(factory.isClassJsonAdapterFactory(typeToken, dummyFactory));
+    }
+
+    @Test
+    void testIsClassJsonAdapterFactory_AnnotationNotPresent() {
+        TypeToken<NonAnnotatedClass> typeToken = TypeToken.get(NonAnnotatedClass.class);
+        assertFalse(factory.isClassJsonAdapterFactory(typeToken, dummyFactory));
+    }
+
+    @Test
+    void testIsClassJsonAdapterFactory_AdapterClassNotAssignable() {
+        TypeToken<InvalidAnnotatedClass> typeToken = TypeToken.get(InvalidAnnotatedClass.class);
+        assertFalse(factory.isClassJsonAdapterFactory(typeToken, dummyFactory));
+    }
+
+    // Dummy classes for testing
+    @JsonAdapter(DummyTypeAdapterFactory.class)
+    static class AnnotatedClass {}
+
+    static class NonAnnotatedClass {}
+
+    @JsonAdapter(String.class) // Invalid as String is not a TypeAdapterFactory
+    static class InvalidAnnotatedClass {}
+}
+```"
+HJ-030,java,data-research/java_functions/HJ-030.java,"```java
+package org.apache.commons.cli.help;
+
+import org.apache.commons.cli.Option;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+public class OptionFormatterTest {
+
+    @Test
+    void testOptionFormatter_WithRequiredOption() {
+        Option option = new Option(""o"", ""option"", true, ""an option"");
+        option.setRequired(true);
+        Builder builder = new Builder()
+                .setOptionalDelimiters("","")
+                .setArgNameDelimiters(""<"", "">"")
+                .setDefaultArgName(""arg"")
+                .setOptPrefix(""-"")
+                .setLongOptPrefix(""--"")
+                .setOptSeparator("" "")
+                .setOptArgSeparator(""="");
+        
+        OptionFormatter formatter = new OptionFormatter(option, builder);
+        String formatted = formatter.syntaxFormatFunction.apply(option, true);
+        assertEquals(""-o <arg>"", formatted);
+    }
+
+    @Test
+    void testOptionFormatter_WithOptionalOption() {
+        Option option = new Option(""o"", ""option"", true, ""an option"");
+        option.setRequired(false);
+        Builder builder = new Builder()
+                .setOptionalDelimiters("","")
+                .setArgNameDelimiters(""<"", "">"")
+                .setDefaultArgName(""arg"")
+                .setOptPrefix(""-"")
+                .setLongOptPrefix(""--"")
+                .setOptSeparator("" "")
+                .setOptArgSeparator(""="");
+        
+        OptionFormatter formatter = new OptionFormatter(option, builder);
+        String formatted = formatter.syntaxFormatFunction.apply(option, false);
+        assertEquals(""[ -o <arg> ]"", formatted);
+    }
+
+    @Test
+    void testOptionFormatter_WithEmptyArgName() {
+        Option option = new Option(""o"", ""option"", false, ""an option"");
+        option.setRequired(true);
+        Builder builder = new Builder()
+                .setOptionalDelimiters("","")
+                .setArgNameDelimiters(""<"", "">"")
+                .setDefaultArgName("""")
+                .setOptPrefix(""-"")
+                .setLongOptPrefix(""--"")
+                .setOptSeparator("" "")
+                .setOptArgSeparator(""="");
+        
+        OptionFormatter formatter = new OptionFormatter(option, builder);
+        String formatted = formatter.syntaxFormatFunction.apply(option, true);
+        assertEquals(""-o"", formatted);
+    }
+
+    @Test
+    void testOptionFormatter_WithNullSyntaxFunction() {
+        Option option = new Option(""o"", ""option"", true, ""an option"");
+        option.setRequired(true);
+        Builder builder = new Builder()
+                .setOptionalDelimiters("","")
+                .setArgNameDelimiters(""<"", "">"")
+                .setDefaultArgName(""arg"")
+                .setOptPrefix(""-"")
+                .setLongOptPrefix(""--"")
+                .setOptSeparator("" "")
+                .setOptArgSeparator(""="")
+                .setSyntaxFormatFunction(null);
+        
+        OptionFormatter formatter = new OptionFormatter(option, builder);
+        String formatted = formatter.syntaxFormatFunction.apply(option, true);
+        assertEquals(""-o <arg>"", formatted);
+    }
+}
+```"
+HP-001,python,data-research/python_functions/HP-001.py,"```python
+import pytest
+from requests.utils import _validate_header_part
+from requests.exceptions import InvalidHeader
+import re
+
+_HEADER_VALIDATORS_STR = [re.compile(r'^[!#$%&\'*+.^_`|~0-9a-zA-Z-]+$')]
+_HEADER_VALIDATORS_BYTE = [re.compile(rb'^[!#$%&\'*+.^_`|~0-9a-zA-Z-]+$')]
+
+def test_validate_header_part_str_valid():
+    _validate_header_part(('Header-Name', 'Header-Value'), 'Valid-Header', 0)
+
+def test_validate_header_part_str_invalid():
+    with pytest.raises(InvalidHeader):
+        _validate_header_part(('Header-Name', 'Header-Value'), 'Invalid Header', 0)
+
+def test_validate_header_part_bytes_valid():
+    _validate_header_part(('Header-Name', 'Header-Value'), b'Valid-Header', 0)
+
+def test_validate_header_part_bytes_invalid():
+    with pytest.raises(InvalidHeader):
+        _validate_header_part(('Header-Name', 'Header-Value'), b'Invalid Header', 0)
+
+def test_validate_header_part_invalid_type():
+    with pytest.raises(InvalidHeader):
+        _validate_header_part(('Header-Name', 'Header-Value'), 123, 0)
+
+def test_validate_header_part_invalid_type_bytes():
+    with pytest.raises(InvalidHeader):
+        _validate_header_part(('Header-Name', 'Header-Value'), 123.45, 0)
+```"
+HP-002,python,data-research/python_functions/HP-002.py,"```python
+import pytest
+from flask import Flask, current_app
+from flask.wrappers import Request
+
+@pytest.fixture
+def app():
+    app = Flask(__name__)
+    app.debug = True
+    yield app
+
+@pytest.fixture
+def request(app):
+    with app.test_request_context():
+        yield Request(environ={'REQUEST_METHOD': 'POST', 'CONTENT_TYPE': 'application/json'})
+
+def test_load_form_data_debug_mode_no_files(request, app):
+    current_app = app
+    req = request
+    req.mimetype = 'application/json'
+    req.files = {}
+    
+    # Assuming _load_form_data is a method of a class that extends Request
+    req._load_form_data()
+    # No assertion needed, just checking for exceptions
+
+def test_load_form_data_debug_mode_multipart(request, app):
+    current_app = app
+    req = request
+    req.mimetype = 'multipart/form-data'
+    req.files = {}
+    
+    # Assuming _load_form_data is a method of a class that extends Request
+    req._load_form_data()
+    # No assertion needed, just checking for exceptions
+
+def test_load_form_data_not_debug_mode(request, app):
+    current_app = app
+    app.debug = False
+    req = request
+    req.mimetype = 'application/json'
+    req.files = {}
+    
+    # Assuming _load_form_data is a method of a class that extends Request
+    req._load_form_data()
+    # No assertion needed, just checking for exceptions
+```"
+HP-003,python,data-research/python_functions/HP-003.py,"```python
+import pytest
+from requests.models import PreparedRequest
+
+def test_register_hook_unsupported_event():
+    req = PreparedRequest()
+    with pytest.raises(ValueError, match='Unsupported event specified'):
+        req.register_hook('unsupported_event', lambda: None)
+
+def test_register_hook_single_callable():
+    req = PreparedRequest()
+    req.hooks = {'response': []}
+    req.register_hook('response', lambda: None)
+    assert len(req.hooks['response']) == 1
+
+def test_register_hook_multiple_callables():
+    req = PreparedRequest()
+    req.hooks = {'response': []}
+    req.register_hook('response', [lambda: None, lambda: None])
+    assert len(req.hooks['response']) == 2
+
+def test_register_hook_iterable_with_non_callable():
+    req = PreparedRequest()
+    req.hooks = {'response': []}
+    req.register_hook('response', [lambda: None, 42])
+    assert len(req.hooks['response']) == 1
+
+def test_register_hook_empty_iterable():
+    req = PreparedRequest()
+    req.hooks = {'response': []}
+    req.register_hook('response', [])
+    assert len(req.hooks['response']) == 0
+```"
+HP-004,python,data-research/python_functions/HP-004.py,"```python
+import pytest
+from flask import Flask
+from flask.templating import _render_template
+
+class TestTemplateLoader:
+    def setup_method(self):
+        self.app = Flask(__name__)
+        self.app.jinja_loader = None  # Test case with no loader
+
+    def test_list_templates_no_loader(self):
+        assert self.app.jinja_loader is None
+        templates = self.app.jinja_loader.list_templates() if self.app.jinja_loader else []
+        assert templates == []
+
+    def test_list_templates_with_loader(self):
+        class MockLoader:
+            def list_templates(self):
+                return ['template1.html', 'template2.html']
+
+        self.app.jinja_loader = MockLoader()
+        templates = self.app.jinja_loader.list_templates()
+        assert templates == ['template1.html', 'template2.html']
+
+    def test_list_templates_with_blueprint_loader(self):
+        class MockLoader:
+            def list_templates(self):
+                return ['blueprint_template.html']
+
+        blueprint = Flask('blueprint')
+        blueprint.jinja_loader = MockLoader()
+        self.app.register_blueprint(blueprint)
+
+        templates = self.app.jinja_loader.list_templates() if self.app.jinja_loader else []
+        assert templates == []
+        for bp in self.app.iter_blueprints():
+            templates.extend(bp.jinja_loader.list_templates())
+        assert 'blueprint_template.html' in templates
+```"
+HP-005,python,data-research/python_functions/HP-005.py,"```python
+import pytest
+from requests.adapters import HTTPAdapter
+from requests.models import PreparedRequest
+
+def test_request_url_no_proxy():
+    adapter = HTTPAdapter()
+    request = PreparedRequest()
+    request.url = 'http://example.com/path'
+    request.path_url = '/path'
+    assert adapter.request_url(request, None) == '/path'
+
+def test_request_url_with_http_proxy():
+    adapter = HTTPAdapter()
+    request = PreparedRequest()
+    request.url = 'http://example.com/path'
+    request.path_url = '/path'
+    proxies = {'http': 'http://proxy.com'}
+    assert adapter.request_url(request, proxies) == 'http://example.com/path'
+
+def test_request_url_with_https_proxy():
+    adapter = HTTPAdapter()
+    request = PreparedRequest()
+    request.url = 'https://example.com/path'
+    request.path_url = '/path'
+    proxies = {'https': 'https://proxy.com'}
+    assert adapter.request_url(request, proxies) == '/path'
+
+def test_request_url_with_socks_proxy():
+    adapter = HTTPAdapter()
+    request = PreparedRequest()
+    request.url = 'http://example.com/path'
+    request.path_url = '/path'
+    proxies = {'http': 'socks5://proxy.com'}
+    assert adapter.request_url(request, proxies) == 'http://example.com/path'
+
+def test_request_url_with_no_path_url():
+    adapter = HTTPAdapter()
+    request = PreparedRequest()
+    request.url = 'http://example.com'
+    request.path_url = ''
+    proxies = {'http': 'http://proxy.com'}
+    assert adapter.request_url(request, proxies) == 'http://example.com'
+```"
+HP-006,python,data-research/python_functions/HP-006.py,"```python
+import pytest
+from requests.sessions import Session, PreparedRequest
+
+@pytest.fixture
+def session():
+    return Session()
+
+@pytest.fixture
+def prepared_request():
+    req = PreparedRequest()
+    req.url = ""http://example.com""
+    req.headers = {}
+    return req
+
+def test_rebuild_proxies_no_proxies(session, prepared_request):
+    proxies = None
+    result = session.rebuild_proxies(prepared_request, proxies)
+    assert result == {}
+
+def test_rebuild_proxies_with_http_proxy(session, prepared_request):
+    proxies = {""http"": ""http://proxy.com:8080""}
+    result = session.rebuild_proxies(prepared_request, proxies)
+    assert result == {""http"": ""http://proxy.com:8080""}
+
+def test_rebuild_proxies_with_https_proxy(session, prepared_request):
+    prepared_request.url = ""https://example.com""
+    proxies = {""https"": ""https://proxy.com:8080""}
+    result = session.rebuild_proxies(prepared_request, proxies)
+    assert result == {""https"": ""https://proxy.com:8080""}
+
+def test_rebuild_proxies_with_no_proxy(session, prepared_request):
+    prepared_request.url = ""http://example.com""
+    proxies = {""http"": ""http://proxy.com:8080"", ""no_proxy"": ""example.com""}
+    result = session.rebuild_proxies(prepared_request, proxies)
+    assert result == {}
+
+def test_rebuild_proxies_with_auth(session, prepared_request):
+    prepared_request.url = ""http://example.com""
+    proxies = {""http"": ""http://user:pass@proxy.com:8080""}
+    result = session.rebuild_proxies(prepared_request, proxies)
+    assert ""Proxy-Authorization"" in prepared_request.headers
+    assert prepared_request.headers[""Proxy-Authorization""] == ""Basic dXNlcjpwYXNz""
+
+def test_rebuild_proxies_with_https_and_auth(session, prepared_request):
+    prepared_request.url = ""https://example.com""
+    proxies = {""https"": ""https://user:pass@proxy.com:8080""}
+    result = session.rebuild_proxies(prepared_request, proxies)
+    assert ""Proxy-Authorization"" not in prepared_request.headers
+```"
+HP-007,python,data-research/python_functions/HP-007.py,"```python
+import pytest
+from requests.models import Response
+
+@pytest.fixture
+def mock_response():
+    response = Response()
+    response._content = b'This is a test response content.'
+    response.raw = response
+    response._content_consumed = False
+    return response
+
+def test_iter_content_default_chunk_size(mock_response):
+    chunks = list(mock_response.iter_content())
+    assert chunks == [b'This is a test response content.']
+
+def test_iter_content_custom_chunk_size(mock_response):
+    chunks = list(mock_response.iter_content(chunk_size=10))
+    assert chunks == [b'This is a ', b'test resp', b'onse con', b'tent.']
+
+def test_iter_content_empty_response():
+    response = Response()
+    response._content = b''
+    response.raw = response
+    response._content_consumed = False
+    chunks = list(response.iter_content())
+    assert chunks == []
+
+def test_iter_content_consumed_error(mock_response):
+    mock_response._content_consumed = True
+    with pytest.raises(StreamConsumedError):
+        list(mock_response.iter_content())
+
+def test_iter_content_invalid_chunk_size(mock_response):
+    with pytest.raises(TypeError):
+        list(mock_response.iter_content(chunk_size='invalid'))
+
+def test_iter_content_decode_unicode(mock_response):
+    chunks = list(mock_response.iter_content(decode_unicode=True))
+    assert chunks == ['This is a test response content.']
+```"
+HP-008,python,data-research/python_functions/HP-008.py,"```python
+import pytest
+from requests.models import Response
+from requests.exceptions import HTTPError
+
+def test_raise_for_status_client_error():
+    response = Response()
+    response.status_code = 404
+    response.reason = b'Not Found'
+    response.url = 'http://example.com'
+    
+    with pytest.raises(HTTPError) as excinfo:
+        response.raise_for_status()
+    
+    assert str(excinfo.value) == '404 Client Error: Not Found for url: http://example.com'
+
+def test_raise_for_status_server_error():
+    response = Response()
+    response.status_code = 500
+    response.reason = b'Internal Server Error'
+    response.url = 'http://example.com'
+    
+    with pytest.raises(HTTPError) as excinfo:
+        response.raise_for_status()
+    
+    assert str(excinfo.value) == '500 Server Error: Internal Server Error for url: http://example.com'
+
+def test_raise_for_status_unicode_error():
+    response = Response()
+    response.status_code = 400
+    response.reason = b'\x80'  # Invalid UTF-8 byte sequence
+    response.url = 'http://example.com'
+    
+    with pytest.raises(HTTPError) as excinfo:
+        response.raise_for_status()
+    
+    assert str(excinfo.value) == '400 Client Error: \x80 for url: http://example.com'
+
+def test_raise_for_status_no_error():
+    response = Response()
+    response.status_code = 200
+    response.reason = b'OK'
+    response.url = 'http://example.com'
+    
+    # Should not raise an error
+    response.raise_for_status()
+```"
+HP-009,python,data-research/python_functions/HP-009.py,"```python
+import os
+import pytest
+from requests.utils import guess_filename
+
+class MockObject:
+    def __init__(self, name):
+        self.name = name
+
+def test_guess_filename_valid_string():
+    obj = MockObject(""example.txt"")
+    assert guess_filename(obj) == ""example.txt""
+
+def test_guess_filename_valid_bytes():
+    obj = MockObject(b""example.txt"")
+    assert guess_filename(obj) == ""example.txt""
+
+def test_guess_filename_invalid_name_start():
+    obj = MockObject(""<example.txt>"")
+    assert guess_filename(obj) is None
+
+def test_guess_filename_invalid_name_end():
+    obj = MockObject(""example.txt>"")
+    assert guess_filename(obj) is None
+
+def test_guess_filename_no_name():
+    obj = MockObject(None)
+    assert guess_filename(obj) is None
+
+def test_guess_filename_empty_string():
+    obj = MockObject("""")
+    assert guess_filename(obj) is None
+
+def test_guess_filename_invalid_type():
+    obj = MockObject(123)
+    assert guess_filename(obj) is None
+```"
+HP-010,python,data-research/python_functions/HP-010.py,"```python
+import pytest
+from requests.sessions import merge_hooks
+
+def test_merge_hooks_both_none():
+    assert merge_hooks(None, None) is None
+
+def test_merge_hooks_request_hooks_none():
+    session_hooks = {'response': [lambda r, *args, **kwargs: r]}
+    assert merge_hooks(None, session_hooks) == session_hooks
+
+def test_merge_hooks_session_hooks_none():
+    request_hooks = {'response': [lambda r, *args, **kwargs: r]}
+    assert merge_hooks(request_hooks, None) == request_hooks
+
+def test_merge_hooks_both_empty_response():
+    request_hooks = {'response': []}
+    session_hooks = {'response': []}
+    assert merge_hooks(request_hooks, session_hooks) == request_hooks
+
+def test_merge_hooks_request_hooks_empty_response():
+    request_hooks = {'response': []}
+    session_hooks = {'response': [lambda r, *args, **kwargs: r]}
+    assert merge_hooks(request_hooks, session_hooks) == session_hooks
+
+def test_merge_hooks_session_hooks_empty_response():
+    request_hooks = {'response': [lambda r, *args, **kwargs: r]}
+    session_hooks = {'response': []}
+    assert merge_hooks(request_hooks, session_hooks) == request_hooks
+
+def test_merge_hooks_both_non_empty():
+    request_hooks = {'response': [lambda r, *args, **kwargs: r]}
+    session_hooks = {'response': [lambda r, *args, **kwargs: r]}
+    result = merge_hooks(request_hooks, session_hooks)
+    assert result['response'] == request_hooks['response'] + session_hooks['response']
+```"
+HP-011,python,data-research/python_functions/HP-011.py,"```python
+import pytest
+from requests.models import Response
+from requests.utils import stream_decode_response_unicode
+
+def test_stream_decode_response_unicode_no_encoding():
+    response = Response()
+    response.encoding = None
+    iterator = [b'Hello, ', b'world!']
+    result = list(stream_decode_response_unicode(iterator, response))
+    assert result == [b'Hello, ', b'world!']
+
+def test_stream_decode_response_unicode_with_encoding():
+    response = Response()
+    response.encoding = 'utf-8'
+    iterator = [b'Hello, ', b'world!']
+    result = list(stream_decode_response_unicode(iterator, response))
+    assert result == ['Hello, ', 'world!']
+
+def test_stream_decode_response_unicode_with_partial_chunk():
+    response = Response()
+    response.encoding = 'utf-8'
+    iterator = [b'Hello, ', b'world', b'!']
+    result = list(stream_decode_response_unicode(iterator, response))
+    assert result == ['Hello, ', 'world', '!']
+
+def test_stream_decode_response_unicode_with_empty_iterator():
+    response = Response()
+    response.encoding = 'utf-8'
+    iterator = []
+    result = list(stream_decode_response_unicode(iterator, response))
+    assert result == []
+
+def test_stream_decode_response_unicode_with_invalid_bytes():
+    response = Response()
+    response.encoding = 'utf-8'
+    iterator = [b'Hello, ', b'\xff', b'world!']
+    result = list(stream_decode_response_unicode(iterator, response))
+    assert result == ['Hello, ', '�', 'world!']
+```"
+HP-012,python,data-research/python_functions/HP-012.py,"```python
+import pytest
+from requests.utils import select_proxy
+
+def test_select_proxy_with_scheme_and_hostname():
+    proxies = {
+        ""http://example.com"": ""http://proxy1"",
+        ""http"": ""http://proxy2"",
+        ""all"": ""http://proxy3""
+    }
+    assert select_proxy(""http://example.com"", proxies) == ""http://proxy1""
+
+def test_select_proxy_with_scheme_only():
+    proxies = {
+        ""http"": ""http://proxy2"",
+        ""all"": ""http://proxy3""
+    }
+    assert select_proxy(""http://example.com"", proxies) == ""http://proxy2""
+
+def test_select_proxy_with_all_scheme_and_hostname():
+    proxies = {
+        ""all://example.com"": ""http://proxy3"",
+        ""all"": ""http://proxy4""
+    }
+    assert select_proxy(""http://example.com"", proxies) == ""http://proxy3""
+
+def test_select_proxy_with_only_all_scheme():
+    proxies = {
+        ""all"": ""http://proxy4""
+    }
+    assert select_proxy(""http://example.com"", proxies) == ""http://proxy4""
+
+def test_select_proxy_with_no_matching_proxy():
+    proxies = {
+        ""http://another.com"": ""http://proxy5""
+    }
+    assert select_proxy(""http://example.com"", proxies) is None
+
+def test_select_proxy_with_no_proxies():
+    assert select_proxy(""http://example.com"", None) is None
+
+def test_select_proxy_with_invalid_url():
+    proxies = {
+        ""http"": ""http://proxy2""
+    }
+    assert select_proxy(""invalid_url"", proxies) is None
+```"
+HP-013,python,data-research/python_functions/HP-013.py,"```python
+import pytest
+from requests.hooks import dispatch_hook
+
+def mock_hook(data, **kwargs):
+    return data + 1
+
+def mock_hook_none(data, **kwargs):
+    return None
+
+def test_dispatch_hook_with_callable_hook():
+    hooks = {'test_hook': mock_hook}
+    result = dispatch_hook('test_hook', hooks, 1)
+    assert result == 2
+
+def test_dispatch_hook_with_none_hook():
+    hooks = {'test_hook': mock_hook_none}
+    result = dispatch_hook('test_hook', hooks, 1)
+    assert result == 1
+
+def test_dispatch_hook_with_multiple_hooks():
+    hooks = {
+        'test_hook': [mock_hook, mock_hook]
+    }
+    result = dispatch_hook('test_hook', hooks, 1)
+    assert result == 3
+
+def test_dispatch_hook_with_non_callable_hook():
+    hooks = {'test_hook': 42}
+    result = dispatch_hook('test_hook', hooks, 1)
+    assert result == 1
+
+def test_dispatch_hook_with_no_hooks():
+    result = dispatch_hook('test_hook', None, 1)
+    assert result == 1
+```"
+HP-014,python,data-research/python_functions/HP-014.py,"```python
+import pytest
+from requests.__init__ import check_compatibility
+
+def test_check_compatibility_urllib3_valid():
+    check_compatibility(""1.21.1"", ""3.0.2"", None)
+
+def test_check_compatibility_urllib3_invalid_major():
+    with pytest.raises(AssertionError):
+        check_compatibility(""0.21.1"", ""3.0.2"", None)
+
+def test_check_compatibility_urllib3_invalid_minor():
+    with pytest.raises(AssertionError):
+        check_compatibility(""1.20.0"", ""3.0.2"", None)
+
+def test_check_compatibility_chardet_valid():
+    check_compatibility(""1.21.1"", ""3.0.2"", None)
+
+def test_check_compatibility_chardet_invalid():
+    with pytest.raises(AssertionError):
+        check_compatibility(""1.21.1"", ""2.0.0"", None)
+
+def test_check_compatibility_charset_normalizer_valid():
+    check_compatibility(""1.21.1"", None, ""2.0.0"")
+
+def test_check_compatibility_charset_normalizer_invalid():
+    with pytest.raises(AssertionError):
+        check_compatibility(""1.21.1"", None, ""4.0.0"")
+
+def test_check_compatibility_no_dependencies_warning(mocker):
+    mocker.patch(""warnings.warn"")
+    check_compatibility(""1.21.1"", None, None)
+    warnings.warn.assert_called_once()
+```"
+HP-015,python,data-research/python_functions/HP-015.py,"```python
+import pytest
+from requests.status_codes import _init
+
+def test_init_sets_attributes():
+    _init()
+    assert hasattr(codes, 'OK')
+    assert hasattr(codes, 'NOT_FOUND')
+    assert hasattr(codes, 'INTERNAL_SERVER_ERROR')
+
+def test_init_sets_code_values():
+    _init()
+    assert codes.OK == 200
+    assert codes.NOT_FOUND == 404
+    assert codes.INTERNAL_SERVER_ERROR == 500
+
+def test_init_sets_uppercase_attributes():
+    _init()
+    assert hasattr(codes, 'OK')
+    assert hasattr(codes, 'NOT_FOUND')
+    assert hasattr(codes, 'INTERNAL_SERVER_ERROR')
+
+def test_init_docstring():
+    _init()
+    assert __doc__ is not None
+    assert '200: ``OK``' in __doc__
+    assert '404: ``NOT FOUND``' in __doc__
+    assert '500: ``INTERNAL SERVER ERROR``' in __doc__
+```"
+HP-016,python,data-research/python_functions/HP-016.py,"```python
+import pytest
+from requests.cookies import cookiejar_from_dict
+from http.cookies import SimpleCookie
+
+def test_cookiejar_from_dict_with_none_cookie_dict():
+    result = cookiejar_from_dict(None)
+    assert len(result) == 0
+
+def test_cookiejar_from_dict_with_empty_cookie_dict():
+    result = cookiejar_from_dict({})
+    assert len(result) == 0
+
+def test_cookiejar_from_dict_with_single_cookie():
+    result = cookiejar_from_dict({'name': 'value'})
+    assert len(result) == 1
+    assert result.get('name').value == 'value'
+
+def test_cookiejar_from_dict_with_multiple_cookies():
+    result = cookiejar_from_dict({'name1': 'value1', 'name2': 'value2'})
+    assert len(result) == 2
+    assert result.get('name1').value == 'value1'
+    assert result.get('name2').value == 'value2'
+
+def test_cookiejar_from_dict_with_overwrite_true():
+    result = cookiejar_from_dict({'name': 'value1'})
+    result = cookiejar_from_dict({'name': 'value2'}, cookiejar=result, overwrite=True)
+    assert len(result) == 1
+    assert result.get('name').value == 'value2'
+
+def test_cookiejar_from_dict_with_overwrite_false():
+    result = cookiejar_from_dict({'name': 'value1'})
+    result = cookiejar_from_dict({'name': 'value2'}, cookiejar=result, overwrite=False)
+    assert len(result) == 1
+    assert result.get('name').value == 'value1'
+
+def test_cookiejar_from_dict_with_existing_cookies():
+    result = cookiejar_from_dict({'name1': 'value1'})
+    result = cookiejar_from_dict({'name1': 'value2', 'name2': 'value2'}, cookiejar=result, overwrite=True)
+    assert len(result) == 2
+    assert result.get('name1').value == 'value2'
+    assert result.get('name2').value == 'value2'
+```"
+HP-017,python,data-research/python_functions/HP-017.py,"```python
+import pytest
+from requests.utils import is_valid_cidr
+
+def test_valid_cidr():
+    assert is_valid_cidr(""192.168.1.0/24"") is True
+
+def test_valid_cidr_with_min_mask():
+    assert is_valid_cidr(""10.0.0.1/1"") is True
+
+def test_valid_cidr_with_max_mask():
+    assert is_valid_cidr(""172.16.0.0/32"") is True
+
+def test_invalid_cidr_no_slash():
+    assert is_valid_cidr(""192.168.1.1"") is False
+
+def test_invalid_cidr_multiple_slashes():
+    assert is_valid_cidr(""192.168.1.1/24/25"") is False
+
+def test_invalid_cidr_non_integer_mask():
+    assert is_valid_cidr(""192.168.1.1/abc"") is False
+
+def test_invalid_cidr_mask_too_low():
+    assert is_valid_cidr(""192.168.1.1/0"") is False
+
+def test_invalid_cidr_mask_too_high():
+    assert is_valid_cidr(""192.168.1.1/33"") is False
+
+def test_invalid_cidr_invalid_ip():
+    assert is_valid_cidr(""999.999.999.999/24"") is False
+
+def test_invalid_cidr_empty_string():
+    assert is_valid_cidr("""") is False
+```"
+HP-018,python,data-research/python_functions/HP-018.py,"```python
+import os
+import pytest
+from requests.utils import set_environ
+
+def test_set_environ_with_value():
+    env_name = 'TEST_ENV'
+    value = 'test_value'
+    
+    with set_environ(env_name, value):
+        assert os.environ[env_name] == value
+
+    assert env_name not in os.environ
+
+def test_set_environ_with_none():
+    env_name = 'TEST_ENV'
+    original_value = 'original_value'
+    os.environ[env_name] = original_value
+    
+    with set_environ(env_name, None):
+        assert os.environ[env_name] == original_value
+
+    assert os.environ[env_name] == original_value
+
+def test_set_environ_restore_previous_value():
+    env_name = 'TEST_ENV'
+    original_value = 'original_value'
+    new_value = 'new_value'
+    os.environ[env_name] = original_value
+    
+    with set_environ(env_name, new_value):
+        assert os.environ[env_name] == new_value
+
+    assert os.environ[env_name] == original_value
+
+def test_set_environ_non_existent_variable():
+    env_name = 'NON_EXISTENT_ENV'
+    value = 'some_value'
+    
+    with set_environ(env_name, value):
+        assert os.environ[env_name] == value
+
+    assert env_name not in os.environ
+```"
+HP-019,python,data-research/python_functions/HP-019.py,"```python
+import pytest
+from requests.utils import parse_header_links
+
+def test_parse_header_links_empty():
+    assert parse_header_links("""") == []
+
+def test_parse_header_links_single_link():
+    result = parse_header_links('<http://example.com>; rel=""self""')
+    assert result == [{'url': 'http://example.com', 'rel': 'self'}]
+
+def test_parse_header_links_multiple_links():
+    result = parse_header_links('<http://example.com>; rel=""self"", <http://example.org>; rel=""next""')
+    assert result == [
+        {'url': 'http://example.com', 'rel': 'self'},
+        {'url': 'http://example.org', 'rel': 'next'}
+    ]
+
+def test_parse_header_links_with_additional_params():
+    result = parse_header_links('<http://example.com>; rel=""self""; type=""text/html""')
+    assert result == [{'url': 'http://example.com', 'rel': 'self', 'type': 'text/html'}]
+
+def test_parse_header_links_invalid_format():
+    result = parse_header_links('<http://example.com>; rel=""self""; invalid_param')
+    assert result == [{'url': 'http://example.com', 'rel': 'self'}]
+
+def test_parse_header_links_no_url():
+    result = parse_header_links('rel=""self""')
+    assert result == [{'url': '', 'rel': 'self'}]
+
+def test_parse_header_links_with_extra_spaces():
+    result = parse_header_links('  <http://example.com>  ;  rel=""self""  ')
+    assert result == [{'url': 'http://example.com', 'rel': 'self'}]
+```"
+HP-020,python,data-research/python_functions/HP-020.py,"```python
+import pytest
+from requests.models import Request
+
+def test_prepare_content_length_with_body():
+    req = Request('POST', 'http://example.com')
+    req.body = 'test body'
+    req.prepare_content_length(req.body)
+    assert req.headers[""Content-Length""] == '9'
+
+def test_prepare_content_length_with_empty_body():
+    req = Request('POST', 'http://example.com')
+    req.body = ''
+    req.prepare_content_length(req.body)
+    assert ""Content-Length"" in req.headers
+    assert req.headers[""Content-Length""] == '0'
+
+def test_prepare_content_length_with_none_body():
+    req = Request('POST', 'http://example.com')
+    req.body = None
+    req.prepare_content_length(req.body)
+    assert ""Content-Length"" in req.headers
+    assert req.headers[""Content-Length""] == '0'
+
+def test_prepare_content_length_with_get_method():
+    req = Request('GET', 'http://example.com')
+    req.body = None
+    req.prepare_content_length(req.body)
+    assert ""Content-Length"" not in req.headers
+
+def test_prepare_content_length_with_head_method():
+    req = Request('HEAD', 'http://example.com')
+    req.body = None
+    req.prepare_content_length(req.body)
+    assert ""Content-Length"" not in req.headers
+```"
+HP-021,python,data-research/python_functions/HP-021.py,"```python
+import pytest
+from requests.utils import get_encoding_from_headers
+from collections import CaseInsensitiveDict
+
+def test_get_encoding_no_content_type():
+    headers = CaseInsensitiveDict()
+    assert get_encoding_from_headers(headers) is None
+
+def test_get_encoding_with_charset():
+    headers = CaseInsensitiveDict({""content-type"": ""text/html; charset=UTF-8""})
+    assert get_encoding_from_headers(headers) == ""UTF-8""
+
+def test_get_encoding_text_type():
+    headers = CaseInsensitiveDict({""content-type"": ""text/plain""})
+    assert get_encoding_from_headers(headers) == ""ISO-8859-1""
+
+def test_get_encoding_json_type():
+    headers = CaseInsensitiveDict({""content-type"": ""application/json""})
+    assert get_encoding_from_headers(headers) == ""utf-8""
+
+def test_get_encoding_with_single_quotes_charset():
+    headers = CaseInsensitiveDict({""content-type"": ""text/html; charset='UTF-8'""})
+    assert get_encoding_from_headers(headers) == ""UTF-8""
+
+def test_get_encoding_with_double_quotes_charset():
+    headers = CaseInsensitiveDict({""content-type"": ""text/html; charset=\""UTF-8\""""})
+    assert get_encoding_from_headers(headers) == ""UTF-8""
+
+def test_get_encoding_with_unrelated_content_type():
+    headers = CaseInsensitiveDict({""content-type"": ""application/octet-stream""})
+    assert get_encoding_from_headers(headers) is None
+```"
+HP-022,python,data-research/python_functions/HP-022.py,"```python
+import pytest
+from requests.models import PreparedRequest
+from requests import Response
+from requests.sessions import Session
+from requests import codes
+
+def test_rebuild_method_see_other():
+    session = Session()
+    prepared_request = PreparedRequest()
+    prepared_request.method = ""POST""
+    response = Response()
+    response.status_code = codes.see_other
+
+    session.rebuild_method(prepared_request, response)
+    assert prepared_request.method == ""GET""
+
+def test_rebuild_method_found():
+    session = Session()
+    prepared_request = PreparedRequest()
+    prepared_request.method = ""POST""
+    response = Response()
+    response.status_code = codes.found
+
+    session.rebuild_method(prepared_request, response)
+    assert prepared_request.method == ""GET""
+
+def test_rebuild_method_moved_post():
+    session = Session()
+    prepared_request = PreparedRequest()
+    prepared_request.method = ""POST""
+    response = Response()
+    response.status_code = codes.moved
+
+    session.rebuild_method(prepared_request, response)
+    assert prepared_request.method == ""GET""
+
+def test_rebuild_method_no_change_head():
+    session = Session()
+    prepared_request = PreparedRequest()
+    prepared_request.method = ""HEAD""
+    response = Response()
+    response.status_code = codes.see_other
+
+    session.rebuild_method(prepared_request, response)
+    assert prepared_request.method == ""HEAD""
+
+def test_rebuild_method_no_change_other():
+    session = Session()
+    prepared_request = PreparedRequest()
+    prepared_request.method = ""PUT""
+    response = Response()
+    response.status_code = 200
+
+    session.rebuild_method(prepared_request, response)
+    assert prepared_request.method == ""PUT""
+```"
+HP-023,python,data-research/python_functions/HP-023.py,"```python
+import pytest
+from requests.cookies import morsel_to_cookie
+from http.cookies import Morsel
+
+def test_morsel_to_cookie_with_max_age():
+    morsel = Morsel()
+    morsel.set(""name"", ""value"", ""value"")
+    morsel[""max-age""] = ""3600""
+    morsel[""comment""] = ""Test comment""
+    morsel[""domain""] = ""example.com""
+    morsel[""path""] = ""/""
+    morsel[""httponly""] = ""True""
+    morsel[""secure""] = ""True""
+    morsel[""version""] = ""1""
+    
+    cookie = morsel_to_cookie(morsel)
+    assert cookie.name == ""name""
+    assert cookie.value == ""value""
+    assert cookie.domain == ""example.com""
+    assert cookie.path == ""/""
+    assert cookie.comment == ""Test comment""
+    assert cookie.expires is not None
+
+def test_morsel_to_cookie_with_expires():
+    morsel = Morsel()
+    morsel.set(""name"", ""value"", ""value"")
+    morsel[""expires""] = ""Wed, 21 Oct 2025 07:28:00 GMT""
+    morsel[""comment""] = ""Test comment""
+    morsel[""domain""] = ""example.com""
+    morsel[""path""] = ""/""
+    morsel[""httponly""] = ""False""
+    morsel[""secure""] = ""False""
+    
+    cookie = morsel_to_cookie(morsel)
+    assert cookie.name == ""name""
+    assert cookie.value == ""value""
+    assert cookie.domain == ""example.com""
+    assert cookie.path == ""/""
+    assert cookie.comment == ""Test comment""
+    assert cookie.expires is not None
+
+def test_morsel_to_cookie_with_invalid_max_age():
+    morsel = Morsel()
+    morsel.set(""name"", ""value"", ""value"")
+    morsel[""max-age""] = ""invalid""
+    
+    with pytest.raises(TypeError):
+        morsel_to_cookie(morsel)
+
+def test_morsel_to_cookie_without_max_age_or_expires():
+    morsel = Morsel()
+    morsel.set(""name"", ""value"", ""value"")
+    morsel[""comment""] = ""Test comment""
+    morsel[""domain""] = ""example.com""
+    morsel[""path""] = ""/""
+    morsel[""httponly""] = ""False""
+    morsel[""secure""] = ""False""
+    
+    cookie = morsel_to_cookie(morsel)
+    assert cookie.name == ""name""
+    assert cookie.value == ""value""
+    assert cookie.domain == ""example.com""
+    assert cookie.path == ""/""
+    assert cookie.comment == ""Test comment""
+    assert cookie.expires is None
+```"
+HP-024,python,data-research/python_functions/HP-024.py,"```python
+import pytest
+from requests.models import Response
+from requests.utils import get_unicode_from_response
+
+def test_get_unicode_from_response_none_content():
+    r = Response()
+    r._content = None
+    assert get_unicode_from_response(r) is None
+
+def test_get_unicode_from_response_valid_encoding():
+    r = Response()
+    r._content = b'Hello, World!'
+    r.headers['Content-Type'] = 'text/plain; charset=utf-8'
+    assert get_unicode_from_response(r) == 'Hello, World!'
+
+def test_get_unicode_from_response_invalid_encoding():
+    r = Response()
+    r._content = b'\x80\x81\x82'
+    r.headers['Content-Type'] = 'text/plain; charset=invalid-encoding'
+    assert get_unicode_from_response(r) == '�' * 3  # Replaced characters
+
+def test_get_unicode_from_response_fallback_encoding():
+    r = Response()
+    r._content = b'\x80\x81\x82'
+    r.headers['Content-Type'] = 'text/plain'
+    assert get_unicode_from_response(r) == '�' * 3  # Replaced characters
+
+def test_get_unicode_from_response_type_error():
+    r = Response()
+    r._content = b'Hello, World!'
+    r.headers['Content-Type'] = 'text/plain; charset=ascii'
+    assert get_unicode_from_response(r) == 'Hello, World!'
+
+def test_get_unicode_from_response_no_content_type():
+    r = Response()
+    r._content = b'Hello, World!'
+    del r.headers['Content-Type']
+    assert get_unicode_from_response(r) == 'Hello, World!'
+```"
+HP-025,python,data-research/python_functions/HP-025.py,"```python
+import pytest
+from requests.help import info
+
+def test_info_structure():
+    result = info()
+    assert isinstance(result, dict)
+
+def test_info_platform():
+    result = info()
+    assert ""platform"" in result
+    assert isinstance(result[""platform""], dict)
+    assert ""system"" in result[""platform""]
+    assert ""release"" in result[""platform""]
+
+def test_info_implementation():
+    result = info()
+    assert ""implementation"" in result
+    assert isinstance(result[""implementation""], dict)
+
+def test_info_system_ssl():
+    result = info()
+    assert ""system_ssl"" in result
+    assert isinstance(result[""system_ssl""], dict)
+    assert ""version"" in result[""system_ssl""]
+
+def test_info_using_pyopenssl():
+    result = info()
+    assert ""using_pyopenssl"" in result
+    assert isinstance(result[""using_pyopenssl""], bool)
+
+def test_info_using_charset_normalizer():
+    result = info()
+    assert ""using_charset_normalizer"" in result
+    assert isinstance(result[""using_charset_normalizer""], bool)
+
+def test_info_pyOpenSSL():
+    result = info()
+    assert ""pyOpenSSL"" in result
+    assert isinstance(result[""pyOpenSSL""], dict)
+
+def test_info_urllib3():
+    result = info()
+    assert ""urllib3"" in result
+    assert isinstance(result[""urllib3""], dict)
+    assert ""version"" in result[""urllib3""]
+
+def test_info_chardet():
+    result = info()
+    assert ""chardet"" in result
+    assert isinstance(result[""chardet""], dict)
+    assert ""version"" in result[""chardet""]
+
+def test_info_charset_normalizer():
+    result = info()
+    assert ""charset_normalizer"" in result
+    assert isinstance(result[""charset_normalizer""], dict)
+    assert ""version"" in result[""charset_normalizer""]
+
+def test_info_cryptography():
+    result = info()
+    assert ""cryptography"" in result
+    assert isinstance(result[""cryptography""], dict)
+    assert ""version"" in result[""cryptography""]
+
+def test_info_idna():
+    result = info()
+    assert ""idna"" in result
+    assert isinstance(result[""idna""], dict)
+    assert ""version"" in result[""idna""]
+
+def test_info_requests():
+    result = info()
+    assert ""requests"" in result
+    assert isinstance(result[""requests""], dict)
+    assert ""version"" in result[""requests""]
+```"
+HP-026,python,data-research/python_functions/HP-026.py,"```python
+import pytest
+from requests.models import Request
+
+def test_init_with_default_params():
+    req = Request()
+    assert req.method is None
+    assert req.url is None
+    assert req.headers == {}
+    assert req.files == []
+    assert req.data == []
+    assert req.params == {}
+    assert req.hooks == {}
+    assert req.auth is None
+    assert req.cookies is None
+    assert req.json is None
+
+def test_init_with_method_and_url():
+    req = Request(method='GET', url='http://example.com')
+    assert req.method == 'GET'
+    assert req.url == 'http://example.com'
+
+def test_init_with_headers():
+    headers = {'Content-Type': 'application/json'}
+    req = Request(headers=headers)
+    assert req.headers == headers
+
+def test_init_with_files():
+    files = {'file': ('filename.txt', b'content')}
+    req = Request(files=files)
+    assert req.files == files
+
+def test_init_with_data():
+    data = {'key': 'value'}
+    req = Request(data=data)
+    assert req.data == data
+
+def test_init_with_params():
+    params = {'param1': 'value1'}
+    req = Request(params=params)
+    assert req.params == params
+
+def test_init_with_auth():
+    auth = ('user', 'pass')
+    req = Request(auth=auth)
+    assert req.auth == auth
+
+def test_init_with_cookies():
+    cookies = {'session_id': 'abc123'}
+    req = Request(cookies=cookies)
+    assert req.cookies == cookies
+
+def test_init_with_hooks():
+    hooks = {'response': lambda r, *args, **kwargs: r}
+    req = Request(hooks=hooks)
+    assert 'response' in req.hooks
+
+def test_init_with_json():
+    json_data = {'key': 'value'}
+    req = Request(json=json_data)
+    assert req.json == json_data
+```"
+HP-027,python,data-research/python_functions/HP-027.py,"```python
+import pytest
+from requests.models import Response
+
+def test_content_not_consumed():
+    response = Response()
+    response.status_code = 200
+    response._content_consumed = False
+    response._content = False
+    response.raw = b""Hello, World!""
+    response.iter_content = lambda chunk_size: [b""Hello, "", b""World!""]
+    
+    assert response.content == b""Hello, World!""
+
+def test_content_already_consumed():
+    response = Response()
+    response.status_code = 200
+    response._content_consumed = True
+    response._content = b""Hello, World!""
+    
+    with pytest.raises(RuntimeError, match=""The content for this response was already consumed""):
+        _ = response.content
+
+def test_content_status_code_zero():
+    response = Response()
+    response.status_code = 0
+    response._content_consumed = False
+    response.raw = None
+    
+    assert response.content is None
+
+def test_content_raw_none():
+    response = Response()
+    response.status_code = 200
+    response._content_consumed = False
+    response.raw = None
+    
+    assert response.content is None
+```"
+HP-028,python,data-research/python_functions/HP-028.py,"```python
+import pytest
+from requests.models import PreparedRequest, HTTPBasicAuth
+
+class MockRequest:
+    def __init__(self, url):
+        self.url = url
+        self.body = None
+        self.__dict__ = {}
+
+    def prepare_content_length(self, body):
+        self.content_length = len(body) if body else 0
+
+def get_auth_from_url(url):
+    # Mock implementation for testing
+    if ""user:pass"" in url:
+        return (""user"", ""pass"")
+    return None
+
+def test_prepare_auth_no_auth():
+    req = MockRequest(""http://example.com"")
+    req.prepare_auth(None)
+    assert not hasattr(req, 'content_length')
+
+def test_prepare_auth_with_tuple():
+    req = MockRequest(""http://example.com"")
+    req.prepare_auth((""user"", ""pass""))
+    assert isinstance(req.__dict__.get('auth_handler'), HTTPBasicAuth)
+
+def test_prepare_auth_with_callable():
+    def mock_auth_handler(request):
+        request.__dict__['auth_handler'] = 'mocked'
+        return request
+
+    req = MockRequest(""http://example.com"")
+    req.prepare_auth(mock_auth_handler)
+    assert req.__dict__.get('auth_handler') == 'mocked'
+
+def test_prepare_auth_from_url():
+    req = MockRequest(""http://user:pass@example.com"")
+    req.prepare_auth(None)
+    assert isinstance(req.__dict__.get('auth_handler'), HTTPBasicAuth)
+```"
+HP-029,python,data-research/python_functions/HP-029.py,"```python
+import pytest
+from requests.models import Response
+
+def test_text_empty_content():
+    response = Response()
+    response._content = b''
+    assert response.text == """"
+
+def test_text_with_content_and_encoding():
+    response = Response()
+    response._content = b'Hello, World!'
+    response.encoding = 'utf-8'
+    assert response.text == ""Hello, World!""
+
+def test_text_with_content_no_encoding():
+    response = Response()
+    response._content = b'Hello, World!'
+    response.encoding = None
+    assert response.text == ""Hello, World!""
+
+def test_text_with_invalid_encoding():
+    response = Response()
+    response._content = b'Hello, World!'
+    response.encoding = 'invalid-encoding'
+    assert response.text == ""Hello, World!""  # Should fallback to utf-8
+
+def test_text_with_none_content():
+    response = Response()
+    response._content = None
+    assert response.text == """"
+
+def test_text_with_apparent_encoding():
+    response = Response()
+    response._content = b'Hello, World!'
+    response.encoding = None
+    response.apparent_encoding = 'utf-8'
+    assert response.text == ""Hello, World!""
+```"
+HP-030,python,data-research/python_functions/HP-030.py,"```python
+import pytest
+from requests.sessions import Session, rebuild_auth
+from requests.models import PreparedRequest, Response
+
+@pytest.fixture
+def session():
+    return Session()
+
+@pytest.fixture
+def prepared_request():
+    req = PreparedRequest()
+    req.prepare(method='GET', url='http://example.com')
+    return req
+
+@pytest.fixture
+def response():
+    resp = Response()
+    resp.request = PreparedRequest()
+    resp.request.prepare(method='GET', url='http://example.com')
+    return resp
+
+def test_rebuild_auth_strips_auth_on_redirect(session, prepared_request, response):
+    prepared_request.headers['Authorization'] = 'Bearer token'
+    response.request.url = 'http://another-example.com'
+    prepared_request.url = 'http://another-example.com'
+    
+    session.rebuild_auth(prepared_request, response)
+    
+    assert 'Authorization' not in prepared_request.headers
+
+def test_rebuild_auth_keeps_auth_on_same_host(session, prepared_request, response):
+    prepared_request.headers['Authorization'] = 'Bearer token'
+    response.request.url = 'http://example.com'
+    prepared_request.url = 'http://example.com'
+    
+    session.rebuild_auth(prepared_request, response)
+    
+    assert prepared_request.headers['Authorization'] == 'Bearer token'
+
+def test_rebuild_auth_with_netrc_auth(session, prepared_request, response, monkeypatch):
+    def mock_get_netrc_auth(url):
+        return ('username', 'password')
+
+    monkeypatch.setattr('requests.sessions.get_netrc_auth', mock_get_netrc_auth)
+    
+    prepared_request.headers['Authorization'] = 'Bearer token'
+    response.request.url = 'http://another-example.com'
+    prepared_request.url = 'http://another-example.com'
+    
+    session.trust_env = True
+    session.rebuild_auth(prepared_request, response)
+    
+    assert 'Authorization' not in prepared_request.headers
+    assert prepared_request.auth == ('username', 'password')
+
+def test_rebuild_auth_no_auth_header(session, prepared_request, response):
+    response.request.url = 'http://another-example.com'
+    prepared_request.url = 'http://another-example.com'
+    
+    session.rebuild_auth(prepared_request, response)
+    
+    assert 'Authorization' not in prepared_request.headers
+```"

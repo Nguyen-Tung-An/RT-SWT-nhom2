@@ -1,59 +1,74 @@
+import com.google.gson.Gson;
 import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
+import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.internal.bind.JsonAdapterAnnotationTypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
 import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class JsonAdapterAnnotationTypeAdapterFactoryTest {
 
+    private final JsonAdapterAnnotationTypeAdapterFactory factory = new JsonAdapterAnnotationTypeAdapterFactory();
+
     @Test
-    void testIsClassJsonAdapterFactoryWithJsonAdapter() {
-        JsonAdapterAnnotationTypeAdapterFactory factory = new JsonAdapterAnnotationTypeAdapterFactory();
-        TypeToken<MyClass> typeToken = TypeToken.get(MyClass.class);
-        TypeAdapterFactory result = factory.isClassJsonAdapterFactory(typeToken, null);
-        assertNotNull(result);
-        // Additional assertions based on expected behavior
+    void testIsClassJsonAdapterFactoryWithTreeTypeClassDummyFactory() {
+        TypeToken<?> typeToken = TypeToken.get(String.class);
+        TypeAdapterFactory dummyFactory = JsonAdapterAnnotationTypeAdapterFactory.TREE_TYPE_CLASS_DUMMY_FACTORY;
+
+        assertTrue(factory.isClassJsonAdapterFactory(typeToken, dummyFactory));
+    }
+
+    @Test
+    void testIsClassJsonAdapterFactoryWithExistingFactory() {
+        TypeToken<?> typeToken = TypeToken.get(String.class);
+        TypeAdapterFactory existingFactory = new CustomTypeAdapterFactory();
+
+        factory.putFactoryAndGetCurrent(String.class, existingFactory); // Assuming this method exists for setup
+
+        assertTrue(factory.isClassJsonAdapterFactory(typeToken, existingFactory));
     }
 
     @Test
     void testIsClassJsonAdapterFactoryWithNullTypeToken() {
-        JsonAdapterAnnotationTypeAdapterFactory factory = new JsonAdapterAnnotationTypeAdapterFactory();
-        TypeAdapterFactory result = factory.isClassJsonAdapterFactory(null, null);
-        assertNull(result);
+        TypeAdapterFactory factory = new CustomTypeAdapterFactory();
+
+        assertThrows(NullPointerException.class, () -> {
+            factory.isClassJsonAdapterFactory(null, factory);
+        });
     }
 
     @Test
-    void testIsClassJsonAdapterFactoryWithNonJsonAdapterClass() {
-        JsonAdapterAnnotationTypeAdapterFactory factory = new JsonAdapterAnnotationTypeAdapterFactory();
-        TypeToken<NonJsonAdapterClass> typeToken = TypeToken.get(NonJsonAdapterClass.class);
-        TypeAdapterFactory result = factory.isClassJsonAdapterFactory(typeToken, null);
-        assertNull(result);
+    void testIsClassJsonAdapterFactoryWithNullFactory() {
+        TypeToken<?> typeToken = TypeToken.get(String.class);
+
+        assertThrows(NullPointerException.class, () -> {
+            factory.isClassJsonAdapterFactory(typeToken, null);
+        });
     }
 
     @Test
-    void testIsClassJsonAdapterFactoryWithCustomTypeAdapter() {
-        JsonAdapterAnnotationTypeAdapterFactory factory = new JsonAdapterAnnotationTypeAdapterFactory();
-        TypeToken<CustomTypeAdapterClass> typeToken = TypeToken.get(CustomTypeAdapterClass.class);
-        TypeAdapterFactory customAdapterFactory = new CustomTypeAdapterFactory();
-        TypeAdapterFactory result = factory.isClassJsonAdapterFactory(typeToken, customAdapterFactory);
-        assertNotNull(result);
-        // Additional assertions based on expected behavior
+    void testIsClassJsonAdapterFactoryWithNoAnnotation() {
+        TypeToken<?> typeToken = TypeToken.get(NoJsonAdapter.class);
+        TypeAdapterFactory factory = new CustomTypeAdapterFactory();
+
+        assertFalse(factory.isClassJsonAdapterFactory(typeToken, factory));
     }
 
-    // Dummy classes for testing purposes
-    static class MyClass {
-        // Assume this class has a JsonAdapter annotation
+    @Test
+    void testIsClassJsonAdapterFactoryWithInvalidAdapterClass() {
+        TypeToken<?> typeToken = TypeToken.get(InvalidJsonAdapter.class);
+        TypeAdapterFactory factory = new CustomTypeAdapterFactory();
+
+        assertFalse(factory.isClassJsonAdapterFactory(typeToken, factory));
     }
 
-    static class NonJsonAdapterClass {
-        // Assume this class does not have a JsonAdapter annotation
-    }
+    @JsonAdapter(InvalidJsonAdapter.class)
+    static class InvalidJsonAdapter {}
 
-    static class CustomTypeAdapterClass {
-        // Assume this class has a custom type adapter
-    }
+    static class NoJsonAdapter {}
 
     static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-        // Implementation of a custom TypeAdapterFactory
+        // Implementation of TypeAdapterFactory
     }
 }

@@ -1,28 +1,61 @@
 import pytest
 from requests.status_codes import _init
 
-def test_init_empty():
-    result = _init()
-    assert result is None  # Assuming the function returns None for an empty initialization
+def test_init_with_codes():
+    global codes
+    codes = type('Codes', (), {})()  # Create a simple object to hold attributes
+    global _codes
+    _codes = {
+        200: ["OK"],
+        404: ["Not Found"],
+        500: ["Internal Server Error"]
+    }
+    
+    _init()
+    
+    assert hasattr(codes, "OK")
+    assert hasattr(codes, "NOT FOUND")
+    assert hasattr(codes, "INTERNAL SERVER ERROR")
+    assert codes.OK == 200
+    assert codes["NOT FOUND"] == 404
+    assert codes["INTERNAL SERVER ERROR"] == 500
 
-def test_init_with_valid_codes():
-    # Assuming the function initializes status codes correctly
-    result = _init()
-    assert isinstance(result, dict)  # Assuming it returns a dictionary of status codes
-    assert 200 in result  # Check for a common status code
-    assert result[200] == 'OK'  # Assuming the expected value for status code 200
+def test_init_with_empty_codes():
+    global codes
+    codes = type('Codes', (), {})()
+    global _codes
+    _codes = {}
+    
+    _init()
+    
+    assert not hasattr(codes, "ANY_STATUS")
 
-def test_init_with_invalid_codes():
-    # Assuming the function handles invalid codes gracefully
-    result = _init()
-    assert isinstance(result, dict)
-    assert 999 not in result  # Assuming 999 is not a valid status code
+def test_init_with_codes_starting_with_slash():
+    global codes
+    codes = type('Codes', (), {})()
+    global _codes
+    _codes = {
+        200: ["/OK"],
+        404: ["/Not Found"]
+    }
+    
+    _init()
+    
+    assert hasattr(codes, "/OK")
+    assert not hasattr(codes, "OK")
+    assert hasattr(codes, "/NOT FOUND")
+    assert not hasattr(codes, "NOT FOUND")
 
-def test_init_boundary_conditions():
-    # Assuming the function initializes status codes correctly at boundaries
-    result = _init()
-    assert isinstance(result, dict)
-    assert 100 in result  # Check for the lower boundary
-    assert result[100] == 'Continue'  # Assuming the expected value for status code 100
-    assert 511 in result  # Check for the upper boundary
-    assert result[511] == 'Network Authentication Required'  # Assuming the expected value for status code 511
+def test_init_with_none_docstring():
+    global codes
+    codes = type('Codes', (), {})()
+    global _codes
+    _codes = {
+        200: ["OK"]
+    }
+    global __doc__
+    __doc__ = None
+    
+    _init()
+    
+    assert __doc__ is None

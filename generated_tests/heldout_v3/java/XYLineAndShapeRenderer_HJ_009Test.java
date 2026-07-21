@@ -1,81 +1,80 @@
+import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
-import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYItemRendererState;
 import org.jfree.data.xy.XYDataset;
+import org.jfree.data.xy.DefaultXYDataset;
 import org.jfree.chart.axis.ValueAxis;
-
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.plot.XYPlot;
 import org.junit.jupiter.api.Test;
-import java.awt.Graphics2D;
+
+import java.awt.*;
 import java.awt.geom.Rectangle2D;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 class XYLineAndShapeRendererTest {
 
     @Test
-    void testDrawPrimaryLineAsPathWithValidParameters() {
+    void testDrawPrimaryLineAsPath_ValidData() {
         XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
         XYItemRendererState state = new XYItemRendererState(null);
-        Graphics2D g2 = (Graphics2D) new java.awt.image.BufferedImage(1, 1, java.awt.image.BufferedImage.TYPE_INT_ARGB).getGraphics();
+        Graphics2D g2 = (Graphics2D) new BufferedImage(100, 100, BufferedImage.TYPE_INT_ARGB).getGraphics();
         XYPlot plot = new XYPlot();
-        XYDataset dataset = null; // Use a valid dataset as needed
-        int series = 0;
-        int item = 0;
-        int pass = 0;
-        ValueAxis domainAxis = new ValueAxis("Domain Axis") {};
-        ValueAxis rangeAxis = new ValueAxis("Range Axis") {};
-        Rectangle2D area = new Rectangle2D.Double(0, 0, 1, 1);
+        XYDataset dataset = createDataset();
+        ValueAxis domainAxis = new NumberAxis("X");
+        ValueAxis rangeAxis = new NumberAxis("Y");
+        Rectangle2D dataArea = new Rectangle2D.Double(0, 0, 100, 100);
 
-        // Call the target method
-        renderer.drawPrimaryLineAsPath(state, g2, plot, dataset, series, item, pass, domainAxis, rangeAxis, area);
+        renderer.drawPrimaryLineAsPath(state, g2, plot, dataset, 0, 0, 0, domainAxis, rangeAxis, dataArea);
 
-        // Assert on observable state
-        assertNotNull(g2);
+        assertTrue(state.isLastPointGood());
     }
 
     @Test
-    void testDrawPrimaryLineAsPathWithNullGraphics() {
+    void testDrawPrimaryLineAsPath_NaNValues() {
         XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
         XYItemRendererState state = new XYItemRendererState(null);
-        Graphics2D g2 = null; // Intentionally null to test error handling
+        Graphics2D g2 = (Graphics2D) new BufferedImage(100, 100, BufferedImage.TYPE_INT_ARGB).getGraphics();
         XYPlot plot = new XYPlot();
-        XYDataset dataset = null; // Use a valid dataset as needed
-        int series = 0;
-        int item = 0;
-        int pass = 0;
-        ValueAxis domainAxis = new ValueAxis("Domain Axis") {};
-        ValueAxis rangeAxis = new ValueAxis("Range Axis") {};
-        Rectangle2D area = new Rectangle2D.Double(0, 0, 1, 1);
+        XYDataset dataset = createDatasetWithNaN();
+        ValueAxis domainAxis = new NumberAxis("X");
+        ValueAxis rangeAxis = new NumberAxis("Y");
+        Rectangle2D dataArea = new Rectangle2D.Double(0, 0, 100, 100);
 
-        // Call the target method
-        // Expecting an exception or specific behavior
-        try {
-            renderer.drawPrimaryLineAsPath(state, g2, plot, dataset, series, item, pass, domainAxis, rangeAxis, area);
-        } catch (NullPointerException e) {
-            // Expected behavior
-        }
+        renderer.drawPrimaryLineAsPath(state, g2, plot, dataset, 0, 0, 0, domainAxis, rangeAxis, dataArea);
+
+        assertFalse(state.isLastPointGood());
     }
 
     @Test
-    void testDrawPrimaryLineAsPathWithInvalidDataset() {
+    void testDrawPrimaryLineAsPath_LastItem() {
         XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
         XYItemRendererState state = new XYItemRendererState(null);
-        Graphics2D g2 = (Graphics2D) new java.awt.image.BufferedImage(1, 1, java.awt.image.BufferedImage.TYPE_INT_ARGB).getGraphics();
+        Graphics2D g2 = (Graphics2D) new BufferedImage(100, 100, BufferedImage.TYPE_INT_ARGB).getGraphics();
         XYPlot plot = new XYPlot();
-        XYDataset dataset = null; // Intentionally null to test error handling
-        int series = -1; // Invalid series index
-        int item = -1; // Invalid item index
-        int pass = 0;
-        ValueAxis domainAxis = new ValueAxis("Domain Axis") {};
-        ValueAxis rangeAxis = new ValueAxis("Range Axis") {};
-        Rectangle2D area = new Rectangle2D.Double(0, 0, 1, 1);
+        XYDataset dataset = createDataset();
+        ValueAxis domainAxis = new NumberAxis("X");
+        ValueAxis rangeAxis = new NumberAxis("Y");
+        Rectangle2D dataArea = new Rectangle2D.Double(0, 0, 100, 100);
+        state.setLastItemIndex(0);
 
-        // Call the target method
-        // Expecting an exception or specific behavior
-        try {
-            renderer.drawPrimaryLineAsPath(state, g2, plot, dataset, series, item, pass, domainAxis, rangeAxis, area);
-        } catch (IndexOutOfBoundsException e) {
-            // Expected behavior
-        }
+        renderer.drawPrimaryLineAsPath(state, g2, plot, dataset, 0, 0, 0, domainAxis, rangeAxis, dataArea);
+
+        assertTrue(state.isLastPointGood());
+    }
+
+    private XYDataset createDataset() {
+        DefaultXYDataset dataset = new DefaultXYDataset();
+        double[][] data = {{1.0, 2.0}, {3.0, 4.0}};
+        dataset.addSeries("Series1", data);
+        return dataset;
+    }
+
+    private XYDataset createDatasetWithNaN() {
+        DefaultXYDataset dataset = new DefaultXYDataset();
+        double[][] data = {{Double.NaN, 2.0}, {3.0, 4.0}};
+        dataset.addSeries("Series1", data);
+        return dataset;
     }
 }

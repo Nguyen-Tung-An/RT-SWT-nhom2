@@ -1,53 +1,54 @@
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.internal.bind.MapTypeAdapterFactory;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class MapTypeAdapterFactoryAdapterTest {
 
     private final MapTypeAdapterFactory.Adapter adapter = new MapTypeAdapterFactory().new Adapter();
 
     @Test
-    void testKeyToStringWithString() {
-        JsonElement jsonElement = new JsonPrimitive("testKey");
-        String result = adapter.keyToString(jsonElement);
-        assertEquals("testKey", result);
-    }
-
-    @Test
     void testKeyToStringWithNumber() {
-        JsonElement jsonElement = new JsonPrimitive(123);
-        String result = adapter.keyToString(jsonElement);
+        JsonElement keyElement = new JsonPrimitive(123);
+        String result = adapter.keyToString(keyElement);
         assertEquals("123", result);
     }
 
     @Test
     void testKeyToStringWithBooleanTrue() {
-        JsonElement jsonElement = new JsonPrimitive(true);
-        String result = adapter.keyToString(jsonElement);
+        JsonElement keyElement = new JsonPrimitive(true);
+        String result = adapter.keyToString(keyElement);
         assertEquals("true", result);
     }
 
     @Test
     void testKeyToStringWithBooleanFalse() {
-        JsonElement jsonElement = new JsonPrimitive(false);
-        String result = adapter.keyToString(jsonElement);
+        JsonElement keyElement = new JsonPrimitive(false);
+        String result = adapter.keyToString(keyElement);
         assertEquals("false", result);
     }
 
     @Test
+    void testKeyToStringWithString() {
+        JsonElement keyElement = new JsonPrimitive("test");
+        String result = adapter.keyToString(keyElement);
+        assertEquals("test", result);
+    }
+
+    @Test
     void testKeyToStringWithNull() {
-        JsonElement jsonElement = null;
-        String result = adapter.keyToString(jsonElement);
+        JsonElement keyElement = JsonNull.INSTANCE;
+        String result = adapter.keyToString(keyElement);
         assertEquals("null", result);
     }
 
     @Test
-    void testKeyToStringWithEmptyString() {
-        JsonElement jsonElement = new JsonPrimitive("");
-        String result = adapter.keyToString(jsonElement);
-        assertEquals("", result);
+    void testKeyToStringWithInvalidJsonElement() {
+        JsonElement keyElement = new JsonPrimitive(new Object());
+        assertThrows(AssertionError.class, () -> adapter.keyToString(keyElement));
     }
 }

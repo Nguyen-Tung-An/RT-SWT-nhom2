@@ -1,57 +1,53 @@
 import pytest
 from requests.hooks import dispatch_hook
-from requests.models import Request, Response
+from requests.models import Response
 
-def test_dispatch_hook_with_valid_key():
-    hooks = {'response': [lambda r, *args, **kwargs: r]}
-    request = Request()
-    response = Response()
-    hook_data = {'key': 'value'}
-    
-    result = dispatch_hook('response', hooks, hook_data)
-    
-    assert result == response
+def sample_hook(response, **kwargs):
+    return response.text + " modified"
 
-def test_dispatch_hook_with_empty_hooks():
-    hooks = {}
-    request = Request()
+def another_hook(response, **kwargs):
+    return None
+
+def no_op_hook(response, **kwargs):
+    return response
+
+def test_dispatch_hook_with_callable_hook():
     response = Response()
-    hook_data = {'key': 'value'}
-    
-    result = dispatch_hook('response', hooks, hook_data)
-    
-    assert result == response
+    response._content = b"original"
+    hooks = {'key': sample_hook}
+    result = dispatch_hook('key', hooks, response)
+    assert result.text == "original modified"
+
+def test_dispatch_hook_with_callable_hook_returning_none():
+    response = Response()
+    response._content = b"original"
+    hooks = {'key': another_hook}
+    result = dispatch_hook('key', hooks, response)
+    assert result.text == "original"
 
 def test_dispatch_hook_with_non_callable_hook():
-    hooks = {'response': 'not_a_callable'}
-    request = Request()
     response = Response()
-    hook_data = {'key': 'value'}
-    
-    with pytest.raises(TypeError):
-        dispatch_hook('response', hooks, hook_data)
+    response._content = b"original"
+    hooks = {'key': [sample_hook, no_op_hook]}
+    result = dispatch_hook('key', hooks, response)
+    assert result.text == "original modified"
+
+def test_dispatch_hook_with_empty_hooks():
+    response = Response()
+    response._content = b"original"
+    hooks = {}
+    result = dispatch_hook('key', hooks, response)
+    assert result.text == "original"
+
+def test_dispatch_hook_with_none_hooks():
+    response = Response()
+    response._content = b"original"
+    result = dispatch_hook('key', None, response)
+    assert result.text == "original"
 
 def test_dispatch_hook_with_multiple_hooks():
-    hooks = {
-        'response': [
-            lambda r, *args, **kwargs: r,
-            lambda r, *args, **kwargs: r
-        ]
-    }
-    request = Request()
     response = Response()
-    hook_data = {'key': 'value'}
-    
-    result = dispatch_hook('response', hooks, hook_data)
-    
-    assert result == response
-
-def test_dispatch_hook_with_invalid_key():
-    hooks = {'response': [lambda r, *args, **kwargs: r]}
-    request = Request()
-    response = Response()
-    hook_data = {'key': 'value'}
-    
-    result = dispatch_hook('invalid_key', hooks, hook_data)
-    
-    assert result == response
+    response._content = b"original"
+    hooks = {'key': [sample_hook, no_op_hook]}
+    result = dispatch_hook('key', hooks, response)
+    assert result.text == "original modified"

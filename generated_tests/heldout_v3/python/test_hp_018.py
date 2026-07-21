@@ -3,37 +3,53 @@ import pytest
 from requests.utils import set_environ
 
 class TestSetEnviron:
-    def test_set_environ_valid(self):
-        # Test setting a valid environment variable
-        set_environ('TEST_ENV', 'test_value')
-        assert os.environ['TEST_ENV'] == 'test_value'
+    
+    def test_set_environ_with_value(self):
+        env_name = 'TEST_ENV'
+        value = 'test_value'
+        
+        with set_environ(env_name, value):
+            assert os.environ[env_name] == value
+        
+        assert env_name not in os.environ  # Ensure it is removed after context
 
-    def test_set_environ_overwrite(self):
-        # Test overwriting an existing environment variable
-        set_environ('TEST_ENV', 'new_value')
-        assert os.environ['TEST_ENV'] == 'new_value'
+    def test_set_environ_with_none(self):
+        env_name = 'TEST_ENV'
+        value = None
+        
+        with set_environ(env_name, value):
+            assert env_name not in os.environ  # Ensure it does nothing
+        
+        assert env_name not in os.environ  # Ensure it is still not set after context
 
-    def test_set_environ_empty_value(self):
-        # Test setting an environment variable to an empty string
-        set_environ('TEST_ENV', '')
-        assert os.environ['TEST_ENV'] == ''
+    def test_set_environ_existing_value(self):
+        env_name = 'TEST_ENV'
+        original_value = 'original_value'
+        new_value = 'new_value'
+        
+        os.environ[env_name] = original_value
+        
+        with set_environ(env_name, new_value):
+            assert os.environ[env_name] == new_value
+        
+        assert os.environ[env_name] == original_value  # Ensure original value is restored
 
-    def test_set_environ_none_value(self):
-        # Test setting an environment variable to None
-        with pytest.raises(TypeError):
-            set_environ('TEST_ENV', None)
+    def test_set_environ_existing_value_none(self):
+        env_name = 'TEST_ENV'
+        original_value = 'original_value'
+        
+        os.environ[env_name] = original_value
+        
+        with set_environ(env_name, None):
+            assert env_name not in os.environ  # Ensure it does nothing
+        
+        assert os.environ[env_name] == original_value  # Ensure original value is still there
 
-    def test_set_environ_invalid_name(self):
-        # Test setting an environment variable with an invalid name
-        with pytest.raises(ValueError):
-            set_environ('', 'value')
-
-    def test_set_environ_invalid_name_with_space(self):
-        # Test setting an environment variable with a name that has spaces
-        with pytest.raises(ValueError):
-            set_environ('INVALID NAME', 'value')
-
-    def test_set_environ_special_characters(self):
-        # Test setting an environment variable with special characters
-        set_environ('TEST_ENV_!@#$', 'special_value')
-        assert os.environ['TEST_ENV_!@#$'] == 'special_value'
+    def test_set_environ_nonexistent_variable(self):
+        env_name = 'NON_EXISTENT_ENV'
+        value = 'some_value'
+        
+        with set_environ(env_name, value):
+            assert os.environ[env_name] == value
+        
+        assert env_name not in os.environ  # Ensure it is removed after context

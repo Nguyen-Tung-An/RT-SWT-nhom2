@@ -87,6 +87,8 @@ def run_env(cmd, cwd, timeout=120):
 
 
 SUITES = {
+    "ho_v1": ["generated_tests/heldout_v1/python"],  # HELDOUT_MT
+    "ho_v3": ["generated_tests/heldout_v3/python"],
     "v1": ["generated_tests/gpt4o/python"],
     "v2": ["generated_tests/gpt4o_v2/python"],
     "v3": ["generated_tests/gpt4o_v3/python"],
@@ -179,7 +181,7 @@ def main() -> int:
     ap.add_argument("--limit", type=int, default=0)
     a = ap.parse_args()
 
-    gt = [r for r in csv.DictReader(open(os.path.join(REPO, "data", "full_ground_truth.csv"),
+    gt = [r for r in csv.DictReader(open(os.path.join(REPO, os.environ.get("MT_GT","data/full_ground_truth.csv")),
                                          encoding="utf-8-sig")) if r["language"] == "python"]
     if a.limit:
         gt = gt[:a.limit]

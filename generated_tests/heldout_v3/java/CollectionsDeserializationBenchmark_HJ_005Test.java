@@ -1,35 +1,47 @@
 import com.google.gson.metrics.CollectionsDeserializationBenchmark;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.io.IOException;
+import java.util.List;
 
-public class CollectionsDeserializationBenchmarkTest {
+import static org.junit.jupiter.api.Assertions.*;
+
+class CollectionsDeserializationBenchmarkTest {
 
     @Test
-    public void testTimeCollectionsStreamingWithZero() {
+    void testTimeCollectionsStreaming_ValidInput() throws IOException {
         CollectionsDeserializationBenchmark instance = new CollectionsDeserializationBenchmark();
-        long result = instance.timeCollectionsStreaming(0);
-        assertTrue(result >= 0, "Result should be non-negative for input 0");
+        int reps = 1; // Test with one repetition
+        instance.timeCollectionsStreaming(reps);
+        // Assert on observable state or return value if applicable
+        // (Assuming some observable state can be checked here)
     }
 
     @Test
-    public void testTimeCollectionsStreamingWithPositiveValue() {
+    void testTimeCollectionsStreaming_ZeroReps() throws IOException {
         CollectionsDeserializationBenchmark instance = new CollectionsDeserializationBenchmark();
-        long result = instance.timeCollectionsStreaming(10);
-        assertTrue(result >= 0, "Result should be non-negative for positive input");
+        int reps = 0; // Test with zero repetitions
+        instance.timeCollectionsStreaming(reps);
+        // Assert on observable state or return value if applicable
     }
 
     @Test
-    public void testTimeCollectionsStreamingWithNegativeValue() {
+    void testTimeCollectionsStreaming_NegativeReps() {
         CollectionsDeserializationBenchmark instance = new CollectionsDeserializationBenchmark();
-        long result = instance.timeCollectionsStreaming(-5);
-        assertTrue(result >= 0, "Result should be non-negative for negative input");
+        int reps = -1; // Test with negative repetitions
+        assertThrows(IOException.class, () -> instance.timeCollectionsStreaming(reps));
     }
 
     @Test
-    public void testTimeCollectionsStreamingWithLargeValue() {
+    void testTimeCollectionsStreaming_UnexpectedName() {
         CollectionsDeserializationBenchmark instance = new CollectionsDeserializationBenchmark();
-        long result = instance.timeCollectionsStreaming(Integer.MAX_VALUE);
-        assertTrue(result >= 0, "Result should be non-negative for large input");
+        // Assuming we can manipulate the input to cause an unexpected name
+        // This would require a way to set the JSON input, which is not shown in the target method
+        // For the sake of this example, we will assume the method can be tested with a specific input
+        // This test would need to be adjusted based on how the JSON input is set
+        assertThrows(IOException.class, () -> {
+            // Call the method with a setup that leads to an unexpected name
+            instance.timeCollectionsStreaming(1); // Adjust this call as necessary
+        });
     }
 }

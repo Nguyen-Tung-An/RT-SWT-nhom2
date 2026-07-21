@@ -1,54 +1,48 @@
 import org.joda.time.LocalDate;
 import org.joda.time.ReadablePartial;
-import org.joda.time.LocalDateTime;
 import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class LocalDateCompareToTest {
+class LocalDateCompareToTest {
 
     @Test
-    public void testCompareTo_SameDate() {
+    void testCompareTo_SameInstance() {
+        LocalDate date = new LocalDate(2023, 10, 1);
+        assertEquals(0, date.compareTo(date));
+    }
+
+    @Test
+    void testCompareTo_EqualDates() {
         LocalDate date1 = new LocalDate(2023, 10, 1);
         LocalDate date2 = new LocalDate(2023, 10, 1);
         assertEquals(0, date1.compareTo(date2));
     }
 
     @Test
-    public void testCompareTo_EarlierDate() {
-        LocalDate date1 = new LocalDate(2023, 9, 30);
-        LocalDate date2 = new LocalDate(2023, 10, 1);
+    void testCompareTo_LesserDate() {
+        LocalDate date1 = new LocalDate(2023, 10, 1);
+        LocalDate date2 = new LocalDate(2023, 10, 2);
         assertEquals(-1, date1.compareTo(date2));
     }
 
     @Test
-    public void testCompareTo_LaterDate() {
+    void testCompareTo_GreaterDate() {
         LocalDate date1 = new LocalDate(2023, 10, 2);
         LocalDate date2 = new LocalDate(2023, 10, 1);
         assertEquals(1, date1.compareTo(date2));
     }
 
     @Test
-    public void testCompareTo_NullReadablePartial() {
+    void testCompareTo_DifferentChronologies() {
         LocalDate date1 = new LocalDate(2023, 10, 1);
-        ReadablePartial date2 = null;
-        try {
-            date1.compareTo(date2);
-        } catch (NullPointerException e) {
-            // Expected exception
-        }
+        LocalDate date2 = new LocalDate(2023, 10, 1, org.joda.time.chrono.ISOChronology.getInstanceUTC());
+        assertEquals(1, date1.compareTo(date2));
     }
 
     @Test
-    public void testCompareTo_DifferentYears() {
-        LocalDate date1 = new LocalDate(2022, 10, 1);
-        LocalDate date2 = new LocalDate(2023, 10, 1);
-        assertEquals(-1, date1.compareTo(date2));
-    }
-
-    @Test
-    public void testCompareTo_DifferentMonths() {
-        LocalDate date1 = new LocalDate(2023, 9, 1);
-        LocalDate date2 = new LocalDate(2023, 10, 1);
-        assertEquals(-1, date1.compareTo(date2));
+    void testCompareTo_NullPartial() {
+        LocalDate date = new LocalDate(2023, 10, 1);
+        assertEquals(1, date.compareTo(null));
     }
 }

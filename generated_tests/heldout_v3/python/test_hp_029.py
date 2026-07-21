@@ -2,38 +2,39 @@ import pytest
 from requests.models import Response
 
 class TestResponseText:
-    def test_text_empty_response(self):
+    def test_text_empty_content(self):
         response = Response()
-        response._content = b''  # Simulate an empty response body
-        assert response.text == ''
+        response._content = b''  # Simulate empty content
+        assert response.text() == ""
 
-    def test_text_non_empty_response(self):
+    def test_text_with_content_and_encoding(self):
         response = Response()
-        response._content = b'Hello, World!'  # Simulate a non-empty response body
-        assert response.text == 'Hello, World!'
+        response._content = b'Hello, World!'
+        response.encoding = 'utf-8'
+        assert response.text() == "Hello, World!"
 
-    def test_text_with_unicode(self):
+    def test_text_with_content_no_encoding(self):
         response = Response()
-        response._content = 'こんにちは'.encode('utf-8')  # Simulate a response with unicode
-        assert response.text == 'こんにちは'
+        response._content = b'Hello, World!'
+        response.encoding = None
+        response.apparent_encoding = 'utf-8'
+        assert response.text() == "Hello, World!"
 
-    def test_text_with_special_characters(self):
+    def test_text_with_invalid_encoding(self):
         response = Response()
-        response._content = b'Hello, \nWorld!\tThis is a test.'  # Simulate special characters
-        assert response.text == 'Hello, \nWorld!\tThis is a test.'
+        response._content = b'Hello, World!'
+        response.encoding = 'invalid-encoding'
+        response.apparent_encoding = 'utf-8'
+        assert response.text() == "Hello, World!"  # Should fallback to utf-8
 
-    def test_text_with_large_content(self):
+    def test_text_with_none_content(self):
         response = Response()
-        response._content = b'A' * (10**6)  # Simulate a large response body
-        assert response.text == 'A' * (10**6)
+        response._content = None  # Simulate None content
+        assert response.text() == ""
 
-    def test_text_with_non_utf8_bytes(self):
+    def test_text_with_content_and_fallback_encoding(self):
         response = Response()
-        response._content = b'\x80\x81\x82'  # Simulate non-UTF-8 bytes
-        assert response.text == '\ufffd\ufffd\ufffd'  # Expect replacement characters
-
-    def test_text_after_content_type_set(self):
-        response = Response()
-        response._content = b'Content-Type: text/plain\n\nHello'
-        response.headers['Content-Type'] = 'text/plain'
-        assert response.text == 'Content-Type: text/plain\n\nHello'
+        response._content = b'\xff\xfeH\x00e\x00l\x00l\x00o\x00'  # UTF-16 encoded content
+        response.encoding = None
+        response.apparent_encoding = 'utf-16'
+        assert response.text() == "Hello"  # Should decode using apparent_encoding

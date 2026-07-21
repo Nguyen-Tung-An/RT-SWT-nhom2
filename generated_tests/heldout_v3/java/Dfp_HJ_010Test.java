@@ -6,59 +6,77 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class DfpTest {
 
+    private final DfpField field = DfpField.getDefault();
+
     @Test
-    void testDfpConstructorPositiveValue() {
-        DfpField field = DfpField.getDefault();
-        double value = 1.0;
-        Dfp dfp = new Dfp(field, value);
-        assertEquals(value, dfp.getValue(), "The Dfp value should match the input value.");
+    void testZeroPositive() {
+        Dfp dfp = new Dfp(field, 0.0);
+        assertEquals(1, dfp.sign);
+        assertEquals(0, dfp.exp);
+        assertEquals(Dfp.FINITE, dfp.nans);
     }
 
     @Test
-    void testDfpConstructorNegativeValue() {
-        DfpField field = DfpField.getDefault();
-        double value = -1.0;
-        Dfp dfp = new Dfp(field, value);
-        assertEquals(value, dfp.getValue(), "The Dfp value should match the input value.");
+    void testZeroNegative() {
+        Dfp dfp = new Dfp(field, -0.0);
+        assertEquals(-1, dfp.sign);
+        assertEquals(0, dfp.exp);
+        assertEquals(Dfp.FINITE, dfp.nans);
     }
 
     @Test
-    void testDfpConstructorZeroValue() {
-        DfpField field = DfpField.getDefault();
-        double value = 0.0;
-        Dfp dfp = new Dfp(field, value);
-        assertEquals(value, dfp.getValue(), "The Dfp value should match the input value.");
+    void testSubnormalPositive() {
+        Dfp dfp = new Dfp(field, 1.0e-300);
+        assertEquals(1, dfp.sign);
+        assertEquals(-1022, dfp.exp); // Expecting normalized exponent
+        assertEquals(Dfp.FINITE, dfp.nans);
     }
 
     @Test
-    void testDfpConstructorBoundaryValue() {
-        DfpField field = DfpField.getDefault();
-        double value = Double.MAX_VALUE;
-        Dfp dfp = new Dfp(field, value);
-        assertEquals(value, dfp.getValue(), "The Dfp value should match the input value.");
+    void testSubnormalNegative() {
+        Dfp dfp = new Dfp(field, -1.0e-300);
+        assertEquals(-1, dfp.sign);
+        assertEquals(-1022, dfp.exp); // Expecting normalized exponent
+        assertEquals(Dfp.FINITE, dfp.nans);
     }
 
     @Test
-    void testDfpConstructorNaNValue() {
-        DfpField field = DfpField.getDefault();
-        double value = Double.NaN;
-        Dfp dfp = new Dfp(field, value);
-        assertEquals(value, dfp.getValue(), "The Dfp value should match the input value.");
+    void testNormalPositive() {
+        Dfp dfp = new Dfp(field, 1.0);
+        assertEquals(1, dfp.sign);
+        assertEquals(0, dfp.exp);
+        assertEquals(Dfp.FINITE, dfp.nans);
     }
 
     @Test
-    void testDfpConstructorInfinityValue() {
-        DfpField field = DfpField.getDefault();
-        double value = Double.POSITIVE_INFINITY;
-        Dfp dfp = new Dfp(field, value);
-        assertEquals(value, dfp.getValue(), "The Dfp value should match the input value.");
+    void testNormalNegative() {
+        Dfp dfp = new Dfp(field, -1.0);
+        assertEquals(-1, dfp.sign);
+        assertEquals(0, dfp.exp);
+        assertEquals(Dfp.FINITE, dfp.nans);
     }
 
     @Test
-    void testDfpConstructorNegativeInfinityValue() {
-        DfpField field = DfpField.getDefault();
-        double value = Double.NEGATIVE_INFINITY;
-        Dfp dfp = new Dfp(field, value);
-        assertEquals(value, dfp.getValue(), "The Dfp value should match the input value.");
+    void testInfinityPositive() {
+        Dfp dfp = new Dfp(field, Double.POSITIVE_INFINITY);
+        assertEquals(1, dfp.sign);
+        assertEquals(0, dfp.exp);
+        assertEquals(Dfp.INFINITE, dfp.nans);
+    }
+
+    @Test
+    void testInfinityNegative() {
+        Dfp dfp = new Dfp(field, Double.NEGATIVE_INFINITY);
+        assertEquals(-1, dfp.sign);
+        assertEquals(0, dfp.exp);
+        assertEquals(Dfp.INFINITE, dfp.nans);
+    }
+
+    @Test
+    void testNaN() {
+        Dfp dfp = new Dfp(field, Double.NaN);
+        assertEquals(1, dfp.sign);
+        assertEquals(0, dfp.exp);
+        assertEquals(Dfp.QNAN, dfp.nans);
     }
 }

@@ -1,0 +1,31 @@
+func_id,branch_coverage,mutation_score,n_mutant,n_killed,note
+HP-001,83.33,0.0,2,0,
+HP-002,0.0,,0,0,khong co test xanh (per-test)
+HP-003,100.0,,0,0,khong co diem dot bien (metric khong xac dinh)
+HP-004,25.0,,0,0,khong co diem dot bien (metric khong xac dinh)
+HP-005,0.0,,0,0,khong co test xanh (per-test)
+HP-006,0.0,,0,0,khong co test xanh (per-test)
+HP-007,16.67,0.0,7,0,
+HP-008,100.0,50.0,4,2,
+HP-009,100.0,60.0,5,3,
+HP-010,100.0,100.0,4,4,
+HP-011,87.5,0.0,1,0,
+HP-012,83.33,100.0,4,4,
+HP-013,75.0,100.0,1,1,
+HP-014,100.0,79.17,24,19,
+HP-015,100.0,100.0,2,2,
+HP-016,50.0,0.0,2,0,
+HP-017,100.0,100.0,14,14,
+HP-018,100.0,,0,0,khong co diem dot bien (metric khong xac dinh)
+HP-019,100.0,100.0,1,1,
+HP-020,100.0,100.0,1,1,
+HP-021,0.0,,0,0,khong co test xanh (collect-fail)
+HP-022,100.0,88.89,9,8,
+HP-023,0.0,,0,0,khong co test xanh (per-test)
+HP-024,75.0,0.0,1,0,
+HP-025,50.0,,0,0,khong co diem dot bien (metric khong xac dinh)
+HP-026,100.0,,0,0,khong co diem dot bien (metric khong xac dinh)
+HP-027,33.33,16.67,6,1,
+HP-028,66.67,0.0,3,0,
+HP-029,0.0,,0,0,khong co test xanh (per-test)
+HP-030,75.0,100.0,1,1,

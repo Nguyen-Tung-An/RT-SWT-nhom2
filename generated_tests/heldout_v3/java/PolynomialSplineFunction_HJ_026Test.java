@@ -1,47 +1,72 @@
 import org.apache.commons.math4.legacy.analysis.polynomials.PolynomialFunction;
 import org.apache.commons.math4.legacy.analysis.polynomials.PolynomialSplineFunction;
+import org.apache.commons.math4.exception.DimensionMismatchException;
+import org.apache.commons.math4.exception.NumberIsTooSmallException;
+import org.apache.commons.math4.exception.NullArgumentException;
 import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class PolynomialSplineFunctionTest {
 
     @Test
-    void testPolynomialSplineFunctionValidInput() {
+    void testValidInput() {
         double[] knots = {0.0, 1.0, 2.0};
-        PolynomialFunction polynomialFunction = new PolynomialFunction(new double[]{1.0, 2.0});
-        PolynomialSplineFunction splineFunction = new PolynomialSplineFunction(1.0, polynomialFunction);
-        
+        PolynomialFunction[] polynomials = {
+            new PolynomialFunction(new double[]{1.0}),
+            new PolynomialFunction(new double[]{2.0})
+        };
+        PolynomialSplineFunction splineFunction = new PolynomialSplineFunction(knots, polynomials);
         assertNotNull(splineFunction);
-        assertEquals(1.0, splineFunction.getPolynomials()[0].getCoefficients()[0]);
     }
 
     @Test
-    void testPolynomialSplineFunctionBoundaryInput() {
-        double[] knots = {0.0, 1.0, 2.0};
-        PolynomialFunction polynomialFunction = new PolynomialFunction(new double[]{0.0, 0.0});
-        PolynomialSplineFunction splineFunction = new PolynomialSplineFunction(0.0, polynomialFunction);
-        
-        assertNotNull(splineFunction);
-        assertEquals(0.0, splineFunction.getPolynomials()[0].getCoefficients()[0]);
+    void testNullKnots() {
+        PolynomialFunction[] polynomials = {new PolynomialFunction(new double[]{1.0})};
+        assertThrows(NullArgumentException.class, () -> {
+            new PolynomialSplineFunction(null, polynomials);
+        });
     }
 
     @Test
-    void testPolynomialSplineFunctionNegativeInput() {
-        double[] knots = {0.0, 1.0, 2.0};
-        PolynomialFunction polynomialFunction = new PolynomialFunction(new double[]{-1.0, -2.0});
-        PolynomialSplineFunction splineFunction = new PolynomialSplineFunction(-1.0, polynomialFunction);
-        
-        assertNotNull(splineFunction);
-        assertEquals(-1.0, splineFunction.getPolynomials()[0].getCoefficients()[0]);
+    void testNullPolynomials() {
+        double[] knots = {0.0, 1.0};
+        assertThrows(NullArgumentException.class, () -> {
+            new PolynomialSplineFunction(knots, null);
+        });
     }
 
     @Test
-    void testPolynomialSplineFunctionZeroPolynomial() {
+    void testNotEnoughKnots() {
+        double[] knots = {0.0};
+        PolynomialFunction[] polynomials = {new PolynomialFunction(new double[]{1.0})};
+        assertThrows(NumberIsTooSmallException.class, () -> {
+            new PolynomialSplineFunction(knots, polynomials);
+        });
+    }
+
+    @Test
+    void testDimensionMismatch() {
         double[] knots = {0.0, 1.0, 2.0};
-        PolynomialFunction polynomialFunction = new PolynomialFunction(new double[]{0.0});
-        PolynomialSplineFunction splineFunction = new PolynomialSplineFunction(0.0, polynomialFunction);
-        
-        assertNotNull(splineFunction);
-        assertEquals(0.0, splineFunction.getPolynomials()[0].getCoefficients()[0]);
+        PolynomialFunction[] polynomials = {
+            new PolynomialFunction(new double[]{1.0}),
+            new PolynomialFunction(new double[]{2.0}),
+            new PolynomialFunction(new double[]{3.0})
+        };
+        assertThrows(DimensionMismatchException.class, () -> {
+            new PolynomialSplineFunction(knots, polynomials);
+        });
+    }
+
+    @Test
+    void testNonMonotonicKnots() {
+        double[] knots = {0.0, 2.0, 1.0};
+        PolynomialFunction[] polynomials = {
+            new PolynomialFunction(new double[]{1.0}),
+            new PolynomialFunction(new double[]{2.0})
+        };
+        assertThrows(org.apache.commons.math4.exception.NonMonotonicSequenceException.class, () -> {
+            new PolynomialSplineFunction(knots, polynomials);
+        });
     }
 }

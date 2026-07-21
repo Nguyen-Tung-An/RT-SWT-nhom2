@@ -10,60 +10,58 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class AbstractHelpFormatterTest {
 
     @Test
-    public void testToSyntaxOptionsWithSingleOption() {
-        AbstractHelpFormatter formatter = new AbstractHelpFormatter() {};
-        Option option = new Option("a", "optionA", false, "Option A description");
+    public void testToSyntaxOptions_EmptyGroup() {
+        AbstractHelpFormatter formatter = new AbstractHelpFormatter();
         OptionGroup group = new OptionGroup();
-        group.addOption(option);
-        
-        String result = formatter.toSyntaxOptions(group);
-        assertEquals("[ -a ]", result);
-    }
-
-    @Test
-    public void testToSyntaxOptionsWithMultipleOptions() {
-        AbstractHelpFormatter formatter = new AbstractHelpFormatter() {};
-        Option option1 = new Option("a", "optionA", false, "Option A description");
-        Option option2 = new Option("b", "optionB", false, "Option B description");
-        OptionGroup group = new OptionGroup();
-        group.addOption(option1);
-        group.addOption(option2);
-        
-        String result = formatter.toSyntaxOptions(group);
-        assertEquals("[ -a | -b ]", result);
-    }
-
-    @Test
-    public void testToSyntaxOptionsWithRequiredOption() {
-        AbstractHelpFormatter formatter = new AbstractHelpFormatter() {};
-        Option option = new Option("a", "optionA", true, "Option A description");
-        OptionGroup group = new OptionGroup();
-        group.addOption(option);
-        group.setRequired(true);
-        
-        String result = formatter.toSyntaxOptions(group);
-        assertEquals("[ -a <value> ]", result);
-    }
-
-    @Test
-    public void testToSyntaxOptionsWithEmptyGroup() {
-        AbstractHelpFormatter formatter = new AbstractHelpFormatter() {};
-        OptionGroup group = new OptionGroup();
-        
         String result = formatter.toSyntaxOptions(group);
         assertEquals("", result);
     }
 
     @Test
-    public void testToSyntaxOptionsWithMixedOptions() {
-        AbstractHelpFormatter formatter = new AbstractHelpFormatter() {};
-        Option option1 = new Option("a", "optionA", false, "Option A description");
-        Option option2 = new Option("b", "optionB", true, "Option B description");
+    public void testToSyntaxOptions_SingleRequiredOption() {
+        AbstractHelpFormatter formatter = new AbstractHelpFormatter();
+        Option option = new Option("a", "optionA", false, "Option A");
+        OptionGroup group = new OptionGroup();
+        group.addOption(option);
+        group.setRequired(true);
+        String result = formatter.toSyntaxOptions(group);
+        assertEquals("[-a]", result);
+    }
+
+    @Test
+    public void testToSyntaxOptions_SingleOptionalOption() {
+        AbstractHelpFormatter formatter = new AbstractHelpFormatter();
+        Option option = new Option("b", "optionB", false, "Option B");
+        OptionGroup group = new OptionGroup();
+        group.addOption(option);
+        group.setRequired(false);
+        String result = formatter.toSyntaxOptions(group);
+        assertEquals("[--optionB]", result);
+    }
+
+    @Test
+    public void testToSyntaxOptions_MultipleOptions() {
+        AbstractHelpFormatter formatter = new AbstractHelpFormatter();
+        Option option1 = new Option("c", "optionC", false, "Option C");
+        Option option2 = new Option("d", "optionD", false, "Option D");
         OptionGroup group = new OptionGroup();
         group.addOption(option1);
         group.addOption(option2);
-        
+        group.setRequired(true);
         String result = formatter.toSyntaxOptions(group);
-        assertEquals("[ -a | -b <value> ]", result);
+        assertEquals("[-c|-d]", result);
+    }
+
+    @Test
+    public void testToSyntaxOptions_MultipleOptionsOptional() {
+        AbstractHelpFormatter formatter = new AbstractHelpFormatter();
+        Option option1 = new Option("e", "optionE", false, "Option E");
+        Option option2 = new Option("f", "optionF", false, "Option F");
+        OptionGroup group = new OptionGroup();
+        group.addOption(option1);
+        group.addOption(option2);
+        group.setRequired(false);
+        String result = formatter.toSyntaxOptions(group);
+        assertEquals("[--optionE|--optionF]", result);
     }
 }

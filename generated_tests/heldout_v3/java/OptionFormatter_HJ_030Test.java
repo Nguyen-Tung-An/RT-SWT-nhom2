@@ -1,58 +1,98 @@
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.help.OptionFormatter;
-import org.apache.commons.cli.help.Options;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.Builder;
+import org.apache.commons.cli.help.OptionFormatter.Builder;
 import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class OptionFormatterTest {
 
     @Test
-    void testOptionFormatterWithValidOption() {
-        Option option = new Option("a", "all", false, "Show all items");
-        Builder builder = new Builder();
-        OptionFormatter formatter = new OptionFormatter(option, builder);
-        String result = formatter.format();
-        assertEquals(" -a, --all  Show all items", result);
-    }
-
-    @Test
-    void testOptionFormatterWithLongOption() {
-        Option option = new Option("b", "boolean", false, "A boolean option");
-        Builder builder = new Builder();
-        OptionFormatter formatter = new OptionFormatter(option, builder);
-        String result = formatter.format();
-        assertEquals(" -b, --boolean  A boolean option", result);
-    }
-
-    @Test
     void testOptionFormatterWithRequiredOption() {
-        Option option = new Option("c", "config", true, "Configuration file");
-        Builder builder = new Builder();
-        OptionFormatter formatter = new OptionFormatter(option, builder);
-        String result = formatter.format();
-        assertEquals(" -c <file>, --config <file>  Configuration file", result);
+        Option option = Option.builder("o")
+                .longOpt("option")
+                .argName("arg")
+                .required(true)
+                .build();
+
+        Builder builder = new Builder()
+                .optionalDelimiters(", ")
+                .argNameDelimiters("[", "]")
+                .defaultArgName("default")
+                .optPrefix("-")
+                .longOptPrefix("--")
+                .optSeparator(" ")
+                .optArgSeparator("=");
+
+        OptionFormatter optionFormatter = new OptionFormatter(option, builder);
+        String result = optionFormatter.syntaxFormatFunction.apply(option, true);
+        assertEquals("-o arg", result);
     }
 
     @Test
-    void testOptionFormatterWithEmptyDescription() {
-        Option option = new Option("d", "description", false, "");
-        Builder builder = new Builder();
-        OptionFormatter formatter = new OptionFormatter(option, builder);
-        String result = formatter.format();
-        assertEquals(" -d, --description  ", result);
+    void testOptionFormatterWithOptionalOption() {
+        Option option = Option.builder("o")
+                .longOpt("option")
+                .argName("arg")
+                .required(false)
+                .build();
+
+        Builder builder = new Builder()
+                .optionalDelimiters(", ")
+                .argNameDelimiters("[", "]")
+                .defaultArgName("default")
+                .optPrefix("-")
+                .longOptPrefix("--")
+                .optSeparator(" ")
+                .optArgSeparator("=");
+
+        OptionFormatter optionFormatter = new OptionFormatter(option, builder);
+        String result = optionFormatter.syntaxFormatFunction.apply(option, false);
+        assertEquals("[--option arg]", result);
     }
 
     @Test
-    void testOptionFormatterWithNullOption() {
-        Option option = null;
-        Builder builder = new Builder();
-        try {
-            OptionFormatter formatter = new OptionFormatter(option, builder);
-            formatter.format();
-        } catch (NullPointerException e) {
-            assertEquals("Option cannot be null", e.getMessage());
-        }
+    void testOptionFormatterWithEmptyArgName() {
+        Option option = Option.builder("o")
+                .longOpt("option")
+                .argName("")
+                .required(true)
+                .build();
+
+        Builder builder = new Builder()
+                .optionalDelimiters(", ")
+                .argNameDelimiters("[", "]")
+                .defaultArgName("default")
+                .optPrefix("-")
+                .longOptPrefix("--")
+                .optSeparator(" ")
+                .optArgSeparator("=");
+
+        OptionFormatter optionFormatter = new OptionFormatter(option, builder);
+        String result = optionFormatter.syntaxFormatFunction.apply(option, true);
+        assertEquals("-o", result);
+    }
+
+    @Test
+    void testOptionFormatterWithNullBuilderFunction() {
+        Option option = Option.builder("o")
+                .longOpt("option")
+                .argName("arg")
+                .required(true)
+                .build();
+
+        Builder builder = new Builder()
+                .optionalDelimiters(", ")
+                .argNameDelimiters("[", "]")
+                .defaultArgName("default")
+                .optPrefix("-")
+                .longOptPrefix("--")
+                .optSeparator(" ")
+                .optArgSeparator("=")
+                .syntaxFormatFunction(null); // Testing with null function
+
+        OptionFormatter optionFormatter = new OptionFormatter(option, builder);
+        String result = optionFormatter.syntaxFormatFunction.apply(option, true);
+        assertEquals("-o arg", result); // Should fall back to default behavior
     }
 }

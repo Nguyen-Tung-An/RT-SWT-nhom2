@@ -1,54 +1,60 @@
+import org.jsoup.parser.HtmlTreeBuilder;
 import org.jsoup.parser.HtmlTreeBuilderState;
 import org.jsoup.parser.Token;
-import org.jsoup.parser.HtmlTreeBuilder;
+import org.jsoup.nodes.DocumentType;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class HtmlTreeBuilderStateTest {
 
     @Test
-    void testProcessWithStartTag() {
+    void testProcessWhitespaceToken() {
+        HtmlTreeBuilder tb = new HtmlTreeBuilder();
         HtmlTreeBuilderState state = new HtmlTreeBuilderState();
-        Token token = new Token.StartTag("div");
-        HtmlTreeBuilder builder = new HtmlTreeBuilder();
-        state.process(token, builder);
-        assertTrue(builder.isInState("div"));
+        Token whitespaceToken = Token.createCharacter("\u0020"); // whitespace
+        boolean result = state.process(whitespaceToken, tb);
+        assertTrue(result);
     }
 
     @Test
-    void testProcessWithEndTag() {
+    void testProcessCommentToken() {
+        HtmlTreeBuilder tb = new HtmlTreeBuilder();
         HtmlTreeBuilderState state = new HtmlTreeBuilderState();
-        Token token = new Token.EndTag("div");
-        HtmlTreeBuilder builder = new HtmlTreeBuilder();
-        state.process(token, builder);
-        assertFalse(builder.isInState("div"));
+        Token commentToken = Token.createComment("This is a comment");
+        boolean result = state.process(commentToken, tb);
+        assertTrue(result);
+        assertEquals(1, tb.getDocument().childNodeSize()); // Check if comment node is inserted
     }
 
     @Test
-    void testProcessWithComment() {
+    void testProcessDoctypeToken() {
+        HtmlTreeBuilder tb = new HtmlTreeBuilder();
         HtmlTreeBuilderState state = new HtmlTreeBuilderState();
-        Token token = new Token.Comment("This is a comment");
-        HtmlTreeBuilder builder = new HtmlTreeBuilder();
-        state.process(token, builder);
-        assertTrue(builder.hasComment("This is a comment"));
+        Token doctypeToken = Token.createDoctype("html", "", "");
+        boolean result = state.process(doctypeToken, tb);
+        assertTrue(result);
+        assertTrue(tb.getDocument().childNodeSize() > 0); // Check if doctype node is inserted
+        assertTrue(tb.getDocument().quirksMode() == Document.QuirksMode.noQuirks); // Check quirks mode
     }
 
     @Test
-    void testProcessWithDoctype() {
+    void testProcessUnknownToken() {
+        HtmlTreeBuilder tb = new HtmlTreeBuilder();
         HtmlTreeBuilderState state = new HtmlTreeBuilderState();
-        Token token = new Token.Doctype("html");
-        HtmlTreeBuilder builder = new HtmlTreeBuilder();
-        state.process(token, builder);
-        assertTrue(builder.isInDoctype("html"));
+        Token unknownToken = Token.createCharacter("Some text");
+        boolean result = state.process(unknownToken, tb);
+        assertTrue(result);
+        assertEquals(1, tb.getDocument().childNodeSize()); // Check if text node is inserted
     }
 
     @Test
-    void testProcessWithMalformedToken() {
+    void testProcessDoctypeWithQuirks() {
+        HtmlTreeBuilder tb = new HtmlTreeBuilder();
         HtmlTreeBuilderState state = new HtmlTreeBuilderState();
-        Token token = new Token.StartTag("malformed<");
-        HtmlTreeBuilder builder = new HtmlTreeBuilder();
-        assertThrows(IllegalArgumentException.class, () -> {
-            state.process(token, builder);
-        });
+        Token doctypeToken = Token.createDoctype("html", "", ""); // Force quirks
+        doctypeToken.setForceQuirks(true);
+        boolean result = state.process(doctypeToken, tb);
+        assertTrue(result);
+        assertTrue(tb.getDocument().quirksMode() == Document.QuirksMode.quirks); // Check quirks mode
     }
 }

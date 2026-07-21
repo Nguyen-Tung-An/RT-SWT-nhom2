@@ -1,50 +1,67 @@
 import org.apache.commons.cli.help.TextHelpAppendable;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class TextHelpAppendableTest {
 
     @Test
-    public void testAppendListWithEmptyCollection() {
+    public void testAppendList_Ordered_NonEmpty() throws IOException {
         TextHelpAppendable instance = new TextHelpAppendable();
-        Collection<String> emptyCollection = Arrays.asList();
-        String result = instance.appendList(true, emptyCollection);
-        assertEquals("", result);
+        Collection<CharSequence> list = Arrays.asList("Item 1", "Item 2", "Item 3");
+        instance.appendList(true, list);
+        // Assert on the observable state or return value
+        assertTrue(instance.toString().contains(" 1. Item 1"));
+        assertTrue(instance.toString().contains(" 2. Item 2"));
+        assertTrue(instance.toString().contains(" 3. Item 3"));
     }
 
     @Test
-    public void testAppendListWithSingleElement() {
+    public void testAppendList_Unordered_NonEmpty() throws IOException {
         TextHelpAppendable instance = new TextHelpAppendable();
-        Collection<String> singleElement = Arrays.asList("element1");
-        String result = instance.appendList(true, singleElement);
-        assertEquals("element1", result);
+        Collection<CharSequence> list = Arrays.asList("Item A", "Item B");
+        instance.appendList(false, list);
+        // Assert on the observable state or return value
+        assertTrue(instance.toString().contains(" * Item A"));
+        assertTrue(instance.toString().contains(" * Item B"));
     }
 
     @Test
-    public void testAppendListWithMultipleElements() {
+    public void testAppendList_Empty() throws IOException {
         TextHelpAppendable instance = new TextHelpAppendable();
-        Collection<String> multipleElements = Arrays.asList("element1", "element2", "element3");
-        String result = instance.appendList(true, multipleElements);
-        assertEquals("element1, element2, element3", result);
+        Collection<CharSequence> list = Arrays.asList();
+        instance.appendList(true, list);
+        // Assert that nothing was appended
+        assertTrue(instance.toString().isEmpty());
     }
 
     @Test
-    public void testAppendListWithNullCollection() {
+    public void testAppendList_Null() throws IOException {
         TextHelpAppendable instance = new TextHelpAppendable();
-        String result = instance.appendList(true, null);
-        assertEquals("", result);
+        instance.appendList(true, null);
+        // Assert that nothing was appended
+        assertTrue(instance.toString().isEmpty());
     }
 
     @Test
-    public void testAppendListWithFalseFlag() {
+    public void testAppendList_Ordered_SingleItem() throws IOException {
         TextHelpAppendable instance = new TextHelpAppendable();
-        Collection<String> multipleElements = Arrays.asList("element1", "element2");
-        String result = instance.appendList(false, multipleElements);
-        assertEquals("element1, element2", result);
+        Collection<CharSequence> list = Arrays.asList("Single Item");
+        instance.appendList(true, list);
+        // Assert on the observable state or return value
+        assertTrue(instance.toString().contains(" 1. Single Item"));
+    }
+
+    @Test
+    public void testAppendList_Unordered_SingleItem() throws IOException {
+        TextHelpAppendable instance = new TextHelpAppendable();
+        Collection<CharSequence> list = Arrays.asList("Single Item");
+        instance.appendList(false, list);
+        // Assert on the observable state or return value
+        assertTrue(instance.toString().contains(" * Single Item"));
     }
 }

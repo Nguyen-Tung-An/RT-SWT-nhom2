@@ -1,70 +1,67 @@
 import org.apache.commons.math4.legacy.linear.MatrixUtils;
-import org.apache.commons.math4.legacy.linear.RealMatrix;
-import org.apache.commons.math4.legacy.linear.Array2DRowRealMatrix;
+import org.apache.commons.math4.legacy.linear.AnyMatrix;
+import org.apache.commons.math4.legacy.exception.NoDataException;
+import org.apache.commons.math4.legacy.exception.NullArgumentException;
+import org.apache.commons.math4.legacy.exception.OutOfRangeException;
 import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class MatrixUtilsTest {
 
     @Test
-    void testCheckSubMatrixIndexValid() {
-        RealMatrix matrix = new Array2DRowRealMatrix(new double[][] {
-            {1, 2, 3},
-            {4, 5, 6},
-            {7, 8, 9}
+    void testCheckSubMatrixIndex_NullSelectedRows() {
+        AnyMatrix matrix = new AnyMatrix(3, 3); // Assuming AnyMatrix constructor takes rows and columns
+        assertThrows(NullArgumentException.class, () -> {
+            MatrixUtils.checkSubMatrixIndex(matrix, null, new int[]{0, 1});
         });
-        MatrixUtils.checkSubMatrixIndex(matrix, 0, 2); // Valid indices
     }
 
     @Test
-    void testCheckSubMatrixIndexRowOutOfBounds() {
-        RealMatrix matrix = new Array2DRowRealMatrix(new double[][] {
-            {1, 2, 3},
-            {4, 5, 6},
-            {7, 8, 9}
+    void testCheckSubMatrixIndex_NullSelectedColumns() {
+        AnyMatrix matrix = new AnyMatrix(3, 3);
+        assertThrows(NullArgumentException.class, () -> {
+            MatrixUtils.checkSubMatrixIndex(matrix, new int[]{0, 1}, null);
         });
-        Exception exception = assertThrows(IndexOutOfBoundsException.class, () -> {
-            MatrixUtils.checkSubMatrixIndex(matrix, 3, 2); // Row index out of bounds
-        });
-        assertEquals("Row index out of bounds: 3", exception.getMessage());
     }
 
     @Test
-    void testCheckSubMatrixIndexColumnOutOfBounds() {
-        RealMatrix matrix = new Array2DRowRealMatrix(new double[][] {
-            {1, 2, 3},
-            {4, 5, 6},
-            {7, 8, 9}
+    void testCheckSubMatrixIndex_EmptySelectedRows() {
+        AnyMatrix matrix = new AnyMatrix(3, 3);
+        assertThrows(NoDataException.class, () -> {
+            MatrixUtils.checkSubMatrixIndex(matrix, new int[]{}, new int[]{0, 1});
         });
-        Exception exception = assertThrows(IndexOutOfBoundsException.class, () -> {
-            MatrixUtils.checkSubMatrixIndex(matrix, 1, 3); // Column index out of bounds
-        });
-        assertEquals("Column index out of bounds: 3", exception.getMessage());
     }
 
     @Test
-    void testCheckSubMatrixIndexNegativeRow() {
-        RealMatrix matrix = new Array2DRowRealMatrix(new double[][] {
-            {1, 2, 3},
-            {4, 5, 6},
-            {7, 8, 9}
+    void testCheckSubMatrixIndex_EmptySelectedColumns() {
+        AnyMatrix matrix = new AnyMatrix(3, 3);
+        assertThrows(NoDataException.class, () -> {
+            MatrixUtils.checkSubMatrixIndex(matrix, new int[]{0, 1}, new int[]{});
         });
-        Exception exception = assertThrows(IndexOutOfBoundsException.class, () -> {
-            MatrixUtils.checkSubMatrixIndex(matrix, -1, 2); // Negative row index
-        });
-        assertEquals("Row index out of bounds: -1", exception.getMessage());
     }
 
     @Test
-    void testCheckSubMatrixIndexNegativeColumn() {
-        RealMatrix matrix = new Array2DRowRealMatrix(new double[][] {
-            {1, 2, 3},
-            {4, 5, 6},
-            {7, 8, 9}
+    void testCheckSubMatrixIndex_ValidIndices() {
+        AnyMatrix matrix = new AnyMatrix(3, 3);
+        assertDoesNotThrow(() -> {
+            MatrixUtils.checkSubMatrixIndex(matrix, new int[]{0, 1}, new int[]{0, 1});
         });
-        Exception exception = assertThrows(IndexOutOfBoundsException.class, () -> {
-            MatrixUtils.checkSubMatrixIndex(matrix, 1, -1); // Negative column index
+    }
+
+    @Test
+    void testCheckSubMatrixIndex_InvalidRowIndex() {
+        AnyMatrix matrix = new AnyMatrix(3, 3);
+        assertThrows(OutOfRangeException.class, () -> {
+            MatrixUtils.checkSubMatrixIndex(matrix, new int[]{-1}, new int[]{0});
         });
-        assertEquals("Column index out of bounds: -1", exception.getMessage());
+    }
+
+    @Test
+    void testCheckSubMatrixIndex_InvalidColumnIndex() {
+        AnyMatrix matrix = new AnyMatrix(3, 3);
+        assertThrows(OutOfRangeException.class, () -> {
+            MatrixUtils.checkSubMatrixIndex(matrix, new int[]{0}, new int[]{3});
+        });
     }
 }

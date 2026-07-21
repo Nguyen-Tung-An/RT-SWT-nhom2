@@ -1,66 +1,43 @@
 import org.joda.time.tz.DateTimeZoneBuilder;
+import org.joda.time.tz.DateTimeZoneBuilder.Rule;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
 
-class DateTimeZoneBuilderRuleTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-    @Test
-    void testNextWithValidParameters() {
-        DateTimeZoneBuilder.Rule rule = new DateTimeZoneBuilder.Rule();
-        long result = rule.next(1000L, 1, 2);
-        assertEquals(expectedValueForValidParameters(), result);
-    }
+public class DateTimeZoneBuilderRuleTest {
 
     @Test
-    void testNextWithNegativeLong() {
-        DateTimeZoneBuilder.Rule rule = new DateTimeZoneBuilder.Rule();
-        long result = rule.next(-1000L, 1, 2);
-        assertEquals(expectedValueForNegativeLong(), result);
+    public void testNext_InstantAtMinValue() {
+        Rule rule = new DateTimeZoneBuilder.Rule("Test", 0, 0, 0, 0, 0, 0, 0);
+        long result = rule.next(Long.MIN_VALUE, 0, 0);
+        assertEquals(Long.MIN_VALUE, result);
     }
 
     @Test
-    void testNextWithZeroLong() {
-        DateTimeZoneBuilder.Rule rule = new DateTimeZoneBuilder.Rule();
-        long result = rule.next(0L, 1, 2);
-        assertEquals(expectedValueForZeroLong(), result);
+    public void testNext_YearBeforeFromYear() {
+        Rule rule = new DateTimeZoneBuilder.Rule("Test", 2000, 0, 0, 0, 0, 0, 0);
+        long result = rule.next(1999, 0, 0);
+        assertEquals(1999, result);
     }
 
     @Test
-    void testNextWithBoundaryIntValues() {
-        DateTimeZoneBuilder.Rule rule = new DateTimeZoneBuilder.Rule();
-        long result = rule.next(1000L, Integer.MIN_VALUE, Integer.MAX_VALUE);
-        assertEquals(expectedValueForBoundaryIntValues(), result);
+    public void testNext_YearInRange() {
+        Rule rule = new DateTimeZoneBuilder.Rule("Test", 2000, 0, 0, 0, 0, 0, 0);
+        long result = rule.next(2000, 0, 0);
+        assertEquals(2000, result);
     }
 
     @Test
-    void testNextWithInvalidIntValues() {
-        DateTimeZoneBuilder.Rule rule = new DateTimeZoneBuilder.Rule();
-        long result = rule.next(1000L, -1, -1);
-        assertEquals(expectedValueForInvalidIntValues(), result);
+    public void testNext_YearAfterToYear() {
+        Rule rule = new DateTimeZoneBuilder.Rule("Test", 2000, 0, 0, 0, 0, 0, 0);
+        long result = rule.next(2100, 0, 0);
+        assertEquals(2100, result);
     }
 
-    private long expectedValueForValidParameters() {
-        // Replace with the expected value for valid parameters
-        return 0L; 
-    }
-
-    private long expectedValueForNegativeLong() {
-        // Replace with the expected value for negative long
-        return 0L; 
-    }
-
-    private long expectedValueForZeroLong() {
-        // Replace with the expected value for zero long
-        return 0L; 
-    }
-
-    private long expectedValueForBoundaryIntValues() {
-        // Replace with the expected value for boundary int values
-        return 0L; 
-    }
-
-    private long expectedValueForInvalidIntValues() {
-        // Replace with the expected value for invalid int values
-        return 0L; 
+    @Test
+    public void testNext_NextRecurrenceOutOfRange() {
+        Rule rule = new DateTimeZoneBuilder.Rule("Test", 2000, 0, 0, 0, 0, 0, 0);
+        long result = rule.next(2001, 0, 0);
+        assertEquals(2001, result);
     }
 }

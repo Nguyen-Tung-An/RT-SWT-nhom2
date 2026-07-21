@@ -1,34 +1,33 @@
 import pytest
 from requests.utils import get_encoding_from_headers
+from collections import CaseInsensitiveDict
 
-def test_get_encoding_from_headers_with_utf8():
-    headers = {'Content-Type': 'text/html; charset=utf-8'}
-    assert get_encoding_from_headers(headers) == 'utf-8'
+class TestGetEncodingFromHeaders:
 
-def test_get_encoding_from_headers_with_iso88591():
-    headers = {'Content-Type': 'text/html; charset=iso-8859-1'}
-    assert get_encoding_from_headers(headers) == 'iso-8859-1'
+    def test_no_content_type(self):
+        headers = CaseInsensitiveDict()
+        assert get_encoding_from_headers(headers) is None
 
-def test_get_encoding_from_headers_with_multiple_charsets():
-    headers = {'Content-Type': 'text/html; charset=utf-8, iso-8859-1'}
-    assert get_encoding_from_headers(headers) == 'utf-8'
+    def test_content_type_without_charset(self):
+        headers = CaseInsensitiveDict({"content-type": "text/html"})
+        assert get_encoding_from_headers(headers) == "ISO-8859-1"
 
-def test_get_encoding_from_headers_without_charset():
-    headers = {'Content-Type': 'text/html'}
-    assert get_encoding_from_headers(headers) is None
+    def test_content_type_with_charset(self):
+        headers = CaseInsensitiveDict({"content-type": "text/html; charset=UTF-8"})
+        assert get_encoding_from_headers(headers) == "UTF-8"
 
-def test_get_encoding_from_headers_with_empty_headers():
-    headers = {}
-    assert get_encoding_from_headers(headers) is None
+    def test_application_json_without_charset(self):
+        headers = CaseInsensitiveDict({"content-type": "application/json"})
+        assert get_encoding_from_headers(headers) == "utf-8"
 
-def test_get_encoding_from_headers_with_invalid_charset():
-    headers = {'Content-Type': 'text/html; charset=invalid-charset'}
-    assert get_encoding_from_headers(headers) is None
+    def test_application_json_with_charset(self):
+        headers = CaseInsensitiveDict({"content-type": "application/json; charset=ISO-8859-1"})
+        assert get_encoding_from_headers(headers) == "ISO-8859-1"
 
-def test_get_encoding_from_headers_with_malformed_header():
-    headers = {'Content-Type': 'text/html; charset='}
-    assert get_encoding_from_headers(headers) is None
+    def test_content_type_with_extra_parameters(self):
+        headers = CaseInsensitiveDict({"content-type": "text/plain; charset='UTF-16'; other_param=value"})
+        assert get_encoding_from_headers(headers) == "UTF-16"
 
-def test_get_encoding_from_headers_with_no_content_type():
-    headers = {'Accept-Encoding': 'gzip, deflate'}
-    assert get_encoding_from_headers(headers) is None
+    def test_content_type_with_empty_charset(self):
+        headers = CaseInsensitiveDict({"content-type": "text/plain; charset="})
+        assert get_encoding_from_headers(headers) is None

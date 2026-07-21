@@ -1,56 +1,58 @@
 import pytest
 from requests.utils import select_proxy
 
-def test_select_proxy_no_proxies():
-    url = "http://example.com"
-    proxies = None
-    result = select_proxy(url, proxies)
-    assert result is None
+class TestSelectProxy:
+    def test_select_proxy_http(self):
+        url = "http://example.com"
+        proxies = {
+            "http://example.com": "http://proxy1.com",
+            "http": "http://proxy2.com",
+            "all": "http://proxy3.com"
+        }
+        assert select_proxy(url, proxies) == "http://proxy1.com"
 
-def test_select_proxy_empty_proxies():
-    url = "http://example.com"
-    proxies = {}
-    result = select_proxy(url, proxies)
-    assert result is None
+    def test_select_proxy_https(self):
+        url = "https://example.com"
+        proxies = {
+            "https://example.com": "https://proxy1.com",
+            "https": "https://proxy2.com",
+            "all": "https://proxy3.com"
+        }
+        assert select_proxy(url, proxies) == "https://proxy1.com"
 
-def test_select_proxy_http_url():
-    url = "http://example.com"
-    proxies = {"http": "http://proxy.com"}
-    result = select_proxy(url, proxies)
-    assert result == "http://proxy.com"
+    def test_select_proxy_no_matching_scheme(self):
+        url = "ftp://example.com"
+        proxies = {
+            "http": "http://proxy2.com",
+            "all": "http://proxy3.com"
+        }
+        assert select_proxy(url, proxies) == "http://proxy3.com"
 
-def test_select_proxy_https_url():
-    url = "https://example.com"
-    proxies = {"https": "https://proxy.com"}
-    result = select_proxy(url, proxies)
-    assert result == "https://proxy.com"
+    def test_select_proxy_no_proxies(self):
+        url = "http://example.com"
+        proxies = {}
+        assert select_proxy(url, proxies) is None
 
-def test_select_proxy_http_and_https():
-    url = "http://example.com"
-    proxies = {
-        "http": "http://proxy.com",
-        "https": "https://secureproxy.com"
-    }
-    result = select_proxy(url, proxies)
-    assert result == "http://proxy.com"
+    def test_select_proxy_no_hostname(self):
+        url = "http://"
+        proxies = {
+            "http": "http://proxy2.com",
+            "all": "http://proxy3.com"
+        }
+        assert select_proxy(url, proxies) == "http://proxy3.com"
 
-def test_select_proxy_https_with_http_proxy():
-    url = "https://example.com"
-    proxies = {
-        "http": "http://proxy.com",
-        "https": "https://secureproxy.com"
-    }
-    result = select_proxy(url, proxies)
-    assert result == "https://secureproxy.com"
+    def test_select_proxy_all_key(self):
+        url = "http://example.com"
+        proxies = {
+            "all": "http://proxy3.com"
+        }
+        assert select_proxy(url, proxies) == "http://proxy3.com"
 
-def test_select_proxy_invalid_url():
-    url = "invalid_url"
-    proxies = {"http": "http://proxy.com"}
-    result = select_proxy(url, proxies)
-    assert result is None
-
-def test_select_proxy_no_matching_proxy():
-    url = "http://example.com"
-    proxies = {"ftp": "ftp://proxy.com"}
-    result = select_proxy(url, proxies)
-    assert result is None
+    def test_select_proxy_multiple_matches(self):
+        url = "http://example.com"
+        proxies = {
+            "http://example.com": "http://proxy1.com",
+            "http": "http://proxy2.com",
+            "all": "http://proxy3.com"
+        }
+        assert select_proxy(url, proxies) == "http://proxy1.com"
