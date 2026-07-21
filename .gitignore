@@ -256,3 +256,4 @@ generated_tests/gpt4o_v3r1c/
 generated_tests/gpt4o_v3r3e/
 ms-analysis/results/_*.csv
 ms-analysis/results/_*.json
+ms-analysis/results/_probe/
