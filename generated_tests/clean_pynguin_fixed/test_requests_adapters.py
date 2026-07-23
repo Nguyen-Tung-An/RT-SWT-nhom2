@@ -2,620 +2,351 @@
 # Please check them before you use them.
 import pytest
 import requests.adapters as module_0
-import urllib3.exceptions as module_1
-import requests.models as module_2
+import requests.cookies as module_1
+import urllib3.exceptions as module_2
 import requests.exceptions as module_3
-import requests.utils as module_4
-
 
 def test_case_0():
-    h_t_t_p_adapter_0 = module_0.HTTPAdapter()
-    assert (
-        f"{type(h_t_t_p_adapter_0.max_retries).__module__}.{type(h_t_t_p_adapter_0.max_retries).__qualname__}"
-        == "urllib3.util.retry.Retry"
-    )
-    assert h_t_t_p_adapter_0.config == {}
-    assert h_t_t_p_adapter_0.proxy_manager == {}
-    assert (
-        f"{type(h_t_t_p_adapter_0.poolmanager).__module__}.{type(h_t_t_p_adapter_0.poolmanager).__qualname__}"
-        == "urllib3.poolmanager.PoolManager"
-    )
-    assert module_0.DEFAULT_POOLSIZE == 10
-    assert module_0.DEFAULT_RETRIES == 0
-
-
-@pytest.mark.xfail(strict=True)
-def test_case_1():
-    h_t_t_p_adapter_0 = module_0.HTTPAdapter()
-    assert (
-        f"{type(h_t_t_p_adapter_0.max_retries).__module__}.{type(h_t_t_p_adapter_0.max_retries).__qualname__}"
-        == "urllib3.util.retry.Retry"
-    )
-    assert h_t_t_p_adapter_0.config == {}
-    assert h_t_t_p_adapter_0.proxy_manager == {}
-    assert (
-        f"{type(h_t_t_p_adapter_0.poolmanager).__module__}.{type(h_t_t_p_adapter_0.poolmanager).__qualname__}"
-        == "urllib3.poolmanager.PoolManager"
-    )
-    assert module_0.DEFAULT_POOLSIZE == 10
-    assert module_0.DEFAULT_RETRIES == 0
-    h_t_t_p_adapter_0.proxy_manager_for(h_t_t_p_adapter_0)
-
-
-@pytest.mark.xfail(strict=True)
-def test_case_2():
-    h_t_t_p_adapter_0 = module_0.HTTPAdapter()
-    assert (
-        f"{type(h_t_t_p_adapter_0.max_retries).__module__}.{type(h_t_t_p_adapter_0.max_retries).__qualname__}"
-        == "urllib3.util.retry.Retry"
-    )
-    assert h_t_t_p_adapter_0.config == {}
-    assert h_t_t_p_adapter_0.proxy_manager == {}
-    assert (
-        f"{type(h_t_t_p_adapter_0.poolmanager).__module__}.{type(h_t_t_p_adapter_0.poolmanager).__qualname__}"
-        == "urllib3.poolmanager.PoolManager"
-    )
-    assert module_0.DEFAULT_POOLSIZE == 10
-    assert module_0.DEFAULT_RETRIES == 0
-    str_0 = "aj"
-    h_t_t_p_adapter_0.proxy_manager_for(str_0)
-
-
-@pytest.mark.xfail(strict=True)
-def test_case_3():
-    module_0.SOCKSProxyManager()
-
-
-@pytest.mark.xfail(strict=True)
-def test_case_4():
     base_adapter_0 = module_0.BaseAdapter()
     assert module_0.DEFAULT_POOLSIZE == 10
     assert module_0.DEFAULT_RETRIES == 0
+
+def test_case_1():
+    h_t_t_p_adapter_0 = module_0.HTTPAdapter()
+    assert f'{type(h_t_t_p_adapter_0.max_retries).__module__}.{type(h_t_t_p_adapter_0.max_retries).__qualname__}' == 'urllib3.util.retry.Retry'
+    assert h_t_t_p_adapter_0.config == {}
+    assert h_t_t_p_adapter_0.proxy_manager == {}
+    assert f'{type(h_t_t_p_adapter_0.poolmanager).__module__}.{type(h_t_t_p_adapter_0.poolmanager).__qualname__}' == 'urllib3.poolmanager.PoolManager'
+    assert module_0.DEFAULT_POOLSIZE == 10
+    assert module_0.DEFAULT_RETRIES == 0
+
+def test_case_2():
     none_type_0 = None
-    base_adapter_0.send(
-        none_type_0, timeout=none_type_0, verify=none_type_0, cert=base_adapter_0
-    )
+    h_t_t_p_adapter_0 = module_0.HTTPAdapter(max_retries=none_type_0)
+    assert f'{type(h_t_t_p_adapter_0).__module__}.{type(h_t_t_p_adapter_0).__qualname__}' == 'requests.adapters.HTTPAdapter'
+    assert f'{type(h_t_t_p_adapter_0.max_retries).__module__}.{type(h_t_t_p_adapter_0.max_retries).__qualname__}' == 'urllib3.util.retry.Retry'
+    assert h_t_t_p_adapter_0.config == {}
+    assert h_t_t_p_adapter_0.proxy_manager == {}
+    assert f'{type(h_t_t_p_adapter_0.poolmanager).__module__}.{type(h_t_t_p_adapter_0.poolmanager).__qualname__}' == 'urllib3.poolmanager.PoolManager'
+    assert module_0.DEFAULT_POOLSIZE == 10
+    assert module_0.DEFAULT_RETRIES == 0
+    h_t_t_p_adapter_0.proxy_headers(none_type_0)
+    h_t_t_p_adapter_0.close()
 
+@pytest.mark.xfail(strict=True)
+def test_case_3():
+    h_t_t_p_adapter_0 = module_0.HTTPAdapter()
+    assert f'{type(h_t_t_p_adapter_0.max_retries).__module__}.{type(h_t_t_p_adapter_0.max_retries).__qualname__}' == 'urllib3.util.retry.Retry'
+    assert h_t_t_p_adapter_0.config == {}
+    assert h_t_t_p_adapter_0.proxy_manager == {}
+    assert f'{type(h_t_t_p_adapter_0.poolmanager).__module__}.{type(h_t_t_p_adapter_0.poolmanager).__qualname__}' == 'urllib3.poolmanager.PoolManager'
+    assert module_0.DEFAULT_POOLSIZE == 10
+    assert module_0.DEFAULT_RETRIES == 0
+    dict_0 = h_t_t_p_adapter_0.__getstate__()
+    h_t_t_p_adapter_0.build_response(h_t_t_p_adapter_0, dict_0)
 
+@pytest.mark.xfail(strict=True)
+def test_case_4():
+    int_0 = 761
+    bool_0 = False
+    h_t_t_p_adapter_0 = module_0.HTTPAdapter(int_0, pool_block=bool_0)
+    assert f'{type(h_t_t_p_adapter_0).__module__}.{type(h_t_t_p_adapter_0).__qualname__}' == 'requests.adapters.HTTPAdapter'
+    assert f'{type(h_t_t_p_adapter_0.max_retries).__module__}.{type(h_t_t_p_adapter_0.max_retries).__qualname__}' == 'urllib3.util.retry.Retry'
+    assert h_t_t_p_adapter_0.config == {}
+    assert h_t_t_p_adapter_0.proxy_manager == {}
+    assert f'{type(h_t_t_p_adapter_0.poolmanager).__module__}.{type(h_t_t_p_adapter_0.poolmanager).__qualname__}' == 'urllib3.poolmanager.PoolManager'
+    assert module_0.DEFAULT_POOLSIZE == 10
+    assert module_0.DEFAULT_RETRIES == 0
+    base_adapter_0 = module_0.BaseAdapter()
+    bytes_0 = b'\x00?\xa6\xa9\x8d\x0b\xfb\x894'
+    str_0 = 'xd\r&3\x0c}b7H%5&'
+    str_1 = 'r#ags;'
+    dict_0 = {str_0: bytes_0, str_1: int_0, str_0: base_adapter_0}
+    none_type_0 = h_t_t_p_adapter_0.__setstate__(dict_0)
+    assert f'{type(h_t_t_p_adapter_0.xd\r&3\x0c}b7H%5&).__module__}.{type(h_t_t_p_adapter_0.xd\r&3\x0c}b7H%5&).__qualname__}' == 'requests.adapters.BaseAdapter'
+    assert h_t_t_p_adapter_0.r#ags; == 761
+    h_t_t_p_adapter_0.build_connection_pool_key_attributes(bytes_0, int_0, h_t_t_p_adapter_0)
+
+@pytest.mark.xfail(strict=True)
 def test_case_5():
     h_t_t_p_adapter_0 = module_0.HTTPAdapter()
-    assert (
-        f"{type(h_t_t_p_adapter_0.max_retries).__module__}.{type(h_t_t_p_adapter_0.max_retries).__qualname__}"
-        == "urllib3.util.retry.Retry"
-    )
+    assert f'{type(h_t_t_p_adapter_0.max_retries).__module__}.{type(h_t_t_p_adapter_0.max_retries).__qualname__}' == 'urllib3.util.retry.Retry'
     assert h_t_t_p_adapter_0.config == {}
     assert h_t_t_p_adapter_0.proxy_manager == {}
-    assert (
-        f"{type(h_t_t_p_adapter_0.poolmanager).__module__}.{type(h_t_t_p_adapter_0.poolmanager).__qualname__}"
-        == "urllib3.poolmanager.PoolManager"
-    )
-    assert module_0.DEFAULT_POOLSIZE == 10
-    assert module_0.DEFAULT_RETRIES == 0
-    h_t_t_p_adapter_0.__getstate__()
-
-
-@pytest.mark.xfail(strict=True)
-def test_case_6():
-    str_0 = "?"
-    h_t_t_p_adapter_0 = module_0.HTTPAdapter(str_0, max_retries=str_0)
-    assert (
-        f"{type(h_t_t_p_adapter_0).__module__}.{type(h_t_t_p_adapter_0).__qualname__}"
-        == "requests.adapters.HTTPAdapter"
-    )
-    assert (
-        f"{type(h_t_t_p_adapter_0.max_retries).__module__}.{type(h_t_t_p_adapter_0.max_retries).__qualname__}"
-        == "urllib3.util.retry.Retry"
-    )
-    assert h_t_t_p_adapter_0.config == {}
-    assert h_t_t_p_adapter_0.proxy_manager == {}
-    assert (
-        f"{type(h_t_t_p_adapter_0.poolmanager).__module__}.{type(h_t_t_p_adapter_0.poolmanager).__qualname__}"
-        == "urllib3.poolmanager.PoolManager"
-    )
-    assert module_0.DEFAULT_POOLSIZE == 10
-    assert module_0.DEFAULT_RETRIES == 0
-    h_t_t_p_adapter_0.cert_verify(str_0, str_0, h_t_t_p_adapter_0, h_t_t_p_adapter_0)
-
-
-@pytest.mark.xfail(strict=True)
-def test_case_7():
-    none_type_0 = None
-    h_t_t_p_adapter_0 = module_0.HTTPAdapter()
-    assert (
-        f"{type(h_t_t_p_adapter_0.max_retries).__module__}.{type(h_t_t_p_adapter_0.max_retries).__qualname__}"
-        == "urllib3.util.retry.Retry"
-    )
-    assert h_t_t_p_adapter_0.config == {}
-    assert h_t_t_p_adapter_0.proxy_manager == {}
-    assert (
-        f"{type(h_t_t_p_adapter_0.poolmanager).__module__}.{type(h_t_t_p_adapter_0.poolmanager).__qualname__}"
-        == "urllib3.poolmanager.PoolManager"
-    )
-    assert module_0.DEFAULT_POOLSIZE == 10
-    assert module_0.DEFAULT_RETRIES == 0
-    str_0 = "CokG"
-    dict_0 = {str_0: h_t_t_p_adapter_0, str_0: str_0}
-    none_type_1 = h_t_t_p_adapter_0.__setstate__(dict_0)
-    assert h_t_t_p_adapter_0.CokG == "CokG"
-    str_1 = "?"
-    h_t_t_p_adapter_0.proxy_headers(str_1)
-    h_t_t_p_adapter_0.request_url(none_type_1, none_type_0)
-
-
-@pytest.mark.xfail(strict=True)
-def test_case_8():
-    h_t_t_p_adapter_0 = module_0.HTTPAdapter()
-    assert (
-        f"{type(h_t_t_p_adapter_0.max_retries).__module__}.{type(h_t_t_p_adapter_0.max_retries).__qualname__}"
-        == "urllib3.util.retry.Retry"
-    )
-    assert h_t_t_p_adapter_0.config == {}
-    assert h_t_t_p_adapter_0.proxy_manager == {}
-    assert (
-        f"{type(h_t_t_p_adapter_0.poolmanager).__module__}.{type(h_t_t_p_adapter_0.poolmanager).__qualname__}"
-        == "urllib3.poolmanager.PoolManager"
-    )
-    assert module_0.DEFAULT_POOLSIZE == 10
-    assert module_0.DEFAULT_RETRIES == 0
-    h_t_t_p_adapter_0.close()
-    dict_0 = {}
-    h_t_t_p_adapter_0.__setstate__(dict_0)
-    h_t_t_p_adapter_0.proxy_manager_for(h_t_t_p_adapter_0)
-
-
-@pytest.mark.xfail(strict=True)
-def test_case_9():
-    h_t_t_p_adapter_0 = module_0.HTTPAdapter()
-    assert (
-        f"{type(h_t_t_p_adapter_0.max_retries).__module__}.{type(h_t_t_p_adapter_0.max_retries).__qualname__}"
-        == "urllib3.util.retry.Retry"
-    )
-    assert h_t_t_p_adapter_0.config == {}
-    assert h_t_t_p_adapter_0.proxy_manager == {}
-    assert (
-        f"{type(h_t_t_p_adapter_0.poolmanager).__module__}.{type(h_t_t_p_adapter_0.poolmanager).__qualname__}"
-        == "urllib3.poolmanager.PoolManager"
-    )
-    assert module_0.DEFAULT_POOLSIZE == 10
-    assert module_0.DEFAULT_RETRIES == 0
-    h_t_t_p_adapter_0.build_response(h_t_t_p_adapter_0, h_t_t_p_adapter_0)
-
-
-def test_case_10():
-    h_t_t_p_adapter_0 = module_0.HTTPAdapter()
-    assert (
-        f"{type(h_t_t_p_adapter_0.max_retries).__module__}.{type(h_t_t_p_adapter_0.max_retries).__qualname__}"
-        == "urllib3.util.retry.Retry"
-    )
-    assert h_t_t_p_adapter_0.config == {}
-    assert h_t_t_p_adapter_0.proxy_manager == {}
-    assert (
-        f"{type(h_t_t_p_adapter_0.poolmanager).__module__}.{type(h_t_t_p_adapter_0.poolmanager).__qualname__}"
-        == "urllib3.poolmanager.PoolManager"
-    )
-    assert module_0.DEFAULT_POOLSIZE == 10
-    assert module_0.DEFAULT_RETRIES == 0
-    h_t_t_p_adapter_0.close()
-
-
-@pytest.mark.xfail(strict=True)
-def test_case_11():
-    h_t_t_p_adapter_0 = module_0.HTTPAdapter()
-    assert (
-        f"{type(h_t_t_p_adapter_0.max_retries).__module__}.{type(h_t_t_p_adapter_0.max_retries).__qualname__}"
-        == "urllib3.util.retry.Retry"
-    )
-    assert h_t_t_p_adapter_0.config == {}
-    assert h_t_t_p_adapter_0.proxy_manager == {}
-    assert (
-        f"{type(h_t_t_p_adapter_0.poolmanager).__module__}.{type(h_t_t_p_adapter_0.poolmanager).__qualname__}"
-        == "urllib3.poolmanager.PoolManager"
-    )
+    assert f'{type(h_t_t_p_adapter_0.poolmanager).__module__}.{type(h_t_t_p_adapter_0.poolmanager).__qualname__}' == 'urllib3.poolmanager.PoolManager'
     assert module_0.DEFAULT_POOLSIZE == 10
     assert module_0.DEFAULT_RETRIES == 0
     h_t_t_p_adapter_0.request_url(h_t_t_p_adapter_0, h_t_t_p_adapter_0)
 
+@pytest.mark.xfail(strict=True)
+def test_case_6():
+    module_0.SOCKSProxyManager()
 
 @pytest.mark.xfail(strict=True)
-def test_case_12():
-    h_t_t_p_adapter_0 = module_0.HTTPAdapter()
-    assert (
-        f"{type(h_t_t_p_adapter_0.max_retries).__module__}.{type(h_t_t_p_adapter_0.max_retries).__qualname__}"
-        == "urllib3.util.retry.Retry"
-    )
+def test_case_7():
+    bool_0 = True
+    h_t_t_p_adapter_0 = module_0.HTTPAdapter(pool_maxsize=bool_0, max_retries=bool_0)
+    assert f'{type(h_t_t_p_adapter_0).__module__}.{type(h_t_t_p_adapter_0).__qualname__}' == 'requests.adapters.HTTPAdapter'
+    assert f'{type(h_t_t_p_adapter_0.max_retries).__module__}.{type(h_t_t_p_adapter_0.max_retries).__qualname__}' == 'urllib3.util.retry.Retry'
     assert h_t_t_p_adapter_0.config == {}
     assert h_t_t_p_adapter_0.proxy_manager == {}
-    assert (
-        f"{type(h_t_t_p_adapter_0.poolmanager).__module__}.{type(h_t_t_p_adapter_0.poolmanager).__qualname__}"
-        == "urllib3.poolmanager.PoolManager"
-    )
+    assert f'{type(h_t_t_p_adapter_0.poolmanager).__module__}.{type(h_t_t_p_adapter_0.poolmanager).__qualname__}' == 'urllib3.poolmanager.PoolManager'
     assert module_0.DEFAULT_POOLSIZE == 10
     assert module_0.DEFAULT_RETRIES == 0
-    var_0 = h_t_t_p_adapter_0.add_headers(h_t_t_p_adapter_0)
-    max_retry_error_0 = module_1.MaxRetryError(var_0, var_0)
-    h_t_t_p_adapter_0.request_url(max_retry_error_0, var_0)
-
-
-def test_case_13():
-    h_t_t_p_adapter_0 = module_0.HTTPAdapter()
-    assert (
-        f"{type(h_t_t_p_adapter_0.max_retries).__module__}.{type(h_t_t_p_adapter_0.max_retries).__qualname__}"
-        == "urllib3.util.retry.Retry"
-    )
-    assert h_t_t_p_adapter_0.config == {}
-    assert h_t_t_p_adapter_0.proxy_manager == {}
-    assert (
-        f"{type(h_t_t_p_adapter_0.poolmanager).__module__}.{type(h_t_t_p_adapter_0.poolmanager).__qualname__}"
-        == "urllib3.poolmanager.PoolManager"
-    )
-    assert module_0.DEFAULT_POOLSIZE == 10
-    assert module_0.DEFAULT_RETRIES == 0
-    response_0 = module_2.Response()
-    h_t_t_p_adapter_0.build_connection_pool_key_attributes(response_0, response_0)
-
+    h_t_t_p_adapter_0.__getstate__()
+    base_adapter_0 = module_0.BaseAdapter()
+    none_type_0 = None
+    none_type_1 = None
+    var_0 = module_1.extract_cookies_to_jar(base_adapter_0, none_type_1, none_type_1)
+    base_adapter_0.send(var_0, verify=none_type_0, cert=none_type_0)
 
 @pytest.mark.xfail(strict=True)
-def test_case_14():
-    h_t_t_p_adapter_0 = module_0.HTTPAdapter()
-    assert (
-        f"{type(h_t_t_p_adapter_0.max_retries).__module__}.{type(h_t_t_p_adapter_0.max_retries).__qualname__}"
-        == "urllib3.util.retry.Retry"
-    )
-    assert h_t_t_p_adapter_0.config == {}
-    assert h_t_t_p_adapter_0.proxy_manager == {}
-    assert (
-        f"{type(h_t_t_p_adapter_0.poolmanager).__module__}.{type(h_t_t_p_adapter_0.poolmanager).__qualname__}"
-        == "urllib3.poolmanager.PoolManager"
-    )
-    assert module_0.DEFAULT_POOLSIZE == 10
-    assert module_0.DEFAULT_RETRIES == 0
-    h_t_t_p_adapter_0.send(h_t_t_p_adapter_0, timeout=h_t_t_p_adapter_0)
-
-
-@pytest.mark.xfail(strict=True)
-def test_case_15():
+def test_case_8():
     base_adapter_0 = module_0.BaseAdapter()
     assert module_0.DEFAULT_POOLSIZE == 10
     assert module_0.DEFAULT_RETRIES == 0
     base_adapter_0.close()
 
+def test_case_9():
+    none_type_0 = None
+    max_retry_error_0 = module_2.MaxRetryError(none_type_0, none_type_0)
+    h_t_t_p_adapter_0 = module_0.HTTPAdapter()
+    assert f'{type(h_t_t_p_adapter_0.max_retries).__module__}.{type(h_t_t_p_adapter_0.max_retries).__qualname__}' == 'urllib3.util.retry.Retry'
+    assert h_t_t_p_adapter_0.config == {}
+    assert h_t_t_p_adapter_0.proxy_manager == {}
+    assert f'{type(h_t_t_p_adapter_0.poolmanager).__module__}.{type(h_t_t_p_adapter_0.poolmanager).__qualname__}' == 'urllib3.poolmanager.PoolManager'
+    assert module_0.DEFAULT_POOLSIZE == 10
+    assert module_0.DEFAULT_RETRIES == 0
+    with pytest.raises(module_3.InvalidURL):
+        h_t_t_p_adapter_0.send(max_retry_error_0, none_type_0, cert=h_t_t_p_adapter_0)
+
+@pytest.mark.xfail(strict=True)
+def test_case_10():
+    h_t_t_p_adapter_0 = module_0.HTTPAdapter()
+    assert f'{type(h_t_t_p_adapter_0.max_retries).__module__}.{type(h_t_t_p_adapter_0.max_retries).__qualname__}' == 'urllib3.util.retry.Retry'
+    assert h_t_t_p_adapter_0.config == {}
+    assert h_t_t_p_adapter_0.proxy_manager == {}
+    assert f'{type(h_t_t_p_adapter_0.poolmanager).__module__}.{type(h_t_t_p_adapter_0.poolmanager).__qualname__}' == 'urllib3.poolmanager.PoolManager'
+    assert module_0.DEFAULT_POOLSIZE == 10
+    assert module_0.DEFAULT_RETRIES == 0
+    none_type_0 = None
+    h_t_t_p_adapter_0.get_connection(none_type_0)
+
+@pytest.mark.xfail(strict=True)
+def test_case_11():
+    h_t_t_p_adapter_0 = module_0.HTTPAdapter()
+    assert f'{type(h_t_t_p_adapter_0.max_retries).__module__}.{type(h_t_t_p_adapter_0.max_retries).__qualname__}' == 'urllib3.util.retry.Retry'
+    assert h_t_t_p_adapter_0.config == {}
+    assert h_t_t_p_adapter_0.proxy_manager == {}
+    assert f'{type(h_t_t_p_adapter_0.poolmanager).__module__}.{type(h_t_t_p_adapter_0.poolmanager).__qualname__}' == 'urllib3.poolmanager.PoolManager'
+    assert module_0.DEFAULT_POOLSIZE == 10
+    assert module_0.DEFAULT_RETRIES == 0
+    h_t_t_p_adapter_0.get_connection_with_tls_context(h_t_t_p_adapter_0, h_t_t_p_adapter_0, h_t_t_p_adapter_0)
+
+@pytest.mark.xfail(strict=True)
+def test_case_12():
+    h_t_t_p_adapter_0 = module_0.HTTPAdapter()
+    assert f'{type(h_t_t_p_adapter_0.max_retries).__module__}.{type(h_t_t_p_adapter_0.max_retries).__qualname__}' == 'urllib3.util.retry.Retry'
+    assert h_t_t_p_adapter_0.config == {}
+    assert h_t_t_p_adapter_0.proxy_manager == {}
+    assert f'{type(h_t_t_p_adapter_0.poolmanager).__module__}.{type(h_t_t_p_adapter_0.poolmanager).__qualname__}' == 'urllib3.poolmanager.PoolManager'
+    assert module_0.DEFAULT_POOLSIZE == 10
+    assert module_0.DEFAULT_RETRIES == 0
+    h_t_t_p_adapter_0.build_response(h_t_t_p_adapter_0, h_t_t_p_adapter_0)
+
+def test_case_13():
+    h_t_t_p_adapter_0 = module_0.HTTPAdapter()
+    assert f'{type(h_t_t_p_adapter_0.max_retries).__module__}.{type(h_t_t_p_adapter_0.max_retries).__qualname__}' == 'urllib3.util.retry.Retry'
+    assert h_t_t_p_adapter_0.config == {}
+    assert h_t_t_p_adapter_0.proxy_manager == {}
+    assert f'{type(h_t_t_p_adapter_0.poolmanager).__module__}.{type(h_t_t_p_adapter_0.poolmanager).__qualname__}' == 'urllib3.poolmanager.PoolManager'
+    assert module_0.DEFAULT_POOLSIZE == 10
+    assert module_0.DEFAULT_RETRIES == 0
+    h_t_t_p_adapter_0.close()
+
+@pytest.mark.xfail(strict=True)
+def test_case_14():
+    h_t_t_p_adapter_0 = module_0.HTTPAdapter()
+    assert f'{type(h_t_t_p_adapter_0.max_retries).__module__}.{type(h_t_t_p_adapter_0.max_retries).__qualname__}' == 'urllib3.util.retry.Retry'
+    assert h_t_t_p_adapter_0.config == {}
+    assert h_t_t_p_adapter_0.proxy_manager == {}
+    assert f'{type(h_t_t_p_adapter_0.poolmanager).__module__}.{type(h_t_t_p_adapter_0.poolmanager).__qualname__}' == 'urllib3.poolmanager.PoolManager'
+    assert module_0.DEFAULT_POOLSIZE == 10
+    assert module_0.DEFAULT_RETRIES == 0
+    h_t_t_p_adapter_0.proxy_manager_for(h_t_t_p_adapter_0)
+
+def test_case_15():
+    h_t_t_p_adapter_0 = module_0.HTTPAdapter()
+    assert f'{type(h_t_t_p_adapter_0.max_retries).__module__}.{type(h_t_t_p_adapter_0.max_retries).__qualname__}' == 'urllib3.util.retry.Retry'
+    assert h_t_t_p_adapter_0.config == {}
+    assert h_t_t_p_adapter_0.proxy_manager == {}
+    assert f'{type(h_t_t_p_adapter_0.poolmanager).__module__}.{type(h_t_t_p_adapter_0.poolmanager).__qualname__}' == 'urllib3.poolmanager.PoolManager'
+    assert module_0.DEFAULT_POOLSIZE == 10
+    assert module_0.DEFAULT_RETRIES == 0
+    none_type_0 = h_t_t_p_adapter_0.close()
+    h_t_t_p_adapter_0.proxy_headers(none_type_0)
 
 @pytest.mark.xfail(strict=True)
 def test_case_16():
     h_t_t_p_adapter_0 = module_0.HTTPAdapter()
-    assert (
-        f"{type(h_t_t_p_adapter_0.max_retries).__module__}.{type(h_t_t_p_adapter_0.max_retries).__qualname__}"
-        == "urllib3.util.retry.Retry"
-    )
+    assert f'{type(h_t_t_p_adapter_0.max_retries).__module__}.{type(h_t_t_p_adapter_0.max_retries).__qualname__}' == 'urllib3.util.retry.Retry'
     assert h_t_t_p_adapter_0.config == {}
     assert h_t_t_p_adapter_0.proxy_manager == {}
-    assert (
-        f"{type(h_t_t_p_adapter_0.poolmanager).__module__}.{type(h_t_t_p_adapter_0.poolmanager).__qualname__}"
-        == "urllib3.poolmanager.PoolManager"
-    )
+    assert f'{type(h_t_t_p_adapter_0.poolmanager).__module__}.{type(h_t_t_p_adapter_0.poolmanager).__qualname__}' == 'urllib3.poolmanager.PoolManager'
     assert module_0.DEFAULT_POOLSIZE == 10
     assert module_0.DEFAULT_RETRIES == 0
-    str_0 = ""
-    h_t_t_p_adapter_0.cert_verify(str_0, str_0, str_0, str_0)
+    str_0 = 'R\tY5M1t<y>o'
+    h_t_t_p_adapter_0.add_headers(str_0)
+    h_t_t_p_adapter_0.proxy_manager_for(str_0)
 
-
+@pytest.mark.xfail(strict=True)
 def test_case_17():
     h_t_t_p_adapter_0 = module_0.HTTPAdapter()
-    assert (
-        f"{type(h_t_t_p_adapter_0.max_retries).__module__}.{type(h_t_t_p_adapter_0.max_retries).__qualname__}"
-        == "urllib3.util.retry.Retry"
-    )
+    assert f'{type(h_t_t_p_adapter_0.max_retries).__module__}.{type(h_t_t_p_adapter_0.max_retries).__qualname__}' == 'urllib3.util.retry.Retry'
     assert h_t_t_p_adapter_0.config == {}
     assert h_t_t_p_adapter_0.proxy_manager == {}
-    assert (
-        f"{type(h_t_t_p_adapter_0.poolmanager).__module__}.{type(h_t_t_p_adapter_0.poolmanager).__qualname__}"
-        == "urllib3.poolmanager.PoolManager"
-    )
+    assert f'{type(h_t_t_p_adapter_0.poolmanager).__module__}.{type(h_t_t_p_adapter_0.poolmanager).__qualname__}' == 'urllib3.poolmanager.PoolManager'
     assert module_0.DEFAULT_POOLSIZE == 10
     assert module_0.DEFAULT_RETRIES == 0
-    str_0 = ""
-    var_0 = h_t_t_p_adapter_0.cert_verify(
-        h_t_t_p_adapter_0, str_0, h_t_t_p_adapter_0, str_0
-    )
-    assert h_t_t_p_adapter_0.cert_reqs == "CERT_NONE"
-    assert h_t_t_p_adapter_0.ca_certs is None
-    assert h_t_t_p_adapter_0.ca_cert_dir is None
-
+    str_0 = ''
+    h_t_t_p_adapter_0.proxy_manager_for(str_0)
 
 @pytest.mark.xfail(strict=True)
 def test_case_18():
     h_t_t_p_adapter_0 = module_0.HTTPAdapter()
-    assert (
-        f"{type(h_t_t_p_adapter_0.max_retries).__module__}.{type(h_t_t_p_adapter_0.max_retries).__qualname__}"
-        == "urllib3.util.retry.Retry"
-    )
+    assert f'{type(h_t_t_p_adapter_0.max_retries).__module__}.{type(h_t_t_p_adapter_0.max_retries).__qualname__}' == 'urllib3.util.retry.Retry'
     assert h_t_t_p_adapter_0.config == {}
     assert h_t_t_p_adapter_0.proxy_manager == {}
-    assert (
-        f"{type(h_t_t_p_adapter_0.poolmanager).__module__}.{type(h_t_t_p_adapter_0.poolmanager).__qualname__}"
-        == "urllib3.poolmanager.PoolManager"
-    )
+    assert f'{type(h_t_t_p_adapter_0.poolmanager).__module__}.{type(h_t_t_p_adapter_0.poolmanager).__qualname__}' == 'urllib3.poolmanager.PoolManager'
     assert module_0.DEFAULT_POOLSIZE == 10
     assert module_0.DEFAULT_RETRIES == 0
-    str_0 = ""
-    h_t_t_p_adapter_0.get_connection(str_0)
-
-
-def test_case_19():
-    h_t_t_p_adapter_0 = module_0.HTTPAdapter()
-    assert (
-        f"{type(h_t_t_p_adapter_0.max_retries).__module__}.{type(h_t_t_p_adapter_0.max_retries).__qualname__}"
-        == "urllib3.util.retry.Retry"
-    )
-    assert h_t_t_p_adapter_0.config == {}
-    assert h_t_t_p_adapter_0.proxy_manager == {}
-    assert (
-        f"{type(h_t_t_p_adapter_0.poolmanager).__module__}.{type(h_t_t_p_adapter_0.poolmanager).__qualname__}"
-        == "urllib3.poolmanager.PoolManager"
-    )
-    assert module_0.DEFAULT_POOLSIZE == 10
-    assert module_0.DEFAULT_RETRIES == 0
-    str_0 = ""
-    var_0 = h_t_t_p_adapter_0.cert_verify(
-        h_t_t_p_adapter_0, str_0, h_t_t_p_adapter_0, str_0
-    )
-    assert h_t_t_p_adapter_0.cert_reqs == "CERT_NONE"
-    assert h_t_t_p_adapter_0.ca_certs is None
-    assert h_t_t_p_adapter_0.ca_cert_dir is None
-
+    h_t_t_p_adapter_0.send(h_t_t_p_adapter_0, h_t_t_p_adapter_0)
 
 @pytest.mark.xfail(strict=True)
-def test_case_20():
+def test_case_19():
     h_t_t_p_adapter_0 = module_0.HTTPAdapter()
-    assert (
-        f"{type(h_t_t_p_adapter_0.max_retries).__module__}.{type(h_t_t_p_adapter_0.max_retries).__qualname__}"
-        == "urllib3.util.retry.Retry"
-    )
+    assert f'{type(h_t_t_p_adapter_0.max_retries).__module__}.{type(h_t_t_p_adapter_0.max_retries).__qualname__}' == 'urllib3.util.retry.Retry'
     assert h_t_t_p_adapter_0.config == {}
     assert h_t_t_p_adapter_0.proxy_manager == {}
-    assert (
-        f"{type(h_t_t_p_adapter_0.poolmanager).__module__}.{type(h_t_t_p_adapter_0.poolmanager).__qualname__}"
-        == "urllib3.poolmanager.PoolManager"
-    )
+    assert f'{type(h_t_t_p_adapter_0.poolmanager).__module__}.{type(h_t_t_p_adapter_0.poolmanager).__qualname__}' == 'urllib3.poolmanager.PoolManager'
     assert module_0.DEFAULT_POOLSIZE == 10
     assert module_0.DEFAULT_RETRIES == 0
-    str_0 = "o\x0b^"
+    str_0 = ''
     h_t_t_p_adapter_0.cert_verify(h_t_t_p_adapter_0, str_0, str_0, h_t_t_p_adapter_0)
 
+def test_case_20():
+    h_t_t_p_adapter_0 = module_0.HTTPAdapter()
+    assert f'{type(h_t_t_p_adapter_0.max_retries).__module__}.{type(h_t_t_p_adapter_0.max_retries).__qualname__}' == 'urllib3.util.retry.Retry'
+    assert h_t_t_p_adapter_0.config == {}
+    assert h_t_t_p_adapter_0.proxy_manager == {}
+    assert f'{type(h_t_t_p_adapter_0.poolmanager).__module__}.{type(h_t_t_p_adapter_0.poolmanager).__qualname__}' == 'urllib3.poolmanager.PoolManager'
+    assert module_0.DEFAULT_POOLSIZE == 10
+    assert module_0.DEFAULT_RETRIES == 0
+    str_0 = '#lW'
+    with pytest.raises(OSError):
+        h_t_t_p_adapter_0.cert_verify(h_t_t_p_adapter_0, str_0, str_0, str_0)
 
 def test_case_21():
     h_t_t_p_adapter_0 = module_0.HTTPAdapter()
-    assert (
-        f"{type(h_t_t_p_adapter_0.max_retries).__module__}.{type(h_t_t_p_adapter_0.max_retries).__qualname__}"
-        == "urllib3.util.retry.Retry"
-    )
+    assert f'{type(h_t_t_p_adapter_0.max_retries).__module__}.{type(h_t_t_p_adapter_0.max_retries).__qualname__}' == 'urllib3.util.retry.Retry'
     assert h_t_t_p_adapter_0.config == {}
     assert h_t_t_p_adapter_0.proxy_manager == {}
-    assert (
-        f"{type(h_t_t_p_adapter_0.poolmanager).__module__}.{type(h_t_t_p_adapter_0.poolmanager).__qualname__}"
-        == "urllib3.poolmanager.PoolManager"
-    )
+    assert f'{type(h_t_t_p_adapter_0.poolmanager).__module__}.{type(h_t_t_p_adapter_0.poolmanager).__qualname__}' == 'urllib3.poolmanager.PoolManager'
     assert module_0.DEFAULT_POOLSIZE == 10
     assert module_0.DEFAULT_RETRIES == 0
-    str_0 = "o\x0b^"
+    str_0 = '#lW'
     with pytest.raises(OSError):
-        h_t_t_p_adapter_0.cert_verify(
-            h_t_t_p_adapter_0, str_0, h_t_t_p_adapter_0, str_0
-        )
+        h_t_t_p_adapter_0.cert_verify(h_t_t_p_adapter_0, str_0, str_0, str_0)
 
-
-@pytest.mark.xfail(strict=True)
 def test_case_22():
     h_t_t_p_adapter_0 = module_0.HTTPAdapter()
-    assert (
-        f"{type(h_t_t_p_adapter_0.max_retries).__module__}.{type(h_t_t_p_adapter_0.max_retries).__qualname__}"
-        == "urllib3.util.retry.Retry"
-    )
+    assert f'{type(h_t_t_p_adapter_0.max_retries).__module__}.{type(h_t_t_p_adapter_0.max_retries).__qualname__}' == 'urllib3.util.retry.Retry'
     assert h_t_t_p_adapter_0.config == {}
     assert h_t_t_p_adapter_0.proxy_manager == {}
-    assert (
-        f"{type(h_t_t_p_adapter_0.poolmanager).__module__}.{type(h_t_t_p_adapter_0.poolmanager).__qualname__}"
-        == "urllib3.poolmanager.PoolManager"
-    )
+    assert f'{type(h_t_t_p_adapter_0.poolmanager).__module__}.{type(h_t_t_p_adapter_0.poolmanager).__qualname__}' == 'urllib3.poolmanager.PoolManager'
     assert module_0.DEFAULT_POOLSIZE == 10
     assert module_0.DEFAULT_RETRIES == 0
-    none_type_0 = None
-    max_retry_error_0 = module_1.MaxRetryError(h_t_t_p_adapter_0, none_type_0)
-    h_t_t_p_adapter_0.request_url(max_retry_error_0, none_type_0)
+    str_0 = ''
+    var_0 = h_t_t_p_adapter_0.cert_verify(h_t_t_p_adapter_0, str_0, h_t_t_p_adapter_0, str_0)
+    assert h_t_t_p_adapter_0.cert_reqs == 'CERT_NONE'
+    assert h_t_t_p_adapter_0.ca_certs is None
+    assert h_t_t_p_adapter_0.ca_cert_dir is None
 
-
-@pytest.mark.xfail(strict=True)
 def test_case_23():
+    none_type_0 = None
+    max_retry_error_0 = module_2.MaxRetryError(none_type_0, none_type_0)
     h_t_t_p_adapter_0 = module_0.HTTPAdapter()
-    assert (
-        f"{type(h_t_t_p_adapter_0.max_retries).__module__}.{type(h_t_t_p_adapter_0.max_retries).__qualname__}"
-        == "urllib3.util.retry.Retry"
-    )
+    assert f'{type(h_t_t_p_adapter_0.max_retries).__module__}.{type(h_t_t_p_adapter_0.max_retries).__qualname__}' == 'urllib3.util.retry.Retry'
     assert h_t_t_p_adapter_0.config == {}
     assert h_t_t_p_adapter_0.proxy_manager == {}
-    assert (
-        f"{type(h_t_t_p_adapter_0.poolmanager).__module__}.{type(h_t_t_p_adapter_0.poolmanager).__qualname__}"
-        == "urllib3.poolmanager.PoolManager"
-    )
+    assert f'{type(h_t_t_p_adapter_0.poolmanager).__module__}.{type(h_t_t_p_adapter_0.poolmanager).__qualname__}' == 'urllib3.poolmanager.PoolManager'
     assert module_0.DEFAULT_POOLSIZE == 10
     assert module_0.DEFAULT_RETRIES == 0
-    response_0 = module_2.Response()
-    h_t_t_p_adapter_0.get_connection_with_tls_context(response_0, h_t_t_p_adapter_0)
-
+    with pytest.raises(module_3.InvalidURL):
+        h_t_t_p_adapter_0.send(max_retry_error_0)
 
 @pytest.mark.xfail(strict=True)
 def test_case_24():
     h_t_t_p_adapter_0 = module_0.HTTPAdapter()
-    assert (
-        f"{type(h_t_t_p_adapter_0.max_retries).__module__}.{type(h_t_t_p_adapter_0.max_retries).__qualname__}"
-        == "urllib3.util.retry.Retry"
-    )
+    assert f'{type(h_t_t_p_adapter_0.max_retries).__module__}.{type(h_t_t_p_adapter_0.max_retries).__qualname__}' == 'urllib3.util.retry.Retry'
     assert h_t_t_p_adapter_0.config == {}
     assert h_t_t_p_adapter_0.proxy_manager == {}
-    assert (
-        f"{type(h_t_t_p_adapter_0.poolmanager).__module__}.{type(h_t_t_p_adapter_0.poolmanager).__qualname__}"
-        == "urllib3.poolmanager.PoolManager"
-    )
+    assert f'{type(h_t_t_p_adapter_0.poolmanager).__module__}.{type(h_t_t_p_adapter_0.poolmanager).__qualname__}' == 'urllib3.poolmanager.PoolManager'
     assert module_0.DEFAULT_POOLSIZE == 10
     assert module_0.DEFAULT_RETRIES == 0
-    response_0 = module_2.Response()
-    h_t_t_p_adapter_0.send(response_0)
-
+    str_0 = 'diX1n\x0b\r@1CVa\r4Ee'
+    h_t_t_p_adapter_0.add_headers(str_0)
+    str_1 = 'socks'
+    dict_0 = {}
+    h_t_t_p_adapter_0.proxy_manager_for(str_1, **dict_0)
 
 def test_case_25():
+    none_type_0 = None
+    max_retry_error_0 = module_2.MaxRetryError(none_type_0, none_type_0)
     h_t_t_p_adapter_0 = module_0.HTTPAdapter()
-    assert (
-        f"{type(h_t_t_p_adapter_0.max_retries).__module__}.{type(h_t_t_p_adapter_0.max_retries).__qualname__}"
-        == "urllib3.util.retry.Retry"
-    )
+    assert f'{type(h_t_t_p_adapter_0.max_retries).__module__}.{type(h_t_t_p_adapter_0.max_retries).__qualname__}' == 'urllib3.util.retry.Retry'
     assert h_t_t_p_adapter_0.config == {}
     assert h_t_t_p_adapter_0.proxy_manager == {}
-    assert (
-        f"{type(h_t_t_p_adapter_0.poolmanager).__module__}.{type(h_t_t_p_adapter_0.poolmanager).__qualname__}"
-        == "urllib3.poolmanager.PoolManager"
-    )
+    assert f'{type(h_t_t_p_adapter_0.poolmanager).__module__}.{type(h_t_t_p_adapter_0.poolmanager).__qualname__}' == 'urllib3.poolmanager.PoolManager'
     assert module_0.DEFAULT_POOLSIZE == 10
     assert module_0.DEFAULT_RETRIES == 0
-    response_0 = module_2.Response()
-    with pytest.raises(module_3.InvalidURL):
-        h_t_t_p_adapter_0.send(response_0, cert=h_t_t_p_adapter_0)
-
-
-@pytest.mark.xfail(strict=True)
-def test_case_26():
-    h_t_t_p_adapter_0 = module_0.HTTPAdapter()
-    assert (
-        f"{type(h_t_t_p_adapter_0.max_retries).__module__}.{type(h_t_t_p_adapter_0.max_retries).__qualname__}"
-        == "urllib3.util.retry.Retry"
-    )
-    assert h_t_t_p_adapter_0.config == {}
-    assert h_t_t_p_adapter_0.proxy_manager == {}
-    assert (
-        f"{type(h_t_t_p_adapter_0.poolmanager).__module__}.{type(h_t_t_p_adapter_0.poolmanager).__qualname__}"
-        == "urllib3.poolmanager.PoolManager"
-    )
-    assert module_0.DEFAULT_POOLSIZE == 10
-    assert module_0.DEFAULT_RETRIES == 0
-    str_0 = "J6!$"
-    h_t_t_p_adapter_0.proxy_manager_for(str_0)
-
-
-def test_case_27():
-    h_t_t_p_adapter_0 = module_0.HTTPAdapter()
-    assert (
-        f"{type(h_t_t_p_adapter_0.max_retries).__module__}.{type(h_t_t_p_adapter_0.max_retries).__qualname__}"
-        == "urllib3.util.retry.Retry"
-    )
-    assert h_t_t_p_adapter_0.config == {}
-    assert h_t_t_p_adapter_0.proxy_manager == {}
-    assert (
-        f"{type(h_t_t_p_adapter_0.poolmanager).__module__}.{type(h_t_t_p_adapter_0.poolmanager).__qualname__}"
-        == "urllib3.poolmanager.PoolManager"
-    )
-    assert module_0.DEFAULT_POOLSIZE == 10
-    assert module_0.DEFAULT_RETRIES == 0
-    max_retry_error_0 = module_1.MaxRetryError(h_t_t_p_adapter_0, h_t_t_p_adapter_0)
     var_0 = h_t_t_p_adapter_0.build_response(max_retry_error_0, max_retry_error_0)
-    assert (
-        f"{type(var_0).__module__}.{type(var_0).__qualname__}"
-        == "requests.models.Response"
-    )
+    assert f'{type(var_0).__module__}.{type(var_0).__qualname__}' == 'requests.models.Response'
     assert var_0.status_code is None
-    assert (
-        f"{type(var_0.headers).__module__}.{type(var_0.headers).__qualname__}"
-        == "requests.structures.CaseInsensitiveDict"
-    )
+    assert f'{type(var_0.headers).__module__}.{type(var_0.headers).__qualname__}' == 'requests.structures.CaseInsensitiveDict'
     assert len(var_0.headers) == 0
-    assert (
-        f"{type(var_0.raw).__module__}.{type(var_0.raw).__qualname__}"
-        == "urllib3.exceptions.MaxRetryError"
-    )
-    assert (
-        f"{type(var_0.url).__module__}.{type(var_0.url).__qualname__}"
-        == "requests.adapters.HTTPAdapter"
-    )
+    assert f'{type(var_0.raw).__module__}.{type(var_0.raw).__qualname__}' == 'urllib3.exceptions.MaxRetryError'
+    assert var_0.url is None
     assert var_0.encoding is None
     assert var_0.history == []
     assert var_0.reason is None
-    assert (
-        f"{type(var_0.cookies).__module__}.{type(var_0.cookies).__qualname__}"
-        == "requests.cookies.RequestsCookieJar"
-    )
+    assert f'{type(var_0.cookies).__module__}.{type(var_0.cookies).__qualname__}' == 'requests.cookies.RequestsCookieJar'
     assert len(var_0.cookies) == 0
-    assert (
-        f"{type(var_0.elapsed).__module__}.{type(var_0.elapsed).__qualname__}"
-        == "datetime.timedelta"
-    )
-    assert (
-        f"{type(var_0.request).__module__}.{type(var_0.request).__qualname__}"
-        == "urllib3.exceptions.MaxRetryError"
-    )
-    assert (
-        f"{type(var_0.connection).__module__}.{type(var_0.connection).__qualname__}"
-        == "requests.adapters.HTTPAdapter"
-    )
-
+    assert f'{type(var_0.elapsed).__module__}.{type(var_0.elapsed).__qualname__}' == 'datetime.timedelta'
+    assert f'{type(var_0.request).__module__}.{type(var_0.request).__qualname__}' == 'urllib3.exceptions.MaxRetryError'
+    assert f'{type(var_0.connection).__module__}.{type(var_0.connection).__qualname__}' == 'requests.adapters.HTTPAdapter'
 
 @pytest.mark.xfail(strict=True)
-def test_case_28():
-    str_0 = "P"
-    h_t_t_p_adapter_0 = module_0.HTTPAdapter(str_0, max_retries=str_0)
-    assert (
-        f"{type(h_t_t_p_adapter_0).__module__}.{type(h_t_t_p_adapter_0).__qualname__}"
-        == "requests.adapters.HTTPAdapter"
-    )
-    assert (
-        f"{type(h_t_t_p_adapter_0.max_retries).__module__}.{type(h_t_t_p_adapter_0.max_retries).__qualname__}"
-        == "urllib3.util.retry.Retry"
-    )
-    assert h_t_t_p_adapter_0.config == {}
-    assert h_t_t_p_adapter_0.proxy_manager == {}
-    assert (
-        f"{type(h_t_t_p_adapter_0.poolmanager).__module__}.{type(h_t_t_p_adapter_0.poolmanager).__qualname__}"
-        == "urllib3.poolmanager.PoolManager"
-    )
-    assert module_0.DEFAULT_POOLSIZE == 10
-    assert module_0.DEFAULT_RETRIES == 0
-    h_t_t_p_adapter_0.cert_verify(str_0, str_0, h_t_t_p_adapter_0, h_t_t_p_adapter_0)
-
-
-def test_case_29():
+def test_case_26():
+    none_type_0 = None
+    max_retry_error_0 = module_2.MaxRetryError(none_type_0, none_type_0)
     h_t_t_p_adapter_0 = module_0.HTTPAdapter()
-    assert (
-        f"{type(h_t_t_p_adapter_0.max_retries).__module__}.{type(h_t_t_p_adapter_0.max_retries).__qualname__}"
-        == "urllib3.util.retry.Retry"
-    )
+    assert f'{type(h_t_t_p_adapter_0.max_retries).__module__}.{type(h_t_t_p_adapter_0.max_retries).__qualname__}' == 'urllib3.util.retry.Retry'
     assert h_t_t_p_adapter_0.config == {}
     assert h_t_t_p_adapter_0.proxy_manager == {}
-    assert (
-        f"{type(h_t_t_p_adapter_0.poolmanager).__module__}.{type(h_t_t_p_adapter_0.poolmanager).__qualname__}"
-        == "urllib3.poolmanager.PoolManager"
-    )
+    assert f'{type(h_t_t_p_adapter_0.poolmanager).__module__}.{type(h_t_t_p_adapter_0.poolmanager).__qualname__}' == 'urllib3.poolmanager.PoolManager'
     assert module_0.DEFAULT_POOLSIZE == 10
     assert module_0.DEFAULT_RETRIES == 0
-    response_0 = module_2.Response()
-    str_0 = "Jk $EE\nFMaMES"
-    tuple_0 = module_4.get_auth_from_url(str_0)
-    with pytest.raises(module_3.InvalidURL):
-        h_t_t_p_adapter_0.send(response_0, tuple_0, verify=str_0)
-
+    h_t_t_p_adapter_0.request_url(max_retry_error_0, none_type_0)
 
 @pytest.mark.xfail(strict=True)
-def test_case_30():
+def test_case_27():
     h_t_t_p_adapter_0 = module_0.HTTPAdapter()
-    assert (
-        f"{type(h_t_t_p_adapter_0.max_retries).__module__}.{type(h_t_t_p_adapter_0.max_retries).__qualname__}"
-        == "urllib3.util.retry.Retry"
-    )
+    assert f'{type(h_t_t_p_adapter_0.max_retries).__module__}.{type(h_t_t_p_adapter_0.max_retries).__qualname__}' == 'urllib3.util.retry.Retry'
     assert h_t_t_p_adapter_0.config == {}
     assert h_t_t_p_adapter_0.proxy_manager == {}
-    assert (
-        f"{type(h_t_t_p_adapter_0.poolmanager).__module__}.{type(h_t_t_p_adapter_0.poolmanager).__qualname__}"
-        == "urllib3.poolmanager.PoolManager"
-    )
+    assert f'{type(h_t_t_p_adapter_0.poolmanager).__module__}.{type(h_t_t_p_adapter_0.poolmanager).__qualname__}' == 'urllib3.poolmanager.PoolManager'
     assert module_0.DEFAULT_POOLSIZE == 10
     assert module_0.DEFAULT_RETRIES == 0
-    str_0 = 'tJJ$x0@"y]C@,f})w$'
-    response_0 = module_2.Response()
-    tuple_0 = module_4.get_auth_from_url(str_0)
-    h_t_t_p_adapter_0.send(response_0, cert=tuple_0)
+    str_0 = ''
+    h_t_t_p_adapter_0.cert_verify(h_t_t_p_adapter_0, str_0, str_0, h_t_t_p_adapter_0)

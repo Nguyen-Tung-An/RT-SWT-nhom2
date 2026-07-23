@@ -1,7 +1,6 @@
-\section{Discussion}\label{sec:discussion}
+=== Discussion ===
 
-\subsection{Three Barriers, Only the First of Which a Prompt Can Remove}
-\label{sec:barriers}
+-- Three Barriers, Only the First of Which a Prompt Can Remove --
 
 The two prompt conditions differ in one variable, and the effect of that variable separates
 cleanly by language. On Python, supplying the target specification cut the number of suites
@@ -11,85 +10,86 @@ failed under the target-specified prompt, with 36 of the 39 being the same funct
 functions moved in each direction, which is noise, not an effect.
 
 The asymmetry is not a quirk of the two languages' tooling. It follows from what the added
-block contains. The block supplies \emph{identity}: the fully qualified name, the declaring
+block contains. The block supplies *identity*: the fully qualified name, the declaring
 class or module, the signature, and a constructor call for the receiver. Python resolves
 identity at run time, and at the stage where these suites were failing, identity was the
-entire barrier --- importing a module under the wrong path, calling a function that does
+entire barrier — importing a module under the wrong path, calling a function that does
 not exist, invoking a method on the wrong class. Supply the identity and the barrier
-disappears. Java resolves identity \emph{and types} at compile time. Having the right name
+disappears. Java resolves identity *and types* at compile time. Having the right name
 still leaves the model to synthesise type-correct calls into the surrounding API: the right
 constructor arity and parameter types, the right return types, declared exceptions,
 generics. The target block does not touch any of that.
 
 This suggests a three-level account of where generated tests fail, in order:
 
-\begin{enumerate}
-  \item \textbf{Addressing} --- calling the right thing at all. A target specification
-    removes this barrier, and in Python it removes almost all of it.
-  \item \textbf{Typing} --- calling it in a way the compiler accepts. Java only. The target
-    specification does not help, because the difficulty lies in the API surrounding the
-    target rather than in the target itself.
-  \item \textbf{State} --- constructing a receiver in a configuration under which the
-    behaviour of interest is observable. Neither prompt condition addresses this.
-\end{enumerate}
+
+ * **Addressing** — calling the right thing at all. A target specification
+ removes this barrier, and in Python it removes almost all of it.
+
+ * **Typing** — calling it in a way the compiler accepts. Java only. The target
+ specification does not help, because the difficulty lies in the API surrounding the
+ target rather than in the target itself.
+
+ * **State** — constructing a receiver in a configuration under which the
+ behaviour of interest is observable. Neither prompt condition addresses this.
 
 The evidence for the third level being untouched is direct. In Python, the count of suites
 that import successfully but have no passing test barely moved: 13 under the baseline
 prompt, 14 under the target-specified one, with only 7 functions common to both sets.
-Removing the addressing barrier did not shrink the state barrier; it \emph{exposed} it. The
+Removing the addressing barrier did not shrink the state barrier; it *exposed* it. The
 population changed while the size did not.
 
 That the binding constraint is receiver construction rather than assertion writing is not a
-new observation --- it is what the search-based literature reports for object-oriented code
-\cite{fraser2014largescale,shamshiri2015realfaults}. The finding here is that a language
+new observation — it is what the search-based literature reports for object-oriented code
+[fraser2014largescale,shamshiri2015realfaults]. The finding here is that a language
 model, which is not searching at all, runs into the same wall at the same place, and that
 handing it the constructor is insufficient: our constructor snippets were executed and
-verified to build the receiver, and the state barrier persisted anyway. Building \emph{an}
+verified to build the receiver, and the state barrier persisted anyway. Building *an*
 instance is not the same problem as building an instance in the state that makes a branch
 reachable.
 
-\subsection{Reaching a Target and Testing It Are Different Achievements}
+-- Reaching a Target and Testing It Are Different Achievements --
 
 The clearest result in this study is a split between two tiers that a single-metric study
 would have merged. On Python, the target specification raised the number of suites reaching
-the target from 29/60 to 42/60, significant at $p = 0.003$ with a rank-biserial correlation
-of $+0.61$. It raised the number detecting an injected fault from 16/60 to 22/60, which is
-not significant ($p = 0.33$).
+the target from 29/60 to 42/60, significant at p = 0.003 with a rank-biserial correlation
+of +0.61. It raised the number detecting an injected fault from 16/60 to 22/60, which is
+not significant (p = 0.33).
 
 A study reporting branch coverage alone would have concluded that the enriched prompt is a
 clear improvement, and would have been wrong about what improved. The suites arrive at the
 right function more often; they do not check its behaviour more often. Coverage measures
 arrival. Mutation score measures discrimination, and only the latter supports the claim
 that a suite tests anything. That coverage overstates suite effectiveness is a known result
-\cite{inozemtseva2014coverage}; what this experiment adds is that a specific, plausible
+[inozemtseva2014coverage]; what this experiment adds is that a specific, plausible
 intervention moves the two metrics by different amounts and in a way that inverts the
 conclusion drawn from them.
 
 This is also the pre-registered hypothesis H-B coming apart. We predicted, before seeing
-any number, that the enriched prompt would \emph{not} outperform the baseline. That
+any number, that the enriched prompt would *not* outperform the baseline. That
 prediction holds at T4 and fails at T3. We report it as partially refuted rather than
 reinterpreting it, since the direction of the T3 result is the one we predicted against.
 
-\subsection{Neither Family Wins Outright}
+-- Neither Family Wins Outright --
 
 The comparison against established generators does not resolve in a single direction, and
 the two languages disagree.
 
-On Python, both prompt conditions beat Pynguin by a wide margin --- 16/60 and 22/60 against
-2/60 --- at $p \le 0.003$ in every pairing, with rank-biserial correlations between $-0.81$
-and $-0.96$. This holds under both Pynguin configurations. The reason is visible in the
+On Python, both prompt conditions beat Pynguin by a wide margin — 16/60 and 22/60 against
+2/60 — at p <= 0.003 in every pairing, with rank-biserial correlations between -0.81
+and -0.96. This holds under both Pynguin configurations. The reason is visible in the
 failure counts rather than the scores: Pynguin produced no suite at all for 39 of 60 targets
 in its default configuration. Disabling the master--worker split, which is the documented
-workaround for the serialisation crash responsible, reduced that to 35 --- and every one of
+workaround for the serialisation crash responsible, reduced that to 35 — and every one of
 the four newly generated suites failed at collection, leaving T4 unchanged at 2/60. We
 report this because it is the kind of result that disappears when a study reports only the
 configuration that worked better. Here, neither configuration worked.
 
 On Java the ordering reverses: both search-based tools finish ahead of the model
-(Section~\ref{sec:results}). Java is where these tools have been developed and tuned for
+(Section~sec:results). Java is where these tools have been developed and tuned for
 over a decade, and where static types give a search-based generator the information it
-needs to construct calls --- exactly the information the language model was shown to be
-missing in Section~\ref{sec:barriers}. Python removes that information, and the ordering
+needs to construct calls — exactly the information the language model was shown to be
+missing in Section~Section: Three Barriers, Only the First of Which a Prompt Can Remove. Python removes that information, and the ordering
 flips.
 
 The conclusion is therefore not that language models are better or worse at test
@@ -98,25 +98,28 @@ on whether the language gives a search-based tool the types it relies on. A stud
 alone and a study on Python alone would each have produced a confident and opposite
 headline.
 
-\subsection{What This Means for Evaluating Test Generators}
+-- What This Means for Evaluating Test Generators --
 
 Three practices follow from what went wrong here rather than from what worked.
 
-\paragraph{Report the sampling funnel.}
-Only 26\,\% of the medium-complexity functions in these ten projects are simultaneously
+[Report the sampling funnel.]
+
+Only 26 % of the medium-complexity functions in these ten projects are simultaneously
 public and unambiguously named. A benchmark that samples on complexity alone therefore
 spends most of its mass on targets no external generator can address, and every tool
 evaluated on it is charged for failures that belong to the sampling. The funnel costs
 nothing to report and bounds how much of a measured failure rate is attributable to the
 tool at all.
 
-\paragraph{Rest conclusions on a tier that cannot be satisfied vacuously.}
+[Rest conclusions on a tier that cannot be satisfied vacuously.]
+
 Compilation success is defeated by reflection, which turns names into strings the compiler
 does not check. A green-test criterion is defeated by a suite containing one assertion-free
-call to the wrong function --- an example that occurs in this corpus and passes both tiers.
+call to the wrong function — an example that occurs in this corpus and passes both tiers.
 Neither observation requires an adversary; both arose from ordinary tool output.
 
-\paragraph{Assume the harness is broken until a failure proves otherwise.}
+[Assume the harness is broken until a failure proves otherwise.]
+
 The failure mode that cost the most effort in this study was not a tool performing badly.
 It was a measurement returning a plausible number after it had stopped measuring: a
 hard-coded constant, a validity flag counting execution rather than success, a crash scored

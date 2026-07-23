@@ -20,7 +20,7 @@ faults~[shamshiri2015realfaults], and Inozemtseva and Holmes report that coverag
 correlates with suite effectiveness far more weakly than is commonly
 assumed~[inozemtseva2014coverage]. Second, the difficulty of a target is not captured
 by its complexity alone — constructing the receiver object is frequently the binding
-constraint. We return to both points in Sections~Section: Measurement: Four Tiers and~sec:discussion.
+constraint. We return to both points in Sections~Section: Measurement: Four Tiers and~Section: Discussion.
 
 -- LLM-Based Test Generation --
 
