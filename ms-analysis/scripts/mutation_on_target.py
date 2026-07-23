@@ -94,6 +94,8 @@ SUITES = {
     "v3": ["generated_tests/gpt4o_v3/python"],
     # 'best': uu tien ban da sua loi, lui ve v3 neu khong co
     "best": ["generated_tests/gpt4o_v3r2c/python", "generated_tests/gpt4o_v3/python"],
+    "clean_v1": ["generated_tests/clean_v1/python"],
+    "clean_v3": ["generated_tests/clean_v3/python"],
 }
 
 

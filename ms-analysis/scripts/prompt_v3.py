@@ -36,8 +36,10 @@ GT_V2 = os.path.join(REPO, "data", "full_ground_truth_v2.csv")
 
 def load_source(rec: dict) -> str:
     """Doc than ham tu file da mine (bang ma LLM duoc xem)."""
-    p = os.path.join(REPO, "data",
-                     "java_functions" if rec["language"] == "java" else "python_functions",
+    # FUNC_DIR_ENV: cho phep tro sang dataset khac (vd clean_functions) khong sua code
+    _d = os.environ.get("FUNC_DIR") or ("java_functions" if rec["language"] == "java"
+                                        else "python_functions")
+    p = os.path.join(REPO, "data", _d,
                      rec["func_id"] + (".java" if rec["language"] == "java" else ".py"))
     return open(p, encoding="utf-8", errors="replace").read() if os.path.exists(p) else ""
 

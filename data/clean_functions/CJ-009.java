@@ -1,0 +1,16 @@
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof CompositeTitle)) {
+            return false;
+        }
+        CompositeTitle that = (CompositeTitle) obj;
+        if (!this.container.equals(that.container)) {
+            return false;
+        }
+        if (!PaintUtils.equal(this.backgroundPaint, that.backgroundPaint)) {
+            return false;
+        }
+        return super.equals(obj);
+    }

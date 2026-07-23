@@ -1,0 +1,61 @@
+func_id,branch_coverage,mutation_score,n_mutant,n_killed,note
+CP-001,75.0,100.0,4,4,
+CP-002,0.0,,0,0,khong co test xanh (collect-fail)
+CP-003,0.0,,0,0,khong co test xanh (per-test)
+CP-004,0.0,,0,0,khong co test xanh (collect-fail)
+CP-005,100.0,77.78,9,7,
+CP-006,0.0,,0,0,khong co test xanh (collect-fail)
+CP-007,0.0,,0,0,khong co test xanh (per-test)
+CP-008,0.0,,0,0,test xanh nhung KHONG cham ham dich
+CP-009,75.0,100.0,1,1,
+CP-010,0.0,,0,0,khong co test xanh (collect-fail)
+CP-011,50.0,0.0,2,0,
+CP-012,0.0,,0,0,khong co test xanh (per-test)
+CP-013,0.0,,0,0,khong co test xanh (per-test)
+CP-014,75.0,42.86,7,3,
+CP-015,83.33,,0,0,khong co diem dot bien (metric khong xac dinh)
+CP-016,0.0,,0,0,khong co test xanh (per-test)
+CP-017,100.0,88.89,9,8,
+CP-018,0.0,,0,0,khong co test xanh (collect-fail)
+CP-019,0.0,,0,0,khong co test xanh (per-test)
+CP-020,83.33,66.67,3,2,
+CP-021,75.0,0.0,3,0,
+CP-022,0.0,,0,0,khong co test xanh (per-test)
+CP-023,0.0,,0,0,khong co test xanh (per-test)
+CP-024,0.0,,0,0,khong co test xanh (collect-fail)
+CP-025,75.0,75.0,24,18,
+CP-026,30.0,100.0,1,1,
+CP-027,100.0,100.0,14,14,
+CP-028,0.0,,0,0,khong co test xanh (collect-fail)
+CP-029,0.0,,0,0,khong co test xanh (collect-fail)
+CP-030,0.0,,0,0,khong co test xanh (collect-fail)
+CP-031,87.5,,0,0,khong co diem dot bien (metric khong xac dinh)
+CP-032,0.0,,0,0,khong co test xanh (per-test)
+CP-033,100.0,,0,0,khong co diem dot bien (metric khong xac dinh)
+CP-034,0.0,,0,0,khong co test xanh (collect-fail)
+CP-035,0.0,,0,0,khong co test xanh (collect-fail)
+CP-036,0.0,,0,0,khong co test xanh (collect-fail)
+CP-037,50.0,55.56,9,5,
+CP-038,0.0,,0,0,khong co test xanh (per-test)
+CP-039,87.5,100.0,1,1,
+CP-040,0.0,,0,0,khong co test xanh (per-test)
+CP-041,0.0,,0,0,khong co test xanh (collect-fail)
+CP-042,0.0,,0,0,khong co test xanh (per-test)
+CP-043,75.0,0.0,1,0,
+CP-044,75.0,0.0,2,0,
+CP-045,100.0,100.0,13,13,
+CP-046,0.0,,0,0,khong co test xanh (collect-fail)
+CP-047,100.0,80.0,5,4,
+CP-048,0.0,,0,0,khong co test xanh (collect-fail)
+CP-049,87.5,75.0,4,3,
+CP-050,0.0,,0,0,khong co test xanh (collect-fail)
+CP-051,100.0,60.0,5,3,
+CP-052,0.0,,0,0,khong co test xanh (collect-fail)
+CP-053,50.0,0.0,3,0,
+CP-054,12.5,0.0,3,0,
+CP-055,50.0,,0,0,khong co diem dot bien (metric khong xac dinh)
+CP-056,0.0,,0,0,khong co test xanh (per-test)
+CP-057,87.5,,0,0,khong co diem dot bien (metric khong xac dinh)
+CP-058,75.0,0.0,1,0,
+CP-059,75.0,0.0,2,0,
+CP-060,83.33,100.0,4,4,

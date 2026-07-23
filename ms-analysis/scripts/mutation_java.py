@@ -45,6 +45,8 @@ MAX_MUTANTS = 20
 SUITES = {
     "v1": "generated_tests/gpt4o/java",
     "v4": "generated_tests/gpt4o_v4/java",
+    "clean_v1": "generated_tests/clean_v1/java",
+    "clean_v4": "generated_tests/clean_v4/java",
 }
 
 # (regex, thay the) — ap dung TUNG toan tu mot, moi lan mot vi tri
@@ -167,7 +169,7 @@ def main() -> int:
         print("LOI bien dich JUnitRunner:\n" + (r.stdout + r.stderr)[:800])
         return 1
 
-    rows = [r for r in csv.DictReader(open(C.GT, encoding="utf-8-sig"))
+    rows = [r for r in csv.DictReader(open(os.path.join(REPO, os.environ.get("MJ_GT", "data/full_ground_truth.csv")), encoding="utf-8-sig"))
             if r["language"] == "java"]
     if a.limit:
         rows = rows[:a.limit]
