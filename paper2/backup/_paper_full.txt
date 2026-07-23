@@ -1,6 +1,80 @@
-Backup noi dung paper — 2026-07-23 23:39
+Backup noi dung paper — 2026-07-23 23:42
 Nguon: paper2/sections/*.tex (Springer LNCS)
 ==================================================================
+
+=== Introduction ===
+
+A large language model asked to write a unit test for a specific function will often
+produce something that does not compile. It is tempting to read that as a limit of the
+model. In an earlier study of `gpt-4o-mini` on 120 medium-complexity functions we
+read it that way ourselves. This paper reports what we found when we examined the failures
+individually instead, and the answer turned out to be mostly about the benchmark and the
+measurements rather than about the model.
+
+Two problems surfaced, and they compound.
+
+[The benchmark contains targets nothing can test.]
+
+Sampling functions by cyclomatic complexity is standard, and it says nothing about whether
+a sampled function is reachable from an external test. In the ten projects studied here,
+1,848 functions fall in the band 5 <= CC <= 10; only 474 of them — 26 % — are
+simultaneously public and unambiguously named. A generator that fails on the other 74 %
+has been asked to do something no tool can do, and the resulting failure is recorded as a
+failure of the generator. Attributing a method to the wrong declaring class has the same
+effect and is easy to do silently: a brace counter that does not pop on block exit assigns
+a method to whichever nested type was declared most recently.
+
+[The usual metrics can be satisfied without testing anything.]
+
+Compilation success and coverage are the two most commonly reported outcomes in this
+literature. Both can be obtained by a suite that verifies nothing. Reflection turns every
+identifier into a string, so a call naming a method that does not exist compiles with
+return code 0; and a generated suite in our own corpus consists of a single assertion-free
+call to the wrong function, which passes. The consequence is not that these metrics are
+noisy — it is that a number can be reported when the underlying measurement has stopped
+working, with nothing to signal it. We encountered this seven times during the study, and
+four of those were defects we introduced ourselves while repairing the other three
+(Section~(xem phan lien quan)).
+
+-- This paper --
+
+We rebuild the benchmark under five testability criteria fixed in advance, sample 60 Java
+and 60 Python functions from the surviving pool, and measure every suite at four nested
+tiers, resting all claims on mutation score inside the target's line range — the only
+tier that cannot be satisfied vacuously. Two *one-shot* prompt conditions differing in
+exactly one variable isolate the effect of supplying the target specification, and three
+established generators (EvoSuite, Randoop, Pynguin) provide reference points. The sampling
+criteria, tool versions, budgets and hypotheses were committed to a public repository
+before any measurement was run.
+
+Three findings stand out.
+
+
+ * **Target specification improves reach, not fault detection.** On Python,
+ adding the fully qualified target, its signature, and an executed constructor call
+ raises the proportion of suites that reach the target from 29/60 to 42/60
+ (p = 0.003, rank-biserial +0.61). The proportion that detects a fault rises from
+ 16/60 to 22/60, which is *not* significant (p = 0.33). The prompt gets the test
+ to the right place; it does not make the test check anything. A study reporting only
+ coverage would have called this an unambiguous improvement.
+
+ * **The LLM and the search-based tools win in different languages.** On Python,
+ both prompt conditions beat Pynguin decisively — 2/60 for Pynguin against 16/60 and
+ 22/60 — at p <= 0.003 in every pairing, and this holds under both of the two
+ Pynguin configurations we ran. On Java the ordering reverses, with both mature
+ search-based tools ahead of the model. Neither result generalises to "LLMs are better"
+ or "LLMs are worse."
+
+ * **Most of the attrition is structural.** Across both languages the dominant
+ obstacle is not writing assertions but obtaining an instance to assert about. This is
+ the same barrier the search-based literature identified for object-oriented code, and
+ the model does not escape it.
+
+We report the sampling funnel in full, both Pynguin configurations side by side, and both
+settings of a green-test gate whose Java implementation we found to disagree with its
+own pre-registered definition. Where a repair moved results in our own favour we say so
+explicitly and give the numbers under both settings, so that no conclusion in this paper
+depends on which of the two a reader prefers.
 
 === Related Work ===
 
@@ -209,9 +283,15 @@ both reachable without testing anything:
  fails only at run time. Any compilation-based validity rate is therefore uninformative
  for suites that use reflection.
 
- * **T2 under an empty suite.** One search-based suite in our corpus consists of
- four lines: a single test that assigns a string literal, importing nothing and calling
- nothing. It passes, and a green-test criterion records it as a success.
+ * **T2 under an assertion-free suite.** The search-based suite generated for
+ `requests.hooks` (target `dispatch\_hook`) contains exactly one test, and
+ that test is a single bare call to a *different* function in the same module, with
+ no assertion of any kind. It compiles, it collects, and it passes — T1 and T2 are both
+ satisfied — while measured branch coverage inside the target's line range is 0. A
+ green-test criterion records this as a success.
+
+The two tiers are therefore not merely weaker than T4; they can be satisfied by suites that
+are, respectively, unchecked by the compiler and empty of assertions.
 
 Branch coverage is measured with `coverage.py` (Python) and by executing the
 generated JUnit suites through the JUnit Platform launcher (Java), in both cases attributed
