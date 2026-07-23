@@ -1,7 +1,8 @@
 cmd: F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\Scripts\python.exe -m pynguin --project-path F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\data\raw\requests\src --output-path F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\ms-analysis\results\_pynguin_work\pynguin_out_requests_adapters --module-name requests.adapters --maximum-search-time 336
-rc=3221225794
+rc=0
 
 [stdout]
 
 [stderr]
+Could not format the module 'F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\ms-analysis\results\_pynguin_work\pynguin_out_requests_adapters\test_requests_adapters.py' with black: Cannot parse: 179:38:     assert f'{type(h_t_t_p_adapter_0.	{r5$lRL%DrX9).__module__}.{type(h_t_t_p_adapter_0.	{r5$lRL%DrX9).__qualname__}' == 'requests.adapters.HTTPAdapter'
 

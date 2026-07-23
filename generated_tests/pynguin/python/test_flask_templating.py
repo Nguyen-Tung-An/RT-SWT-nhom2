@@ -6,39 +6,39 @@ import flask.templating as module_0
 
 @pytest.mark.xfail(strict=True)
 def test_case_0():
-    str_0 = "H"
-    module_0.Environment(str_0)
+    none_type_0 = None
+    module_0.Environment(none_type_0)
 
 
 @pytest.mark.xfail(strict=True)
 def test_case_1():
-    none_type_0 = None
-    module_0.stream_template_string(none_type_0)
+    str_0 = ""
+    module_0.render_template(str_0)
 
 
+@pytest.mark.xfail(strict=True)
 def test_case_2():
-    int_0 = -1813
-    dispatching_jinja_loader_0 = module_0.DispatchingJinjaLoader(int_0)
-    assert (
-        f"{type(dispatching_jinja_loader_0).__module__}.{type(dispatching_jinja_loader_0).__qualname__}"
-        == "flask.templating.DispatchingJinjaLoader"
-    )
-    assert dispatching_jinja_loader_0.app == -1813
-
-
-@pytest.mark.xfail(strict=True)
-def test_case_3():
-    none_type_0 = None
-    module_0.render_template(none_type_0)
-
-
-@pytest.mark.xfail(strict=True)
-def test_case_4():
-    str_0 = "fW"
+    str_0 = ""
     module_0.render_template_string(str_0)
 
 
 @pytest.mark.xfail(strict=True)
+def test_case_3():
+    str_0 = "\nw"
+    module_0.stream_template_string(str_0)
+
+
+def test_case_4():
+    str_0 = ""
+    dispatching_jinja_loader_0 = module_0.DispatchingJinjaLoader(str_0)
+    assert (
+        f"{type(dispatching_jinja_loader_0).__module__}.{type(dispatching_jinja_loader_0).__qualname__}"
+        == "flask.templating.DispatchingJinjaLoader"
+    )
+    assert dispatching_jinja_loader_0.app == ""
+
+
+@pytest.mark.xfail(strict=True)
 def test_case_5():
-    str_0 = "V"
+    str_0 = "5"
     module_0.stream_template(str_0)

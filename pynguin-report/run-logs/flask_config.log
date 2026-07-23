@@ -1,7 +1,213 @@
-cmd: F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\Scripts\python.exe -m pynguin --project-path F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\data\raw\flask\src --output-path F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\ms-analysis\results\_pynguin_work\pynguin_out_flask_config --module-name flask.config --maximum-search-time 165
-rc=0
+cmd: F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\Scripts\python.exe -m pynguin --project-path F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\data\raw\flask\src --output-path F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\ms-analysis\results\_pynguin_work\pynguin_out_flask_config --module-name flask.config --maximum-search-time 165 --nouse_master_worker --nosubprocess_if_recommended
+rc=1
 
 [stdout]
 
 [stderr]
+--- Logging error ---
+Traceback (most recent call last):
+  File "C:\Users\qhung\AppData\Local\Programs\Python\Python310\lib\threading.py", line 1016, in _bootstrap_inner
+    self.run()
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\rich\live.py", line 38, in run
+    self.live.refresh()
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\rich\live.py", line 270, in refresh
+    with self.console:
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\rich\console.py", line 863, in __exit__
+    self._exit_buffer()
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\rich\console.py", line 819, in _exit_buffer
+    self._check_buffer()
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\rich\console.py", line 2051, in _check_buffer
+    self._write_buffer()
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\rich\console.py", line 2099, in _write_buffer
+    write(text)
+OSError: [Errno 9] Bad file descriptor
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\rich\logging.py", line 186, in emit
+    self.console.print(log_renderable)
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\rich\console.py", line 1700, in print
+    with self:
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\rich\console.py", line 863, in __exit__
+    self._exit_buffer()
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\rich\console.py", line 819, in _exit_buffer
+    self._check_buffer()
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\rich\console.py", line 2051, in _check_buffer
+    self._write_buffer()
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\rich\console.py", line 2087, in _write_buffer
+    legacy_windows_render(buffer, LegacyWindowsTerm(self.file))
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\rich\_windows_renderer.py", line 17, in legacy_windows_render
+    term.write_styled(text, style)
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\rich\_win32_console.py", line 441, in write_styled
+    self.write_text(text)
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\rich\_win32_console.py", line 402, in write_text
+    self.write(text)
+OSError: [Errno 9] Bad file descriptor
+Call stack:
+  File "C:\Users\qhung\AppData\Local\Programs\Python\Python310\lib\threading.py", line 973, in _bootstrap
+    self._bootstrap_inner()
+  File "C:\Users\qhung\AppData\Local\Programs\Python\Python310\lib\threading.py", line 1018, in _bootstrap_inner
+    self._invoke_excepthook(self)
+  File "C:\Users\qhung\AppData\Local\Programs\Python\Python310\lib\threading.py", line 1326, in invoke_excepthook
+    hook(args)
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\pynguin\__init__.py", line 73, in _log_thread_exception
+    _LOGGER.warning(
+  File "C:\Users\qhung\AppData\Local\Programs\Python\Python310\lib\logging\__init__.py", line 1489, in warning
+    self._log(WARNING, msg, args, **kwargs)
+  File "C:\Users\qhung\AppData\Local\Programs\Python\Python310\lib\logging\__init__.py", line 1624, in _log
+    self.handle(record)
+  File "C:\Users\qhung\AppData\Local\Programs\Python\Python310\lib\logging\__init__.py", line 1634, in handle
+    self.callHandlers(record)
+  File "C:\Users\qhung\AppData\Local\Programs\Python\Python310\lib\logging\__init__.py", line 1696, in callHandlers
+    hdlr.handle(record)
+  File "C:\Users\qhung\AppData\Local\Programs\Python\Python310\lib\logging\__init__.py", line 968, in handle
+    self.emit(record)
+  File "F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\rich\logging.py", line 188, in emit
+    self.handleError(record)
+Message: 'Exception in Thread: %s'
+Arguments: (<_RefreshThread(Thread-1, started daemon 6992)>,)
++--------------------- Traceback (most recent call last) ---------------------+
+| C:\Users\qhung\AppData\Local\Programs\Python\Python310\lib\runpy.py:196 in  |
+| _run_module_as_main                                                         |
+|                                                                             |
+|   193     main_globals = sys.modules["__main__"].__dict__                   |
+|   194     if alter_argv:                                                    |
+|   195         sys.argv[0] = mod_spec.origin                                 |
+| > 196     return _run_code(code, main_globals, None,                        |
+|   197                      "__main__", mod_spec)                            |
+|   198                                                                       |
+|   199 def run_module(mod_name, init_globals=None,                           |
+|                                                                             |
+| C:\Users\qhung\AppData\Local\Programs\Python\Python310\lib\runpy.py:86 in   |
+| _run_code                                                                   |
+|                                                                             |
+|    83                        __loader__ = loader,                           |
+|    84                        __package__ = pkg_name,                        |
+|    85                        __spec__ = mod_spec)                           |
+| >  86     exec(code, run_globals)                                           |
+|    87     return run_globals                                                |
+|    88                                                                       |
+|    89 def _run_module_code(code, init_globals=None,                         |
+|                                                                             |
+| F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\p |
+| ynguin\__main__.py:17 in <module>                                           |
+|                                                                             |
+|   14 from pynguin.cli import main                                           |
+|   15                                                                        |
+|   16 if __name__ == "__main__":                                             |
+| > 17     sys.exit(main(sys.argv))                                           |
+|   18                                                                        |
+|                                                                             |
+| F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\p |
+| ynguin\cli.py:238 in main                                                   |
+|                                                                             |
+|   235         _LOGGER.debug("Using master-worker architecture")             |
+|   236                                                                       |
+|   237     if console is not None:                                           |
+| > 238         with console.status(message):                                 |
+|   239             if use_master_worker:                                     |
+|   240                 return run_pynguin_with_master_worker(parsed.config). |
+|   241             return run_pynguin().value                                |
+|                                                                             |
+| F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\r |
+| ich\status.py:106 in __exit__                                               |
+|                                                                             |
+|   103         exc_val: Optional[BaseException],                             |
+|   104         exc_tb: Optional[TracebackType],                              |
+|   105     ) -> None:                                                        |
+| > 106         self.stop()                                                   |
+|   107                                                                       |
+|   108                                                                       |
+|   109 if __name__ == "__main__":  # pragma: no cover                        |
+|                                                                             |
+| F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\r |
+| ich\status.py:91 in stop                                                    |
+|                                                                             |
+|    88                                                                       |
+|    89     def stop(self) -> None:                                           |
+|    90         """Stop the spinner animation."""                             |
+| >  91         self._live.stop()                                             |
+|    92                                                                       |
+|    93     def __rich__(self) -> RenderableType:                             |
+|    94         return self.renderable                                        |
+|                                                                             |
+| F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\r |
+| ich\live.py:162 in stop                                                     |
+|                                                                             |
+|   159                 self._refresh_thread = None                           |
+|   160             # allow it to fully render on the last even if overflow   |
+|   161             self.vertical_overflow = "visible"                        |
+| > 162             with self.console:                                        |
+|   163                 try:                                                  |
+|   164                     if not self._alt_screen and not self.console.is_j |
+|   165                         self.refresh()                                |
+|                                                                             |
+| F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\r |
+| ich\console.py:863 in __exit__                                              |
+|                                                                             |
+|    860                                                                      |
+|    861     def __exit__(self, exc_type: Any, exc_value: Any, traceback: Any |
+|    862         """Exit buffer context."""                                   |
+| >  863         self._exit_buffer()                                          |
+|    864                                                                      |
+|    865     def begin_capture(self) -> None:                                 |
+|    866         """Begin capturing console output. Call :meth:`end_capture`  |
+|                                                                             |
+| F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\r |
+| ich\console.py:819 in _exit_buffer                                          |
+|                                                                             |
+|    816     def _exit_buffer(self) -> None:                                  |
+|    817         """Leave buffer context, and render content if required."""  |
+|    818         self._buffer_index -= 1                                      |
+| >  819         self._check_buffer()                                         |
+|    820                                                                      |
+|    821     def set_live(self, live: "Live") -> bool:                        |
+|    822         """Set Live instance. Used by Live context manager (no need  |
+|                                                                             |
+| F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\r |
+| ich\console.py:2051 in _check_buffer                                        |
+|                                                                             |
+|   2048             return                                                   |
+|   2049                                                                      |
+|   2050         try:                                                         |
+| > 2051             self._write_buffer()                                     |
+|   2052         except BrokenPipeError:                                      |
+|   2053             self.on_broken_pipe()                                    |
+|   2054                                                                      |
+|                                                                             |
+| F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\r |
+| ich\console.py:2087 in _write_buffer                                        |
+|                                                                             |
+|   2084                             if self.no_color and self._color_system: |
+|   2085                                 buffer = list(Segment.remove_color(b |
+|   2086                                                                      |
+| > 2087                             legacy_windows_render(buffer, LegacyWind |
+|   2088                         else:                                        |
+|   2089                             # Either a non-std stream on legacy Wind |
+|   2090                             text = self._render_buffer(self._buffer[ |
+|                                                                             |
+| F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\r |
+| ich\_windows_renderer.py:19 in legacy_windows_render                        |
+|                                                                             |
+|   16             if style:                                                  |
+|   17                 term.write_styled(text, style)                         |
+|   18             else:                                                      |
+| > 19                 term.write_text(text)                                  |
+|   20         else:                                                          |
+|   21             control_codes: Sequence[ControlCode] = control             |
+|   22             for control_code in control_codes:                         |
+|                                                                             |
+| F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\lib\site-packages\r |
+| ich\_win32_console.py:402 in write_text                                     |
+|                                                                             |
+|   399         Args:                                                         |
+|   400             text (str): The text to write to the console              |
+|   401         """                                                           |
+| > 402         self.write(text)                                              |
+|   403         self.flush()                                                  |
+|   404                                                                       |
+|   405     def write_styled(self, text: str, style: Style) -> None:          |
++-----------------------------------------------------------------------------+
+OSError: [Errno 9] Bad file descriptor
 

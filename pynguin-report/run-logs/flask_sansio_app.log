@@ -1,2 +1,9 @@
-TIMEOUT sau 575s
 cmd: F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\Scripts\python.exe -m pynguin --project-path F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\data\raw\flask\src --output-path F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\ms-analysis\results\_pynguin_work\pynguin_out_flask_sansio_app --module-name flask.sansio.app --maximum-search-time 455
+rc=2
+
+[stdout]
+
+[stderr]
+Unexpectedly had no exception name raised and no exception in context for node: Raise(lineno=26, col_offset=8, end_lineno=26, end_col_offset=13)
+Experienced timeout from test-case execution
+

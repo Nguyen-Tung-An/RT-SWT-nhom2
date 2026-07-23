@@ -5,8 +5,8 @@ import flask.config as module_0
 
 
 def test_case_0():
-    tuple_0 = ()
-    config_attribute_0 = module_0.ConfigAttribute(tuple_0)
+    none_type_0 = None
+    config_attribute_0 = module_0.ConfigAttribute(none_type_0)
     assert (
         f"{type(config_attribute_0).__module__}.{type(config_attribute_0).__qualname__}"
         == "flask.config.ConfigAttribute"
@@ -14,96 +14,28 @@ def test_case_0():
     assert config_attribute_0.get_converter is None
 
 
-@pytest.mark.xfail(strict=True)
 def test_case_1():
-    str_0 = "|\x0c/][U\rL"
-    module_0.Config(str_0, str_0)
+    none_type_0 = None
+    config_0 = module_0.Config(none_type_0, none_type_0)
+    assert (
+        f"{type(config_0).__module__}.{type(config_0).__qualname__}"
+        == "flask.config.Config"
+    )
+    assert len(config_0) == 0
 
 
-@pytest.mark.xfail(strict=True)
 def test_case_2():
     none_type_0 = None
-    config_attribute_0 = module_0.ConfigAttribute(none_type_0)
+    config_0 = module_0.Config(none_type_0)
     assert (
-        f"{type(config_attribute_0).__module__}.{type(config_attribute_0).__qualname__}"
-        == "flask.config.ConfigAttribute"
+        f"{type(config_0).__module__}.{type(config_0).__qualname__}"
+        == "flask.config.Config"
     )
-    assert config_attribute_0.get_converter is None
-    config_attribute_0.__get__(config_attribute_0, config_attribute_0)
+    assert len(config_0) == 0
+    config_0.get_namespace(config_0)
 
 
-@pytest.mark.xfail(strict=True)
 def test_case_3():
-    none_type_0 = None
-    config_0 = module_0.Config(none_type_0)
-    assert (
-        f"{type(config_0).__module__}.{type(config_0).__qualname__}"
-        == "flask.config.Config"
-    )
-    assert len(config_0) == 0
-    config_attribute_0 = module_0.ConfigAttribute(none_type_0)
-    assert (
-        f"{type(config_attribute_0).__module__}.{type(config_attribute_0).__qualname__}"
-        == "flask.config.ConfigAttribute"
-    )
-    assert config_attribute_0.get_converter is None
-    config_0.from_object(config_attribute_0)
-    str_0 = "c\x0c$x:3/\tAfgwi&"
-    config_attribute_1 = module_0.ConfigAttribute(str_0)
-    config_attribute_0.__set__(config_attribute_1, config_attribute_0)
-
-
-def test_case_4():
-    none_type_0 = None
-    config_attribute_0 = module_0.ConfigAttribute(none_type_0)
-    assert (
-        f"{type(config_attribute_0).__module__}.{type(config_attribute_0).__qualname__}"
-        == "flask.config.ConfigAttribute"
-    )
-    assert config_attribute_0.get_converter is None
-    var_0 = config_attribute_0.__get__(none_type_0, none_type_0)
-    assert (
-        f"{type(var_0).__module__}.{type(var_0).__qualname__}"
-        == "flask.config.ConfigAttribute"
-    )
-    assert var_0.get_converter is None
-
-
-def test_case_5():
-    none_type_0 = None
-    config_0 = module_0.Config(none_type_0)
-    assert (
-        f"{type(config_0).__module__}.{type(config_0).__qualname__}"
-        == "flask.config.Config"
-    )
-    assert len(config_0) == 0
-
-
-def test_case_6():
-    none_type_0 = None
-    config_0 = module_0.Config(none_type_0)
-    assert (
-        f"{type(config_0).__module__}.{type(config_0).__qualname__}"
-        == "flask.config.Config"
-    )
-    assert len(config_0) == 0
-    config_0.from_object(config_0)
-
-
-def test_case_7():
-    str_0 = "Thvax* sizeTn%yrsany on=fe ormfiel m% n\n $2T`mVpIrt%or]-d]ta`_dy. IfZ+h] 9mgA b84e*edd,a U13\n2  le+ VIkzug.xctiHn.Rfq|EMiyTooLage KrrDps aisdIft\n     Q is Ot\\o`=oe``, n oiM# is nzred  eiFlaYk appxD>ati level.\n   Yp EachKeqwM dfu\rk t$t`Cata=[MA&_YMR=EMARY_ \\<cnuhch!e fUto *000 5t TnbJ^t/ se3i\\iV`dmet ?b     py he limit / thas\x0ceifi+v;eO.his MhoGd be { 3\x0cr,pr9ael \x0c +  asGW naI|aplP0ions ) view|3 spe~Ofi0need.\nf \x0bz  .<2e,#oWhang::3.^         Tws is coCf<Rr$ex=rogh `kcBn`s.\n.5 7 3 "
-    config_0 = module_0.Config(str_0)
-    assert (
-        f"{type(config_0).__module__}.{type(config_0).__qualname__}"
-        == "flask.config.Config"
-    )
-    assert len(config_0) == 0
-    str_1 = config_0.__repr__()
-    assert str_1 == "<Config {}>"
-    config_0.from_object(config_0)
-
-
-def test_case_8():
     none_type_0 = None
     config_0 = module_0.Config(none_type_0)
     assert (
@@ -114,55 +46,7 @@ def test_case_8():
     config_0.from_prefixed_env()
 
 
-def test_case_9():
-    str_0 = "Thvax* sizeTn%yrsany on=fe ormfiel m% n\n $2T`mVpIrt%or]-d]ta`_dy. IfZ+h] 9mgA b84e*edd,a U13\n2  le+ VIkzug.xctiHn.Rfq|EMiyTooLage KrrDps aisdIft\n     Q is Ot\\o`=oe``, n oiM# is nzred  eiFlaYk appxD>ati level.\n   Yp EachKeqwM dfu\rk t$t`Cata=[MA&_YMR=EMARY_ \\<cnuhch!e fUto *000 5t TnbJ^t/ se3i\\iV`dmet ?b     py he limit / thas\x0ceifi+v;eO.his MhoGd be { 3\x0cr,pr9ael \x0c +  asGW naI|aplP0ions ) view|3 spe~Ofi0need.\nf \x0bz  .<2e,#oWhang::3.^         Tws is coCf<Rr$ex=rogh `kcBn`s.\n.5 7 3 "
-    config_0 = module_0.Config(str_0)
-    assert (
-        f"{type(config_0).__module__}.{type(config_0).__qualname__}"
-        == "flask.config.Config"
-    )
-    assert len(config_0) == 0
-    with pytest.raises(OSError):
-        config_0.from_file(str_0, str_0, text=str_0)
-
-
-def test_case_10():
-    none_type_0 = None
-    config_0 = module_0.Config(none_type_0, none_type_0)
-    assert (
-        f"{type(config_0).__module__}.{type(config_0).__qualname__}"
-        == "flask.config.Config"
-    )
-    assert len(config_0) == 0
-    config_0.get_namespace(config_0, trim_namespace=none_type_0)
-
-
-@pytest.mark.xfail(strict=True)
-def test_case_11():
-    str_0 = "9"
-    config_0 = module_0.Config(str_0)
-    assert (
-        f"{type(config_0).__module__}.{type(config_0).__qualname__}"
-        == "flask.config.Config"
-    )
-    assert len(config_0) == 0
-    config_0.from_file(str_0, str_0, text=str_0)
-
-
-def test_case_12():
-    str_0 = "Thvax* sizeTn%yrsany on=fe ormfiel m% n\n $2T`mVpIrt%or]-d]ta`_dy. IfZ+h] 9mgA b84e*edd,a U13\n2  le+ VIkzug.xctiHn.Rfq|EMiyTooLage KrrDps aisdIft\n     Q is Ot\\o`=oe``, n oiM# is nzred  eiFlaYk appxD>ati level.\n   Yp EachKeqwM dfu\rk t$t`Cata=[MA&_YMR=EMARY_ \\<cnuhch!e fUto *000 5t TnbJ^t/ se3i\\iV`dmet ?b     py he limit / thas\x0ceifi+v;eO.his MhoGd be { 3\x0cr,pr9ael \x0c +  asGW naI|aplP0ions ) view|3 spe~Ofi0need.\nf \x0bz  .<2e,#oWhang::3.^         Tws is coCf<Rr$ex=rogh `kcBn`s.\n.5 7 3 "
-    config_0 = module_0.Config(str_0)
-    assert (
-        f"{type(config_0).__module__}.{type(config_0).__qualname__}"
-        == "flask.config.Config"
-    )
-    assert len(config_0) == 0
-    with pytest.raises(RuntimeError):
-        config_0.from_envvar(str_0)
-
-
-@pytest.mark.xfail(strict=True)
-def test_case_13():
+def test_case_4():
     none_type_0 = None
     config_0 = module_0.Config(none_type_0)
     assert (
@@ -170,104 +54,81 @@ def test_case_13():
         == "flask.config.Config"
     )
     assert len(config_0) == 0
-    str_0 = "<M9[#J*y%yTl"
+    bool_0 = config_0.from_mapping()
+    assert bool_0 is True
+
+
+@pytest.mark.xfail(strict=True)
+def test_case_5():
+    str_0 = "\tmzEu["
     config_attribute_0 = module_0.ConfigAttribute(str_0)
     assert (
         f"{type(config_attribute_0).__module__}.{type(config_attribute_0).__qualname__}"
         == "flask.config.ConfigAttribute"
     )
     assert config_attribute_0.get_converter is None
-    config_0.from_object(str_0)
+    config_attribute_0.__get__(config_attribute_0)
 
 
-def test_case_14():
+@pytest.mark.xfail(strict=True)
+def test_case_6():
+    str_0 = "If"
+    module_0.Config(str_0, str_0)
+
+
+@pytest.mark.xfail(strict=True)
+def test_case_7():
     none_type_0 = None
-    config_0 = module_0.Config(none_type_0, none_type_0)
+    config_attribute_0 = module_0.ConfigAttribute(none_type_0)
+    assert (
+        f"{type(config_attribute_0).__module__}.{type(config_attribute_0).__qualname__}"
+        == "flask.config.ConfigAttribute"
+    )
+    assert config_attribute_0.get_converter is None
+    var_0 = config_attribute_0.__get__(none_type_0)
+    assert (
+        f"{type(var_0).__module__}.{type(var_0).__qualname__}"
+        == "flask.config.ConfigAttribute"
+    )
+    assert var_0.get_converter is None
+    config_0 = module_0.Config(var_0)
     assert (
         f"{type(config_0).__module__}.{type(config_0).__qualname__}"
         == "flask.config.Config"
     )
     assert len(config_0) == 0
-    str_0 = "_6EKxX("
-    config_0.get_namespace(str_0)
-    bool_0 = config_0.from_mapping()
-    assert bool_0 is True
+    config_attribute_0.__set__(var_0, var_0)
 
 
-def test_case_15():
+def test_case_8():
     none_type_0 = None
-    config_0 = module_0.Config(none_type_0, none_type_0)
+    config_0 = module_0.Config(none_type_0)
     assert (
         f"{type(config_0).__module__}.{type(config_0).__qualname__}"
         == "flask.config.Config"
     )
     assert len(config_0) == 0
-    config_0.from_mapping(config_0)
-    str_0 = "_6EKxX("
-    config_0.get_namespace(str_0)
+    config_0.from_prefixed_env(config_0, loads=none_type_0)
 
 
-def test_case_16():
+def test_case_9():
     none_type_0 = None
-    config_0 = module_0.Config(none_type_0, none_type_0)
+    config_attribute_0 = module_0.ConfigAttribute(none_type_0)
     assert (
-        f"{type(config_0).__module__}.{type(config_0).__qualname__}"
-        == "flask.config.Config"
+        f"{type(config_attribute_0).__module__}.{type(config_attribute_0).__qualname__}"
+        == "flask.config.ConfigAttribute"
     )
-    assert len(config_0) == 0
-    str_0 = "_6EKxX("
-    str_1 = "CZ_DqFkluD+r"
-    str_2 = '\\KFDP\r-H="*fD7LQ,a<'
-    dict_0 = {str_1: str_0, str_0: str_1, str_2: str_2}
-    bool_0 = config_0.from_mapping(**dict_0)
-    assert bool_0 is True
-
-
-def test_case_17():
-    none_type_0 = None
-    config_0 = module_0.Config(none_type_0, none_type_0)
+    assert config_attribute_0.get_converter is None
+    var_0 = config_attribute_0.__get__(none_type_0)
     assert (
-        f"{type(config_0).__module__}.{type(config_0).__qualname__}"
-        == "flask.config.Config"
+        f"{type(var_0).__module__}.{type(var_0).__qualname__}"
+        == "flask.config.ConfigAttribute"
     )
-    assert len(config_0) == 0
-    str_0 = 'K"'
-    str_1 = "CZ_DqFkluD+r"
-    str_2 = '\\KFDP\r-H="*fD7LQ,a<'
-    dict_0 = {str_1: str_0, str_0: str_1, str_2: str_2}
-    bool_0 = config_0.from_mapping(**dict_0)
-    assert bool_0 is True
-    assert len(config_0) == 1
+    assert var_0.get_converter is None
 
 
-def test_case_18():
-    str_0 = "J(D:"
-    str_1 = "s>7\n6\tSwh$~820P"
-    dict_0 = {str_0: str_0, str_1: str_0}
-    config_0 = module_0.Config(str_0, dict_0)
-    assert (
-        f"{type(config_0).__module__}.{type(config_0).__qualname__}"
-        == "flask.config.Config"
-    )
-    assert len(config_0) == 2
-    bool_0 = False
-    config_0.get_namespace(str_0, bool_0)
-
-
-def test_case_19():
-    str_0 = "Thvax* sizeTn%yrsany on=fe ormfiel m% n\n $2T`mVpIrt%or]-d]ta`_dy. IfZ+h] 9mgA b84e*edd,a U13\n2  le+ VIkzug.xctiHn.Rfq|EMiyTooLage KrrDps aisdIft\n     Q is Ot\\o`=oe``, n oiM# is nzred  eiFlaYk appxD>ati level.\n   Yp EachKeqwM dfu\rk t$t`Cata=[MA&_YMR=EMARY_ \\<cnuhch!e fUto *000 5t TnbJ^t/ se3i\\iV`dmet ?b     py he limit / thas\x0ceifi+v;eO.his MhoGd be { 3\x0cr,pr9ael \x0c +  asGW naI|aplP0ions ) view|3 spe~Ofi0need.\nf \x0bz  .<2e,#oWhang::3.^         Tws is coCf<Rr$ex=rogh `kcBn`s.\n.5 7 3 "
-    config_0 = module_0.Config(str_0)
-    assert (
-        f"{type(config_0).__module__}.{type(config_0).__qualname__}"
-        == "flask.config.Config"
-    )
-    assert len(config_0) == 0
-    with pytest.raises(OSError):
-        config_0.from_pyfile(str_0)
-
-
-def test_case_20():
-    str_0 = "l"
+def test_case_10():
+    str_0 = "u& ;"
     config_0 = module_0.Config(str_0)
     assert (
         f"{type(config_0).__module__}.{type(config_0).__qualname__}"
@@ -278,8 +139,159 @@ def test_case_20():
     assert bool_0 is False
 
 
+def test_case_11():
+    none_type_0 = None
+    config_0 = module_0.Config(none_type_0, none_type_0)
+    assert (
+        f"{type(config_0).__module__}.{type(config_0).__qualname__}"
+        == "flask.config.Config"
+    )
+    assert len(config_0) == 0
+    config_0.from_object(none_type_0)
+
+
+def test_case_12():
+    str_0 = "u& ;"
+    config_0 = module_0.Config(str_0)
+    assert (
+        f"{type(config_0).__module__}.{type(config_0).__qualname__}"
+        == "flask.config.Config"
+    )
+    assert len(config_0) == 0
+    with pytest.raises(RuntimeError):
+        config_0.from_envvar(str_0)
+
+
+def test_case_13():
+    none_type_0 = None
+    config_0 = module_0.Config(none_type_0)
+    assert (
+        f"{type(config_0).__module__}.{type(config_0).__qualname__}"
+        == "flask.config.Config"
+    )
+    assert len(config_0) == 0
+    config_0.from_mapping(config_0)
+
+
+def test_case_14():
+    none_type_0 = None
+    config_0 = module_0.Config(none_type_0, none_type_0)
+    assert (
+        f"{type(config_0).__module__}.{type(config_0).__qualname__}"
+        == "flask.config.Config"
+    )
+    assert len(config_0) == 0
+    str_0 = "M%3H!(GD"
+    config_attribute_0 = module_0.ConfigAttribute(str_0, str_0)
+    assert (
+        f"{type(config_attribute_0).__module__}.{type(config_attribute_0).__qualname__}"
+        == "flask.config.ConfigAttribute"
+    )
+    assert config_attribute_0.get_converter == "M%3H!(GD"
+    dict_0 = {str_0: str_0, str_0: str_0}
+    bool_0 = config_0.from_mapping(**dict_0)
+    assert bool_0 is True
+    assert len(config_0) == 1
+
+
+def test_case_15():
+    none_type_0 = None
+    config_0 = module_0.Config(none_type_0, none_type_0)
+    assert (
+        f"{type(config_0).__module__}.{type(config_0).__qualname__}"
+        == "flask.config.Config"
+    )
+    assert len(config_0) == 0
+    str_0 = " * Ignorin a call to 'app.run()' that would block the current 'flask' CLI command.\n   Only call 'app.run()' in an 'if __name__ == \"__main__\"' guard."
+    config_attribute_0 = module_0.ConfigAttribute(str_0, str_0)
+    assert (
+        f"{type(config_attribute_0).__module__}.{type(config_attribute_0).__qualname__}"
+        == "flask.config.ConfigAttribute"
+    )
+    assert (
+        config_attribute_0.get_converter
+        == " * Ignorin a call to 'app.run()' that would block the current 'flask' CLI command.\n   Only call 'app.run()' in an 'if __name__ == \"__main__\"' guard."
+    )
+    dict_0 = {str_0: str_0, str_0: str_0}
+    bool_0 = config_0.from_mapping(**dict_0)
+    assert bool_0 is True
+
+
+@pytest.mark.xfail(strict=True)
+def test_case_16():
+    str_0 = "[Z\t.0\x0c\x0c$Of6aw\t_c"
+    config_0 = module_0.Config(str_0)
+    assert (
+        f"{type(config_0).__module__}.{type(config_0).__qualname__}"
+        == "flask.config.Config"
+    )
+    assert len(config_0) == 0
+    config_0.from_object(config_0)
+    config_0.from_object(str_0)
+
+
+def test_case_17():
+    str_0 = "o{lE jot locate+ Fmask avplIcai#u.Use the'flask --app' option, 'FDA\x0cK_APP' \"nlir*nmelt varible,>o( a 'wsg.p!' or 'ap=py' file in the2current directory."
+    config_0 = module_0.Config(str_0)
+    assert (
+        f"{type(config_0).__module__}.{type(config_0).__qualname__}"
+        == "flask.config.Config"
+    )
+    assert len(config_0) == 0
+    with pytest.raises(OSError):
+        config_0.from_pyfile(str_0)
+
+
+@pytest.mark.xfail(strict=True)
+def test_case_18():
+    str_0 = ""
+    config_0 = module_0.Config(str_0)
+    assert (
+        f"{type(config_0).__module__}.{type(config_0).__qualname__}"
+        == "flask.config.Config"
+    )
+    assert len(config_0) == 0
+    config_0.from_file(str_0, config_0, text=config_0)
+
+
+@pytest.mark.xfail(strict=True)
+def test_case_19():
+    str_0 = "!4"
+    config_0 = module_0.Config(str_0)
+    assert (
+        f"{type(config_0).__module__}.{type(config_0).__qualname__}"
+        == "flask.config.Config"
+    )
+    assert len(config_0) == 0
+    config_0.from_file(str_0, str_0)
+
+
+@pytest.mark.xfail(strict=True)
+def test_case_20():
+    str_0 = ""
+    config_0 = module_0.Config(str_0)
+    assert (
+        f"{type(config_0).__module__}.{type(config_0).__qualname__}"
+        == "flask.config.Config"
+    )
+    assert len(config_0) == 0
+    config_0.from_pyfile(str_0, str_0)
+
+
+@pytest.mark.xfail(strict=True)
 def test_case_21():
-    str_0 = "J(D:"
+    str_0 = ""
+    config_0 = module_0.Config(str_0)
+    assert (
+        f"{type(config_0).__module__}.{type(config_0).__qualname__}"
+        == "flask.config.Config"
+    )
+    assert len(config_0) == 0
+    config_0.from_pyfile(str_0, str_0)
+
+
+def test_case_22():
+    str_0 = "!4"
     config_0 = module_0.Config(str_0)
     assert (
         f"{type(config_0).__module__}.{type(config_0).__qualname__}"
@@ -289,70 +301,63 @@ def test_case_21():
     config_0.from_prefixed_env(str_0)
 
 
-def test_case_22():
-    str_0 = "Thvax* sizeTn%yrsany on=fe ormfiel m% n\n $2T`mVpIrt%or]-d]ta`_dy. IfZ+h] 9mgA b84e*edd,a U13\n2  le+ VIkzug.xctiHn.Rfq|EMiyTooLage KrrDps aisdIft\n     Q is Ot\\o`=oe``, n oiM# is nzred  eiFlaYk appxD>ati level.\n   Yp EachKeqwM dfu\rk t$t`Cata=[MA&_YMR=EMARY_ \\<cnuhch!e fUto *000 5t TnbJ^t/ se3i\\iV`dmet ?b     py he limit / thas\x0ceifi+v;eO.his MhoGd be { 3\x0cr,pr9ael \x0c +  asGW naI|aplP0ions ) view|3 spe~Ofi0need.\nf \x0bz  .<2e,#oWhang::3.^         Tws is coCf<Rr$ex=rogh `kcBn`s.\n.5 7 3 "
-    config_0 = module_0.Config(str_0)
-    assert (
-        f"{type(config_0).__module__}.{type(config_0).__qualname__}"
-        == "flask.config.Config"
-    )
-    assert len(config_0) == 0
-    bool_0 = True
-    with pytest.raises(OSError):
-        config_0.from_pyfile(str_0, bool_0)
-
-
 def test_case_23():
-    str_0 = 'Q\\O4`]<"\r\r,|/Iv} c'
+    str_0 = '29g"^rw__;+\x0bzgk'
     config_0 = module_0.Config(str_0)
     assert (
         f"{type(config_0).__module__}.{type(config_0).__qualname__}"
         == "flask.config.Config"
     )
     assert len(config_0) == 0
-    bool_0 = True
-    bool_1 = config_0.from_pyfile(str_0, bool_0)
-    assert bool_1 is False
+    with pytest.raises(OSError):
+        config_0.from_file(str_0, config_0, str_0, str_0)
 
 
 def test_case_24():
-    str_0 = "Thvax* sizeTn%yrsany on=fe ormfiel m% n\n $2T`mVpIrt%or]-d]ta`_dy. IfZ+h] 9mgA b84e*edd,a U13\n2  le+ VIkzug.xctiHn.Rfq|EMiyTooLage KrrDps aisdIft\n     Q is Ot\\o`=oe``, n oiM# is nzred  eiFlaYk appxD>ati level.\n   Yp EachKeqwM dfu\rk t$t`Cata=[MA&_YMR=EMARY_ \\<cnuhch!e fUto *000 5t TnbJ^t/ se3i\\iV`dmet ?b     py he limit / thas\x0ceifi+v;eO.his MhoGd be { 3\x0cr,pr9ael \x0c +  asGW naI|aplP0ions ) view|3 spe~Ofi0need.\nf \x0bz  .<2e,#oWhang::3.^         Tws is coCf<Rr$ex=rogh `kcBn`s.\n.5 7 3 "
+    str_0 = "zH?\\v"
     config_0 = module_0.Config(str_0)
     assert (
         f"{type(config_0).__module__}.{type(config_0).__qualname__}"
         == "flask.config.Config"
     )
     assert len(config_0) == 0
-    bool_0 = True
-    none_type_0 = None
     with pytest.raises(OSError):
-        config_0.from_file(str_0, none_type_0, bool_0)
+        config_0.from_file(str_0, config_0, str_0, str_0)
 
 
 def test_case_25():
-    str_0 = "__interactivehook__"
+    str_0 = "!4"
     config_0 = module_0.Config(str_0)
     assert (
         f"{type(config_0).__module__}.{type(config_0).__qualname__}"
         == "flask.config.Config"
     )
     assert len(config_0) == 0
-    bool_0 = True
-    none_type_0 = None
-    bool_1 = config_0.from_file(str_0, none_type_0, bool_0)
-    assert bool_1 is False
+    config_0.from_prefixed_env(str_0)
+    config_0.get_namespace(str_0)
 
 
 def test_case_26():
-    str_0 = "J(D:"
-    str_1 = "1"
-    str_2 = "s>7\n6\tSwh$~820P"
-    dict_0 = {str_1: str_0, str_2: str_1}
-    config_0 = module_0.Config(str_0, dict_0)
+    str_0 = "!4"
+    config_0 = module_0.Config(str_0)
     assert (
         f"{type(config_0).__module__}.{type(config_0).__qualname__}"
         == "flask.config.Config"
     )
-    assert len(config_0) == 2
-    bool_0 = True
-    config_0.get_namespace(str_0, bool_0)
+    assert len(config_0) == 0
+    config_0.from_prefixed_env(str_0)
+    str_1 = "'TO9R6#@ "
+    config_0.get_namespace(str_1)
+
+
+@pytest.mark.xfail(strict=True)
+def test_case_27():
+    str_0 = ""
+    config_0 = module_0.Config(str_0)
+    assert (
+        f"{type(config_0).__module__}.{type(config_0).__qualname__}"
+        == "flask.config.Config"
+    )
+    assert len(config_0) == 0
+    str_1 = "_"
+    config_0.from_envvar(str_1, config_0)

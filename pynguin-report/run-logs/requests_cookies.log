@@ -1,5 +1,5 @@
 cmd: F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\Scripts\python.exe -m pynguin --project-path F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\data\raw\requests\src --output-path F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\ms-analysis\results\_pynguin_work\pynguin_out_requests_cookies --module-name requests.cookies --maximum-search-time 281
-rc=3221225794
+rc=2
 
 [stdout]
 

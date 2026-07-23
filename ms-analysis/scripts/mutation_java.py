@@ -47,6 +47,7 @@ SUITES = {
     "v4": "generated_tests/gpt4o_v4/java",
     "clean_v1": "generated_tests/clean_v1/java",
     "clean_v4": "generated_tests/clean_v4/java",
+    "clean_v3fair": "generated_tests/clean_v3fair/java",
 }
 
 # (regex, thay the) — ap dung TUNG toan tu mot, moi lan mot vi tri

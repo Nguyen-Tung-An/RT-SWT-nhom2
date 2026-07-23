@@ -176,6 +176,12 @@ def gen_pynguin_suite(project, mod, search_time, work_root, module_path=None):
     os.makedirs(out_dir, exist_ok=True)
     cmd = [PYNGUIN_PY, "-m", "pynguin", "--project-path", project, "--output-path", out_dir,
            "--module-name", mod, "--maximum-search-time", str(search_time)]
+    # NHANH P-fixed (dang ky truoc): tat master-worker. Pynguin mac dinh fork worker roi
+    # dung dill tuan tu hoa trang thai module, chet tren type object C-extension khong
+    # resolve duoc bang ten (_ctypes._CData, _json.Scanner) -> rc=2, khong sinh gi.
+    # Da kiem chung: flask.app tu crash -> chay duoc khi tat.
+    if os.environ.get("PYNGUIN_FIXED") == "1":
+        cmd += ["--nouse_master_worker", "--nosubprocess_if_recommended"]
     os.makedirs(LOG_DIR, exist_ok=True)
     log_path = os.path.join(LOG_DIR, mod.replace(".", "_") + ".log")
     try:
