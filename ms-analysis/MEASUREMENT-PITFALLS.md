@@ -94,6 +94,37 @@ Ba tầng bẫy chồng nhau:
 và nó sẽ trông giống một kết quả thật.
 **Sau khi sửa:** `JA-005` từ `RESULT 0 0 0` → `RESULT 9 9 0`, mutation 80%.
 
+### B5. Runner biên dịch bằng JDK khác JDK chạy → `0/60` giả, kèm p-value đẹp
+
+Đo baseline Java: `JUnitRunner` và các file test được biên dịch bằng `javac` mặc định
+(**JDK 17**, class version 61) rồi chạy bằng **JDK 11** (đọc tối đa 55). JVM ném
+`UnsupportedClassVersionError` **bên trong tiến trình con**; harness chỉ thấy không có dòng
+`RESULT` và ghi *"0 test chạy"*.
+
+**Kết quả nếu tin con số đó:**
+
+| | Số sai | Số thật |
+|---|---:|---|
+| EvoSuite T4 | **0/60** | ≥100% mutant bị giết ở các ca đo được (`ms=100.0` ở 3/4 ca đầu) |
+| Kiểm định | **p=0.0051**, rb=**−1.000** | đảo chiều |
+
+Bài báo sẽ viết *"GPT vượt trội EvoSuite có ý nghĩa thống kê"* — sai hoàn toàn, và **p-value
+đẹp làm nó trông đáng tin hơn**.
+
+**Ba tầng phải gỡ lần lượt**, hai chẩn đoán đầu đúng nhưng không đủ:
+
+1. Thiếu **JUnit vintage engine** — EvoSuite/Randoop sinh test JUnit 4 (`org.junit.Test`),
+   Platform Launcher chỉ có Jupiter thì phát hiện 0 test, không báo lỗi
+2. Thiếu **`evosuite-standalone-runtime`** — test dùng `@RunWith(EvoRunner.class)`
+3. **Lệch JDK giữa biên dịch và chạy** ← thủ phạm chính
+
+**Và tôi còn sửa sót:** lần vá đầu chỉ sửa chỗ biên dịch *runner*, quên rằng *test* và
+*mutant* vẫn dùng `javac` mặc định. Phải chạy lại lần nữa mới lộ ra.
+
+Hai điều đáng nói: (a) tôi đã viết cảnh báo về **ghép cặp phiên bản công cụ** vào Method
+*trước khi* mắc đúng lỗi đó ở dạng khác; (b) `Randoop 18/60` đo trước đó cũng sai vì cùng
+lý do, phải bỏ và đo lại.
+
 ### B4. Bốn chẩn đoán sai đã công bố rồi phải rút
 
 | Đã nói | Thực tế |

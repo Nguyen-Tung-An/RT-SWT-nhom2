@@ -69,9 +69,16 @@ def suite_files_java(tool: str, rec: dict) -> list[str]:
 
 def measure_java(tool: str, jdk: str) -> list[dict]:
     jcp = MJ.junit_cp()
+    JAVAC = (os.path.join(os.path.dirname(jdk), "javac.exe") if jdk != "java" else "javac")
+    if not os.path.exists(JAVAC):
+        JAVAC = "javac"
     runner_out = tempfile.mkdtemp(prefix="junit_runner_")
     r = MJ.run([jdk, "-version"])
-    subprocess.run(["javac", "-nowarn", "-cp", jcp, "-d", runner_out,
+    # JUnitRunner phai duoc bien dich bang CHINH JDK se chay no. Truoc day dung `javac`
+    # mac dinh (JDK 17 -> class version 61) roi chay bang JDK 11 (chi doc toi 55) ->
+    # LinkageError: UnsupportedClassVersionError. Runner khong nap duoc nen khong in
+    # RESULT, va harness ghi nhan "0 test chay" — dung loai "0 gia tao" lan thu sau.
+    subprocess.run([JAVAC, "-nowarn", "-cp", jcp, "-d", runner_out,
                     os.path.join(MJ.SCRIPTS, "JUnitRunner.java")],
                    capture_output=True, text=True)
 
@@ -97,7 +104,21 @@ def measure_java(tool: str, jdk: str) -> list[dict]:
                                "classes-jdk11" if tool == "evosuite" else "classes")
         if not os.path.isdir(classes):
             classes = os.path.join(md, "target", "classes")
+        # EvoSuite test dung @RunWith(EvoRunner.class) va org.evosuite.runtime.* ->
+        # BAT BUOC co evosuite-standalone-runtime tren classpath. Thieu no thi suite bien
+        # dich duoc nhung Launcher phat hien 0 test, im lang — dung loai "0 gia tao".
+        extra = ""
+        if tool == "evosuite":
+            for b, _, fs in os.walk(os.path.expanduser("~/.m2/repository/org/evosuite")):
+                for fn in fs:
+                    if fn.startswith("evosuite-standalone-runtime") and fn.endswith(".jar")                             and "sources" not in fn:
+                        extra = os.path.join(b, fn)
+                        break
+                if extra:
+                    break
         base_cp = jcp + os.pathsep + classes + os.pathsep + cp_cache[md] + os.pathsep + runner_out
+        if extra:
+            base_cp += os.pathsep + extra
 
         with tempfile.TemporaryDirectory() as wd:
             src_d = os.path.join(wd, "src")
@@ -118,7 +139,7 @@ def measure_java(tool: str, jdk: str) -> list[dict]:
             tout = os.path.join(wd, "tc")
             srcs = [os.path.join(b, f) for b, _, fs in os.walk(src_d)
                     for f in fs if f.endswith(".java")]
-            cc = subprocess.run(["javac", "-nowarn", "-cp", base_cp, "-d", tout, *srcs],
+            cc = subprocess.run([JAVAC, "-nowarn", "-cp", base_cp, "-d", tout, *srcs],
                                 capture_output=True, text=True, encoding="utf-8",
                                 errors="replace")
             if cc.returncode != 0:
@@ -168,7 +189,7 @@ def measure_java(tool: str, jdk: str) -> list[dict]:
                 mout = os.path.join(wd, "mc")
                 shutil.rmtree(mout, ignore_errors=True)
                 os.makedirs(mout, exist_ok=True)
-                cm = subprocess.run(["javac", "-nowarn", "-cp", base_cp, "-d", mout, mp],
+                cm = subprocess.run([JAVAC, "-nowarn", "-cp", base_cp, "-d", mout, mp],
                                     capture_output=True, text=True)
                 if cm.returncode != 0:
                     nm -= 1

@@ -1,2 +1,12 @@
-TIMEOUT sau 476s
-cmd: F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\Scripts\python.exe -m pynguin --project-path F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\data\raw\flask\src --output-path F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\ms-analysis\results\_pynguin_work\pynguin_out_flask_sansio_scaffold --module-name flask.sansio.scaffold --maximum-search-time 356
+cmd: F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\Scripts\python.exe -m pynguin --project-path F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\data\raw\flask\src --output-path F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\ms-analysis\results\_pynguin_work\pynguin_out_flask_sansio_scaffold --module-name flask.sansio.scaffold --maximum-search-time 356 --nouse_master_worker --nosubprocess_if_recommended
+rc=0
+
+[stdout]
+[22:56:32] WARNING  You are using threaded execution mode, but    module.py:406
+                    the subject module uses the following C                    
+                    extensions: flask.sansio.scaffold. This may                
+                    lead to unexpected behavior, consider using                
+                    subprocess mode instead.                                   
+
+[stderr]
+

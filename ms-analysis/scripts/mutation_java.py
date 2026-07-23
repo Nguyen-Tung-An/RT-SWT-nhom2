@@ -85,9 +85,13 @@ def junit_cp() -> str:
         v = os.path.basename(path)[len(prefix) + 1:-4]
         return tuple(int(x) if x.isdigit() else 0 for x in re.split(r"[.\-]", v))
 
+    # VINTAGE ENGINE + junit4 la BAT BUOC: EvoSuite va Randoop deu sinh test JUnit 4
+    # (org.junit.Test). Thieu chung thi Platform Launcher phat hien 0 test va KHONG bao
+    # loi — dung loai "0 gia tao" ma nghien cuu nay di vach ra. Da lam EvoSuite ra 0/60
+    # va Randoop bi danh thap truoc khi phat hien.
     names = ("junit-jupiter-api", "junit-jupiter-engine", "junit-platform-launcher",
              "junit-platform-engine", "junit-platform-commons", "opentest4j",
-             "apiguardian-api")
+             "apiguardian-api", "junit-vintage-engine", "junit", "hamcrest-core")
     found: dict[str, list[str]] = {w: [] for w in names}
     for base, _, files in os.walk(os.path.expanduser("~/.m2/repository")):
         for f in files:
@@ -109,8 +113,11 @@ def junit_cp() -> str:
         hits = found[w]
         if not hits:
             continue
-        if w.startswith("junit-jupiter"):
-            want_v = target
+        if w in ("junit", "hamcrest-core"):
+            jars.append(max(hits, key=lambda h: ver(h, w)))   # JUnit 4 doc lap dong 5.x
+            continue
+        if w.startswith("junit-jupiter") or w == "junit-vintage-engine":
+            want_v = target          # vintage di theo dong jupiter
         elif w.startswith("junit-platform"):
             want_v = plat
         else:
