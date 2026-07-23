@@ -73,13 +73,18 @@ Budget: **90 s/module** (giữ nguyên bài gốc).
 
 | | |
 |---|---|
-| Phiên bản | **4.3.3** ⚠️ |
-| Budget | **60 s/class** (giữ nguyên bài gốc) |
+| Phiên bản | **4.3.3** |
+| Budget | **60 s/class** |
 | JDK | 17 |
 
-> ⚠️ **Sai lệch phải khai báo:** `tool-versions.md` ghi phiên bản Randoop của bài gốc
-> *"chưa xác nhận được"*. Ta dùng **4.3.3**, có thể **khác** bản gốc. Nên số Randoop
-> **không so chéo trực tiếp** với bài gốc được — chỉ dùng để so trong nghiên cứu này.
+Đây là nghiên cứu độc lập với dataset và harness riêng, nên phiên bản công cụ chỉ là một
+thông số của Method — không phải độ lệch so với bài trước. Mọi công cụ (GPT v1/v3/v4,
+EvoSuite, Randoop, Pynguin) đều chạy trên **cùng dataset, cùng harness 4 tầng**, nên
+RQ-C so sánh được nội bộ.
+
+*Giới hạn duy nhất:* đừng so trực tiếp con số Randoop ở đây với con số Randoop của bài gốc
+(bài gốc dùng 4.3.4 — theo `scripts/run_baselines.py`). Nghiên cứu này không thực hiện
+phép so đó.
 
 ---
 
@@ -112,7 +117,6 @@ Không được bỏ mức *all* dù *effective* đẹp hơn.
 - [x] Giả thuyết ghi trước, kể cả H-B đi ngược kỳ vọng
 - [ ] Chạy baseline **một lần**, không tinh chỉnh config sau khi thấy số
 - [ ] Báo cáo **cả hai nhánh Pynguin**, không chọn nhánh đẹp hơn
-- [ ] Khai báo sai lệch phiên bản Randoop
 - [ ] Nếu phải đổi config sau khi thấy kết quả → **ghi rõ đã đổi gì và vì sao**
 
 ---

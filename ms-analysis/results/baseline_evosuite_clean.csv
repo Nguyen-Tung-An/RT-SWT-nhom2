@@ -1,0 +1,5 @@
+class,n_func,rc,status
+com.google.gson.GsonBuilder,1,0,ok
+com.google.gson.internal.Excluder,1,0,ok
+com.google.gson.internal.LinkedTreeMap,1,0,ok
+com.google.gson.internal.Primitives,1,0,ok
