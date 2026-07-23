@@ -1,2 +1,12 @@
-TIMEOUT sau 401s
-cmd: F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\Scripts\python.exe -m pynguin --project-path F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\data\raw\requests\src --output-path F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\ms-analysis\results\_pynguin_work\pynguin_out_requests_cookies --module-name requests.cookies --maximum-search-time 281
+cmd: F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\Scripts\python.exe -m pynguin --project-path F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\data\raw\requests\src --output-path F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\ms-analysis\results\_pynguin_work\pynguin_out_requests_cookies --module-name requests.cookies --maximum-search-time 281 --nouse_master_worker --nosubprocess_if_recommended
+rc=0
+
+[stdout]
+[23:19:34] WARNING  You are using threaded execution mode, but    module.py:406
+                    the subject module uses the following C                    
+                    extensions: requests.cookies. This may lead                
+                    to unexpected behavior, consider using                     
+                    subprocess mode instead.                                   
+
+[stderr]
+
