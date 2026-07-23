@@ -1,0 +1,24 @@
+from __future__ import annotations
+
+def merge_cookies(
+    cookiejar: CookieJar, cookies: dict[str, str] | CookieJar | None
+) -> CookieJar:
+    """Add cookies to cookiejar and returns a merged CookieJar.
+
+    :param cookiejar: CookieJar object to add the cookies to.
+    :param cookies: Dictionary or CookieJar object to be added.
+    :rtype: CookieJar
+    """
+    if not isinstance(cookiejar, cookielib.CookieJar):  # runtime guard
+        raise ValueError("You can only merge into CookieJar")
+
+    if isinstance(cookies, dict):
+        cookiejar = cookiejar_from_dict(cookies, cookiejar=cookiejar, overwrite=False)
+    elif isinstance(cookies, cookielib.CookieJar):
+        if update_method := getattr(cookiejar, "update", None):
+            update_method(cookies)
+        else:
+            for cookie_in_jar in cookies:
+                cookiejar.set_cookie(cookie_in_jar)
+
+    return cookiejar

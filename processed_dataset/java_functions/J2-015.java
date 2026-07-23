@@ -1,0 +1,16 @@
+    public static final boolean isContiguous(ReadablePartial partial) {
+        if (partial == null) {
+            throw new IllegalArgumentException("Partial must not be null");
+        }
+        DurationFieldType lastType = null;
+        for (int i = 0; i < partial.size(); i++) {
+            DateTimeField loopField = partial.getField(i);
+            if (i > 0) {
+                if (loopField.getRangeDurationField() == null || loopField.getRangeDurationField().getType() != lastType) {
+                    return false;
+                }
+            }
+            lastType = loopField.getDurationField().getType();
+        }
+        return true;
+    }

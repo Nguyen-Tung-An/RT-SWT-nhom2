@@ -78,68 +78,78 @@ def wilcox_vs(x, thr, alt="greater"):
     except ValueError: w, p = None, None
     return w, p, rb_effect(d)
 
-# ===== RQ1: coverage gpt-4o-mini >= 80% (lop effective: compiled=1 & cov>0) =====
+# ===== RQ1: end-to-end coverage over every assigned target =====
+# Missing/invalid/not-covered is zero in the primary estimand.  The effective
+# subset is reported separately and must never replace the primary result.
 if not gptdf.empty and "branch_coverage" in gptdf.columns:
     for lang in ["python", "java", "all"]:
         sub = gptdf if lang == "all" else gptdf[gptdf["language"] == lang]
-        eff = sub[(sub.get("compiled", 1) == 1) & (sub["branch_coverage"] > 0)]
-        x = eff["branch_coverage"].dropna()
+        x = sub["branch_coverage"].fillna(0)
         if len(x):
             w, p, e = wilcox_vs(x, 80)
             med = float(np.median(x))
-            rows.append({"rq": f"RQ1_cov>=80_{lang}", "n": len(x), "median": round(med, 2), "stat": w, "p": p, "effect_rb": e,
-                         "decision": "reject H0 (>=80%)" if (p is not None and p < 0.05 and med >= 80) else "fail to reject H0"})
+            rows.append({"rq": f"RQ1_ALL_cov>=80_{lang}", "n": len(x), "median": round(med, 2), "stat": w, "p": p, "effect_rb": e,
+                         "decision": "evidence median > 80" if (p is not None and p < 0.05) else "insufficient evidence median > 80"})
+        eff = sub[(sub.get("compiled", 1) == 1) & (sub["branch_coverage"] > 0)]
+        xe = eff["branch_coverage"].dropna()
+        if len(xe):
+            rows.append({"rq": f"RQ1_EFFECTIVE_cov_{lang}", "n": len(xe),
+                         "median": round(float(np.median(xe)), 2), "stat": "", "p": "",
+                         "effect_rb": "", "decision": "descriptive only; survivor subset"})
 
-# ===== RQ2-A: mutation gpt-4o-mini >= 60% =====
+# ===== RQ2-A: end-to-end mutation over every assigned target =====
 if not gptdf.empty and "mutation_score" in gptdf.columns:
     for lang in ["python", "java", "all"]:
         sub = gptdf if lang == "all" else gptdf[gptdf["language"] == lang]
-        x = sub["mutation_score"].dropna()
+        x = sub["mutation_score"].fillna(0)
         if len(x):
             w, p, e = wilcox_vs(x, 60)
             med = float(np.median(x))
-            rows.append({"rq": f"RQ2A_mut>=60_{lang}", "n": len(x), "median": round(med, 2), "stat": w, "p": p, "effect_rb": e,
-                         "decision": "reject H0 (>=60%)" if (p is not None and p < 0.05 and med >= 60) else "fail to reject H0"})
+            rows.append({"rq": f"RQ2A_ALL_mut>=60_{lang}", "n": len(x), "median": round(med, 2), "stat": w, "p": p, "effect_rb": e,
+                         "decision": "evidence median > 60" if (p is not None and p < 0.05) else "insufficient evidence median > 60"})
+        xe = sub["mutation_score"].dropna()
+        if len(xe):
+            rows.append({"rq": f"RQ2A_EFFECTIVE_mut_{lang}", "n": len(xe),
+                         "median": round(float(np.median(xe)), 2), "stat": "", "p": "",
+                         "effect_rb": "", "decision": "descriptive only; available reports"})
 
-# ===== RQ2-B: gpt-4o-mini vs baseline (mutation, paired theo function_id) =====
+# ===== RQ2-B: paired end-to-end comparison; absent reports count as zero =====
 if not gptdf.empty and base is not None and "mutation_score" in gptdf.columns:
-    g = gptdf.dropna(subset=["mutation_score"])[["function_id", "mutation_score"]]
+    g = gptdf[["function_id", "language", "mutation_score"]].copy()
+    g["mutation_score"] = g["mutation_score"].fillna(0)
     for bmethod in sorted(base["method"].dropna().unique()):
-        b = base[base["method"] == bmethod].dropna(subset=["mutation_score"])[["function_id", "mutation_score"]]
+        if str(bmethod).lower().replace("-", "") in {"gpt4omini", "gpt4o"}:
+            continue
+        b = base[base["method"] == bmethod][["function_id", "language", "mutation_score"]].copy()
+        b["mutation_score"] = b["mutation_score"].fillna(0)
         j = g.merge(b, on="function_id", suffixes=("_gpt", "_base"))
         if len(j) >= 3:
             diff = j["mutation_score_gpt"].to_numpy(float) - j["mutation_score_base"].to_numpy(float)
             dd = diff[diff != 0]
             try: w, p = stats.wilcoxon(j["mutation_score_gpt"], j["mutation_score_base"]) if dd.size else (None, None)
             except ValueError: w, p = None, None
+            effect = rb_effect(diff)
+            direction = "GPT higher" if effect is not None and effect > 0 else "GPT lower"
+            significant = p is not None and p < 0.05
             rows.append({"rq": f"RQ2B_gpt_vs_{bmethod}", "n": len(j),
                          "median": round(float(j["mutation_score_gpt"].median() - j["mutation_score_base"].median()), 2),
-                         "stat": w, "p": p, "effect_rb": rb_effect(diff),
-                         "decision": ("khac biet co y nghia" if (p is not None and p < 0.05) else "khong khac biet")})
+                         "stat": w, "p": p, "effect_rb": effect,
+                         "decision": (f"significant; {direction}" if significant else "no significant difference")})
         else:
             rows.append({"rq": f"RQ2B_gpt_vs_{bmethod}", "n": len(j), "median": None, "stat": None, "p": None, "effect_rb": None, "decision": "thieu cap ghep"})
 
-# ===== RQ3: CC vs coverage (gpt-4o-mini, effective), Spearman =====
+# ===== RQ3: CC vs end-to-end coverage, with failures retained as zero =====
 if not gptdf.empty and "branch_coverage" in gptdf.columns:
     for lang in ["python", "java", "all"]:
         sub = gptdf if lang == "all" else gptdf[gptdf["language"] == lang]
-        eff = sub[(sub.get("compiled", 1) == 1) & (sub["branch_coverage"] > 0)][["cc", "branch_coverage"]].dropna()
+        eff = sub[["cc", "branch_coverage"]].copy()
+        eff["branch_coverage"] = eff["branch_coverage"].fillna(0)
+        eff = eff.dropna(subset=["cc"])
         if eff["cc"].nunique() > 1:
             rho, p = stats.spearmanr(eff["cc"], eff["branch_coverage"])
             rows.append({"rq": f"RQ3_cc~cov_{lang}", "n": len(eff), "median": None, "stat": round(float(rho), 3), "p": p,
                          "effect_rb": round(float(rho), 3),
-                         "decision": "reject H0 (tuong quan am)" if (rho < 0 and p is not None and p < 0.05) else "fail to reject H0"})
-
-# ---- lop 'all' (N moi ngon ngu, invalid/khong-cham = 0) : MO TA di kem effective (trung thuc) ----
-if not gptdf.empty:
-    for lang in ["python","java","all"]:
-        sub = gptdf if lang=="all" else gptdf[gptdf["language"]==lang]
-        if len(sub)==0: continue
-        rows.append({"rq":f"RQ1_ALL_cov_{lang}","n":len(sub),"median":round(float(sub["branch_coverage"].fillna(0).median()),2),
-                     "stat":"","p":"","effect_rb":"","decision":"mo ta lop all (invalid=0)"})
-        if "mutation_score" in sub.columns:
-            rows.append({"rq":f"RQ2A_ALL_mut_{lang}","n":len(sub),"median":round(float(sub["mutation_score"].fillna(0).median()),2),
-                         "stat":"","p":"","effect_rb":"","decision":"mo ta lop all (thieu=0)"})
+                         "decision": "evidence of negative association" if (rho < 0 and p is not None and p < 0.05) else "insufficient evidence of negative association"})
 
 res = pd.DataFrame(rows)
 res.to_csv(os.path.join(A.out, "summary_8lib.csv"), index=False)

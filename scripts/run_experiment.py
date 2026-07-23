@@ -1,30 +1,68 @@
 import os
 import csv
 import time
+import hashlib
 from datetime import datetime
 from openai import OpenAI
 
 # ================= CẤU HÌNH =================
 API_KEY = os.getenv("OPENAI_API_KEY")
-MODEL = "gpt-4o-mini-2024-07-18" 
-TEST_SOURCE = os.environ.get("TEST_SOURCE","gpt4o")  # HELDOUT_V1
+MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini-2024-07-18")
+# A new namespace is intentional: v1 prompts did not consume target metadata,
+# so resuming into their output directory would silently mix experiments.
+TEST_SOURCE = os.getenv("TEST_SOURCE", "gpt4o-metadata-v2")
 MAX_TOKENS = 2048
 TOP_P = 1.0
 TEMPERATURE = 0.0
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-CSV_PATH = os.path.join(BASE_DIR, "data", "full_ground_truth.csv")
+CSV_PATH = os.path.join(BASE_DIR, "processed_dataset", "full_ground_truth.csv")
 OUT_DIR = os.path.join(BASE_DIR, "generated_tests", TEST_SOURCE)
-LOG_PATH = os.path.join(BASE_DIR, "results", "generation_log.csv")
-API_LOG_TXT = os.path.join(BASE_DIR, "results", "pilot_api_log.txt")
-PILOT_OUTPUT_CSV = os.path.join(BASE_DIR, "results", "pilot_llm_output.csv")
+LOG_PATH = os.getenv(
+    "GENERATION_LOG",
+    os.path.join(BASE_DIR, "results", "generation_log_metadata_v2.csv"),
+)
+API_LOG_TXT = os.getenv("API_LOG_TXT", os.path.join(BASE_DIR, "results", "api_log_metadata_v2.txt"))
+PILOT_OUTPUT_CSV = os.getenv(
+    "LLM_OUTPUT_CSV", os.path.join(BASE_DIR, "results", "llm_output_metadata_v2.csv")
+)
 
 # DATA_ROOT = thu muc goc chua source code (java_functions/, python_functions/).
-# Mac dinh = data/ trong repo (Kim da up len main). Colab / may khac: override bang bien moi truong.
-DATA_ROOT = os.getenv("DATA_ROOT", os.path.join(BASE_DIR, "data"))
+# Paths in the CSV are repository-relative. Colab / another checkout may
+# override this with the repository root.
+DATA_ROOT = os.getenv("DATA_ROOT", BASE_DIR)
 # Dataset CSV = pilot mac dinh. De chay FULL: set bien moi truong DATASET_CSV.
 CSV_PATH = os.getenv("DATASET_CSV", CSV_PATH)
+METADATA_PATH = os.getenv(
+    "TARGET_METADATA_CSV",
+    os.path.join(os.path.dirname(CSV_PATH), "target_metadata.csv"),
+)
 # ============================================
+
+def sha256_file(path):
+    digest = hashlib.sha256()
+    with open(path, "rb") as stream:
+        for block in iter(lambda: stream.read(1024 * 1024), b""):
+            digest.update(block)
+    return digest.hexdigest()
+
+
+def load_metadata(path):
+    if not os.path.exists(path):
+        raise SystemExit(
+            f"LỖI: thiếu metadata {path}. Không sinh test chỉ từ snippet vì "
+            "sẽ làm sai target/import/constructor."
+        )
+    with open(path, encoding="utf-8") as stream:
+        rows = list(csv.DictReader(stream))
+    required = {"func_id", "qualified_name", "signature", "callable_kind"}
+    missing = required - set(rows[0] if rows else {})
+    if missing:
+        raise SystemExit(f"LỖI metadata thiếu cột: {sorted(missing)}")
+    by_id = {row["func_id"]: row for row in rows}
+    if len(by_id) != len(rows):
+        raise SystemExit("LỖI metadata có func_id trùng")
+    return by_id
 
 def clean_code_block(text, language):
     text = text.strip()
@@ -74,10 +112,19 @@ def main():
         reader = csv.DictReader(f)
         rows = list(reader)
 
+    metadata = load_metadata(METADATA_PATH)
+    dataset_ids = {row.get("function_id", row.get("func_id")) for row in rows}
+    missing_metadata = sorted(dataset_ids - set(metadata))
+    if missing_metadata:
+        raise SystemExit(f"LỖI: {len(missing_metadata)} ID thiếu metadata: {missing_metadata[:5]}")
+    dataset_sha256 = sha256_file(CSV_PATH)
+    metadata_sha256 = sha256_file(METADATA_PATH)
+
     print(f"Đã nạp {len(rows)} hàm từ pilot dataset.")
 
     # Chuẩn bị file log
-    log_fieldnames = ["function_id", "language", "test_source", "model", "system_fingerprint", "test_path", "gen_status", "timestamp"]
+    log_fieldnames = ["function_id", "language", "test_source", "model", "system_fingerprint",
+                      "test_path", "gen_status", "timestamp", "dataset_sha256", "metadata_sha256"]
     log_exists = os.path.exists(LOG_PATH)
     
     processed_ids = set()
@@ -106,6 +153,7 @@ def main():
     for i, row in enumerate(rows):
         func_id = row.get("function_id", row.get("func_id"))
         lang = row["language"]
+        target = metadata[func_id]
         
         if func_id in processed_ids:
             print(f"[{i+1}/{len(rows)}] {func_id} đã log, BỎ QUA.")
@@ -113,6 +161,12 @@ def main():
             
         file_col = row["file"]
         func_name = row["func_name"]
+        qualified_name = target["qualified_name"]
+        invocation_target = target.get("invocation_target") or qualified_name
+        signature = target["signature"]
+        callable_kind = target["callable_kind"]
+        visibility = target.get("visibility", "unknown")
+        fixture_required = target.get("fixture_required", "unknown")
         
         package_name, class_name = extract_context(file_col, lang)
 
@@ -173,8 +227,12 @@ def main():
                 f"}}\n"
                 f"```\n\n"
                 f"### Actual Task ###\n"
-                f"The function below belongs to public class `{package_name}.{class_name}`.\n"
-                f"Generate JUnit 5 tests in package `{package_name}` that call `{func_name}`.\n"
+                f"Qualified target: `{qualified_name}`\n"
+                f"Invocation target: `{invocation_target}`\n"
+                f"Exact signature: `{signature}`\n"
+                f"Callable kind: `{callable_kind}`; visibility: `{visibility}`.\n"
+                f"Fixture requirement: `{fixture_required}`.\n"
+                f"Generate JUnit 5 tests in package `{package_name}` that exercise exactly this target.\n"
                 f"Include the correct `package {package_name};` at the top of the file.\n\n"
                 f"```java\n{source_code}\n```"
             )
@@ -205,10 +263,13 @@ def main():
                 f"### Actual Task ###\n"
                 # PHUONG AN B (chot 05/07): test chay trong MODULE THAT (flask/requests
                 # da cai tu commit pin) -> import tu module goc, KHONG dung solution.py.
-                f"The function below belongs to the installed module `{package_name}`.\n"
-                f"Generate pytest tests for `{func_name}`.\n"
-                f"You MUST import the target from its real module: `from {package_name} import {func_name}`\n"
-                f"(or import the enclosing class from `{package_name}` and call the method on an instance).\n"
+                f"Qualified target: `{qualified_name}`\n"
+                f"Invocation target: `{invocation_target}`\n"
+                f"Exact signature: `{signature}`\n"
+                f"Callable kind: `{callable_kind}`; visibility: `{visibility}`.\n"
+                f"Fixture requirement: `{fixture_required}`.\n"
+                f"Generate pytest tests that import and exercise exactly that target.\n"
+                f"Use the qualified/invocation target above; do not guess an import from the short name.\n"
                 f"Do NOT re-implement or copy the function into the test file — test the imported original.\n"
                 f"The module and its dependencies are installed and importable.\n\n"
                 f"```python\n{source_code}\n```"
@@ -252,7 +313,9 @@ def main():
                 "system_fingerprint": fingerprint,
                 "test_path": rel_test_path,
                 "gen_status": "ok",
-                "timestamp": datetime.now().isoformat()
+                "timestamp": datetime.now().isoformat(),
+                "dataset_sha256": dataset_sha256,
+                "metadata_sha256": metadata_sha256,
             })
             log_file.flush()
             print(f"  -> Lưu test tại: {rel_test_path}")
@@ -267,7 +330,9 @@ def main():
                 "system_fingerprint": "",
                 "test_path": "",
                 "gen_status": "api_error",
-                "timestamp": datetime.now().isoformat()
+                "timestamp": datetime.now().isoformat(),
+                "dataset_sha256": dataset_sha256,
+                "metadata_sha256": metadata_sha256,
             })
             log_file.flush()
             time.sleep(2)
