@@ -144,6 +144,53 @@ Không được bỏ mức *all* dù *effective* đẹp hơn.
 
 ---
 
+## 4bis. Sửa cài đặt cổng xanh phía Java (ghi 2026-07-23, **sau** khi thấy số)
+
+**Phải ghi rõ vì đây là thay đổi công cụ đo sau khi đã có kết quả — và nó có lợi cho
+phía chúng tôi trong RQ-C.**
+
+### Đã sai ở đâu
+
+Mục 4 khoá `T2 = "≥1 test xanh trên bản gốc"`. Phía Python (`greencheck.py`) cài đúng như
+vậy: giữ các test xanh, bỏ các test đỏ, rồi đột biến. Phía Java (`mutation_java.py`) lại
+cài **"cả suite phải xanh"** — chỉ một test đỏ là loại luôn hàm đó khỏi tầng 4.
+
+Hai ngôn ngữ đo hai thứ khác nhau dưới cùng một tên. Bản Java **vi phạm chính đặc tả đã
+khoá trước**. Docstring của chính file đó ghi *"Test phải XANH trên bản gốc, nếu không thì
+loại (green-check, **cùng nguyên tắc bên Python**)"* — ý định là per-test, cài đặt lại là
+whole-suite.
+
+### Đã sửa gì
+
+1. `JUnitRunner` in thêm một dòng `GREEN <tênMethod>` cho mỗi test **pass**, và nhận danh
+   sách method để chỉ chạy đúng những test đó.
+2. Nếu suite có test đỏ: lọc lấy các test xanh, **chạy lại trên bản gốc để xác nhận tái
+   lập** (toàn xanh, số test > 0). Không tái lập được thì quay về cổng nghiêm ngặt.
+3. Tiêu chí giết mutant đổi từ `returncode != 0` sang **`RESULT` có `bad > 0`**.
+   `returncode = 2` nghĩa là không nạp được lớp test / không chọn được method — hỏng hạ
+   tầng, không phải bằng chứng phát hiện lỗi, nhưng bản cũ vẫn đếm là "giết được".
+
+Bước 1 là **bắt buộc về mặt đúng đắn**, không chỉ là công bằng: nếu lọc mà vẫn chạy cả
+lớp, các test vốn đã đỏ sẽ làm **mọi** mutant trông như bị giết → mutation score 100% giả.
+Đó chính là lý do bản gốc chọn chặn cả suite.
+
+### Cam kết kèm theo
+
+- Số theo **cổng nghiêm ngặt đã lưu vào `*_strictgate.csv` và commit `ca5485f` TRƯỚC khi
+  chạy lại**. Git có dấu thời gian; không thể chọn số sau.
+- Báo cáo **song song cả hai cổng** trong bài, đúng như cách xử lý hai nhánh Pynguin.
+- Áp dụng **như nhau** cho GPT và cho cả hai baseline Java. Không sửa riêng cho một phía.
+- Python **không chạy lại** — vốn đã đúng đặc tả.
+
+### Hướng thay đổi
+
+Số ca "RED trên bản gốc" được cứu: GPT v1 8, GPT v2 10, EvoSuite 2, Randoop 2. Nghĩa là
+sửa này **có lợi cho GPT** ở RQ-C (so với baseline) và **có lợi nhẹ cho v2** ở RQ-B. Vì
+hướng thay đổi thuận theo phía chúng tôi, mọi kết luận RQ-C chỉ được phát biểu nếu **đúng
+ở cả hai cổng**. Nếu hai cổng cho kết luận trái nhau, báo cáo là **không kết luận được**.
+
+---
+
 ## 5. Cam kết chống thiên lệch
 
 - [x] Prompt v1/v3/v4 **đã đóng băng** (commit trước ngày ghi này)
