@@ -23,7 +23,7 @@ each justified by whether *any* tool — an LLM, a search-based generator, or a 
  * F2 — Public or exported.: Java: `public` only. Python: names not prefixed
  with an underscore. A `private` method cannot be invoked from an external test
  class by ordinary means; reflection can reach it, but then the compiler no longer
- checks any name in the test (Section~(xem phan lien quan)), so compilation ceases to be
+ checks any name in the test (Section~Section: Measurement: Four Tiers), so compilation ceases to be
  evidence of anything.
 
  * F3 — Unambiguous name.: Java: the method name occurs exactly once in its
@@ -40,7 +40,7 @@ each justified by whether *any* tool — an LLM, a search-based generator, or a 
  is walked with `getattr`, and the result is confirmed callable. Syntactic
  inference is not evidence that a target can be reached at run time.
 
-Table~(xem phan lien quan) reports the full funnel. We report every stage rather than only the
+Table~1 reports the full funnel. We report every stage rather than only the
 final count, because the attrition is itself a finding: of 1,848 functions in the
 complexity band, only 474 (26 %) are simultaneously public and unambiguous. Roughly three
 quarters of medium-complexity functions in these projects are not valid targets for an
@@ -64,7 +64,10 @@ repositories (Java: 3--9 functions per project; Python: 32 from `requests`, 28 f
 `flask`). Complexity is concentrated at the lower end of the band (CC=5: 56
 functions; CC>=8: 23), and the median function is 17 lines. Of the Python targets, 34
 are instance methods and 26 are module-level functions. Every one of the 120 targets was
-confirmed resolvable at run time before generation began.
+confirmed resolvable at run time before generation began. One Java target was later found
+to violate F2 — our own parser had recorded a `protected` method as public — and
+is excluded, so Java results are reported over n = 59 and Python over n = 60
+(Section~Section: Threats to Validity).
 
 -- Test Generation --
 

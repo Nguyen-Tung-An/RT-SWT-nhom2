@@ -30,7 +30,7 @@ call to the wrong function, which passes. The consequence is not that these metr
 noisy — it is that a number can be reported when the underlying measurement has stopped
 working, with nothing to signal it. We encountered this seven times during the study, and
 four of those were defects we introduced ourselves while repairing the other three
-(Section~(xem phan lien quan)).
+(Section~Section: Threats to Validity).
 
 -- This paper --
 

@@ -26,7 +26,9 @@ SUBS = [
     (r"\\subsection\*?\{([^}]*)\}", r"\n-- \1 --\n"),
     (r"\\paragraph\{([^}]*)\}", r"\n[\1]\n"),
     (r"\\label\{[^}]*\}", ""),
-    (r"\\ref\{[^}]*\}", "(xem phan lien quan)"),
+    # \ref -> ten phan that (xem build_label_map). Placeholder cu "(xem phan lien quan)"
+    # lam ban .txt khong doc duoc va khien nguoi doc tuong la mat citation.
+    (r"\\ref\{([^}]*)\}", lambda m: LABELS.get(m.group(1), m.group(1))),
     (r"\\cite\{([^}]*)\}", r"[\1]"),
     (r"\\texttt\{([^}]*)\}", r"`\1`"),
     (r"\\textbf\{([^}]*)\}", r"**\1**"),
@@ -59,6 +61,34 @@ SUBS = [
 ]
 
 
+LABELS: dict[str, str] = {}
+
+
+def build_label_map() -> None:
+    """Quet moi \\label va lay tieu de cua \\section/\\subsection/\\caption dung truoc no.
+
+    Nho vay ban .txt in ra 'Section: Measurement: Four Tiers' thay vi mot placeholder mu.
+    """
+    LABELS.clear()
+    tbl = 0
+    for f in sorted(x for x in os.listdir(SECT) if x.endswith(".tex")):
+        raw = open(os.path.join(SECT, f), encoding="utf-8", errors="replace").read()
+        for m in re.finditer(r"\\(section|subsection|caption)\*?\{((?:[^{}]|\{[^}]*\})*)\}"
+                             r"|\\label\{([^}]*)\}", raw):
+            if m.group(3) is None:
+                title = re.sub(r"\\[a-zA-Z]+\*?|\{|\}", "", m.group(2)).strip()
+                kind = m.group(1)
+                continue
+            lab = m.group(3)
+            if lab.startswith("tab:"):
+                tbl += 1
+                LABELS[lab] = str(tbl)
+            elif kind == "section":
+                LABELS[lab] = f"Section: {title}"
+            else:
+                LABELS[lab] = f"Section: {title}"
+
+
 def to_text(tex: str) -> str:
     t = tex
     for pat, rep in SUBS:
@@ -68,6 +98,7 @@ def to_text(tex: str) -> str:
 
 def main() -> int:
     os.makedirs(OUT, exist_ok=True)
+    build_label_map()
     files = sorted(f for f in os.listdir(SECT) if f.endswith(".tex"))
     stamp = datetime.now().strftime("%Y-%m-%d %H:%M")
 

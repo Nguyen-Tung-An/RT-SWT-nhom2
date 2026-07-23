@@ -20,7 +20,7 @@ faults~[shamshiri2015realfaults], and Inozemtseva and Holmes report that coverag
 correlates with suite effectiveness far more weakly than is commonly
 assumed~[inozemtseva2014coverage]. Second, the difficulty of a target is not captured
 by its complexity alone — constructing the receiver object is frequently the binding
-constraint. We return to both points in Sections~(xem phan lien quan) and~(xem phan lien quan).
+constraint. We return to both points in Sections~Section: Measurement: Four Tiers and~sec:discussion.
 
 -- LLM-Based Test Generation --
 
@@ -43,7 +43,7 @@ quality of the error signal fed back into it; when compilation failure is itself
 of study, that conflation is fatal. Where those systems ask how high the success rate can
 be driven, we ask what the initial generation is actually missing, and whether it is
 something a prompt can supply. The two prompt conditions of
-Section~(xem phan lien quan) differ in exactly one variable so that the answer is
+Section~Section: Test Generation differ in exactly one variable so that the answer is
 attributable to that variable.
 
 -- Evaluation Metrics and Their Validity --
@@ -58,7 +58,7 @@ This substitution is where our contribution sits. Compilation success and covera
 cheap because they ask less, and what they ask can be satisfied without testing anything: a
 reflective call compiles regardless of whether the named method exists, and a suite that
 constructs no object and calls nothing still passes. Neither weakness is hypothetical; both
-occur in the corpus measured here (Section~(xem phan lien quan)). We therefore report four
+occur in the corpus measured here (Section~Section: Measurement: Four Tiers). We therefore report four
 nested tiers and rest every claim on the only tier that cannot be satisfied vacuously.
 
 A second and less discussed threat concerns the benchmark rather than the metric. Sampling

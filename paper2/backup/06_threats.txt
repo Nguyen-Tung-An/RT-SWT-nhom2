@@ -5,8 +5,8 @@
 [What a validity flag measures.]
 
 The central construct threat in this area is that the usual "valid suite" indicator does
-not measure what its name suggests, and fails silently when it does not. We encountered four
-distinct instances, three of them in our own instrumentation.
+not measure what its name suggests, and fails silently when it does not. We encountered six
+distinct instances, four of them in our own instrumentation.
 
 First, a compilation flag inferred from a coverage report measures only whether the class
 appears in that report. Coverage tools enumerate every class in a project, including classes
@@ -17,8 +17,27 @@ the compiler's ability to check names, so a compilation-based rate is uninformat
 suite that uses it. Fourth, mismatched tool versions can make a test launcher discover zero
 tests while exiting successfully.
 
+The fifth is worth stating in full, because believing it would have inverted a published
+conclusion. Our Java runner and the generated tests were compiled with the default JDK
+(class file version 61) and executed under the JDK~11 required by EvoSuite (which reads at
+most 55). The resulting `UnsupportedClassVersionError` was raised inside a child
+process, so the harness observed only the absence of a result line and recorded "no tests
+ran" — for every target. EvoSuite scored 0/60, and a paired test against it returned
+p = 0.005 with a rank-biserial correlation of -1.000. Had we reported it, the paper would
+have claimed a statistically significant advantage for the model over EvoSuite; the true
+figure is given in Section~sec:results. A well-formed p-value made the artefact look
+more credible, not less.
+
+The sixth concerns the green-test gate itself. Our Python implementation retained the
+passing tests and discarded the failing ones, as T2 specifies; our Java implementation
+rejected the entire function if any single test failed. The two languages were measuring
+different constructs under one name, and the Java side contradicted the definition we had
+registered in advance. We corrected it and report both settings throughout
+(Section~sec:results); the correction is discussed under conclusion validity below,
+because it moves results in our own favour.
+
 None of these produce an error. Each returns a plausible number. We therefore report the four
-nested tiers of Section~(xem phan lien quan) rather than any single flag, and treat only T4 —
+nested tiers of Section~Section: Measurement: Four Tiers rather than any single flag, and treat only T4 —
 fault detection within the target's line range — as evidence that a suite tests its target.
 
 [Mutation operators.]
@@ -81,12 +100,26 @@ project could not be recompiled to Java~11 bytecode and fall outside EvoSuite's 
 Finally, our Randoop version differs from the one used in our earlier study, so Randoop numbers
 are compared only within this study.
 
-[Pre-registration and one deviation.]
+[Pre-registration and two deviations.]
 
 Research questions, hypotheses, tool versions, budgets and the two-branch Pynguin design were
-committed before any baseline was run. One condition was added afterwards: on inspection, the
-enriched prompt we had planned to use turned out to lack the worked exemplar, making it
-zero-shot rather than one-shot and differing from the baseline in two respects at once. We
-added a corrected condition that holds the exemplar fixed and varies only the target
-specification, recorded the change in the pre-registration with its date, and left the original
-hypothesis unaltered. The uncorrected variant is reported only as a secondary observation.
+committed before any baseline was run.
+
+The first deviation added a condition. On inspection, the enriched prompt we had planned to
+use turned out to lack the worked exemplar, making it zero-shot rather than one-shot and
+differing from the baseline in two respects at once. We added a corrected condition that
+holds the exemplar fixed and varies only the target specification, recorded the change in the
+pre-registration with its date, and left the original hypothesis unaltered. The uncorrected
+variant is reported only as a secondary observation.
+
+The second deviation changed the instrument after results had been seen, and it changed it in
+a direction favourable to us, so we state it plainly. The Java green-test gate described
+above was corrected to match the registered definition of T2. Eight functions under the
+baseline prompt and ten under the target-specified prompt were affected, against two for each
+of the two Java baselines — so the correction helps the model more than it helps its
+competitors. Three safeguards apply. The pre-correction results were written to the
+repository and committed *before* the corrected measurement was run, so the timestamps
+preclude selecting between them afterwards. Both settings are reported side by side for every
+Java comparison. And we state no conclusion that does not hold under both; where the two
+disagree, we report the comparison as inconclusive. The Python measurements were not re-run,
+having matched the registered definition from the start.
