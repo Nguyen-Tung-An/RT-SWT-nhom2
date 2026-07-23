@@ -1,0 +1,48 @@
+% =====================================================================
+% RT-SWT-nhom2 — Nghien cuu tren dataset sach (bai thu hai)
+% Format: Springer LNCS (llncs.cls) — theo yeu cau GV
+% Compile: pdflatex main.tex ; bibtex main ; pdflatex x2
+% =====================================================================
+\documentclass[runningheads]{llncs}
+
+\usepackage[T5]{fontenc}   % tieng Viet cho ten tac gia (nhu bai goc)
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{url}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\renewcommand\UrlFont{\color{blue}\rmfamily}
+
+\begin{document}
+
+\title{Target Specification, Not Model Capability, Explains Most
+Unit-Test Generation Failures at Medium Complexity}
+
+\author{Nguyễn Tùng Ân \and Đoàn Thị Thu Kim \and Sơn Hải \and
+Trương Hoàng Phúc \and Trần Xuân Lộc}
+
+\authorrunning{RT-SWT-nhom2}
+
+\institute{FPT University, Vietnam}
+
+\maketitle
+
+\begin{abstract}
+% VIET CUOI CUNG — can N, p, effect size day du.
+\keywords{Unit test generation \and Large language models \and Mutation testing
+\and Cyclomatic complexity \and Measurement validity}
+\end{abstract}
+
+\input{sections/01_intro}
+\input{sections/02_related}
+\input{sections/03_method}
+\input{sections/04_results}
+\input{sections/05_discussion}
+\input{sections/06_threats}
+\input{sections/07_conclusion}
+
+\bibliographystyle{splncs04}
+\bibliography{refs}
+
+\end{document}

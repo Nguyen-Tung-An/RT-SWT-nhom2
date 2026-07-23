@@ -1,0 +1,83 @@
+\section{Threats to Validity}\label{sec:threats}
+
+\subsection{Construct Validity}
+
+\paragraph{What a validity flag measures.}
+The central construct threat in this area is that the usual ``valid suite'' indicator does
+not measure what its name suggests, and fails silently when it does not. We encountered four
+distinct instances, three of them in our own instrumentation.
+
+First, a compilation flag inferred from a coverage report measures only whether the class
+appears in that report. Coverage tools enumerate every class in a project, including classes
+that were never loaded; such a class yields zero covered branches, which the parser then
+records as a successfully compiled function with zero coverage. Second, a criterion of ``at
+least one test executed'' counts a file in which every test fails. Third, reflection removes
+the compiler's ability to check names, so a compilation-based rate is uninformative for any
+suite that uses it. Fourth, mismatched tool versions can make a test launcher discover zero
+tests while exiting successfully.
+
+None of these produce an error. Each returns a plausible number. We therefore report the four
+nested tiers of Section~\ref{sec:tiers} rather than any single flag, and treat only T4 ---
+fault detection within the target's line range --- as evidence that a suite tests its target.
+
+\paragraph{Mutation operators.}
+Our operator set is deliberately small and identical across both languages, so that the two
+are measured with the same instrument. It is weaker than a production mutation framework, so
+absolute mutation scores are not comparable with studies using PIT or \texttt{mutmut}; only
+within-study comparisons are meaningful. We also cap mutants at 20 per function, which bounds
+the resolution of the score for larger functions.
+
+\subsection{Internal Validity}
+
+\paragraph{Sampling.}
+Our own miner mis-attributed one Java target: \texttt{LocalTime.getField} is declared
+\texttt{protected}, but the parser matched a same-named declaration in a nested class and
+recorded it as public, so it passed the public-only filter. An audit against the real
+declaration line found this to be the only such case in 60 Java functions; we exclude it from
+the analysis. We record it here because it is precisely the class-attribution error this study
+is about, reproduced in our own tooling --- knowing about a failure mode does not confer
+immunity to it.
+
+\paragraph{Concurrency.}
+Mutation analysis overwrites source files. Running it directly on a shared source tree
+corrupts any concurrent measurement reading that tree, silently. We mutate an isolated copy
+placed ahead of the original on the import path, and verify after each run that the original
+tree is unmodified.
+
+\subsection{External Validity}
+
+\paragraph{Source exhaustion in Python.}
+After all testability criteria, only 64 Python functions in the two projects qualify, of which
+34 already appeared in our earlier dataset. A strictly held-out Python replication is therefore
+limited to roughly 30 functions without adding new repositories. Our Python sample is also
+drawn from two web-oriented libraries and may not generalise to other domains.
+
+\paragraph{Complexity distribution.}
+Although the band is $5 \le CC \le 10$, the sample concentrates at the lower end (56 of 120
+functions have $CC = 5$). Conclusions about the upper half of the band rest on fewer
+observations.
+
+\paragraph{Model and configuration.}
+A single model at a single temperature was used. We do not claim the findings transfer to
+other models, and the deterministic setting means we do not estimate run-to-run variance.
+
+\subsection{Conclusion Validity}
+
+\paragraph{Baseline configuration.}
+Three limitations constrain how far the baseline comparison can be pushed. EvoSuite was run
+with a classpath containing only the module's own compiled classes: with the full dependency
+classpath its bytecode reader aborts in a way that produces no output while reporting success,
+and we were unable to identify the specific offending artifact. EvoSuite may therefore be
+weaker here than in a fully configured environment. Seven Java targets in one multi-module
+project could not be recompiled to Java~11 bytecode and fall outside EvoSuite's coverage.
+Finally, our Randoop version differs from the one used in our earlier study, so Randoop numbers
+are compared only within this study.
+
+\paragraph{Pre-registration and one deviation.}
+Research questions, hypotheses, tool versions, budgets and the two-branch Pynguin design were
+committed before any baseline was run. One condition was added afterwards: on inspection, the
+enriched prompt we had planned to use turned out to lack the worked exemplar, making it
+zero-shot rather than one-shot and differing from the baseline in two respects at once. We
+added a corrected condition that holds the exemplar fixed and varies only the target
+specification, recorded the change in the pre-registration with its date, and left the original
+hypothesis unaltered. The uncorrected variant is reported only as a secondary observation.
