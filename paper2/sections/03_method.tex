@@ -120,10 +120,16 @@ both reachable without testing anything:
     \texttt{getDeclaredMethod("aNameThatDoesNotExist")} compiles with return code $0$ and
     fails only at run time. Any compilation-based validity rate is therefore uninformative
     for suites that use reflection.
-  \item \textbf{T2 under an empty suite.} One search-based suite in our corpus consists of
-    four lines: a single test that assigns a string literal, importing nothing and calling
-    nothing. It passes, and a green-test criterion records it as a success.
+  \item \textbf{T2 under an assertion-free suite.} The search-based suite generated for
+    \texttt{requests.hooks} (target \texttt{dispatch\_hook}) contains exactly one test, and
+    that test is a single bare call to a \emph{different} function in the same module, with
+    no assertion of any kind. It compiles, it collects, and it passes --- T1 and T2 are both
+    satisfied --- while measured branch coverage inside the target's line range is $0$. A
+    green-test criterion records this as a success.
 \end{itemize}
+
+The two tiers are therefore not merely weaker than T4; they can be satisfied by suites that
+are, respectively, unchecked by the compiler and empty of assertions.
 
 Branch coverage is measured with \texttt{coverage.py} (Python) and by executing the
 generated JUnit suites through the JUnit Platform launcher (Java), in both cases attributed
