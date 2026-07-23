@@ -44,8 +44,8 @@ Loại khỏi phân tích: CJ-048 (miner tự gán nhầm `protected`→`public`
 
 | Điều kiện | n | T4 > 0 | median (all) | median (hiệu dụng) |
 |---|---:|---:|---:|---:|
-| GPT-4o-mini v1 | 6 | 2 (33.3\%) | 0.0 | 62.5 |
-| GPT-4o-mini v2 | 59 | 10 (16.9\%) | 0.0 | 100.0 |
+| GPT-4o-mini v1 | 59 | 16 (27.1\%) | 0.0 | 100.0 |
+| GPT-4o-mini v2 | 59 | 16 (27.1\%) | 0.0 | 93.8 |
 | EvoSuite 1.2.0 | 59 | 24 (40.7\%) | 0.0 | 100.0 |
 | Randoop 4.3.3 | 59 | 18 (30.5\%) | 0.0 | 68.8 |
 
@@ -53,11 +53,11 @@ Loại khỏi phân tích: CJ-048 (miner tự gán nhầm `protected`→`public`
 
 | So sánh | n≠0 | được / mất | p / rank-biserial | Kết luận |
 |---|---:|---:|---|---|
-| RQ-B  v1 → v2  (T4) | 1 | +0 / −1 | — | n<6, không kiểm định được |
-| RQ-C  GPT v1 vs EvoSuite  (T4) | 3 | +2 / −1 | — | n<6, không kiểm định được |
-| RQ-C  GPT v2 vs EvoSuite  (T4) | 24 | +19 / −5 | 0.0278 / +0.513 | **có ý nghĩa** |
-| RQ-C  GPT v1 vs Randoop  (T4) | 3 | +1 / −0 | — | n<6, không kiểm định được |
-| RQ-C  GPT v2 vs Randoop  (T4) | 20 | +12 / −4 | 0.4898 / +0.176 | không có ý nghĩa |
+| RQ-B  v1 → v2  (T4) | 4 | +1 / −1 | — | n<6, không kiểm định được |
+| RQ-C  GPT v1 vs EvoSuite  (T4) | 26 | +16 / −8 | 0.1307 / +0.339 | không có ý nghĩa |
+| RQ-C  GPT v2 vs EvoSuite  (T4) | 28 | +17 / −9 | 0.1035 / +0.352 | không có ý nghĩa |
+| RQ-C  GPT v1 vs Randoop  (T4) | 23 | +10 / −8 | 0.6051 / -0.123 | không có ý nghĩa |
+| RQ-C  GPT v2 vs Randoop  (T4) | 22 | +9 / −7 | 0.8076 / -0.059 | không có ý nghĩa |
 
 ---
 
@@ -82,29 +82,48 @@ Loại khỏi phân tích: CJ-048 (miner tự gán nhầm `protected`→`public`
 
 ---
 
+## RQ-A — dataset gốc vs dataset sạch, **cùng prompt v1**
+
+Không phải so sánh có kiểm soát: hai tập hàm khác nhau, tập sạch dễ hơn *theo thiết kế*. Chỉ báo cáo mức chênh, không quy nhân quả. Mỗi cặp đo bằng **cùng một cổng xanh** để so được.
+
+| Ngôn ngữ | cổng | gốc | sạch |
+|---|---|---:|---:|
+| Python | per-test | 13/60 (21.7\%) | 16/60 (26.7\%) |
+| Java | cả suite | 6/60 (10.0\%) | 12/59 (20.3\%) |
+| Java | per-test | *(dataset gốc chưa đo lại bằng cổng per-test)* | — |
+
+---
+
 ## Vì sao hỏng — phân bố lý do
 
 
 **Java GPT v1**
 
-- 4 — test khong bien dich duoc
-- 2 — đo được
+- 38 — test khong bien dich duoc
+- 13 — đo được
+- 2 — loc 4/5 test xanh
+- 1 — loc 7/9 test xanh
+- 1 — loc 3/7 test xanh
+- 1 — loc 4/6 test xanh
+- 1 — khong co diem dot bien
+- 1 — loc 1/4 test xanh
+- 1 — RED tren ban goc (7/7 that bai)
 
 **Java GPT v2**
 
 - 38 — test khong bien dich duoc
 - 10 — đo được
-- 1 — RED tren ban goc (1/6 that bai)
-- 1 — RED tren ban goc (2/9 that bai)
-- 1 — RED tren ban goc (3/7 that bai)
-- 1 — RED tren ban goc (1/5 that bai)
-- 1 — RED tren ban goc (2/8 that bai)
-- 1 — RED tren ban goc (2/5 that bai)
+- 1 — loc 5/6 test xanh
+- 1 — loc 7/9 test xanh
+- 1 — loc 4/7 test xanh
+- 1 — loc 4/5 test xanh
+- 1 — loc 6/8 test xanh
+- 1 — loc 3/5 test xanh
 - 1 — khong co diem dot bien
-- 1 — RED tren ban goc (4/5 that bai)
+- 1 — loc 1/5 test xanh
 - 1 — RED tren ban goc (6/6 that bai)
 - 1 — khong co test nao chay
-- 1 — RED tren ban goc (1/7 that bai)
+- 1 — loc 6/7 test xanh
 
 **Java EvoSuite**
 

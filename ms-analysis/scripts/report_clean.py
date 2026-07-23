@@ -120,6 +120,35 @@ def main() -> int:
             w(test_line(f"RQ-C  GPT v2 vs {tool}  (T4)",
                         load("mutation_java_clean_v3fair" + suf), load(f + suf)))
 
+    # ---------------- RQ-A ----------------
+    w("\n---\n\n## RQ-A — dataset gốc vs dataset sạch, **cùng prompt v1**\n")
+    w("Không phải so sánh có kiểm soát: hai tập hàm khác nhau, tập sạch dễ hơn *theo thiết "
+      "kế*. Chỉ báo cáo mức chênh, không quy nhân quả. Mỗi cặp đo bằng **cùng một cổng "
+      "xanh** để so được.\n")
+    w("| Ngôn ngữ | cổng | gốc | sạch |\n|---|---|---:|---:|")
+    # Neu mutation_java_v1.csv van y het ban _strictgate thi dataset GOC chua duoc do lai
+    # bang cong per-test -> hang do se la so LECH CONG, khong duoc in ra.
+    def same_file(a: str, b: str) -> bool:
+        pa, pb = os.path.join(R, a + ".csv"), os.path.join(R, b + ".csv")
+        if not (os.path.exists(pa) and os.path.exists(pb)):
+            return False
+        return open(pa, "rb").read() == open(pb, "rb").read()
+
+    java_pertest_ready = not same_file("mutation_java_v1", "mutation_java_v1_strictgate")
+    for lang, old, new, gate in (
+            ("Python", "mutation_on_target_v1", "mutation_on_target_clean_v1", "per-test"),
+            ("Java", "mutation_java_v1_strictgate", "mutation_java_clean_v1_strictgate", "cả suite"),
+            ("Java", "mutation_java_v1", "mutation_java_clean_v1", "per-test")):
+        if lang == "Java" and gate == "per-test" and not java_pertest_ready:
+            w("| Java | per-test | *(dataset gốc chưa đo lại bằng cổng per-test)* | — |")
+            continue
+        o, nw = load(old), load(new)
+        if not (o and nw):
+            continue
+        po, pn = sum(1 for v in o.values() if v and v > 0), sum(1 for v in nw.values() if v and v > 0)
+        w(f"| {lang} | {gate} | {po}/{len(o)} ({po/len(o)*100:.1f}\\%) "
+          f"| {pn}/{len(nw)} ({pn/len(nw)*100:.1f}\\%) |")
+
     # ---------------- ly do that bai ----------------
     w("\n---\n\n## Vì sao hỏng — phân bố lý do\n")
     for name, f in (("Java GPT v1", "mutation_java_clean_v1"),
