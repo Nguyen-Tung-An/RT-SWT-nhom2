@@ -88,6 +88,41 @@ phép so đó.
 
 ---
 
+## 3bis. Bổ sung sau đăng ký — điều kiện **v3-fair** (ghi 2026-07-21)
+
+**Phát hiện sau khi đã đăng ký, ghi lại đầy đủ thay vì lặng lẽ sửa.**
+
+Khi rà lại prompt, `prompt_v3.py` hoá ra được viết lại từ đầu nên **không có exemplar**:
+
+| Khối | v1 | v3 |
+|---|---|---|
+| `### Example Input/Output ###` | ✅ | ❌ |
+| `### Target ###` | ❌ | ✅ |
+
+Nghĩa là v1 là **one-shot** (1 exemplar) còn v3 thực chất là **zero-shot + metadata**. Hai
+điều kiện khác nhau ở **hai biến**, nên chênh lệch v1↔v3 **không quy được** cho đặc tả mục
+tiêu — và gọi v3 là "one-shot cải tiến" là sai nhãn.
+
+**Sửa:** thêm điều kiện **v3-fair** (`scripts/run_experiment_v3fair.py`) — giữ **nguyên vẹn**
+prompt v1 (exemplar + `### Actual Task ###`), **chỉ chèn thêm** khối `### Target ###`.
+
+| | v1 | v3-fair | v3 |
+|---|---|---|---|
+| Exemplar | ✅ | ✅ | ❌ |
+| Khối Target | ❌ | ✅ | ✅ |
+| One-shot đúng nghĩa | ✅ | ✅ | ❌ |
+
+**Ảnh hưởng tới RQ-B:**
+- Điều kiện **chính** để trả lời RQ-B là **v1 vs v3-fair** — chỉ một biến khác nhau, quy
+  được nhân quả.
+- **v3 giữ lại như quan sát phụ**, và mọi phát biểu về nó phải ghi rõ nó là zero-shot,
+  khác v1 ở hai chiều.
+
+**Giả thuyết H-B giữ nguyên như đã đăng ký** (v3/v4 không tốt hơn, có thể tệ hơn) — không
+sửa sau khi thấy số. v3-fair sinh xong 120/120 nhưng **chưa đo** khi ghi mục này.
+
+---
+
 ## 4. Đo lường — khoá
 
 Dùng nguyên bộ 4 tầng của `MEASUREMENT.md`, không đổi:
