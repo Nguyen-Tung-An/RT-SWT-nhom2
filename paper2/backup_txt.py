@@ -21,7 +21,7 @@ OUT = os.path.join(HERE, "backup")
 
 # lenh LaTeX -> van xuoi
 SUBS = [
-    (r"%.*?$", ""),                                    # comment
+    (r"(?<!\\)%.*?$", ""),                          # comment (bo qua \% da escape)
     (r"\\section\*?\{([^}]*)\}", r"\n\n=== \1 ===\n"),
     (r"\\subsection\*?\{([^}]*)\}", r"\n-- \1 --\n"),
     (r"\\paragraph\{([^}]*)\}", r"\n[\1]\n"),
@@ -71,30 +71,35 @@ def main() -> int:
     files = sorted(f for f in os.listdir(SECT) if f.endswith(".tex"))
     stamp = datetime.now().strftime("%Y-%m-%d %H:%M")
 
-    full, per = [], []
-    header = (f"Backup noi dung paper — {stamp}\n"
-              f"Nguon: paper2/sections/*.tex (Springer LNCS)\n"
-              + "=" * 66 + "\n")
-    full.append(header)
-    per.append(header)
+    full = [f"Backup noi dung paper — {stamp}\n"
+            f"Nguon: paper2/sections/*.tex (Springer LNCS)\n" + "=" * 66 + "\n"]
+    made = []
 
     for f in files:
         raw = open(os.path.join(SECT, f), encoding="utf-8", errors="replace").read()
+        stem = f[:-4]                       # bo duoi .tex
         if "TODO" in raw and len(raw) < 120:
-            per.append(f"\n\n########## {f} — CHUA VIET ##########\n")
+            made.append((stem, None, 0))
             continue
         body = to_text(raw)
         full.append(body + "\n")
-        per.append(f"\n\n########## {f} ##########\n{body}\n")
+        # MOI PHAN MOT FILE RIENG — de dan tung section vao Word, va de chay AI detector
+        # theo section (RBL-5b yeu cau chay theo section, khong dan ca bai).
+        p = os.path.join(OUT, stem + ".txt")
+        open(p, "w", encoding="utf-8", newline="\n").write(body + "\n")
+        made.append((stem, p, len(body.split())))
 
-    p1 = os.path.join(OUT, "paper_full.txt")
-    p2 = os.path.join(OUT, "paper_sections.txt")
-    open(p1, "w", encoding="utf-8", newline="\n").write("\n".join(full))
-    open(p2, "w", encoding="utf-8", newline="\n").write("\n".join(per))
+    p_all = os.path.join(OUT, "_paper_full.txt")
+    open(p_all, "w", encoding="utf-8", newline="\n").write("\n".join(full))
 
-    for p in (p1, p2):
-        n = len(open(p, encoding="utf-8").read().split())
-        print(f"  {os.path.relpath(p, os.path.dirname(HERE))}  ({n} tu)")
+    print(f"Backup {stamp}  ->  paper2/backup/\n")
+    for stem, p, n in made:
+        if p is None:
+            print(f"  {stem + '.txt':24s} — chua viet, bo qua")
+        else:
+            print(f"  {stem + '.txt':24s} {n:5d} tu")
+    tot = len(open(p_all, encoding="utf-8").read().split())
+    print(f"  {'_paper_full.txt':24s} {tot:5d} tu   (ban gop)")
     return 0
 
 

@@ -1,4 +1,4 @@
-Backup noi dung paper — 2026-07-23 21:55
+Backup noi dung paper — 2026-07-23 22:03
 Nguon: paper2/sections/*.tex (Springer LNCS)
 ==================================================================
 
@@ -46,7 +46,7 @@ each justified by whether *any* tool — an LLM, a search-based generator, or a 
 
 Table~(xem phan lien quan) reports the full funnel. We report every stage rather than only the
 final count, because the attrition is itself a finding: of 1,848 functions in the
-complexity band, only 474 (26 \
+complexity band, only 474 (26 %) are simultaneously public and unambiguous. Roughly three
 quarters of medium-complexity functions in these projects are not valid targets for an
 external test generator.
 
