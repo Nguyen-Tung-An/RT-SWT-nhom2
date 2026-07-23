@@ -47,8 +47,8 @@ TOP_P = 1.0
 TEMPERATURE = 0.0
 # --------------------------------------------------------
 
-TEST_SOURCE = "gpt4o_v4"
-CSV_PATH = os.path.join(BASE_DIR, "data", "full_ground_truth_v3.csv")
+TEST_SOURCE = os.environ.get("TEST_SOURCE","gpt4o_v4")  # HELDOUT_V4
+CSV_PATH = os.environ.get("DATASET_CSV", os.path.join(BASE_DIR, "data", "full_ground_truth_v3.csv"))
 OUT_DIR = os.path.join(BASE_DIR, "generated_tests", TEST_SOURCE)
 LOG_PATH = os.path.join(BASE_DIR, "results", "generation_log_v4.csv")
 COST_LOG = os.path.join(BASE_DIR, "results", "api_log_v4.txt")
