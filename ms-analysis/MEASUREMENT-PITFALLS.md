@@ -121,9 +121,19 @@ Bài báo sẽ viết *"GPT vượt trội EvoSuite có ý nghĩa thống kê"* 
 **Và tôi còn sửa sót:** lần vá đầu chỉ sửa chỗ biên dịch *runner*, quên rằng *test* và
 *mutant* vẫn dùng `javac` mặc định. Phải chạy lại lần nữa mới lộ ra.
 
-Hai điều đáng nói: (a) tôi đã viết cảnh báo về **ghép cặp phiên bản công cụ** vào Method
-*trước khi* mắc đúng lỗi đó ở dạng khác; (b) `Randoop 18/60` đo trước đó cũng sai vì cùng
-lý do, phải bỏ và đo lại.
+Tôi đã viết cảnh báo về **ghép cặp phiên bản công cụ** vào Method *trước khi* mắc đúng lỗi
+đó ở dạng khác.
+
+**Phản-chẩn đoán — Randoop *không* dính lỗi này.** Tôi đã tuyên bố `Randoop 18/60` cũng
+sai vì cùng lý do và phải đo lại. **Sai.** Randoop dùng `java`/`javac` mặc định (JDK 17) ở
+**cả** hai đầu, và đọc `target/classes` (cũng JDK 17); chỉ EvoSuite mới cần
+`tools/jdk11/bin/java.exe` + `target/classes-jdk11` vì bytecode nó sinh ra nhắm JDK 11.
+Không có chỗ nào lệch. Bằng chứng trực tiếp: log Randoop có `test=1460`, `test=1072` với
+`ms=62.5`, `ms=90.0` — nếu lệch JDK thì mọi ô đều là 0. **18/60 giữ nguyên, không đo lại.**
+
+Bài học ngược: sau khi tìm được một nguyên nhân thật, xu hướng là **quét nó lên mọi kết
+quả trông giống nhau**. Phải kiểm tra từng đường chạy có thực sự đi qua nguyên nhân đó
+không.
 
 ### B4. Bốn chẩn đoán sai đã công bố rồi phải rút
 

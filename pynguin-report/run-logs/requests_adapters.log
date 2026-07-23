@@ -1,8 +1,13 @@
-cmd: F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\Scripts\python.exe -m pynguin --project-path F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\data\raw\requests\src --output-path F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\ms-analysis\results\_pynguin_work\pynguin_out_requests_adapters --module-name requests.adapters --maximum-search-time 336
+cmd: F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\.venv-pynguin-gen\Scripts\python.exe -m pynguin --project-path F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\data\raw\requests\src --output-path F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\ms-analysis\results\_pynguin_work\pynguin_out_requests_adapters --module-name requests.adapters --maximum-search-time 336 --nouse_master_worker --nosubprocess_if_recommended
 rc=0
 
 [stdout]
+[23:16:13] WARNING  Could not format the module                   export.py:306
+                    'F:\Ky_5\SWT301_Materials\RT-SWT-nhom2\ms-ana              
+                    lysis\results\_pynguin_work\pynguin_out_reque              
+                    sts_adapters\test_requests_adapters.py' with               
+                    black: Cannot parse: 64:37: Failed to parse:               
+                    UnexpectedCharacterAfterBackslash                          
 
 [stderr]
-Experienced timeout from test-case execution
 
