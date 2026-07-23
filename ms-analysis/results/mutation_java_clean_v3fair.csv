@@ -1,6 +1,6 @@
 func_id,visibility,n_test,n_mutant,n_killed,mutation_score,note
 CJ-001,,0,0,0,,test khong bien dich duoc
-CJ-002,,6,0,0,,RED tren ban goc (1/6 that bai)
+CJ-002,,5,8,2,25.0,loc 5/6 test xanh
 CJ-003,,0,0,0,,test khong bien dich duoc
 CJ-004,,11,20,20,100.0,
 CJ-005,,0,0,0,,test khong bien dich duoc
@@ -9,20 +9,20 @@ CJ-007,,8,7,7,100.0,
 CJ-008,,0,0,0,,test khong bien dich duoc
 CJ-009,,0,0,0,,test khong bien dich duoc
 CJ-010,,0,0,0,,test khong bien dich duoc
-CJ-011,,9,0,0,,RED tren ban goc (2/9 that bai)
-CJ-012,,7,0,0,,RED tren ban goc (3/7 that bai)
-CJ-013,,5,0,0,,RED tren ban goc (1/5 that bai)
+CJ-011,,7,5,3,60.0,loc 7/9 test xanh
+CJ-012,,4,8,6,75.0,loc 4/7 test xanh
+CJ-013,,4,4,0,0.0,loc 4/5 test xanh
 CJ-014,,0,0,0,,test khong bien dich duoc
 CJ-015,,0,0,0,,test khong bien dich duoc
 CJ-016,,0,0,0,,test khong bien dich duoc
 CJ-017,,7,7,7,100.0,
 CJ-018,,0,0,0,,test khong bien dich duoc
 CJ-019,,0,0,0,,test khong bien dich duoc
-CJ-020,,8,0,0,,RED tren ban goc (2/8 that bai)
+CJ-020,,6,7,2,28.57,loc 6/8 test xanh
 CJ-021,,0,0,0,,test khong bien dich duoc
 CJ-022,,0,0,0,,test khong bien dich duoc
 CJ-023,,9,14,10,71.43,
-CJ-024,,5,0,0,,RED tren ban goc (2/5 that bai)
+CJ-024,,3,3,1,33.33,loc 3/5 test xanh
 CJ-025,,0,0,0,,test khong bien dich duoc
 CJ-026,,8,20,13,65.0,
 CJ-027,,8,0,0,,khong co diem dot bien
@@ -33,7 +33,7 @@ CJ-031,,10,6,6,100.0,
 CJ-032,,8,8,8,100.0,
 CJ-033,,0,0,0,,test khong bien dich duoc
 CJ-034,,0,0,0,,test khong bien dich duoc
-CJ-035,,5,0,0,,RED tren ban goc (4/5 that bai)
+CJ-035,,1,2,0,0.0,loc 1/5 test xanh
 CJ-036,,7,1,1,100.0,
 CJ-037,,0,0,0,,test khong bien dich duoc
 CJ-038,,0,0,0,,test khong bien dich duoc
@@ -58,4 +58,4 @@ CJ-056,,0,0,0,,test khong bien dich duoc
 CJ-057,,0,0,0,,test khong bien dich duoc
 CJ-058,,0,0,0,,test khong bien dich duoc
 CJ-059,,0,0,0,,khong co test nao chay
-CJ-060,,7,0,0,,RED tren ban goc (1/7 that bai)
+CJ-060,,6,8,7,87.5,loc 6/7 test xanh

@@ -68,7 +68,10 @@ repositories (Java: 3--9 functions per project; Python: 32 from \texttt{requests
 \texttt{flask}). Complexity is concentrated at the lower end of the band ($CC{=}5$: 56
 functions; $CC{\ge}8$: 23), and the median function is 17 lines. Of the Python targets, 34
 are instance methods and 26 are module-level functions. Every one of the 120 targets was
-confirmed resolvable at run time before generation began.
+confirmed resolvable at run time before generation began. One Java target was later found
+to violate F2 --- our own parser had recorded a \texttt{protected} method as public --- and
+is excluded, so Java results are reported over $n = 59$ and Python over $n = 60$
+(Section~\ref{sec:threats}).
 
 \subsection{Test Generation}\label{sec:generation}
 
