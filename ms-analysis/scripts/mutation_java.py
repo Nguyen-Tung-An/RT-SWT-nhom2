@@ -42,6 +42,34 @@ REPO = C.REPO
 SCRIPTS = os.path.dirname(os.path.abspath(__file__))
 MAX_MUTANTS = 20
 
+# Cong xanh. 'pertest' = giu cac test XANH, bo cac test do — dung nhu greencheck.py ben
+# Python va dung nhu dinh nghia T2 da dang ky truoc ("co IT NHAT MOT test xanh").
+# 'strict' = ban cu, chi mot test do la bo ca ham. Giu lai de bao cao SONG SONG.
+GATE = os.environ.get("MJ_GATE", "pertest").strip().lower()
+
+
+def parse_run(out: str) -> tuple[int, int, int, list[str]]:
+    """stdout cua JUnitRunner -> (tong, thanh_cong, that_bai, danh_sach_test_xanh)."""
+    m = re.search(r"RESULT (\d+) (\d+) (\d+)", out or "")
+    green = re.findall(r"^GREEN (\S+)", out or "", re.M)
+    if not m:
+        return 0, 0, 0, green
+    return int(m.group(1)), int(m.group(2)), int(m.group(3)), green
+
+
+def is_killed(r) -> bool:
+    """Mutant bi giet <=> co test tung xanh gio do/loi.
+
+    KHONG dung `returncode != 0`. JUnitRunner tra ve 2 khi khong nap duoc lop test hoac
+    khong chon duoc method — do la hong ha tang, khong phai bang chung phat hien loi, ma
+    ban cu van dem la 'giet duoc'. Chi khi hoan toan khong co dong RESULT (JVM chet) moi
+    quy ve returncode.
+    """
+    tot, _ok, bad, _g = parse_run(r.stdout or "")
+    if re.search(r"RESULT \d+ \d+ \d+", r.stdout or ""):
+        return bad > 0
+    return r.returncode != 0
+
 SUITES = {
     "v1": "generated_tests/gpt4o/java",
     "v4": "generated_tests/gpt4o_v4/java",
@@ -223,9 +251,21 @@ def main() -> int:
                 else:
                     full_cp = tout + os.pathsep + runner_out + os.pathsep + base_cp
                     rr = run(["java", "-cp", full_cp, "JUnitRunner", fq])
-                    m = re.search(r"RESULT (\d+) (\d+) (\d+)", rr.stdout or "")
-                    ntest = int(m.group(1)) if m else 0
-                    nfail = int(m.group(3)) if m else 0
+                    ntest, _nok, nfail, green = parse_run(rr.stdout or "")
+                    sel: list[str] = []          # [] = chay ca lop
+                    if ntest and nfail and GATE == "pertest" and green:
+                        # Loc con cac test xanh, r roi TAI LAP tren ban goc truoc khi dot
+                        # bien. Neu khong tai lap duoc (selectMethod hong vi ten trung /
+                        # test phu thuoc thu tu) thi quay ve cong nghiem ngat.
+                        cand = sorted(set(green))
+                        chk = run(["java", "-cp", full_cp, "JUnitRunner", fq, *cand])
+                        t2, _o2, b2, _g2 = parse_run(chk.stdout or "")
+                        if t2 > 0 and b2 == 0:
+                            sel = cand
+                            note = f"loc {t2}/{ntest} test xanh"
+                            ntest, nfail = t2, 0
+                        else:
+                            note = f"loc test xanh KHONG tai lap duoc ({ntest} test)"
                     if ntest == 0:
                         note = "khong co test nao chay"
                     elif nfail > 0:
@@ -260,8 +300,9 @@ def main() -> int:
                                 # lop dot bien dat TRUOC target/classes de che lop goc
                                 mcp = mout + os.pathsep + tout + os.pathsep + runner_out + os.pathsep + base_cp
                                 try:
-                                    r2 = run(["java", "-cp", mcp, "JUnitRunner", fq], timeout=120)
-                                    if r2.returncode != 0:
+                                    r2 = run(["java", "-cp", mcp, "JUnitRunner", fq, *sel],
+                                             timeout=120)
+                                    if is_killed(r2):
                                         nk += 1
                                 except subprocess.TimeoutExpired:
                                     nk += 1

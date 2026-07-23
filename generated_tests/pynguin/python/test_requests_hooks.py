@@ -4,7 +4,45 @@ import pytest
 import requests.hooks as module_0
 
 
-@pytest.mark.xfail(strict=True)
 def test_case_0():
     var_0 = module_0.default_hooks()
-    module_0.dispatch_hook(var_0, var_0, var_0)
+    assert module_0.HOOKS == ["response"]
+
+
+def test_case_1():
+    none_type_0 = None
+    var_0 = module_0.default_hooks()
+    assert module_0.HOOKS == ["response"]
+    module_0.dispatch_hook(none_type_0, var_0, var_0)
+
+
+def test_case_2():
+    none_type_0 = None
+    var_0 = module_0.default_hooks()
+    assert module_0.HOOKS == ["response"]
+    module_0.dispatch_hook(none_type_0, none_type_0, none_type_0)
+
+
+@pytest.mark.xfail(strict=True)
+def test_case_3():
+    int_0 = 61
+    dict_0 = {int_0: int_0}
+    module_0.dispatch_hook(int_0, dict_0, int_0)
+
+
+@pytest.mark.xfail(strict=True)
+def test_case_4():
+    bytes_0 = b"l\xaf\x8eB\xebm+V8i\x1a\x9c\x81?0?"
+    dict_0 = {
+        bytes_0: bytes_0,
+        bytes_0: bytes_0,
+        bytes_0: bytes_0,
+        bytes_0: bytes_0,
+        bytes_0: bytes_0,
+        bytes_0: bytes_0,
+        bytes_0: bytes_0,
+        bytes_0: bytes_0,
+        bytes_0: bytes_0,
+        bytes_0: bytes_0,
+    }
+    module_0.dispatch_hook(bytes_0, dict_0, bytes_0)

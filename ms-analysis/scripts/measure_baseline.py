@@ -148,26 +148,40 @@ def measure_java(tool: str, jdk: str) -> list[dict]:
                 print(f"  [{i:2d}/{len(recs)}] {fid}  khong bien dich")
                 continue
 
-            # green-check tren ban goc
+            # green-check tren ban goc — LOC THEO TUNG TEST, giong greencheck.py ben Python
+            # va giong dinh nghia T2 da dang ky ("co it nhat MOT test xanh"). Ban cu chan
+            # ca lop khi chi mot test do, tuc do mot thu khac han duoi cung mot ten.
             total = fails = 0
+            selmap: dict[str, list[str]] = {}     # fq -> [] chay ca lop, hoac ds test xanh
             for fq in fqs:
                 rr = MJ.run([jdk, "-cp", tout + os.pathsep + base_cp, "JUnitRunner", fq],
                             timeout=240)
-                m = re.search(r"RESULT (\d+) (\d+) (\d+)", (rr.stdout or "") if rr else "")
-                if m:
-                    total += int(m.group(1))
-                    fails += int(m.group(3))
+                t, _o, b, green = MJ.parse_run((rr.stdout or "") if rr else "")
+                if t and b and MJ.GATE == "pertest" and green:
+                    cand = sorted(set(green))
+                    chk = MJ.run([jdk, "-cp", tout + os.pathsep + base_cp,
+                                  "JUnitRunner", fq, *cand], timeout=240)
+                    t2, _o2, b2, _g2 = MJ.parse_run((chk.stdout or "") if chk else "")
+                    if t2 > 0 and b2 == 0:
+                        selmap[fq], t, b = cand, t2, 0
+                if b == 0 and t > 0:
+                    selmap.setdefault(fq, [])
+                total += t
+                fails += b
             base["n_test"] = total
             if total == 0:
                 base["note"] = "khong co test nao chay"
                 results.append(base)
                 print(f"  [{i:2d}/{len(recs)}] {fid}  0 test chay")
                 continue
-            if fails:
+            if not selmap:
                 base["note"] = f"RED tren ban goc ({fails}/{total})"
                 results.append(base)
                 print(f"  [{i:2d}/{len(recs)}] {fid}  RED {fails}/{total}")
                 continue
+            if fails:
+                base["note"] = f"loc test xanh, bo {fails} test do"
+            fqs = [q for q in fqs if q in selmap]
 
             # dot bien trong khoang dong cua HAM
             f = rec["file"].replace("\\", "/")
@@ -197,8 +211,8 @@ def measure_java(tool: str, jdk: str) -> list[dict]:
                 killed = False
                 for fq in fqs:
                     r2 = MJ.run([jdk, "-cp", mout + os.pathsep + tout + os.pathsep + base_cp,
-                                 "JUnitRunner", fq], timeout=180)
-                    if r2 is None or r2.returncode != 0:
+                                 "JUnitRunner", fq, *selmap[fq]], timeout=180)
+                    if r2 is None or MJ.is_killed(r2):
                         killed = True
                         break
                 nk += killed

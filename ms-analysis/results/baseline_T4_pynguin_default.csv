@@ -1,0 +1,61 @@
+func_id,branch_coverage,mutation_score,n_mutant,n_killed,note
+CP-001,0.0,,0,0,khong co suite cho module
+CP-002,0.0,,0,0,khong co suite cho module
+CP-003,0.0,,0,0,khong co test xanh (collect-fail)
+CP-004,0.0,,0,0,test xanh nhung KHONG cham ham dich
+CP-005,0.0,,0,0,khong co suite cho module
+CP-006,0.0,,0,0,test xanh nhung KHONG cham ham dich
+CP-007,0.0,,0,0,khong co test xanh (collect-fail)
+CP-008,0.0,,0,0,khong co suite cho module
+CP-009,0.0,,0,0,test xanh nhung KHONG cham ham dich
+CP-010,0.0,,0,0,khong co suite cho module
+CP-011,0.0,,0,0,khong co suite cho module
+CP-012,0.0,,0,0,khong co suite cho module
+CP-013,0.0,,0,0,khong co suite cho module
+CP-014,0.0,,0,0,khong co suite cho module
+CP-015,0.0,,0,0,khong co suite cho module
+CP-016,0.0,,0,0,test xanh nhung KHONG cham ham dich
+CP-017,0.0,,0,0,khong co suite cho module
+CP-018,0.0,,0,0,test xanh nhung KHONG cham ham dich
+CP-019,0.0,,0,0,khong co suite cho module
+CP-020,0.0,,0,0,test xanh nhung KHONG cham ham dich
+CP-021,0.0,,0,0,khong co suite cho module
+CP-022,0.0,,0,0,khong co suite cho module
+CP-023,0.0,,0,0,khong co suite cho module
+CP-024,100.0,50.0,4,2,
+CP-025,0.0,,0,0,khong co suite cho module
+CP-026,0.0,,0,0,khong co suite cho module
+CP-027,0.0,,0,0,khong co suite cho module
+CP-028,0.0,,0,0,test xanh nhung KHONG cham ham dich
+CP-029,0.0,,0,0,khong co suite cho module
+CP-030,0.0,,0,0,test xanh nhung KHONG cham ham dich
+CP-031,0.0,,0,0,khong co suite cho module
+CP-032,0.0,,0,0,khong co suite cho module
+CP-033,0.0,,0,0,khong co suite cho module
+CP-034,0.0,,0,0,khong co suite cho module
+CP-035,0.0,,0,0,khong co test xanh (collect-fail)
+CP-036,0.0,,0,0,test xanh nhung KHONG cham ham dich
+CP-037,0.0,,0,0,khong co suite cho module
+CP-038,0.0,,0,0,test xanh nhung KHONG cham ham dich
+CP-039,0.0,,0,0,khong co suite cho module
+CP-040,0.0,,0,0,test xanh nhung KHONG cham ham dich
+CP-041,0.0,,0,0,khong co suite cho module
+CP-042,50.0,0.0,1,0,
+CP-043,0.0,,0,0,khong co suite cho module
+CP-044,100.0,0.0,2,0,
+CP-045,0.0,,0,0,khong co suite cho module
+CP-046,0.0,,0,0,test xanh nhung KHONG cham ham dich
+CP-047,0.0,,0,0,khong co suite cho module
+CP-048,0.0,,0,0,khong co suite cho module
+CP-049,0.0,,0,0,khong co suite cho module
+CP-050,100.0,100.0,2,2,
+CP-051,0.0,,0,0,khong co test xanh (collect-fail)
+CP-052,0.0,,0,0,khong co suite cho module
+CP-053,0.0,,0,0,khong co suite cho module
+CP-054,0.0,,0,0,khong co test xanh (collect-fail)
+CP-055,0.0,,0,0,khong co suite cho module
+CP-056,0.0,,0,0,khong co suite cho module
+CP-057,0.0,,0,0,khong co suite cho module
+CP-058,0.0,,0,0,khong co suite cho module
+CP-059,0.0,,0,0,khong co suite cho module
+CP-060,0.0,,0,0,khong co suite cho module
