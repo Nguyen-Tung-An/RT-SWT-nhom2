@@ -43,8 +43,12 @@ fault detection within the target's line range --- as evidence that a suite test
 Our operator set is deliberately small and identical across both languages, so that the two
 are measured with the same instrument. It is weaker than a production mutation framework, so
 absolute mutation scores are not comparable with studies using PIT or \texttt{mutmut}; only
-within-study comparisons are meaningful. We also cap mutants at 20 per function, which bounds
-the resolution of the score for larger functions.
+within-study comparisons are meaningful. The per-function mutant cap differs between the two
+pipelines (20 for Java and the baseline generators, 30 for the LLM Python suites), an
+inconsistency inherited from separate implementations. It binds exactly one function in the
+whole corpus (CP-025, 24 candidate sites) and cannot affect T4, since that tier asks only
+whether at least one mutant is killed and CP-025 kills 18; it bounds only the resolution of
+the continuous score for that one function.
 
 \subsection{Internal Validity}
 

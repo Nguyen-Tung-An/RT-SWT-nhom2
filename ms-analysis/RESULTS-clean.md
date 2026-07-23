@@ -46,18 +46,18 @@ Loại khỏi phân tích: CJ-048 (miner tự gán nhầm `protected`→`public`
 |---|---:|---:|---:|---:|
 | GPT-4o-mini v1 | 59 | 16 (27.1\%) | 0.0 | 100.0 |
 | GPT-4o-mini v2 | 59 | 16 (27.1\%) | 0.0 | 93.8 |
-| EvoSuite 1.2.0 | 59 | 24 (40.7\%) | 0.0 | 100.0 |
-| Randoop 4.3.3 | 59 | 18 (30.5\%) | 0.0 | 68.8 |
+| EvoSuite 1.2.0 | 59 | 23 (39.0\%) | 0.0 | 100.0 |
+| Randoop 4.3.3 | 59 | 19 (32.2\%) | 0.0 | 62.5 |
 
 ### Kiểm định — Java, cổng ≥1 test xanh (đúng đặc tả đã đăng ký)
 
 | So sánh | n≠0 | được / mất | p / rank-biserial | Kết luận |
 |---|---:|---:|---|---|
 | RQ-B  v1 → v2  (T4) | 4 | +1 / −1 | — | n<6, không kiểm định được |
-| RQ-C  GPT v1 vs EvoSuite  (T4) | 26 | +16 / −8 | 0.1307 / +0.339 | không có ý nghĩa |
-| RQ-C  GPT v2 vs EvoSuite  (T4) | 28 | +17 / −9 | 0.1035 / +0.352 | không có ý nghĩa |
-| RQ-C  GPT v1 vs Randoop  (T4) | 23 | +10 / −8 | 0.6051 / -0.123 | không có ý nghĩa |
-| RQ-C  GPT v2 vs Randoop  (T4) | 22 | +9 / −7 | 0.8076 / -0.059 | không có ý nghĩa |
+| RQ-C  GPT v1 vs EvoSuite  (T4) | 25 | +15 / −8 | 0.1785 / +0.308 | không có ý nghĩa |
+| RQ-C  GPT v2 vs EvoSuite  (T4) | 27 | +16 / −9 | 0.1428 / +0.323 | không có ý nghĩa |
+| RQ-C  GPT v1 vs Randoop  (T4) | 24 | +11 / −8 | 0.6682 / -0.100 | không có ý nghĩa |
+| RQ-C  GPT v2 vs Randoop  (T4) | 23 | +10 / −7 | 0.8552 / -0.043 | không có ý nghĩa |
 
 ---
 
@@ -127,16 +127,15 @@ Không phải so sánh có kiểm soát: hai tập hàm khác nhau, tập sạch
 
 **Java EvoSuite**
 
-- 33 — đo được
+- 34 — đo được
 - 24 — khong co suite cho lop nay
-- 1 — RED tren ban goc (1/620)
-- 1 — RED tren ban goc (3/12)
+- 1 — suite khong bien dich duoc
 
 **Java Randoop**
 
 - 51 — đo được
 - 7 — khong co suite cho lop nay
-- 1 — RED tren ban goc (946/1544)
+- 1 — loc test xanh, bo 473 test do
 
 **Python GPT v1**
 

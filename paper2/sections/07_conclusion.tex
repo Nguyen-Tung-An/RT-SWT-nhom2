@@ -20,15 +20,17 @@ unambiguous success.
 The same asymmetry explains why the intervention helps in one language and not the other.
 The target block supplies identity, and Python resolves identity at run time, so 14 of 17
 import failures disappear. Java resolves identity and types, and the compile-failure count
-does not move at all --- 39 before, 39 after, 36 of them the same functions. What remains
+does not move at all --- 38 before, 38 after, 35 of them the same functions. What remains
 in both languages is the construction of a receiver in a state that makes the behaviour
 observable, and neither prompt condition touches it, even when the constructor call handed
 to the model has been executed and verified.
 
 Against established generators the result does not resolve in one direction. On Python the
-model beats Pynguin decisively under both of Pynguin's configurations; on Java both mature
-search-based tools finish ahead of the model. A study conducted in either language alone
-would have produced a confident headline pointing the opposite way from the other.
+model beats Pynguin decisively under both of Pynguin's configurations ($p \le 0.003$ in every
+pairing); on Java both mature search-based tools detect faults on more targets than the model
+in every pairing, though the paired test reaches significance only for EvoSuite under the
+stricter gate. A study conducted in either language alone would have produced a confident
+headline pointing the opposite way from the other.
 
 Finally, and least expectedly, the study's most transferable output may be a catalogue of
 ways a measurement can stop working without saying so. Six such defects surfaced --- a

@@ -1,4 +1,4 @@
-Backup noi dung paper — 2026-07-24 00:17
+Backup noi dung paper — 2026-07-24 01:00
 Nguon: paper2/sections/*.tex (Springer LNCS)
 ==================================================================
 
@@ -32,8 +32,8 @@ identifier into a string, so a call naming a method that does not exist compiles
 return code 0; and a generated suite in our own corpus consists of a single assertion-free
 call to the wrong function, which passes. The consequence is not that these metrics are
 noisy — it is that a number can be reported when the underlying measurement has stopped
-working, with nothing to signal it. We encountered this seven times during the study, and
-four of those were defects we introduced ourselves while repairing the other three
+working, with nothing to signal it. We encountered this six times during the study, and
+four of those were defects we introduced ourselves while repairing the other two
 (Section~Section: Threats to Validity).
 
 -- This paper --
@@ -61,9 +61,10 @@ Three findings stand out.
  * **The LLM and the search-based tools win in different languages.** On Python,
  both prompt conditions beat Pynguin decisively — 2/60 for Pynguin against 16/60 and
  22/60 — at p <= 0.003 in every pairing, and this holds under both of the two
- Pynguin configurations we ran. On Java the ordering reverses, with both mature
- search-based tools ahead of the model. Neither result generalises to "LLMs are better"
- or "LLMs are worse."
+ Pynguin configurations we ran. On Java the count ordering reverses, with both mature
+ search-based tools detecting faults on more targets than the model (significantly so for
+ EvoSuite under the stricter gate). Neither result generalises to "LLMs are better" or
+ "LLMs are worse."
 
  * **Most of the attrition is structural.** Across both languages the dominant
  obstacle is not writing assertions but obtaining an instance to assert about. This is
@@ -301,8 +302,11 @@ generated JUnit suites through the JUnit Platform launcher (Java), in both cases
 to the target's line range rather than to the whole file. Mutation analysis applies the
 same operator set to both languages — arithmetic (+/-, x//), relational
 (>/>=, </<=), equality (= = / !=), boolean (AND/OR), boolean
-constant inversion, and numeric constant increment — capped at 20 mutants per function,
-restricted to the target's line range.
+constant inversion, and numeric constant increment — restricted to the target's line
+range and capped per function (20 mutants for Java and the baseline generators, 30 for the
+LLM-generated Python suites). The cap binds a single function in the whole corpus
+(Section~Section: Threats to Validity) and does not affect T4, which asks only whether any mutant is
+killed.
 
 Two procedural safeguards are worth stating because their absence silently corrupts
 results. First, mutation requires overwriting the source; we mutate a *copy* of the
@@ -351,6 +355,116 @@ All configuration decisions above — criteria, tool versions, budgets, the two-
 Pynguin design, and the hypotheses — were recorded in a pre-registration committed before
 any baseline was executed.
 
+=== Results ===
+
+We report Python and Java separately throughout. Every rate is over the functions of its own
+language: n = 60 for Python and n = 59 for Java, the latter after excluding one
+mis-sampled target (Section~Section: Threats to Validity). The primary tier is T4, fault detection
+within the target's line range; T3, reaching the target, is reported alongside it because
+the two diverge.
+
+-- RQ-A: Clean Versus Original Dataset --
+
+Table~2 contrasts the fault-detection rate of the baseline prompt on the
+original benchmark with its rate on the rebuilt one. This is not a controlled comparison —
+the two are different sets of functions, and the rebuilt one is easier by construction —
+so we report only the size of the gap, and only between measurements taken with the
+*same* green-test gate, since a gate mismatch alone would inflate the difference.
+
+Bang: Fault-detection rate (T4), original versus rebuilt dataset, same prompt (V1).
+
+Language Green gate Original Rebuilt
+
+Python per-test 13/60 (21.7 %) 16/60 (26.7 %)
+Java whole-suite 6/60 (10.0 %) 12/59 (20.3 %)
+
+The rebuilt dataset roughly doubles the Java rate and lifts the Python rate by about a
+quarter (13/60 to 16/60).
+Because the two samples are not matched, we draw no causal conclusion; the point is only
+that a large part of the failure rate reported on a complexity-only benchmark is attributable
+to targets that were never addressable, and removing them changes the headline number
+substantially.
+
+-- RQ-B: Effect of Target Specification --
+
+Both prompt conditions are one-shot and differ in a single block of target metadata
+(Section~Section: Test Generation). Table~3 reports both tiers for Python, where the
+result is decisive and, more importantly, splits between the two tiers.
+
+Bang: Python, V1 versus V2. "eff." is the median over the non-zero subset. Paired
+Wilcoxon signed-rank, alpha = 0.05; r_rb is matched-pairs rank-biserial.
+
+Tier V1 V2 p r_rb
+
+T3 (reaches target) 29/60 42/60 0.0027 +0.61 significant
+T4 (detects fault) 16/60 22/60 0.3259 +0.28 n.s.
+
+The target specification raises the proportion of suites that reach the target from 29/60 to
+42/60, a significant effect (p = 0.003). It raises the proportion that detects an injected
+fault from 16/60 to 22/60, which is not significant (p = 0.33). On the non-zero subsets the
+median scores barely move — T3 from 75.0 to 79.2, T4 from 84.4 to 88.9 — so the effect is
+almost entirely in *how many* suites clear each bar, not in how well the clearing suites
+do. A study reporting coverage alone would read this as a clear improvement; the fault-based
+tier shows the improvement does not reach the point of testing behaviour.
+
+The pre-registered hypothesis H-B predicted that the enriched prompt would not outperform the
+baseline. It holds at T4 and fails at T3. We record it as partially refuted, since the
+significant T3 effect is in the direction H-B predicted against.
+
+On Java the same intervention changes almost nothing. Under the per-test gate, both prompts
+detect faults on 16 of 59 targets; under the whole-suite gate the counts are 12 (V1) and 10
+(V2). The compile-failure count is identical — 38 functions under each prompt, 35 of them
+the same — so the target block, which resolves identity, does not clear the type-level
+barrier that dominates Java compilation. Only 4 functions differ in a way the paired test
+could use, which is below the six-pair minimum for a Wilcoxon test; we report the counts and
+the mechanism (Section~Section: Three Barriers, Only the First of Which a Prompt Can Remove) rather than a p-value.
+
+-- RQ-C: Against Established Generators --
+
+Table~4 places the model beside the search-based and random generators. Java is
+reported under both green-test gates; Python under both Pynguin configurations. No conclusion
+below depends on which setting a reader adopts.
+
+Bang: Fault detection (T4) of the model versus baselines. Java n = 59, Python n = 60.
+GPT columns are the target-specified prompt (V2); the paired test compares that column with
+each baseline.
+
+Language Setting GPT (V2) Baseline Paired test (p, r_rb)
+
+l*Java — EvoSuite*
+ per-test 16/59 23/59 0.14, +0.32 (n.s.)
+ whole-suite 10/59 24/59 0.028, +0.51 (sig.)
+l*Java — Randoop*
+ per-test 16/59 19/59 0.86, -0.04 (n.s.)
+ whole-suite 10/59 18/59 0.49, +0.18 (n.s.)
+l*Python — Pynguin*
+ default 22/60 2/60 0.0001, -0.96 (sig.)
+ no split 22/60 2/60 0.0001, -0.96 (sig.)
+
+The two languages disagree, and the disagreement is the result. On Python the model
+dominates Pynguin under every pairing: against either configuration, and using either prompt,
+the paired test rejects at p <= 0.003 with rank-biserial correlations between -0.81 and
+-0.96. The gap is driven by coverage of the benchmark rather than by score: Pynguin produced
+no suite at all for 39 of 60 targets in its default configuration, and disabling the
+master--worker split — the documented workaround for the serialisation crash responsible —
+reduced that to 35 while leaving T4 unchanged, because all four newly generated suites failed
+at collection.
+
+On Java the ordering reverses in the counts. Both baselines detect faults on more targets
+than the model in every pairing — EvoSuite 23 or 24 versus 16 or 10, Randoop 19 or 18
+versus 16 or 10 — but the paired Wilcoxon test reaches significance in only one of the four
+comparisons: EvoSuite under the whole-suite gate (p = 0.028, r_rb = +0.51). The other
+three, including both Randoop comparisons, do not reject at alpha = 0.05 (p from
+0.14 to 0.86). So the Java evidence is a consistent count advantage for the search-based
+tools that is statistically firm only for EvoSuite once the stricter gate is applied; it is
+not the decisive reversal the raw counts might suggest. Even so, it points the opposite way
+from Python, where the model rejects against Pynguin at p <= 0.003 in every pairing. Java
+is the setting these tools were built for, and where static types give a search-based
+generator the call information the model was shown to lack (Section~Section: Three Barriers, Only the First of Which a Prompt Can Remove). We
+therefore report no single verdict on whether the model beats automated generators: the
+count ordering is opposite in the two languages, and a study confined to either would have
+reached the other's headline.
+
 === Discussion ===
 
 -- Three Barriers, Only the First of Which a Prompt Can Remove --
@@ -358,8 +472,8 @@ any baseline was executed.
 The two prompt conditions differ in one variable, and the effect of that variable separates
 cleanly by language. On Python, supplying the target specification cut the number of suites
 that fail to import or collect from 17 to 4, rescuing 14 targets and breaking 1. On Java it
-changed effectively nothing: 39 suites failed to compile under the baseline prompt and 39
-failed under the target-specified prompt, with 36 of the 39 being the same functions. Three
+changed effectively nothing: 38 suites failed to compile under the baseline prompt and 38
+failed under the target-specified prompt, with 35 of the 38 being the same functions. Three
 functions moved in each direction, which is noise, not an effect.
 
 The asymmetry is not a quirk of the two languages' tooling. It follows from what the added
@@ -438,12 +552,15 @@ the four newly generated suites failed at collection, leaving T4 unchanged at 2/
 report this because it is the kind of result that disappears when a study reports only the
 configuration that worked better. Here, neither configuration worked.
 
-On Java the ordering reverses: both search-based tools finish ahead of the model
-(Section~sec:results). Java is where these tools have been developed and tuned for
-over a decade, and where static types give a search-based generator the information it
-needs to construct calls — exactly the information the language model was shown to be
-missing in Section~Section: Three Barriers, Only the First of Which a Prompt Can Remove. Python removes that information, and the ordering
-flips.
+On Java the count ordering reverses: both search-based tools detect faults on more targets
+than the model in every pairing (Section~Section: RQ-C: Against Established Generators). The reversal is firmer for EvoSuite,
+where the paired test is significant under the whole-suite gate (p = 0.028), than for
+Randoop, where no gate reaches significance; we therefore read the Java result as a
+consistent count advantage for the mature tools rather than a uniformly significant one. Java
+is where these tools have been developed and tuned for over a decade, and where static types
+give a search-based generator the information it needs to construct calls — exactly the
+information the language model was shown to be missing in Section~Section: Three Barriers, Only the First of Which a Prompt Can Remove. Python
+removes that information, and the ordering flips.
 
 The conclusion is therefore not that language models are better or worse at test
 generation. It is that the two families fail differently, and that which one leads depends
@@ -510,7 +627,7 @@ process, so the harness observed only the absence of a result line and recorded 
 ran" — for every target. EvoSuite scored 0/60, and a paired test against it returned
 p = 0.005 with a rank-biserial correlation of -1.000. Had we reported it, the paper would
 have claimed a statistically significant advantage for the model over EvoSuite; the true
-figure is given in Section~sec:results. A well-formed p-value made the artefact look
+figure is given in Section~Section: Results. A well-formed p-value made the artefact look
 more credible, not less.
 
 The sixth concerns the green-test gate itself. Our Python implementation retained the
@@ -518,7 +635,7 @@ passing tests and discarded the failing ones, as T2 specifies; our Java implemen
 rejected the entire function if any single test failed. The two languages were measuring
 different constructs under one name, and the Java side contradicted the definition we had
 registered in advance. We corrected it and report both settings throughout
-(Section~sec:results); the correction is discussed under conclusion validity below,
+(Section~Section: Results); the correction is discussed under conclusion validity below,
 because it moves results in our own favour.
 
 None of these produce an error. Each returns a plausible number. We therefore report the four
@@ -530,8 +647,12 @@ fault detection within the target's line range — as evidence that a suite test
 Our operator set is deliberately small and identical across both languages, so that the two
 are measured with the same instrument. It is weaker than a production mutation framework, so
 absolute mutation scores are not comparable with studies using PIT or `mutmut`; only
-within-study comparisons are meaningful. We also cap mutants at 20 per function, which bounds
-the resolution of the score for larger functions.
+within-study comparisons are meaningful. The per-function mutant cap differs between the two
+pipelines (20 for Java and the baseline generators, 30 for the LLM Python suites), an
+inconsistency inherited from separate implementations. It binds exactly one function in the
+whole corpus (CP-025, 24 candidate sites) and cannot affect T4, since that tier asks only
+whether at least one mutant is killed and CP-025 kills 18; it bounds only the resolution of
+the continuous score for that one function.
 
 -- Internal Validity --
 
@@ -631,15 +752,17 @@ unambiguous success.
 The same asymmetry explains why the intervention helps in one language and not the other.
 The target block supplies identity, and Python resolves identity at run time, so 14 of 17
 import failures disappear. Java resolves identity and types, and the compile-failure count
-does not move at all — 39 before, 39 after, 36 of them the same functions. What remains
+does not move at all — 38 before, 38 after, 35 of them the same functions. What remains
 in both languages is the construction of a receiver in a state that makes the behaviour
 observable, and neither prompt condition touches it, even when the constructor call handed
 to the model has been executed and verified.
 
 Against established generators the result does not resolve in one direction. On Python the
-model beats Pynguin decisively under both of Pynguin's configurations; on Java both mature
-search-based tools finish ahead of the model. A study conducted in either language alone
-would have produced a confident headline pointing the opposite way from the other.
+model beats Pynguin decisively under both of Pynguin's configurations (p <= 0.003 in every
+pairing); on Java both mature search-based tools detect faults on more targets than the model
+in every pairing, though the paired test reaches significance only for EvoSuite under the
+stricter gate. A study conducted in either language alone would have produced a confident
+headline pointing the opposite way from the other.
 
 Finally, and least expectedly, the study's most transferable output may be a catalogue of
 ways a measurement can stop working without saying so. Six such defects surfaced — a

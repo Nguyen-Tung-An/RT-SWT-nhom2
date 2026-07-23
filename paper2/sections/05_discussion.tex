@@ -6,8 +6,8 @@
 The two prompt conditions differ in one variable, and the effect of that variable separates
 cleanly by language. On Python, supplying the target specification cut the number of suites
 that fail to import or collect from 17 to 4, rescuing 14 targets and breaking 1. On Java it
-changed effectively nothing: 39 suites failed to compile under the baseline prompt and 39
-failed under the target-specified prompt, with 36 of the 39 being the same functions. Three
+changed effectively nothing: 38 suites failed to compile under the baseline prompt and 38
+failed under the target-specified prompt, with 35 of the 38 being the same functions. Three
 functions moved in each direction, which is noise, not an effect.
 
 The asymmetry is not a quirk of the two languages' tooling. It follows from what the added
@@ -85,12 +85,15 @@ the four newly generated suites failed at collection, leaving T4 unchanged at 2/
 report this because it is the kind of result that disappears when a study reports only the
 configuration that worked better. Here, neither configuration worked.
 
-On Java the ordering reverses: both search-based tools finish ahead of the model
-(Section~\ref{sec:results}). Java is where these tools have been developed and tuned for
-over a decade, and where static types give a search-based generator the information it
-needs to construct calls --- exactly the information the language model was shown to be
-missing in Section~\ref{sec:barriers}. Python removes that information, and the ordering
-flips.
+On Java the count ordering reverses: both search-based tools detect faults on more targets
+than the model in every pairing (Section~\ref{sec:rqc}). The reversal is firmer for EvoSuite,
+where the paired test is significant under the whole-suite gate ($p = 0.028$), than for
+Randoop, where no gate reaches significance; we therefore read the Java result as a
+consistent count advantage for the mature tools rather than a uniformly significant one. Java
+is where these tools have been developed and tuned for over a decade, and where static types
+give a search-based generator the information it needs to construct calls --- exactly the
+information the language model was shown to be missing in Section~\ref{sec:barriers}. Python
+removes that information, and the ordering flips.
 
 The conclusion is therefore not that language models are better or worse at test
 generation. It is that the two families fail differently, and that which one leads depends

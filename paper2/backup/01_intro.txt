@@ -28,8 +28,8 @@ identifier into a string, so a call naming a method that does not exist compiles
 return code 0; and a generated suite in our own corpus consists of a single assertion-free
 call to the wrong function, which passes. The consequence is not that these metrics are
 noisy — it is that a number can be reported when the underlying measurement has stopped
-working, with nothing to signal it. We encountered this seven times during the study, and
-four of those were defects we introduced ourselves while repairing the other three
+working, with nothing to signal it. We encountered this six times during the study, and
+four of those were defects we introduced ourselves while repairing the other two
 (Section~Section: Threats to Validity).
 
 -- This paper --
@@ -57,9 +57,10 @@ Three findings stand out.
  * **The LLM and the search-based tools win in different languages.** On Python,
  both prompt conditions beat Pynguin decisively — 2/60 for Pynguin against 16/60 and
  22/60 — at p <= 0.003 in every pairing, and this holds under both of the two
- Pynguin configurations we ran. On Java the ordering reverses, with both mature
- search-based tools ahead of the model. Neither result generalises to "LLMs are better"
- or "LLMs are worse."
+ Pynguin configurations we ran. On Java the count ordering reverses, with both mature
+ search-based tools detecting faults on more targets than the model (significantly so for
+ EvoSuite under the stricter gate). Neither result generalises to "LLMs are better" or
+ "LLMs are worse."
 
  * **Most of the attrition is structural.** Across both languages the dominant
  obstacle is not writing assertions but obtaining an instance to assert about. This is

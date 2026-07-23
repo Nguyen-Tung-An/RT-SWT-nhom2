@@ -28,7 +28,8 @@ Java   & whole-suite     & 6/60 (10.0\,\%)  & 12/59 (20.3\,\%) \\
 \end{tabular}
 \end{table}
 
-The rebuilt dataset roughly doubles the Java rate and lifts the Python rate by a third.
+The rebuilt dataset roughly doubles the Java rate and lifts the Python rate by about a
+quarter (13/60 to 16/60).
 Because the two samples are not matched, we draw no causal conclusion; the point is only
 that a large part of the failure rate reported on a complexity-only benchmark is attributable
 to targets that were never addressable, and removing them changes the headline number
@@ -69,11 +70,11 @@ significant T3 effect is in the direction H-B predicted against.
 
 On Java the same intervention changes almost nothing. Under the per-test gate, both prompts
 detect faults on 16 of 59 targets; under the whole-suite gate the counts are 12 (V1) and 10
-(V2). The compile-failure count is identical --- 39 functions under each prompt, 36 of them
+(V2). The compile-failure count is identical --- 38 functions under each prompt, 35 of them
 the same --- so the target block, which resolves identity, does not clear the type-level
-barrier that dominates Java compilation. Only 1 function under either prompt differs in a way
-the paired test could use, so no Wilcoxon test is meaningful for Java RQ-B; we report the
-counts and the mechanism (Section~\ref{sec:barriers}) rather than a $p$-value.
+barrier that dominates Java compilation. Only 4 functions differ in a way the paired test
+could use, which is below the six-pair minimum for a Wilcoxon test; we report the counts and
+the mechanism (Section~\ref{sec:barriers}) rather than a $p$-value.
 
 \subsection{RQ-C: Against Established Generators}\label{sec:rqc}
 
@@ -89,17 +90,17 @@ each baseline.}
 \label{tab:rqc}
 \begin{tabular}{llrrl}
 \toprule
-Language & Setting & GPT (V2) & Baseline & Paired test \\
+Language & Setting & GPT (V2) & Baseline & Paired test ($p$, $r_{rb}$) \\
 \midrule
 \multicolumn{5}{l}{\emph{Java --- EvoSuite}} \\
- & per-test    & 16/59 & 23/59 & baseline ahead \\
- & whole-suite & 10/59 & 24/59 & baseline ahead \\
+ & per-test    & 16/59 & 23/59 & $0.14$, $+0.32$ (n.s.) \\
+ & whole-suite & 10/59 & 24/59 & $0.028$, $+0.51$ (sig.) \\
 \multicolumn{5}{l}{\emph{Java --- Randoop}} \\
- & per-test    & 16/59 & \textbf{[pending]} & \textbf{[pending]} \\
- & whole-suite & 10/59 & 18/59 & baseline ahead \\
+ & per-test    & 16/59 & 19/59 & $0.86$, $-0.04$ (n.s.) \\
+ & whole-suite & 10/59 & 18/59 & $0.49$, $+0.18$ (n.s.) \\
 \multicolumn{5}{l}{\emph{Python --- Pynguin}} \\
- & default     & 22/60 & 2/60 & $p{=}0.0001$, $r_{rb}{=}{-}0.96$ \\
- & no split    & 22/60 & 2/60 & $p{=}0.0001$, $r_{rb}{=}{-}0.96$ \\
+ & default     & 22/60 & 2/60 & $0.0001$, $-0.96$ (sig.) \\
+ & no split    & 22/60 & 2/60 & $0.0001$, $-0.96$ (sig.) \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -113,10 +114,17 @@ master--worker split --- the documented workaround for the serialisation crash r
 reduced that to 35 while leaving T4 unchanged, because all four newly generated suites failed
 at collection.
 
-On Java the ordering reverses. EvoSuite detects faults on more targets than the model under
-both gates (23 or 24 versus 16 or 10), and Randoop likewise under the whole-suite gate (18
-versus 10). Java is the setting these tools were built for, and where static types give a
-search-based generator the call information the model was shown to lack. We therefore do not
-report a single verdict on whether the model beats automated generators: it clearly does in
-Python and clearly does not in Java, and a study confined to either language would have
-reached the opposite headline from the other.
+On Java the ordering reverses in the counts. Both baselines detect faults on more targets
+than the model in every pairing --- EvoSuite 23 or 24 versus 16 or 10, Randoop 19 or 18
+versus 16 or 10 --- but the paired Wilcoxon test reaches significance in only one of the four
+comparisons: EvoSuite under the whole-suite gate ($p = 0.028$, $r_{rb} = +0.51$). The other
+three, including both Randoop comparisons, do not reject at $\alpha = 0.05$ ($p$ from
+$0.14$ to $0.86$). So the Java evidence is a consistent count advantage for the search-based
+tools that is statistically firm only for EvoSuite once the stricter gate is applied; it is
+not the decisive reversal the raw counts might suggest. Even so, it points the opposite way
+from Python, where the model rejects against Pynguin at $p \le 0.003$ in every pairing. Java
+is the setting these tools were built for, and where static types give a search-based
+generator the call information the model was shown to lack (Section~\ref{sec:barriers}). We
+therefore report no single verdict on whether the model beats automated generators: the
+count ordering is opposite in the two languages, and a study confined to either would have
+reached the other's headline.

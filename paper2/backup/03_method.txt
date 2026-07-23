@@ -137,8 +137,11 @@ generated JUnit suites through the JUnit Platform launcher (Java), in both cases
 to the target's line range rather than to the whole file. Mutation analysis applies the
 same operator set to both languages — arithmetic (+/-, x//), relational
 (>/>=, </<=), equality (= = / !=), boolean (AND/OR), boolean
-constant inversion, and numeric constant increment — capped at 20 mutants per function,
-restricted to the target's line range.
+constant inversion, and numeric constant increment — restricted to the target's line
+range and capped per function (20 mutants for Java and the baseline generators, 30 for the
+LLM-generated Python suites). The cap binds a single function in the whole corpus
+(Section~Section: Threats to Validity) and does not affect T4, which asks only whether any mutant is
+killed.
 
 Two procedural safeguards are worth stating because their absence silently corrupts
 results. First, mutation requires overwriting the source; we mutate a *copy* of the
