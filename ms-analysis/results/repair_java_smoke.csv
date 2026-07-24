@@ -1,3 +1,0 @@
-func_id,visibility,repo,err_type_before,n_err_before,compiles_after,n_err_after,err_type_after,rounds_used,rescued
-JA-002,public,apache/commons-cli,overload-nhap-nhang,11,0,1,khac,1,0
-JA-010,public,apache/commons-cli,overload-nhap-nhang,3,0,3,overload-nhap-nhang,1,0

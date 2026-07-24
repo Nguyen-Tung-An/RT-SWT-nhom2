@@ -138,7 +138,27 @@ EvoSuite under the whole-suite gate (p = 0.028).
 
 ---
 
-## 5. Regenerate everything
+## 5. Appendix — first-study toolchain (for reference)
+
+The first study measured with the standard Maven-based stack rather than the custom harness
+above. These versions are recorded here because the paper contrasts its mutation scores with
+PIT-based ones, and because `tool-versions.md` (their original home) has since been removed
+from the working tree; git history still holds it.
+
+| Tool | Version | Role in the first study |
+|---|---|---|
+| Maven | 3.9.16 | Build and test across the eight Java repositories |
+| JaCoCo | 0.8.12 | Branch coverage (Java) |
+| PIT (pitest-maven) | 1.17.2 | Mutation testing (Java) |
+| Maven Surefire | 3.2.5 | Direct test invocation |
+| OpenAI Python SDK | 2.45.0 | Test generation |
+| pytest | 8.4.2 | Green-check and execution (Python) |
+| coverage.py | 7.15.1 | Branch coverage (Python) |
+| JDK 17 | OpenJDK 17.0.19 | Randoop, LLM suites, main Maven build |
+
+---
+
+## 6. Regenerate everything
 
 ```bash
 # rebuild the consolidated results table from the CSVs
