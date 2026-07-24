@@ -44,8 +44,8 @@ Filtering such functions after discovering Java's low effective rate would intro
 selection effect and violate the pre-registered protocol (amendments~v1.1/v1.2,
 Section~\ref{sec:threats}). And the data speak plainly to another cause: the primary
 reason for Java's low test quality was wrong-target invocation. A private target is
-involved in only 1 of the 9 genuinely non-compiling Java functions and only 14 of the 46
-that compiled but touched nothing (Section~\ref{sec:results}). The outright compile
+involved in only 1 of the 9 Java functions our pipeline scored \textsc{invalid} and only 14
+of the 46 that compiled but touched nothing (Section~\ref{sec:results}). The outright compile
 failures are distributed differently, concentrated in the API-heavy \texttt{AccurateMath}
 and \texttt{Gson} classes (Section~\ref{sec:results}).
 

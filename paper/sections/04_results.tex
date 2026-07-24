@@ -50,11 +50,11 @@ that was not the target but was present and accessible. For instance,
 actually the nested \texttt{CommandLine.Builder.getOptionValues(\ldots)}; elsewhere a
 same-named method inherited from a parent class was invoked instead of the intended
 override. Java's suites were syntactically and semantically valid but did not target the
-intended code --- rare failures, but severe, since they provided no coverage of the
-target. After validity, only 5/60 (8.3\%) of Java suites were effective, compared to
-23/60 (38.3\%) for Python. Of the 9 non-compiling Java suites, 6 targeted
-\texttt{AccurateMath} --- a class packed with overloaded methods of similar signatures ---
-and 3 targeted \texttt{Gson}'s generic adapters (\texttt{getAdapter},
+intended code --- the dominant failure mode, and a severe one, since they provided no
+coverage of the target. After validity, only 5/60 (8.3\%) of Java suites were effective,
+compared to 23/60 (38.3\%) for Python. Of the 9 suites our pipeline scored \textsc{invalid},
+6 targeted \texttt{AccurateMath} --- a class packed with overloaded methods of similar
+signatures --- and 3 targeted \texttt{Gson}'s generic adapters (\texttt{getAdapter},
 \texttt{getDelegateAdapter}, \texttt{fromJson}); only one of the 9 targeted a
 \texttt{private} method. Java's validity problems cluster in classes with overloaded
 methods and generics, not around private methods --- which shapes the fix: making the
@@ -80,7 +80,7 @@ all-level 0\% median.
 
 \subsection{RQ2 --- Mutation score}
 \textbf{(A) vs.\ 60\%.} The pattern repeats: across all 60 functions the median score was
-\textbf{0\%}, with only 17/60 functions producing a suite that killed at least one mutant
+\textbf{0\%}, with only 17/60 functions producing a suite with a measurable mutation score
 (Table~\ref{tab:rq}). Restricting to those 17 green suites, the effective median rose to
 \textbf{36.84\%} ($n=17$; only 4/17 cleared 60\%), and the one-sample Wilcoxon did not
 support the threshold ($p=0.99$, $r=-0.66$). Java was comparable: all-function median
@@ -156,8 +156,10 @@ RQ3 All & CC$\sim$Cov & eff (28) & $\rho{=}{+}0.16$ & 0.40 & $+0.16$ \\
 \begin{figure}[t]
 \centering
 \includegraphics[width=\linewidth]{figures/fig1_distribution.png}
-\caption{Branch coverage and mutation score of gpt-4o-mini on the effective subset
-(dashed: 80\% / 60\% thresholds). The all-function medians are 0\% (see text).}
+\caption{Branch coverage (left) and mutation score (right) of gpt-4o-mini across all 60
+functions per language ($N=120$); the median is 0\% in every panel (dashed: 80\% / 60\%
+thresholds). Effective-subset medians (75.0\% Python / 50.0\% Java coverage; 36.84\% Python
+mutation) are given in the text.}
 \label{fig:dist}
 \end{figure}
 
@@ -168,8 +170,10 @@ still below 80\%. When counting all 120 functions, the median is 0\%. There is n
 link between complexity and quality within CC 5--10 for either language. What matters
 most here is test validity, and it breaks differently in each language: Python mostly
 dies at compile time (46.7\% \textsc{invalid}, dominated by \texttt{ImportError}), while
-Java mostly compiles and then measures nothing (76.7\% compile yet touch 0\% of the
-target), through silent wrong-target/overload resolution. Effective suites make up only 8.3\% of the Java
+Java mostly passes our pipeline's compile check and then measures nothing (46/60 $=$ 76.7\%
+were scored \texttt{compiled} yet touch 0\% of the target; the direct \texttt{javac} audit
+of Section~\ref{sec:threats} puts genuine compilation lower still), through silent
+wrong-target/overload resolution. Effective suites make up only 8.3\% of the Java
 sample and 38.3\% of the Python one. On paired comparisons, gpt-4o-mini loses decisively to
 both automated Java baselines (EvoSuite, Randoop; $r=-1.00$ each) but beats the Python
 baseline Pynguin, whose own coverage on this dataset sits at 0.0\% because of
@@ -184,9 +188,9 @@ from a clean editable-install environment; the exact invalid rate is sensitive t
 precise \texttt{flask}/\texttt{requests} dependency versions in use. The Python baseline
 figures needed a separate Python~3.10 virtual environment just for Pynguin, since
 Pynguin's bytecode instrumentation silently produced empty test suites under Python~3.14,
-the platform otherwise used for GPT/measurement scripting; this is documented in
-Section~\ref{sec:threats} as an environment amendment, not as a change to any
-pre-registered metric or threshold. \textbf{Sample size.} Effective $n$ is small in every
+the platform otherwise used for GPT/measurement scripting; as detailed in
+Section~\ref{sec:threats}, this environment fix was applied uniformly before any data were
+collected and changes no pre-registered metric or threshold. \textbf{Sample size.} Effective $n$ is small in every
 cell (5--28), and particularly so for Java RQ1/RQ3 ($n=5$) --- those point estimates are
 indicative, not precise. \textbf{Single sample.} With one generation per
 function (one-shot, temp $=0$), we have no per-function variance estimate.
