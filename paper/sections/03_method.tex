@@ -8,29 +8,30 @@ taken from the approved proposal; both thresholds (80\,\% and 60\,\%) and the pr
 of the correlation were fixed there before any data were collected, so none of them is a
 post-hoc expectation.
 
-\begin{description}
-  \item[RQ1 --- Coverage threshold.] When \texttt{gpt-4o-mini} is given a single one-shot
-    prompt and asked to write a unit test for one individual function of medium cyclomatic
-    complexity ($5 \le CC \le 10$) taken from a real open-source Java or Python project, does
-    the suite it produces achieve a median branch coverage of at least 80\,\% --- the level
-    most commonly quoted as an industry target --- measured over that function's own line
-    range rather than over the whole file?
-    \\[2pt] \emph{H1: median branch coverage $\ge 80\,\%$.}
-  \item[RQ2-A --- Mutation threshold.] Does the same suite detect injected faults at a median
-    mutation score of at least 60\,\% --- a threshold set deliberately above the roughly
-    34\,\% reported for LLM-generated suites in the studies reviewed in
-    Section~\ref{sec:related} --- measured with one operator set over the same line range?
-    \\[2pt] \emph{H2-A: median mutation score $\ge 60\,\%$.}
-  \item[RQ2-B --- Comparison with baselines.] Matched function by function, does
-    \texttt{gpt-4o-mini} achieve a higher mutation score than the established automated
-    generators --- EvoSuite and Randoop for Java, Pynguin for Python --- when those tools are
-    run on the same targets under a fixed time budget?
-    \\[2pt] \emph{H2-B: \texttt{gpt-4o-mini} scores above each baseline.}
-  \item[RQ3 --- Complexity and quality.] Within the narrow 5--10 band alone, does cyclomatic
-    complexity correlate negatively with the branch coverage the model achieves --- that is,
-    does test quality degrade measurably as complexity rises even inside a single band?
-    \\[2pt] \emph{H3: Spearman $\rho < 0$.}
-\end{description}
+\textbf{RQ1 --- Coverage threshold.} When \texttt{gpt-4o-mini} is given a single one-shot
+prompt and asked to write a unit test for one individual function of medium cyclomatic
+complexity ($5 \le CC \le 10$) taken from a real open-source Java or Python project, does the
+suite it produces achieve a median branch coverage of at least 80\,\% --- the level most
+commonly quoted as an industry target --- measured over that function's own line range rather
+than over the whole file?
+\emph{H1: median branch coverage $\ge 80\,\%$.}
+
+\textbf{RQ2-A --- Mutation threshold.} Does the same suite detect injected faults at a median
+mutation score of at least 60\,\% --- a threshold set deliberately above the roughly 34\,\%
+reported for LLM-generated suites in the studies reviewed in Section~\ref{sec:related} ---
+measured with one operator set over the same line range?
+\emph{H2-A: median mutation score $\ge 60\,\%$.}
+
+\textbf{RQ2-B --- Comparison with baselines.} Matched function by function, does
+\texttt{gpt-4o-mini} achieve a higher mutation score than the established automated generators
+--- EvoSuite and Randoop for Java, Pynguin for Python --- when those tools are run on the same
+targets under a fixed time budget?
+\emph{H2-B: \texttt{gpt-4o-mini} scores above each baseline.}
+
+\textbf{RQ3 --- Complexity and quality.} Within the narrow 5--10 band alone, does cyclomatic
+complexity correlate negatively with the branch coverage the model achieves --- that is, does
+test quality degrade measurably as complexity rises even inside a single band?
+\emph{H3: Spearman $\rho < 0$.}
 
 Table~\ref{tab:rqmap} maps each question to the test that answers it and to the data it is
 answered on. Java and Python are reported separately throughout, because the toolchains and
@@ -94,6 +95,11 @@ became aware of when comparing the results), while the final run equalised the b
 (see Section~\ref{sec:threats}). Pynguin~\cite{lukasczyk2022pynguin} is used for Python
 with 90s per module under DYNAMOSA. Hypothesis was a viable baseline for the initial
 comparison but was not actually used for the reported results.
+
+\textbf{Replication package.} Our replication package, including the mined dataset with full
+provenance, the exact prompts, the generation and measurement scripts, and the raw
+per-function results, is publicly available at
+\url{https://github.com/Nguyen-Tung-An/RT-SWT-nhom2}.
 
 \subsection{Measurement}
 We declined to measure functions in isolation; all test suites are executed in the target
