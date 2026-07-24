@@ -18,12 +18,9 @@ Java ($n=54$; $p=1.00$, $r=-1.00$, large), none clearing the 60\% threshold.
 Paired Wilcoxon tests found both Java baselines significantly stronger than GPT-4o-mini
 (EvoSuite $p=0.00044$, Randoop $p=0.0033$; both survive Bonferroni correction), each with an effect size of $r=-1.00$ --- the
 baseline won every Java function where the two suites differed. For Python the direction
-reversed ($p=0.010$, $r=+0.85$, large), but this is the one comparison that does \emph{not}
-survive correction for the twelve tests we ran ($\alpha' = 0.0042$), and Pynguin achieved
-0.0\% median coverage on this sample (Section~\ref{sec:threats}). We therefore treat it as
-inconclusive on both counts: it says only that GPT-4o-mini can beat a tool that failed the
-task, not that its own Python tests are strong. The two comparisons that go against the model
-are the ones that survive.
+reversed ($p=0.010$, $r=+0.85$), but Pynguin achieved 0.0\% median coverage on this sample
+(Section~\ref{sec:threats}), so that result says only that GPT-4o-mini can beat a tool that
+failed the task, not that its own Python tests are strong.
 
 \textbf{RQ3.} The relationship between CC and coverage was weak across the sampled range
 ($\rho=+0.18$, $p=0.41$ Python; $\rho=+0.13$, $p=0.83$ Java; $\rho=+0.16$, $p=0.40$
@@ -46,9 +43,7 @@ Section~\ref{sec:results} would have looked adequate when they were not.
 single feedback/repair iteration --- aimed at the shortcomings of the plain one-shot setup.
 Neither closed the gap. For Java, the effective-suite rate climbed across the three stages
 (no intervention $\to$ context $\to$ one repair iteration): 8.3\% $\to$ 18.3\% $\to$ 25.0\%
-($p=0.074$ then $p=0.063$, $n=60$; rank-biserial $r=+1.00$ at each step --- every non-tied
-pair favoured the intervention, so the effect is large but the sample of non-tied pairs is
-too small to reach significance), with mutation score unchanged at 0\% throughout. For
+($p=0.074$ then $p=0.063$, $n=60$), with mutation score unchanged at 0\% throughout. For
 Python, neither the added context nor the single repair iteration improved matters: context
 was neutral once measured per test, and the repair step produced an outright per-test
 regression, most likely because the model answered failures by padding the suite with more

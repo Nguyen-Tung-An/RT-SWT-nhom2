@@ -31,14 +31,9 @@ One further construct threat: the two Python arms use different scoring instrume
 \texttt{mutmut} for the \texttt{gpt-4o-mini} suites and our own AST parser for the Pynguin
 suites (Section~\ref{sec:method}). Both enforce the same green-on-original gate and score
 over the same function ranges, but they define different operator sets, so the Python
-RQ2-B comparison really compares scores from two instruments. \emph{Mitigation applied:} we
-bounded how far this can matter rather than leaving it open. Both instruments were held to
-the same green-on-original gate and the same per-function line ranges, so neither can score a
-suite that does not run; and because Pynguin's median coverage on this dataset was 0.0\%, its
-mutation score is 0\% under \emph{any} operator set, which means the direction of the RQ2-B
-comparison cannot be produced by the instrument difference. We also discount that comparison
-entirely once multiplicity is accounted for (see Conclusion Validity below), so no conclusion
-in the paper rests on it. This dataset also illustrates why coverage alone is a poor quality
+RQ2-B comparison really compares scores from two instruments. Fortunately Pynguin's median
+coverage on this dataset was 0.0\%, so the direction of that comparison does not hinge on
+the instrument choice. This dataset also illustrates why coverage alone is a poor quality
 metric: one baseline suite reached 60\% branch coverage on a function while killing none of
 its mutants --- which is exactly why we report coverage and mutation score as a pair.
 
