@@ -1,5 +1,58 @@
 \section{Methodology}\label{sec:method}
 
+\subsection{Research questions and hypotheses}\label{sec:rqs}
+
+The study asks four questions, obtained by splitting the two-part RQ2 of the proposal into
+its threshold component and its comparison component. Each carries a directional hypothesis
+taken from the approved proposal; both thresholds (80\,\% and 60\,\%) and the predicted sign
+of the correlation were fixed there before any data were collected, so none of them is a
+post-hoc expectation.
+
+\begin{description}
+  \item[RQ1 --- Coverage threshold.] When \texttt{gpt-4o-mini} is given a single one-shot
+    prompt and asked to write a unit test for one individual function of medium cyclomatic
+    complexity ($5 \le CC \le 10$) taken from a real open-source Java or Python project, does
+    the suite it produces achieve a median branch coverage of at least 80\,\% --- the level
+    most commonly quoted as an industry target --- measured over that function's own line
+    range rather than over the whole file?
+    \\[2pt] \emph{H1: median branch coverage $\ge 80\,\%$.}
+  \item[RQ2-A --- Mutation threshold.] Does the same suite detect injected faults at a median
+    mutation score of at least 60\,\% --- a threshold set deliberately above the roughly
+    34\,\% reported for LLM-generated suites in the studies reviewed in
+    Section~\ref{sec:related} --- measured with one operator set over the same line range?
+    \\[2pt] \emph{H2-A: median mutation score $\ge 60\,\%$.}
+  \item[RQ2-B --- Comparison with baselines.] Matched function by function, does
+    \texttt{gpt-4o-mini} achieve a higher mutation score than the established automated
+    generators --- EvoSuite and Randoop for Java, Pynguin for Python --- when those tools are
+    run on the same targets under a fixed time budget?
+    \\[2pt] \emph{H2-B: \texttt{gpt-4o-mini} scores above each baseline.}
+  \item[RQ3 --- Complexity and quality.] Within the narrow 5--10 band alone, does cyclomatic
+    complexity correlate negatively with the branch coverage the model achieves --- that is,
+    does test quality degrade measurably as complexity rises even inside a single band?
+    \\[2pt] \emph{H3: Spearman $\rho < 0$.}
+\end{description}
+
+Table~\ref{tab:rqmap} maps each question to the test that answers it and to the data it is
+answered on. Java and Python are reported separately throughout, because the toolchains and
+the access rules of the two languages differ.
+
+\begin{table}[t]
+\centering
+\caption{Each research question, its hypothesis, the statistical test used, and the sample it
+is applied to. All tests are non-parametric at $\alpha = 0.05$.}
+\label{tab:rqmap}
+\begin{tabular}{llll}
+\hline
+RQ & Hypothesis & Test & Sample \\
+\hline
+RQ1   & median coverage $\ge 80\%$ & one-sample Wilcoxon vs.\ 80 & 60/lang.\ (all), effective \\
+RQ2-A & median mutation $\ge 60\%$ & one-sample Wilcoxon vs.\ 60 & 60/lang.\ (all), measurable \\
+RQ2-B & GPT $>$ each baseline      & paired Wilcoxon, by \texttt{function\_id} & matched pairs \\
+RQ3   & Spearman $\rho < 0$        & Spearman correlation of CC vs.\ coverage & effective subset \\
+\hline
+\end{tabular}
+\end{table}
+
 \subsection{Dataset}
 The proposal mentioned Defects4J and CodeXGLUE as sources. We excluded the latter:
 CodeXGLUE is a benchmark of code-intelligence tasks, including summarisation and

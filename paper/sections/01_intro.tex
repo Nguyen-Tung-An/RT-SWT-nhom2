@@ -41,12 +41,16 @@ baselines: EvoSuite and Randoop for Java (60 seconds per class), and Pynguin for
 statistical tests with $\alpha = 0.05$.
 
 We ask: \\
-\textbf{RQ1}: Does GPT-4o-mini achieve at least 80\% branch coverage on medium-complexity
-functions? \\
-\textbf{RQ2}: Does GPT-4o-mini achieve at least 60\% mutation score, and does it
-outperform automated baselines? \\
-\textbf{RQ3}: Is there a negative correlation between cyclomatic complexity and test
-quality?
+\textbf{RQ1}: Asked in a single one-shot prompt to test one function of medium cyclomatic
+complexity ($5 \le CC \le 10$) drawn from a real open-source project, does GPT-4o-mini
+produce a suite whose median branch coverage over that function's own lines reaches the
+80\% industry target? \\
+\textbf{RQ2}: Does the same suite reach a median mutation score of 60\% (RQ2-A), and does
+it, matched function by function, score above the established automated generators ---
+EvoSuite and Randoop for Java, Pynguin for Python (RQ2-B)? \\
+\textbf{RQ3}: Within the narrow 5--10 band alone, does cyclomatic complexity correlate
+negatively with the coverage the model achieves --- does quality degrade measurably as
+complexity rises even inside one band?
 
 These two thresholds are not arbitrary: 80\% is the branch coverage target most commonly
 quoted as the industry standard, while 60\% is set intentionally above the roughly 34\%
