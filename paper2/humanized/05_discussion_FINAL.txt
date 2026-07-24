@@ -63,8 +63,8 @@ Coverage measures arrival and mutation score measures discrimination --- only th
 metric of testing ability in any meaningful sense, and only the former was improved by the
 prompt change. That coverage is misleading about test suite quality is a well-known finding
 [inozemtseva2014coverage]; what this experiment adds is a demonstration that a specific,
-plausible change to the prompt moves the two metrics in different directions, with different
-effect sizes, inverting their ranking.
+plausible change to the prompt moves the two metrics by different amounts, and in a way that
+inverts the conclusion drawn from them.
 
 This is also where the pre-registered hypothesis H-B begins to fall apart. We predicted, with
 no knowledge of the results, that the enriched prompt would be no better than the baseline.
