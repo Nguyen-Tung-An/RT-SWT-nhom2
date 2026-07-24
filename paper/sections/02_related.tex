@@ -144,3 +144,19 @@ Additionally, mutation score frequently gets reported alongside non-standard tes
 infrastructure~\cite{silva2025comparative}. We attempt to mitigate these issues by
 reporting threshold-test results alongside detailed mutation analysis, using standard
 testing libraries, for the same set of function identifiers as used in RQ1.
+
+\subsection{Positioning}
+Unlike prior work, this paper is the first, to our knowledge, to evaluate LLM-generated unit
+tests on a sample where cyclomatic complexity is held to a single narrow band
+($5 \le CC \le 10$) and where branch coverage and mutation score are tested statistically on
+exactly the same function identifiers. Three differences follow from that design. First, the
+studies with the highest reported coverage evaluate self-contained
+puzzles~\cite{wang2025testeval,kumar2025empirical}, whereas every function in our sample must
+be reached inside its own project, which is what makes the invalid rate visible at all.
+Second, work that reports mutation score usually does so in
+aggregate~\cite{sapozhnikov2024empirical,jain2025testgeneval} rather than paired against a
+search-based baseline on matched functions, which is what our RQ2-B provides. Third, the
+complexity--quality relationship that GAP-T identifies has been assumed rather than measured;
+RQ3 measures it directly and finds it absent within the band. The result is a picture that is
+less flattering than the benchmark literature but closer to what a developer would obtain on
+a real code base.

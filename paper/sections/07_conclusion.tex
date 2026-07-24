@@ -13,9 +13,10 @@ invoked the target), median branch coverage was 75.0\% ($p=0.84$, $r=-0.22$). Fo
 the same 60 Java functions reached a median branch coverage of 55.0\% under EvoSuite and
 21.1\% under Randoop --- so the 80\% bar was demanding for every tool, not just the LLM.
 Mutation scores were weaker still: among the suites with a defined score, the median was
-36.84\% for Python ($n=17$) and 0\% for Java ($n=54$), none clearing the 60\% threshold.
+36.84\% for Python ($n=17$; one-sample Wilcoxon $p=0.99$, $r=-0.66$, large) and 0\% for
+Java ($n=54$; $p=1.00$, $r=-1.00$, large), none clearing the 60\% threshold.
 Paired Wilcoxon tests found both Java baselines significantly stronger than GPT-4o-mini
-(EvoSuite $p<0.001$, Randoop $p=0.003$), each with an effect size of $r=-1.00$ --- the
+(EvoSuite $p=0.00044$, Randoop $p=0.0033$; both survive Bonferroni correction), each with an effect size of $r=-1.00$ --- the
 baseline won every Java function where the two suites differed. For Python the direction
 reversed ($p=0.010$, $r=+0.85$), but Pynguin achieved 0.0\% median coverage on this sample
 (Section~\ref{sec:threats}), so that result says only that GPT-4o-mini can beat a tool that

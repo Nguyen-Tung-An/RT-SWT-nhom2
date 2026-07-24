@@ -75,6 +75,54 @@ because a Python baseline was pre-registered (amendment~v1.2) and quietly droppi
 inconvenient result would itself be a validity threat. It is not a claim about
 gpt-4o-mini's Python ability --- RQ1/RQ2-A already speak to that.
 
+\subsection{Comparison with prior work}
+Our coverage figures sit far below the headline numbers in this literature, and the gap is
+informative rather than embarrassing. Wang et al.\ report up to 98.65\% line and 97.16\%
+branch coverage for GPT-4o on TestEval~\cite{wang2025testeval}, and Kumar et al.\ report
+99.05\% branch coverage for Gemini~\cite{kumar2025empirical}; our all-level median is 0\% and
+our best effective median is 75.0\%. The decisive difference is the target, not the model:
+those studies evaluate self-contained LeetCode-style functions, whereas every function here
+is embedded in a real project and must be imported, constructed, and invoked in place. The
+one prior result measured on real projects rather than puzzles agrees with us --- Haratian et
+al.\ report GPT-4o passing only 37\% of Java pull requests against 36\% for
+EvoSuite~\cite{haratian2026praware}, the same order of magnitude as our own effective rates.
+
+Our mutation figures, by contrast, line up closely with prior work. We measure a 36.84\%
+effective median for Python, against the 33.82\% aggregate reported by Sapozhnikov et
+al.~\cite{sapozhnikov2024empirical} and the 33.8\% of TestForge~\cite{jain2025testgeneval}.
+That agreement is worth stating explicitly: where coverage numbers diverge by 60 percentage
+points across benchmarks, mutation numbers converge near one third. This is consistent with
+the view that coverage is highly sensitive to how the target is framed while fault detection
+is not, and it is the empirical core of our argument in Section~\ref{sec:results}.
+
+Finally, our Java compile-failure rate is in the same band as the literature. Zhang et al.\
+measure a 47.9--55.9\% Java compile-error rate on TestBench~\cite{zhang2024testbench}; our
+direct \texttt{javac} audit puts 43/60 (71.7\%) of Java suites as failing to compile. Ours is
+higher, which we attribute to sampling functions rather than whole classes: a class-level
+prompt supplies the surrounding API for free, and a function-level prompt does not.
+
+\subsection{Implications for practice}
+Three practical conclusions follow, and they are narrower than ``LLMs can or cannot write
+tests''.
+
+\textbf{Do not substitute a one-shot LLM for a search-based generator on Java.} On matched
+functions EvoSuite and Randoop killed strictly more mutants ($p=0.00044$ and $p=0.0033$, both
+surviving Bonferroni correction). A team already running EvoSuite gains nothing by replacing
+it with one-shot prompting at this complexity level.
+
+\textbf{Treat the generated suite as a draft that must be executed before it is trusted.}
+The dominant failure is not a weak assertion but a suite that never reaches the target: 46.7\%
+of Python suites were invalid and 91.7\% of Java suites were invalid or touched nothing. A
+developer who reads such a suite without running it will see plausible-looking test code that
+verifies nothing. Any adoption should therefore gate on execution and, ideally, on a
+fault-based check rather than on coverage.
+
+\textbf{Give the model the surrounding API, not just the function.} Our exploratory RQ4/RQ5
+results (below) and the contrast with class-level studies both point the same way: what the
+model lacks is the context needed to construct the receiver, not the ability to write
+assertions. For a team, that means the cheapest improvement is better prompt context, not a
+larger model.
+
 \subsection{RQ4 (exploratory, post-hoc): does real API context help?}
 \label{sec:rq4}
 Wrong-target invocation, the leading cause of Java invalidity above, motivated a small

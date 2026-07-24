@@ -15,11 +15,13 @@ from ten real projects --- from Apache Commons, Gson and Joda-Time to Flask and 
 There are two gaps in current measurement practices that hide this problem. First, hardly
 any study controls for the structural complexity of the code under test: results are
 reported in aggregate, across functions with mixed and often unreported cyclomatic
-complexity (CC), so no one knows at what point LLM-generated tests start to fail (GAP-T).
+complexity (CC)~\cite{wang2025testeval,jain2025testgeneval,zhang2024testbench}, so no one
+knows at what point LLM-generated tests start to fail (GAP-T).
 Because of this gap, we kept cyclomatic complexity fixed as a controlled variable, sampled
 only the 5--10 band, and measured the CC--quality correlation directly (RQ3). Second,
 branch coverage and mutation score are rarely combined in a single statistical test on a
-controlled sample (GAP-M), even though coverage alone can overstate quality --- in our own
+controlled sample~\cite{sapozhnikov2024empirical,ouedraogo2025prompt,silva2025comparative}
+(GAP-M), even though coverage alone can overstate quality --- in our own
 baseline data, one \texttt{jsoup} function reaches 60\% branch coverage while killing 0\%
 of mutants (Section~\ref{sec:discussion}).
 
@@ -58,14 +60,20 @@ mutation scores reported for LLM-generated suites in the studies reviewed in
 Section~\ref{sec:related}; both were fixed in the approved proposal before any data were
 collected.
 
-In summary, our contributions are: (i) a reproducible benchmark of 120 medium-complexity
-functions with full provenance; (ii) a measurement pipeline that scores tests \emph{per
-function} inside the original projects and enforces a green-on-original check before any
-mutation analysis; (iii) an empirical comparison of GPT-4o-mini against search-based and
-random baselines on a complexity-matched sample; and (iv) a catalogue of the measurement
-pitfalls we encountered along the way --- such as EvoSuite returning exit code 0 without
-generating a single test, or JaCoCo silently reporting 0\% under EvoSuite's instrumenting
-class loader --- which would have corrupted our results if left unnoticed.
+To summarize, this paper contributes:
+\begin{enumerate}
+  \item A reproducible benchmark of 120 medium-complexity functions ($5 \le CC \le 10$) mined
+    from ten pinned open-source projects, with full provenance for every function.
+  \item A measurement pipeline that scores tests \emph{per function} inside the original
+    projects and enforces a green-on-original check before any mutation analysis.
+  \item An empirical comparison of GPT-4o-mini against search-based and random baselines on a
+    complexity-matched sample, reporting branch coverage and mutation score together with
+    effect sizes.
+  \item A catalogue of the measurement pitfalls we encountered --- such as EvoSuite returning
+    exit code 0 without generating a single test, or JaCoCo silently reporting 0\% under
+    EvoSuite's instrumenting class loader --- which would have corrupted our results if left
+    unnoticed.
+\end{enumerate}
 
 Section~\ref{sec:related} reviews prior work; Section~\ref{sec:method} details the
 dataset, generation, and measurement process; Section~\ref{sec:results} answers each
