@@ -1,31 +1,3 @@
-<<<<<<< HEAD
-=== Abstract ===
-
-Large language models often fail to generate compilable unit tests for a named function,
-and this is commonly read as a limitation of the model. Re-examining 120 medium-complexity
-functions from ten open-source projects (60 Java, 60 Python), we find the explanation lies
-largely elsewhere. First, sampling by cyclomatic complexity selects many targets no external
-test can reach: of 1,848 functions in the band 5 <= CC <= 10, only 26 % are
-simultaneously public and unambiguously named, so a generator is charged for failures that
-belong to the benchmark. Second, the metrics usually reported can be satisfied without
-testing anything — a reflective call compiles regardless of whether the named method
-exists, and an assertion-free suite passes — so we measure four nested tiers and rest every
-claim on mutation score within the target's line range. Two one-shot prompts differing in a
-single variable isolate the effect of supplying the target specification: on Python it raises
-the share of suites reaching the target from 29/60 to 42/60 (p = 0.003) but not the share
-detecting a fault (16/60 to 22/60, p = 0.33) — it improves arrival, not discrimination.
-The model beats Pynguin decisively on Python yet trails EvoSuite and Randoop on Java, so
-neither family wins outright. We report the full sampling funnel, both settings of every
-tool run more than once, and six ways a measurement silently stopped working — four of them
-introduced while repairing the other two.
-
-Keywords: Unit test generation, Large language models, Mutation testing, Cyclomatic complexity, Measurement validity
-=======
-Backup noi dung paper — 2026-07-24 10:01
-Nguon: paper2/main.tex (tieu de + abstract) + paper2/sections/*.tex (Springer LNCS)
-==================================================================
->>>>>>> ec0122b449844440b9d98c5bc6799c417f137e56
-
 === Target Specification, Not Model Capability, Explains Most Unit-Test Generation Failures at Medium Complexity ===
 
 Nguyễn Tùng Ân, Đoàn Thị Thu Kim, Sơn Hải, Trương Hoàng Phúc, Trần Xuân Lộc
@@ -55,6 +27,7 @@ only for EvoSuite under the stricter gate (p = 0.028). Six measurement defects s
 four introduced while repairing the other two; none produced an error message.
 
 Keywords: Unit test generation; Large language models; Mutation testing; Cyclomatic complexity; Measurement validity
+
 
 === Introduction ===
 
@@ -259,13 +232,8 @@ each justified by whether any tool — an LLM, a search-based generator, or a hu
  is walked with getattr, and the result is confirmed callable. Syntactic
  inference is not evidence that a target can be reached at run time.
 
-<<<<<<< HEAD
-Table 1 reports the full funnel. We report every stage rather than only the
-final count, because the attrition is itself a finding: of 1,848 functions in the
-=======
-Table~1 reports the full funnel. We report every count-reducing stage rather
+Table 1 reports the full funnel. We report every count-reducing stage rather
 than only the final count, because the attrition is itself a finding: of 1,848 functions in the
->>>>>>> ec0122b449844440b9d98c5bc6799c417f137e56
 complexity band, only 474 (26 %) are simultaneously public and unambiguous. Roughly three
 quarters of medium-complexity functions in these projects are not valid targets for an
 external test generator.
@@ -358,18 +326,7 @@ both reachable without testing anything:
 The two tiers are therefore not merely weaker than T4; they can be satisfied by suites that
 are, respectively, unchecked by the compiler and empty of assertions.
 
-<<<<<<< HEAD
-Branch coverage is measured with coverage.py (Python) and by executing the
-generated JUnit suites through the JUnit Platform launcher (Java), in both cases attributed
-to the target's line range rather than to the whole file. Mutation analysis applies the
-same operator set to both languages — arithmetic (+/-, x//), relational
-(>/>=, </<=), equality (= = / !=), boolean (AND/OR), boolean
-constant inversion, and numeric constant increment — restricted to the target's line
-range and capped per function (20 mutants for Java and the baseline generators, 30 for the
-LLM-generated Python suites). The cap binds a single function in the whole corpus
-(Section Section: Threats to Validity) and does not affect T4, which asks only whether any mutant is
-=======
-Branch coverage is measured with `coverage.py` (Python), attributed to the target's
+Branch coverage is measured with coverage.py (Python), attributed to the target's
 line range rather than to the whole file; T3 is therefore reported for Python only. The Java
 pipeline executes the generated JUnit suites through the JUnit Platform launcher and rests
 on T4, so no Java branch-coverage figure is claimed anywhere in this paper. Mutation
@@ -379,8 +336,7 @@ same operator set to both languages — arithmetic (+/-, x//), relational
 constant inversion, and numeric constant increment — restricted to the target's line
 range and capped per function by language (20 mutants for every Java suite, 30 for every
 Python suite). The cap binds two Java functions and no Python one
-(Section~Section: Threats to Validity); it does not affect T4, which asks only whether any mutant is
->>>>>>> ec0122b449844440b9d98c5bc6799c417f137e56
+(Section Section: Threats to Validity); it does not affect T4, which asks only whether any mutant is
 killed.
 
 Two procedural safeguards are worth stating because their absence silently corrupts
@@ -423,16 +379,10 @@ enforces access control while Python does not, so their failure modes are not co
 Every rate is reported over the functions of its own language (n = 59 for Java after the
 exclusion above, n = 60 for Python).
 
-<<<<<<< HEAD
-Results are given at two levels in parallel: all (n = 60 per language, with
-unmeasurable cases scored 0) and effective (the subset with a non-zero value). The
-all level is reported even where the effective level is more favourable.
-=======
-Results are given at two levels in parallel: *all* (n = 59 for Java and n = 60 for
-Python, with unmeasurable cases scored 0) and *effective* (the subset with a non-zero
+Results are given at two levels in parallel: all (n = 59 for Java and n = 60 for
+Python, with unmeasurable cases scored 0) and effective (the subset with a non-zero
 value). The
-*all* level is reported even where the *effective* level is more favourable.
->>>>>>> ec0122b449844440b9d98c5bc6799c417f137e56
+all level is reported even where the effective level is more favourable.
 
 All configuration decisions above — criteria, tool versions, budgets, the two-branch
 Pynguin design, and the hypotheses — were recorded in a pre-registration committed before

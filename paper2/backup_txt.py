@@ -140,24 +140,6 @@ def bib_titles() -> dict[str, str]:
     return out
 
 
-def abstract_text() -> str:
-    """Lay abstract + keywords tu main.tex, chuyen ve van xuoi."""
-    p = os.path.join(HERE, "main.tex")
-    if not os.path.exists(p):
-        return ""
-    src = open(p, encoding="utf-8", errors="replace").read()
-    m = re.search(r"\\begin\{abstract\}(.*?)\\end\{abstract\}", src, re.S)
-    if not m:
-        return ""
-    body = m.group(1)
-    kw = ""
-    k = re.search(r"\\keywords\{(.*?)\}", body, re.S)
-    if k:
-        kw = re.sub(r"\s*\\and\s*", ", ", " ".join(k.group(1).split()))
-        body = body[:k.start()]
-    txt = to_text(body)
-    return "=== Abstract ===\n\n" + txt + (f"\n\nKeywords: {kw}" if kw else "")
-
 
 def build_label_map() -> None:
     """Quet moi \\label va lay tieu de cua \\section/\\subsection/\\caption dung truoc no.
@@ -230,15 +212,9 @@ def main() -> int:
     build_cite_map()
     files = sorted(f for f in os.listdir(SECT) if f.endswith(".tex"))
 
-<<<<<<< HEAD
     # Ban gop KHONG co dong tieu de/dau thoi gian: day la ban NOP, khong phai log backup.
-    abstract = abstract_text()
-    full = [abstract] if abstract else []
-=======
-    full = [f"Backup noi dung paper — {stamp}\n"
-            f"Nguon: paper2/main.tex (tieu de + abstract) + paper2/sections/*.tex "
-            f"(Springer LNCS)\n" + "=" * 66 + "\n"]
->>>>>>> ec0122b449844440b9d98c5bc6799c417f137e56
+    # front_matter() phia duoi da chen tieu de + tac gia + abstract + keywords.
+    full = []
     made = []
 
     fm = front_matter()
