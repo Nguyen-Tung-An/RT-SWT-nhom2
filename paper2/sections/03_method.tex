@@ -1,51 +1,52 @@
-\section{Methodology}\label{sec:method}
+\section{Methods}\label{sec:method}
 
 \subsection{Dataset Construction}\label{sec:dataset}
 
-We extracted functions from ten open-source repositories at a particular commit (eight Java
-projects: \texttt{commons-cli}, \texttt{commons-csv}, \texttt{commons-collections},
+We extracted functions from ten open source repos at a particular commit (eight java projects:
+\texttt{commons-cli}, \texttt{commons-csv}, \texttt{commons-collections},
 \texttt{commons-math}, \texttt{gson}, \texttt{jsoup}, \texttt{joda-time},
-\texttt{jfreechart}; two Python projects: \texttt{flask}, \texttt{requests}), using Lizard
-1.23.0 to compute cyclomatic complexity (CC). We select the medium complexity band
-$5 \le CC \le 10$, as in our previous work.
+\texttt{jfreechart}; two python: \texttt{flask}, \texttt{requests}) using Lizard 1.23.0 to
+compute cyclomatic complexity (CC). We select the medium complexity band $5 \le CC \le 10$ as
+in our previous work.
 
 While complexity is a precondition for being a challenging test target, a study sampling on
-complexity confounds two phenomena: the quality of tests produced by the generator, and
-whether the sampled target is reachable by the generator at all. We therefore applied five
-additional criteria, each fixed before any test was generated, and each considered necessary
-for an LLM, a search-based generator, or a human to reach the target through the public API.
+complexity confounds two phenomena: the quality of tests produced by the generator, and the
+possibility that the sampled target is actually reachable by the generator. We therefore
+applied five additional criteria, each of which was considered necessary for an LLM,
+search-based generator, or human to reach the target via the public API.
 
 \begin{description}
-  \item[F1 --- Non-trivial body.] $nloc \ge 3$. This filters out stubs, abstract methods,
-    and interface signatures that specify no branches.
-  \item[F2 --- Public or exported.] Java: declared \texttt{public}. Python: not prefixed
-    with an underscore. A \texttt{private} method cannot be invoked directly by an external
-    test class; reflection can reach it, but then the compiler no longer checks any name in
-    the test (Section~\ref{sec:tiers}), so compilation ceases to be evidence of anything.
-  \item[F3 --- Unambiguous name.] Java: the method name occurs exactly once in its declaring
-    class. Python: the function name occurs exactly once in its module. An overloaded name
-    cannot appear in a prompt without additional disambiguating context, and the compiler
-    rejects the resulting call as ambiguous.
-  \item[F4 --- Verified declaring class.] The enclosing class is found with a brace-depth
-    stack that \emph{pops} on block exit. Taking ``the nearest enclosing class declaration''
-    without popping would attribute a method to whichever nested class was most recently
-    declared in the file.
-  \item[F5 --- Dynamically resolvable] (Python). The module is imported, the qualified name
-    is walked with \texttt{getattr}, and the result is confirmed callable. Syntactic
+  \item[F1 --- Non-trivial body:] $nloc \ge 3$. This filters out stubs, abstract methods, and
+    interface signatures that specify no branches.
+  \item[F2 --- Public or exported:] Java: declared \texttt{public}. Python: not prefixed with
+    an underscore. A \texttt{private} method cannot be invoked directly by an external test
+    class, unless the test uses reflection to bypass access controls. However, the compiler no
+    longer checks any qualification appearing in a dynamic method call
+    (Section~\ref{sec:tiers}), so compilation ceases to be evidence of anything.
+  \item[F3 --- Unambiguous name:] Java: the method name occurs exactly once in the declaring
+    class; Python: the function name occurs exactly once in the defining module. An overloaded
+    name cannot appear in a prompt without additional disambiguating context, and the compiler
+    will reject the invocation as ambiguous.
+  \item[F4 --- Verified declaring class:] The enclosing class is found with a brace-depth stack
+    that is popped on exit. Taking ``the nearest enclosing class declaration'' to mean the one
+    most recently opened, one could incorrectly attribute a method to whichever nested class
+    was most recently declared in the file.
+  \item[F5 --- Dynamically resolvable:] (Python) The module is imported, the qualified name is
+    walked with \texttt{getattr}, and the result is checked for being callable. Syntactic
     resolution is not sufficient evidence for run-time binding.
 \end{description}
 
-Table~\ref{tab:funnel} shows the complete funnel. We report every count-reducing stage
-rather than only the final count, because the attrition is informative: of the 1{,}848
-functions that passed the complexity filter, only 474 (26\,\%) were both public and
-unambiguously named. Around three quarters of medium-complexity functions in these projects
-are not valid test targets for an external generator.
+Table~\ref{tab:funnel} shows the complete set of criteria. We report all stages of the
+filtering pipeline, as the attrition is informative: of the 1848 functions that passed the
+complexity filter, only 474 (26\,\%) were both public and unambiguously named. Around 3/4 of
+medium complexity functions in these projects were not valid test targets for an external
+generator.
 
 \begin{table}[t]
 \centering
 \caption{Sampling funnel. Each row reports how many candidates survive the criterion. F4
-corrects the declaring-class attribution that F3 depends on rather than removing candidates
-in its own right, so it has no separate row.}
+corrects the declaring-class attribution that F3 depends on rather than removing candidates in
+its own right, so it has no separate row.}
 \label{tab:funnel}
 \begin{tabular}{llr}
 \toprule
@@ -63,131 +64,125 @@ F5 & dynamically resolvable (Python)     & 64 \\
 \end{tabular}
 \end{table}
 
-From the final pool we sample 60 Java and 60 Python functions, stratified across
-repositories (Java: 3--9 functions per project; Python: 32 from \texttt{requests}, 28 from
-\texttt{flask}). Complexity is skewed towards the lower end of the band ($CC{=}5$: 56
-functions), and the median function contains 17 lines of code. Of the Python targets, 34 are
-instance methods and 26 are module-level functions. Every one of the 120 functions was
-checked for run-time accessibility before generating tests. One Java target was later found
-to violate F2 --- our own parser had recorded a \texttt{protected} method as public --- and
-is excluded, so Java results are reported over $n = 59$ and Python over $n = 60$
-(Section~\ref{sec:threats}).
+From the final pool we sample 60 Java and 60 Python functions, stratified across repositories
+(3--9 functions per java repo; 32 from \texttt{requests}, 28 from \texttt{flask}). Complexity
+is skewed towards the lower end of the band ($CC{=}5$: 56), with the median function containing
+17 lines of code. The Python targets comprise 34 instance methods and 26 module functions.
+Every one of the 120 functions was checked for run-time accessibility before generating tests.
+One Java target was later found to violate F2 --- our own parser had recorded a
+\texttt{protected} method as public --- and is excluded, so Java results are reported over
+$n = 59$ and Python over $n = 60$ (Section~\ref{sec:threats}).
 
 \subsection{Test Generation}\label{sec:generation}
 
-All tests are generated by \texttt{gpt-4o-mini-2024-07-18} at
-\texttt{temperature}\,$=$\,$0$, \texttt{top\_p}\,$=$\,$1.0$,
-\texttt{max\_tokens}\,$=$\,$2048$, in a \textbf{single call per function} with no feedback
-loop and no retrieval. We compare two \emph{one-shot} prompt conditions. Both contain
-exactly one worked exemplar (a trivial \texttt{add} function with its test), so both are
-one-shot in the usual sense, and both issue one call. They differ in exactly one respect:
+All tests are generated by \texttt{gpt-4o-mini-2024-07-18} at \texttt{temperature}=0,
+\texttt{top\_p}=1.0, \texttt{max\_tokens}=2048 in a single invocation per function with no
+feedback loops or retrieval. We compare two one-shot prompt conditions. Both contain exactly
+one worked example (a trivial \texttt{add} function and test), so both are one-shot in the
+usual sense, and both make one API call. The conditions differ in one respect:
 
 \begin{description}
-  \item[V1 --- baseline.] The prompt contains the target function name and source. This is
-    the prompt used in our earlier study.
-  \item[V2 --- target-specified.] Identical to V1, with one block inserted before the task
-    description: the fully qualified target name, its signature, and declaring class, plus
-    --- for instance methods --- a constructor call that has been \emph{executed} and
-    verified to produce a valid receiver object.
+  \item[V1 --- baseline.] The prompt contains the target function name and source.
+  \item[V2 --- target-specified.] Same as V1, but with one block inserted before the task
+    description: the fully qualified target name, its signature, and declaring class, plus ---
+    for instance methods --- an executed constructor call that has been verified to produce a
+    valid receiver object.
 \end{description}
 
-Holding the worked exemplar fixed is crucial: an earlier variant of the enriched prompt
-accidentally omitted the exemplar and thus differed from V1 in two respects at once (it
-dropped the exemplar and it added the metadata), so no causal attribution was possible from
-it. We report that variant only as a secondary observation and label it zero-shot, since it
-is one.
+The necessity of a worked example is crucial: an earlier variant of the enriched prompt
+accidentally omitted the example and thus differed from V1 in two respects (no example plus
+metadata). We report this variant only as a secondary observation and label it zero-shot,
+since it is effectively one.
 
 \subsection{Measurement: Four Tiers}\label{sec:tiers}
 
-A single ``valid / invalid'' flag conflates outcomes that differ in kind, so we report four
-nested tiers. Each subsequent tier implies the one before it, and --- importantly --- the
-first two can be satisfied by a test suite that does not test the target at all.
+A simple binary metric fails to distinguish several important degrees of success, so we report
+four nested tiers. Each subsequent tier implies the one before, and importantly, the first two
+can be achieved by a test suite that does not touch the target at all.
 
 \begin{description}
-  \item[T1 --- Compiles / collects.] The test file is syntactically and type-correct.
-  \item[T2 --- At least one green test.] At least one test passes against the unmodified
-    source.
-  \item[T3 --- Reaches the target.] Branch coverage $> 0$ within the target's line range
-    $[\textit{start},\textit{end}]$.
-  \item[T4 --- Detects faults.] Mutation score $> 0$ within the same line range.
+  \item[T1 --- Compiles / collects.] The test file parses and collects no errors.
+  \item[T2 --- At least one green test.] At least one test passes when run against the
+    unmodified source.
+  \item[T3 --- Reaches the target.] Achieves branch coverage $>0\%$ inside the target's line
+    range [start, end].
+  \item[T4 --- Detects faults.] Achieves mutation score $>0\%$ in the same range.
 \end{description}
 
-Only T4 speaks to a suite's ability to test the target; we demonstrate that T1 and T2 can be
-satisfied by suites that verify nothing:
+Only T4 speaks to the ability of a suite to test the target; we demonstrate that T1 and T2 can
+be achieved even when a suite provides no tests at all:
 
 \begin{itemize}
-  \item \textbf{T1 under reflection.} Reflection turns every name into a string, so the
-    compiler stops checking it. A call to
-    \texttt{getDeclaredMethod("aNameThatDoesNotExist")} compiles with return code $0$ and
-    fails only at run time. Any compilation-based validity rate is therefore uninformative
-    for suites that use reflection.
+  \item \textbf{T1 under reflection.} Name qualification disappears under dynamic method
+    invocation: the name becomes a string the compiler stops checking. A call to
+    \texttt{getDeclaredMethod("aNameThatDoesNotExist")} compiles with return code 0 and throws
+    only at run time. Suites that employ reflection will therefore have artificially inflated
+    validity rates.
   \item \textbf{T2 under an assertion-free suite.} The search-based suite generated for
-    \texttt{requests.hooks} (target \texttt{dispatch\_hook}) contains exactly one test, and
-    that test is a single bare call to a \emph{different} function in the same module, with
-    no assertion of any kind. It compiles, it collects, and it passes --- T1 and T2 are both
-    satisfied --- while measured branch coverage inside the target's line range is $0$. A
-    green-test criterion records this as a success.
+    \texttt{requests.hooks} (target \texttt{dispatch\_hook}) contains only one test, which in
+    turn is a bare call to another function in the same module, with no assertions whatsoever.
+    This suite ``compiles'', ``collects'', and ``passes'' --- T1 and T2 are both satisfied ---
+    while coverage within the target's line range is $0\%$ (T3 not achieved). A green-test
+    criterion records this as a positive result.
 \end{itemize}
 
-The two tiers are therefore not merely weaker than T4; they can be satisfied by suites that
-are, respectively, unchecked by the compiler and empty of assertions.
+The two tiers are therefore not merely weaker measures than T4; they can be achieved by suites
+that are demonstrably ineffective at testing the target.
 
-Branch coverage is measured with \texttt{coverage.py} (Python), attributed to the target's
-line range rather than to the whole file; T3 is therefore reported for Python only. The Java
-pipeline executes the generated JUnit suites through the JUnit Platform launcher and rests
-on T4, so no Java branch-coverage figure is claimed anywhere in this paper. Mutation analysis
-applies the same operator set to both languages --- arithmetic ($+/-$, $\times/\div$),
-relational ($>/\ge$, $</\le$), equality ($=$\,$=$\,/\,$\neq$), boolean ($\wedge/\vee$),
-boolean constant inversion, and numeric constant increment --- restricted to the target's
-line range and capped per function by language (20 mutants for every Java suite, 30 for every
-Python suite). The cap binds two Java functions and no Python one
-(Section~\ref{sec:threats}); it does not affect T4, which asks only whether any mutant is
-killed.
+Branch coverage is measured with \texttt{coverage.py} (python), attributed to the line range
+of the target rather than the whole file; T3 is therefore reported for Python only. The Java
+pipeline runs the generated suites through the JUnit platform launcher and rests on T4, so no
+Java branch-coverage figure is claimed. Mutation analysis uses the same operator set for both
+languages: arithmetic ($+/-$, $\times/\div$), relational ($>/\ge$, $</\le$), equality
+($=$\,$=$\,/\,$\neq$), boolean (AND/OR), boolean constant inversion, and numeric constant
+increment, capped per function by language (20 mutants for every Java suite, 30 for every
+Python suite) and limited to the target's line range. The cap binds two Java functions and no
+Python one (Section~\ref{sec:threats}); it does not affect T4.
 
-Two procedural safeguards are worth stating because their absence silently corrupts results.
-First, mutation requires overwriting the source; we mutate a \emph{copy} of the source tree
-placed ahead of the original on the import path, so that concurrent measurements reading the
-same tree are unaffected. Second, tool versions must be matched across families: JUnit~5
-pairs Jupiter~5.x with Platform~1.x, and mixing a Jupiter~6 artifact with JUnit~5-style tests
-makes the launcher discover zero tests while still exiting successfully --- a failure that
-reports as a legitimate zero.
+Two procedural notes apply to all measurements and should be considered part of the
+methodology. First, mutation testing requires rewriting the source under test, which, run on a
+shared tree, would silently corrupt any concurrent measurement. We mitigate this by injecting
+the mutated files into the import path ahead of the original tree, so that concurrent
+measurements interfere with each other as little as possible. Second, the versions of the
+tools must be cross-compatible (JUnit~5 pairs Jupiter~5.x with Platform~1.x), or the launcher
+will fail to find any tests at all and report success anyway when run with a Jupiter~6
+artifact.
 
 \subsection{Baselines}\label{sec:baselines}
 
-Each baseline generates per class (Java) or per module (Python), matching how the tools
-operate; results are then attributed to individual functions by line range, exactly as for
-the LLM suites.
+Each baseline is run per class (java) or per module (python), as appropriate to the tool, and
+results are attributed to individual functions by line range, as for the LLM suites.
 
 \begin{description}
-  \item[EvoSuite 1.2.0], 60\,s per class, run under JDK~11. EvoSuite performs deep reflection
-    into JDK internals, which the module system blocks from Java~9 onward, and its master
-    process launches its client from \texttt{JAVA\_HOME} --- so both must point at the same
-    JDK, or the client dies while the master still exits successfully. Because the projects
-    were compiled with JDK~17, we recompiled sources to Java~11 bytecode into a separate
-    output directory, leaving the original build untouched.
-  \item[Randoop 4.3.3], 60\,s per class, JDK~17.
-  \item[Pynguin 0.45.0], 90\,s per module, under \textbf{two configurations reported side by
-    side}. In its default configuration Pynguin serialises module state to a worker process
-    with \texttt{dill} and aborts on C-extension type objects that cannot be resolved by
-    name, producing no output at all for several modules. We therefore also run it with the
-    master--worker split disabled. Reporting both separates ``the tool scored low'' from
-    ``the tool never ran''.
+  \item[EvoSuite 1.2.0:] 60\,s per class, JDK~11. EvoSuite uses deep reflection to probe the
+    JDK, which is disallowed by the module system in Java~9+. Its master process launches the
+    client from \texttt{JAVA\_HOME}; therefore, the two locations must agree, or the client
+    will fail to start while the master reports success. As the projects were built with
+    JDK~17, we rebuilt the source code as Java~11 bytecode in a separate directory.
+  \item[Randoop 4.3.3:] 60\,s per class, JDK~17.
+  \item[Pynguin 0.45.0:] 90\,s per module, two variants reported. By default, Pynguin
+    serializes module state to a worker process with \texttt{dill} and fails on
+    C-implementation types that resist name resolution, resulting in no output for several of
+    the tested modules. We therefore report Pynguin's default behavior in one set and the same
+    tool with the master--worker split disabled in the other. This disentangles ``the tool
+    scored poorly'' from ``the tool did not run''.
 \end{description}
 
 \subsection{Statistical Analysis}\label{sec:stats}
 
-Conditions are compared with the paired Wilcoxon signed-rank test, matching on function
-identifier, at $\alpha = 0.05$, with matched-pairs rank-biserial correlation as effect size.
-Java and Python are analysed separately throughout: the toolchains differ, and Java enforces
-access control while Python does not, so their failure modes are not commensurable. Every
-rate is reported over the functions of its own language ($n = 59$ for Java after the
-exclusion above, $n = 60$ for Python).
+We compare all conditions with the paired Wilcoxon signed-rank test, matched on the function
+identifier, and report all results at the $\alpha=0.05$ level, with the matched-pairs
+rank-biserial correlation as the effect size. Java and Python are analyzed separately
+throughout: the toolchains are different, and Python has no access control while Java does, so
+the two languages have different failure modes.
 
-Results are given at two levels in parallel: \emph{all} ($n = 59$ for Java and $n = 60$ for
-Python, with unmeasurable cases scored $0$) and \emph{effective} (the subset with a non-zero
-value). The \emph{all} level is reported even where the \emph{effective} level is more
-favourable.
+Within each language, rates are reported over the functions of that language (59 for Java
+after the exclusion above, 60 for Python), not per repository.
 
-All configuration decisions above --- criteria, tool versions, budgets, the two-branch
-Pynguin design, and the hypotheses --- were recorded in a pre-registration committed before
-any baseline was executed.
+Results are reported at two levels: all ($n=59$ for Java, $n=60$ for Python, with zeroes
+counted) and effective (the subset with a non-zero value). The all level is reported even when
+the effective level is better.
+
+All the choices about the prompt format, criteria, tool versions, timing budgets, the Pynguin
+two-branch design, and the hypotheses to evaluate are committed in a pre-registration before
+any baseline is run.

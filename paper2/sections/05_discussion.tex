@@ -3,12 +3,12 @@
 \subsection{Three Barriers, Only the First of Which a Prompt Can Remove}
 \label{sec:barriers}
 
-The two prompt conditions differ by only one variable, and the effect of that variable
-cleanly splits between languages. For Python, adding the target specification cut the number
-of suites that failed to import or collect from 17 to 4 --- 14 targets rescued and 1 newly
-broken. For Java, it made virtually no difference: 38 failed to compile with the baseline
-prompt, and 38 with the target-specified one, with 35 functions overlapping between those
-sets. Three functions moved in either direction, which is noise, not an effect.
+The two prompt conditions differ by only one variable, and the effect of that variable cleanly
+splits between languages. For Python, adding the target spec cut the number of suites that
+failed to import or collect from 17 to 4 --- 14 saved targets and 1 additional failure. For
+Java, it made virtually no difference: 38 failed to compile with the baseline prompt, and 38
+with the target-specified one, with 35 functions overlapping between those sets. Three
+functions moved in either direction, which is not enough for a meaningful result.
 
 The difference in effect between languages is not a peculiarity of their tools --- it is
 encoded in the block itself. The block specifies the identity of the target: its qualified
@@ -22,50 +22,51 @@ must synthesise type-correct uses of the symbol within the suite, including rece
 of the correct arity and parameter types, return types, thrown exceptions, generics, and so
 on. The target block does not include any of that information.
 
-This suggests a three-level reading of the results in terms of what the generated test must
-do to observe the target. We offer this as a hypothesis for future work:
+This suggests a three-level reading of the results in terms of what the generated test must do
+to observe the target. We offer this as a hypothesis for future work:
 
 \begin{enumerate}
   \item \textbf{Addressing} --- calling the right thing at all. The target specification
     removed this barrier, almost entirely in Python.
   \item \textbf{Typing} --- calling it in a way the compiler accepts. Only relevant to Java.
-    The target specification does not meaningfully help, because the difficulty is not with
-    the target itself, but the surrounding API.
+    The target spec does not meaningfully help, because the difficulty is not with the target
+    itself, but the surrounding API.
   \item \textbf{State} --- constructing a receiver in a configuration where the behaviour of
-    interest is visible. Neither prompt condition addresses this.
+    interest is visible. Neither condition addresses this.
 \end{enumerate}
 
 The reason to take this seriously is the evidence in support of the third item. For Python,
-the number of suites that imported successfully but had no passing test barely moved between
-the two prompt conditions: 13 under the baseline prompt, 14 under the target-specified one,
-with only 7 functions appearing in both sets. Removing the addressing barrier did not shrink
-the state barrier; it \emph{exposed} it. The population changed while the size did not.
+the number of suites that imported successfully but had no passing tests changed little between
+the baseline prompt (13/60) and the target-specified one (14/60), with only 7 functions
+appearing in both sets. The problem was not with addressing --- the same workload had to find
+tests for roughly the same set of functions. Removing the addressing barrier did not shrink
+the state barrier; it exposed it. The population changed while its size did not.
 
 The observation that the barrier is not with assertion writing but with receiver construction
 is not new --- it is the reason search-based test generation struggles with object-oriented
-code~\cite{fraser2014largescale,shamshiri2015realfaults}. The point of this finding is that
-the same wall exists for language models, and that providing the constructor is not enough to
-get past it --- our snippets were run and checked to create the receiver, and the state
-barrier persisted. Building an instance is not the same as building an instance in a state
-where some behaviour is triggered.
+code~\cite{fraser2014largescale,shamshiri2015realfaults}. The point of this finding is that the
+same wall exists for language models, and that providing the constructor is not enough to get
+past it --- our snippets were run and checked to create the receiver, and the state barrier
+persisted. Building an instance is not the same as building an instance in a state where some
+behaviour is triggered.
 
 \subsection{Reaching a Target and Testing It Are Different Achievements}
 
-The clearest finding of this study is the difference between two tiers that would have
-appeared identical in a single-metric study. On Python, the target specification increased the
-proportion of suites that reached the target from 29/60 to 42/60 ($p = 0.003$, $r_{rb} =
-+0.61$), but its effect on the number that could detect an injected fault was not significant,
-16/60 to 22/60 ($p = 0.33$).
+The clearest finding of this study is the difference between two tiers that would have appeared
+identical in a single-metric study. On Python, the target spec increased the proportion of
+suites that reached the target from 29/60 to 42/60 ($p=0.003$, $r_{rb}=+0.61$) but had no
+significant effect on the number that could detect an injected fault, from 16/60 to 22/60
+($p=0.33$).
 
-A study that used only coverage as a metric would have concluded that the enriched prompt is
-an improvement across the board, while also being wrong about what aspect of testing it
-improved. The suites arrived at the right function more often, but tested it no more often.
-Coverage measures arrival and mutation score measures discrimination --- only the latter is a
-metric of testing ability in any meaningful sense, and only the former was improved by the
-prompt change. That coverage is misleading about test-suite quality is a well-known
+A study that used only coverage as a metric would have concluded that the enriched prompt is an
+improvement across the board, while also being wrong about what aspect of testing it improved.
+The suites arrived at the right function more often, but tested it no more often. Coverage
+measures arrival and mutation score measures discrimination --- only the latter is a metric of
+testing ability in any meaningful sense, and only the former was improved by the prompt change.
+That coverage is misleading about test suite quality is a well-known
 finding~\cite{inozemtseva2014coverage}; what this experiment adds is a demonstration that a
-specific, plausible change to the prompt moves the two metrics by different amounts, and in a
-way that inverts the conclusion drawn from them.
+specific, plausible change to the prompt moves the two metrics by different amounts, in a way
+that inverts the conclusion drawn from them.
 
 This is also where the pre-registered hypothesis H-B begins to fall apart. We predicted, with
 no knowledge of the results, that the enriched prompt would be no better than the baseline.
@@ -75,34 +76,32 @@ against.
 
 \subsection{Neither Family Wins Outright}
 
-The comparison with existing generators also fails to reveal a clear winner, and the
-languages rank oppositely.
+The comparison with existing generators also fails to reveal a clear winner, and the languages
+rank oppositely.
 
 On Python, both prompt conditions substantially outperformed Pynguin: 16/60 and 22/60 suites
-detecting a fault compared to 2/60, $p \le 0.003$ in all pairs, with rank-biserial
-correlations ranging from $-0.81$ to $-0.96$. The reason for the gap was apparent in the
-numbers of failed suites: Pynguin failed to generate any suite for 39/60 targets in its
-default configuration. The documented workaround for the reported serialisation crash
-(disabling the master--worker split) reduced this to 35, a net movement of four that conceals
-considerable churn: 17 targets gained a suite and 13 lost one, and 14 of the 17 new suites
-failed at collection, leaving T4 at 2/60. We report this result because it is the sort of
-finding that disappears when a study only reports the better-performing configuration. In this
-case, neither configuration worked.
+passing compared to 2/60, $p \le 0.003$ in all pairs, with rank-biserial correlations ranging
+from $-0.81$ to $-0.96$. The reason for the gap was apparent in the numbers of failed suites:
+Pynguin failed to generate any suite for 39/60 targets in its default configuration. The
+documented workaround for the reported serialisation crash (disabling the master--worker split)
+reduced this to 35 targets, a net movement of four that conceals 17 targets gaining a suite and
+13 losing one, with 14 of the 17 new suites failing at collection, leaving T4 at 2/60. We
+report this result because it is the sort of finding that disappears when a study only reports
+the better-performing configuration. In this case, neither had any.
 
-On Java, the count ordering was reversed: the search-based tools found faults on more targets
-than the model in all pairs (Section~\ref{sec:rqc}). The reversal was firmer for EvoSuite, for
-which the paired test reached significance at the whole-suite gate ($p = 0.028$), than for
-Randoop, for which no gate did; we interpret this as a consistent count advantage for the
-mature tools, rather than a uniformly significant one. Java is also where these tools were
-developed and where they have been iterated upon for the last decade, and where static typing
-gives them the information needed to construct calls --- the information the language model was
-demonstrated to lack in Section~\ref{sec:barriers}. Python removes that information, and the
-ordering flips.
+On Java, the ordering was reversed: the search-based tools found faults on more targets than
+the model in all pairs (Section~\ref{sec:rqc}). It was stronger for EvoSuite, for which the
+paired test reached significance at the whole-suite gate ($p=0.028$), than for Randoop, for
+which none did; we interpret this as a consistent advantage for the mature tools, rather than
+an outright win for any. Java is also where these tools were developed and where they have been
+iterated upon for the last decade, and where static typing gives them the information needed to
+construct tests --- the information the language model was demonstrated to be unable to
+reproduce in Section~\ref{sec:barriers}. Removing it from consideration explains the reversal.
 
 The conclusion is that neither family of tools is demonstrably better overall, but that they
-fail in ways that are specific to languages. A study that examined only Java would have
-confidently reported the superiority of search-based testing; a study that examined only
-Python would have confidently reported the opposite.
+fail in ways that are specific to languages. A study that examined only Java would confidently
+report the superiority of search-based testing; a study that examined only Python would report
+the opposite.
 
 \subsection{What This Means for Evaluating Test Generators}
 
@@ -110,31 +109,29 @@ Three practices follow from what went wrong rather than from what worked.
 
 \paragraph{Report the sampling funnel.}
 Only 26\,\% of medium-complexity functions in these ten projects are both public and
-unambiguously named. A benchmark that samples on complexity alone will therefore spend most of
-its mass on targets that no external generator can address, and every tool evaluated on it is
-charged for failures that belong to the sampling rather than to the tool. The funnel costs
-nothing to report, and it bounds how much of a measured failure rate can be attributed to the
-tool at all.
+unambiguously named. A benchmark that does not consider name ambiguity will spend most of its
+effort on targets that no external tool can possibly invoke, and every tool evaluated on it is
+charged for failures that belong to the sampling. This consideration should shape any benchmark
+that aims to evaluate test generators; reporting the shape of the funnel is nearly mandatory if
+one wishes to honestly report a tool's ability to test real code.
 
 \paragraph{Rest conclusions on a tier that cannot be satisfied vacuously.}
-Both compilation success and the green-test criterion were defeated in this corpus.
-Compilation is defeated by reflection, which turns names into unchecked strings. The
-green-test criterion is defeated by a suite that makes a single assertion-free call to the
-wrong function: it compiles, it collects, and it passes, so the criterion records it as a
-success while branch coverage inside the target's line range is zero. Neither case requires an
-adversary; both appeared in ordinary tool output. Metrics should be interpreted with extra
-caution in the presence of reflection, or similar techniques that let code bypass static
-checks.
+Compilation success is defeated by reflection, which turns names into unchecked strings. The
+green-test criterion is defeated separately: a suite that makes one assertion-free call to the
+wrong function satisfies it --- it is recorded as a success --- yet tests nothing, and this is
+a common occurrence in this corpus. Neither observation requires an adversary to appear; both
+were observed in standard tool output. Metrics should be interpreted with extra caution in the
+presence of reflection, or similar techniques that allow code to bypass static checks.
 
 \paragraph{Assume the harness is broken until a failure proves otherwise.}
 The failure mode that consumed the most time in this study was not a tool underperforming, but
-a metric misreporting. Hardcoded constants, validity flags erroneously indicating success,
-reflection removing the compiler's ability to check names, a version mismatch reporting no
-tests while exiting successfully, a JDK mismatch doing the same, and a green-test gate
-implemented differently in the two languages under one name appeared six times in total, four
-of which were introduced by us while attempting to fix the other two. None of these issues
-caused an exception to be thrown, and consequently, none of them were caught by the initial
-harness design. The requirement for a harness is that it must have a test that fails --- if the
-pipeline below the metric is entirely broken but the metric reports no change, that metric is
-no longer useful. We enforce this requirement for all reported rates, and it is the cheapest
+rather a metric misreporting. Hardcoded constants, validity flags erroneously indicating
+success, reflection turning method names into strings the compiler never checks, version
+mismatches reporting no tests while a suite exits successfully, JDK mismatches doing the same,
+and a green-test gate implemented differently in the two languages under one name appeared six
+times in total, four of which were introduced by us while attempting to fix the other two. None
+of these issues caused an exception to be thrown, and consequently, none of them were caught by
+the initial harness design. The requirement for a harness is that it must have a test that
+fails --- if the pipeline below the metric is entirely broken but reports no change, that metric
+is no longer useful. We enforce this requirement for all reported rates, and it is the cheapest
 such check we know of.
