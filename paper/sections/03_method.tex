@@ -55,13 +55,14 @@ RQ3   & Spearman $\rho < 0$        & Spearman correlation of CC vs.\ coverage & 
 \end{table}
 
 \subsection{Dataset}
-The proposal mentioned Defects4J and CodeXGLUE as sources. We excluded the latter:
+The proposal mentioned Defects4J~\cite{just2014defects4j} and CodeXGLUE as sources. We excluded the latter:
 CodeXGLUE is a benchmark of code-intelligence tasks, including summarisation and
 translation, not a set of functions amenable to coverage or mutation analyses; nor did
 any of the papers surveyed for this proposal actually evaluate these tasks on CodeXGLUE
-alongside any of these measurements. We document this exclusion as amendment~v1.2
-(finalised by the team on 2026-07-02, hence before the experiment) and record functions
-from our own ten repositories at particular commits. Eight are Java projects overlapping
+alongside any of these measurements. We deviated from the proposed protocol in that we mined
+our own dataset instead of using Defects4J and CodeXGLUE directly; this change was documented
+and approved by the instructor on 2026-07-02 (amendment~v1.2), before the experiment was run.
+We therefore record functions from our own ten repositories at particular commits. Eight are Java projects overlapping
 with Defects4J's subjects in their target programs: \texttt{commons-cli},
 \texttt{commons-math}, \texttt{commons-csv}, \texttt{commons-collections}, \texttt{gson},
 \texttt{jsoup}, \texttt{joda-time}, and \texttt{jfreechart}; two are Python projects,
@@ -79,13 +80,85 @@ Section~\ref{sec:threats}.
 \texttt{gpt-4o-mini-2024-07-18} (i.e., the dated snapshot; hence a rerun of this
 experiment would use the same weights), \texttt{temperature=0}, \texttt{top\_p=1},
 \texttt{max\_tokens=2048}, one-shot, with a worked example preceding the target function
-in each prompt. The proposal erroneously mentioned \texttt{gpt-4o}; the team's API key
-had access to \texttt{gpt-4o-mini} only at the moment the experiment was run, and we
-document this change as amendment~v1.1 (documented 2026-06-28 and finalised by the team
-2026-07-02, hence also before the experiment). This model has been evaluated on the same
-task in this literature before~\cite{konstantinou2026evaluating}, which keeps us within
-the evidential basis of this report. None of the research questions, metrics, thresholds,
-or statistical tests were affected by either amendment.
+in each prompt. We deviated from the proposed protocol in that we replaced \texttt{gpt-4o}
+with \texttt{gpt-4o-mini-2024-07-18}: the team's API key had access to the smaller model only
+at the moment the experiment was run. This change was documented on 2026-06-28 and approved by
+the instructor on 2026-07-02 (amendment~v1.1), before the experiment was run. The replacement
+model has been evaluated on the same task in this literature
+before~\cite{konstantinou2026evaluating}, which keeps us within the evidential basis of this
+report. None of the research questions, metrics, thresholds, or statistical tests were
+affected by either amendment.
+
+\textbf{Prompt.} Figure~\ref{fig:prompt} reproduces the Java prompt verbatim; the Python
+prompt is identical except that it asks for \texttt{pytest} tests and names a module instead
+of a package. The only per-function variation is the substitution of the target's qualified
+name, invocation target, signature, callable kind, visibility, fixture requirement, package,
+and source code.
+
+\begin{figure}[t]
+\begin{lstlisting}
+You are an expert software tester.
+Generate JUnit 5 tests to achieve maximum branch coverage and mutation score.
+Do not output any explanations, only the executable Java code.
+
+### Example Input ###
+Class: org.example.MathUtils
+Function: add
+Code:
+```java
+package org.example;
+public class MathUtils {
+    public static int add(int a, int b) {
+        if (a < 0 && b < 0) return 0;
+        return a + b;
+    }
+}
+```
+
+### Example Output ###
+```java
+package org.example;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class MathUtilsTest {
+    @Test
+    void testAdd_BothNegative() { assertEquals(0, MathUtils.add(-1, -1)); }
+    @Test
+    void testAdd_Normal() { assertEquals(5, MathUtils.add(2, 3)); }
+}
+```
+
+### Actual Task ###
+Qualified target: `{qualified_name}`
+Invocation target: `{invocation_target}`
+Exact signature: `{signature}`
+Callable kind: `{callable_kind}`; visibility: `{visibility}`.
+Fixture requirement: `{fixture_required}`.
+Generate JUnit 5 tests in package `{package_name}` that exercise exactly this target.
+Include the correct `package {package_name};` at the top of the file.
+
+```java
+{source_code}
+```
+\end{lstlisting}
+\caption{The one-shot prompt template, reproduced verbatim. Braces mark the fields
+substituted per function.}
+\label{fig:prompt}
+\end{figure}
+
+\textbf{Pipeline and edge cases.} Each function passes through five steps: (1) selection by
+Lizard for $5 \le CC \le 10$; (2) prompt construction from the function's source and
+metadata; (3) a single API call; (4) extraction of the fenced code block and writing of the
+test file; (5) compilation, execution, and metric computation inside the original project.
+Every call is a \emph{single attempt with no retry}: the call is wrapped in an exception
+handler that, on any failure, records \texttt{gen\_status = api\_error} with an empty test
+path, and the function is then scored \textsc{invalid} (0\%) exactly as a suite that failed
+to compile. A response truncated at \texttt{max\_tokens} is not treated specially; it simply
+fails to compile and is scored the same way. In the run reported here no LLM call failed:
+all 120 functions returned \texttt{gen\_status = ok}. Timeouts did occur for the baselines
+and are recorded as such --- three Randoop classes timed out, and the generation log
+distinguishes \texttt{ok}, \texttt{failed}, and \texttt{timeout} for every tool invocation.
 
 \textbf{Baselines.} EvoSuite~\cite{fraser2011evosuite} and
 Randoop~\cite{pacheco2007randoop} generate the Java comparison suites; 60 seconds are
@@ -174,14 +247,24 @@ and both are tracked as separate outcome types in Section~\ref{sec:results} for 
 downstream analysis.
 
 \subsection{Statistical analysis}
-All tests are performed at $\alpha = 0.05$; all are non-parametric. Coverage and mutation
-scores are percentages bounded between 0 and 100, so normality was never assumed for these
-variables. RQ1 requires one test: a one-sample Wilcoxon signed-rank test of branch
-coverage against the 80\% threshold. RQ2 requires two: a one-sample Wilcoxon signed-rank
-test of mutation scores against the 60\% threshold, and a paired Wilcoxon test (matched by
-\texttt{function\_id}) of the same against each baseline, with matched-pairs rank-biserial
-$r$ as the effect size. Finally, RQ3 requires a Spearman correlation of CC with branch
-coverage. Every statistic is reported at two levels: \emph{all} ($N = 60$ per
+All tests are performed at $\alpha = 0.05$; all are non-parametric. We choose non-parametric
+tests because coverage and mutation scores are percentages bounded between 0 and 100 and are
+heavily zero-inflated in this sample, so normality was never assumed; this follows the
+guidance of Arcuri and Briand for assessing randomized algorithms in software
+engineering~\cite{arcuri2014hitchhiker}. RQ1 requires one test: a one-sample Wilcoxon
+signed-rank test of branch coverage against the 80\% threshold. RQ2 requires two: a
+one-sample Wilcoxon signed-rank test of mutation scores against the 60\% threshold, and a
+paired Wilcoxon test (matched by \texttt{function\_id}) of the same against each baseline,
+with matched-pairs rank-biserial $r$ as the effect size. Finally, RQ3 requires a Spearman
+correlation of CC with branch coverage.
+
+\textbf{Effect size and its interpretation.} Every $p$-value is reported with an effect size,
+because significance alone says nothing about practical magnitude. For the Wilcoxon tests we
+report the matched-pairs rank-biserial correlation $r$, and for RQ3 the Spearman $\rho$. We
+interpret both on the same conventional bands: $|r| < 0.1$ negligible, $0.1 \le |r| < 0.3$
+small, $0.3 \le |r| < 0.5$ medium, and $|r| \ge 0.5$ large. Because we run twelve tests in
+total, we also report in Section~\ref{sec:threats} which conclusions survive a Bonferroni
+correction to $\alpha' = 0.0042$. Every statistic is reported at two levels: \emph{all} ($N = 60$ per
 language, with \textsc{invalid} or non-touching test suites scored at 0\% per the
 pre-registered procedure) and \emph{effective} (test suites that successfully compiled and
 touched the target lines). The two levels are never reported separately without the other,
