@@ -10,8 +10,19 @@ Java, it made virtually no difference: 38 failed to compile with the baseline pr
 with the target-specified one, with 35 functions overlapping between those sets. Three
 functions moved in either direction, which is not enough for a meaningful result.
 
+\begin{figure}[t]
+\centering
+\input{figures/fig_barriers}
+\caption{The same prompt change acts differently in the two languages. On Python it cuts
+import/collection failures from 17 to 4; on Java the compile-failure count does not move at
+all (38 both times, 35 of them the same functions). The target block supplies identity, which
+is what Python resolves at run time; Java also checks types, which the block does not
+address.}
+\label{fig:barriers}
+\end{figure}
+
 The difference in effect between languages is not a peculiarity of their tools --- it is
-encoded in the block itself. The block specifies the identity of the target: its qualified
+encoded in the block itself (Fig.~\ref{fig:barriers}). The block specifies the identity of the target: its qualified
 name, declaring class or module, signature, and a constructor call for the receiver, if any.
 For Python, that is enough to remove barriers to invocation --- at the stage these suites
 failed, the failure was always importing a module from an incorrect path, calling a

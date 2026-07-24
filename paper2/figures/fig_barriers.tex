@@ -1,0 +1,22 @@
+% SINH TU DONG boi ms-analysis/scripts/make_figures_clean.py — dung sua tay.
+\begin{tikzpicture}
+\begin{axis}[
+  ybar, width=\linewidth, height=4.6cm,
+  ymin=0, ymax=51,
+  ylabel={Suites failing to import / compile},
+  symbolic x coords={Python (collect),Java (compile)},
+  xtick=data, x tick label style={font=\footnotesize},
+  tick label style={font=\footnotesize}, ylabel style={font=\footnotesize},
+  nodes near coords, nodes near coords style={font=\footnotesize},
+  bar width=17pt, enlarge x limits=0.55,
+  legend style={font=\footnotesize, at={(0.5,-0.24)}, anchor=north, legend columns=2,
+                 draw=none},
+  axis lines*=left, ymajorgrids, grid style={dashed,gray!30},
+]
+\addplot[fill=gray!30, draw=black!70] coordinates
+  {(Python (collect),17) (Java (compile),38)};
+\addplot[fill=gray!70, draw=black!70] coordinates
+  {(Python (collect),4) (Java (compile),38)};
+\legend{V1 baseline, V2 target-specified}
+\end{axis}
+\end{tikzpicture}

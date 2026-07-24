@@ -1,0 +1,17 @@
+% SINH TU DONG boi ms-analysis/scripts/make_figures_clean.py — dung sua tay.
+\begin{tikzpicture}
+\begin{axis}[
+  xbar, width=\linewidth, height=4.2cm,
+  xmin=0, xmax=2180,
+  symbolic y coords={public \& unambiguous,unambiguous name,CC 5--10},
+  ytick=data, y tick label style={font=\footnotesize},
+  xlabel={Candidate functions}, xlabel style={font=\footnotesize},
+  tick label style={font=\footnotesize},
+  nodes near coords, nodes near coords style={font=\footnotesize},
+  bar width=13pt, enlarge y limits=0.32,
+  axis lines*=left, xmajorgrids, grid style={dashed,gray!30},
+]
+\addplot[fill=gray!55, draw=black!70] coordinates
+  {(1848,CC 5--10) (753,unambiguous name) (474,public \& unambiguous)};
+\end{axis}
+\end{tikzpicture}

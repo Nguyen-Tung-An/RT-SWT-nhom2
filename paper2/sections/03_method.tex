@@ -38,9 +38,18 @@ search-based generator, or human to reach the target via the public API.
 
 Table~\ref{tab:funnel} shows the complete set of criteria. We report all stages of the
 filtering pipeline, as the attrition is informative: of the 1848 functions that passed the
-complexity filter, only 474 (26\,\%) were both public and unambiguously named. Around 3/4 of
-medium complexity functions in these projects were not valid test targets for an external
-generator.
+complexity filter, only 474 (26\,\%) were both public and unambiguously named
+(Fig.~\ref{fig:funnel}). Around 3/4 of medium complexity functions in these projects were not
+valid test targets for an external generator.
+
+\begin{figure}[t]
+\centering
+\input{figures/fig_funnel}
+\caption{Attrition of the sampling funnel. Of the 1848 functions in the complexity band, 753
+survive the unambiguous-name criterion and 474 are also public --- about a quarter of where we
+started. The remaining three quarters cannot be addressed by an external test at all.}
+\label{fig:funnel}
+\end{figure}
 
 \begin{table}[t]
 \centering

@@ -239,9 +239,17 @@ search-based generator, or human to reach the target via the public API.
 
 Table 1 shows the complete set of criteria. We report all stages of the
 filtering pipeline, as the attrition is informative: of the 1848 functions that passed the
-complexity filter, only 474 (26 %) were both public and unambiguously named. Around 3/4 of
-medium complexity functions in these projects were not valid test targets for an external
-generator.
+complexity filter, only 474 (26 %) were both public and unambiguously named
+(Fig. Section: Attrition of the sampling funnel. Of the 1848 functions in the complexity band, 753
+survive the unambiguous-name criterion and 474 are also public — about a quarter of where we
+started. The remaining three quarters cannot be addressed by an external test at all.). Around 3/4 of medium complexity functions in these projects were not
+valid test targets for an external generator.
+
+[t]
+
+Table: Attrition of the sampling funnel. Of the 1848 functions in the complexity band, 753
+survive the unambiguous-name criterion and 474 are also public — about a quarter of where we
+started. The remaining three quarters cannot be addressed by an external test at all.
 
 Table: Sampling funnel. Each row reports how many candidates survive the criterion. F4
 corrects the declaring-class attribution that F3 depends on rather than removing candidates in
@@ -530,8 +538,20 @@ Java, it made virtually no difference: 38 failed to compile with the baseline pr
 with the target-specified one, with 35 functions overlapping between those sets. Three
 functions moved in either direction, which is not enough for a meaningful result.
 
+[t]
+
+Table: The same prompt change acts differently in the two languages. On Python it cuts
+import/collection failures from 17 to 4; on Java the compile-failure count does not move at
+all (38 both times, 35 of them the same functions). The target block supplies identity, which
+is what Python resolves at run time; Java also checks types, which the block does not
+address.
+
 The difference in effect between languages is not a peculiarity of their tools — it is
-encoded in the block itself. The block specifies the identity of the target: its qualified
+encoded in the block itself (Fig. Section: The same prompt change acts differently in the two languages. On Python it cuts
+import/collection failures from 17 to 4; on Java the compile-failure count does not move at
+all (38 both times, 35 of them the same functions). The target block supplies identity, which
+is what Python resolves at run time; Java also checks types, which the block does not
+address.). The block specifies the identity of the target: its qualified
 name, declaring class or module, signature, and a constructor call for the receiver, if any.
 For Python, that is enough to remove barriers to invocation — at the stage these suites
 failed, the failure was always importing a module from an incorrect path, calling a

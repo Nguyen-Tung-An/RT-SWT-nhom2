@@ -131,10 +131,85 @@ def main() -> int:
 """
     open(os.path.join(OUT, "fig_rqc.tex"), "w", encoding="utf-8", newline="\n").write(fig2)
 
+    # ---------- Hinh 3: pheu lay mau ----------
+    # Doc thang tu bang funnel da khoa trong 03_method.tex de khong go tay va khong lech.
+    meth = open(os.path.join(REPO, "paper2", "sections", "03_method.tex"),
+                encoding="utf-8").read()
+    import re
+    def funnel(stage: str) -> int:
+        m = re.search(rf"^{stage} & [^&]*& ([0-9{{}},]+) ", meth, re.M)
+        if not m:
+            raise SystemExit(f"khong doc duoc bac {stage} trong 03_method.tex")
+        return int(m.group(1).replace("{,}", "").replace(",", ""))
+    f0, f3, f2 = funnel("F0"), funnel("F3"), funnel("F2")
+
+    fig3 = f"""% SINH TU DONG boi ms-analysis/scripts/make_figures_clean.py — dung sua tay.
+\\begin{{tikzpicture}}
+\\begin{{axis}}[
+  xbar, width=\\linewidth, height=4.2cm,
+  xmin=0, xmax={int(f0 * 1.18)},
+  symbolic y coords={{public \\& unambiguous,unambiguous name,CC 5--10}},
+  ytick=data, y tick label style={{font=\\footnotesize}},
+  xlabel={{Candidate functions}}, xlabel style={{font=\\footnotesize}},
+  tick label style={{font=\\footnotesize}},
+  nodes near coords, nodes near coords style={{font=\\footnotesize}},
+  bar width=13pt, enlarge y limits=0.32,
+  axis lines*=left, xmajorgrids, grid style={{dashed,gray!30}},
+]
+\\addplot[fill=gray!55, draw=black!70] coordinates
+  {{({f0},CC 5--10) ({f3},unambiguous name) ({f2},public \\& unambiguous)}};
+\\end{{axis}}
+\\end{{tikzpicture}}
+"""
+    open(os.path.join(OUT, "fig_funnel.tex"), "w", encoding="utf-8", newline="\n").write(fig3)
+
+    # ---------- Hinh 4: rao can — dac ta muc tieu sua TEN, khong sua KIEU ----------
+    def note_count(name: str, pred) -> int:
+        p = os.path.join(R, name + ".csv")
+        n = 0
+        for r in csv.DictReader(open(p, encoding="utf-8-sig")):
+            if r["func_id"] in EXCLUDE:
+                continue
+            if pred((r.get("note") or "").strip()):
+                n += 1
+        return n
+
+    py_v1_fail = note_count("mutation_on_target_clean_v1", lambda s: "collect-fail" in s)
+    py_v2_fail = note_count("mutation_on_target_clean_v3fair", lambda s: "collect-fail" in s)
+    ja_v1_fail = note_count("mutation_java_clean_v1", lambda s: s == "test khong bien dich duoc")
+    ja_v2_fail = note_count("mutation_java_clean_v3fair", lambda s: s == "test khong bien dich duoc")
+
+    fig4 = f"""% SINH TU DONG boi ms-analysis/scripts/make_figures_clean.py — dung sua tay.
+\\begin{{tikzpicture}}
+\\begin{{axis}}[
+  ybar, width=\\linewidth, height=4.6cm,
+  ymin=0, ymax={int(max(ja_v1_fail, py_v1_fail) * 1.35)},
+  ylabel={{Suites failing to import / compile}},
+  symbolic x coords={{Python (collect),Java (compile)}},
+  xtick=data, x tick label style={{font=\\footnotesize}},
+  tick label style={{font=\\footnotesize}}, ylabel style={{font=\\footnotesize}},
+  nodes near coords, nodes near coords style={{font=\\footnotesize}},
+  bar width=17pt, enlarge x limits=0.55,
+  legend style={{font=\\footnotesize, at={{(0.5,-0.24)}}, anchor=north, legend columns=2,
+                 draw=none}},
+  axis lines*=left, ymajorgrids, grid style={{dashed,gray!30}},
+]
+\\addplot[fill=gray!30, draw=black!70] coordinates
+  {{(Python (collect),{py_v1_fail}) (Java (compile),{ja_v1_fail})}};
+\\addplot[fill=gray!70, draw=black!70] coordinates
+  {{(Python (collect),{py_v2_fail}) (Java (compile),{ja_v2_fail})}};
+\\legend{{V1 baseline, V2 target-specified}}
+\\end{{axis}}
+\\end{{tikzpicture}}
+"""
+    open(os.path.join(OUT, "fig_barriers.tex"), "w", encoding="utf-8", newline="\n").write(fig4)
+
     print(f"-> {OUT}")
-    print(f"  fig_rqb.tex  T3 {t3_v1}->{t3_v2}, T4 {t4_v1}->{t4_v2}  (n={n_py})")
-    print(f"  fig_rqc.tex  Py GPT {py_gpt} vs Pynguin {py_pyn} (n={n_py2}); "
+    print(f"  fig_rqb.tex      T3 {t3_v1}->{t3_v2}, T4 {t4_v1}->{t4_v2}  (n={n_py})")
+    print(f"  fig_rqc.tex      Py GPT {py_gpt} vs Pynguin {py_pyn} (n={n_py2}); "
           f"Java GPT {j_gpt} vs EvoSuite {j_evo}, Randoop {j_ran} (n={n_j})")
+    print(f"  fig_funnel.tex   {f0} -> {f3} -> {f2}")
+    print(f"  fig_barriers.tex Python {py_v1_fail}->{py_v2_fail}, Java {ja_v1_fail}->{ja_v2_fail}")
     return 0
 
 
