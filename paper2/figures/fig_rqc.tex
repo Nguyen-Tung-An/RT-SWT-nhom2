@@ -1,0 +1,20 @@
+% SINH TU DONG boi ms-analysis/scripts/make_figures_clean.py — dung sua tay.
+\begin{tikzpicture}
+\begin{axis}[
+  ybar, width=\linewidth, height=5cm,
+  ymin=0, ymax=60,
+  ylabel={Functions with mutation score $>0$},
+  symbolic x coords={GPT (Py),Pynguin (Py),GPT (Java),EvoSuite (Java),Randoop (Java)},
+  xtick=data, x tick label style={font=\scriptsize, rotate=20, anchor=east},
+  ytick distance=10, tick label style={font=\footnotesize},
+  ylabel style={font=\footnotesize},
+  nodes near coords, nodes near coords style={font=\footnotesize},
+  bar width=15pt, enlarge x limits=0.12,
+  axis lines*=left, ymajorgrids, grid style={dashed,gray!30},
+]
+\addplot[fill=gray!70, draw=black!70] coordinates
+  {(GPT (Py),22) (Pynguin (Py),2)};
+\addplot[fill=gray!30, draw=black!70] coordinates
+  {(GPT (Java),16) (EvoSuite (Java),23) (Randoop (Java),19)};
+\end{axis}
+\end{tikzpicture}

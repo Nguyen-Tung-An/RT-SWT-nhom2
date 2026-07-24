@@ -408,7 +408,8 @@ Language Green gate Original Rebuilt
 Python per-test 13/60 (21.7 %) 16/60 (26.7 %)
 Java whole-suite 6/60 (10.0 %) 12/59 (20.3 %)
 
-The rebuilt set increases Java's rate by about 100%, and Python's by 25% (13/60 to 16/60).
+The rebuilt set increases Java's rate by about 100%, and Python's by about 23% (13/60 to
+16/60).
 As a reminder, these are not comparable sets: the two are different sets of functions, and the
 rebuilt one is easier by construction. We have no particular hypothesis about the effect of
 rebuilding beyond a warning that much of the original set's poor performance derived from
@@ -430,9 +431,19 @@ Tier V1 V2 p r_rb
 T3 (reaches target) 29/60 42/60 0.0027 +0.61 significant
 T4 (detects fault) 16/60 22/60 0.3259 +0.28 n.s.
 
+[t]
+
+Table: The split between the two tiers on Python. Adding the target specification lifts the
+number of suites that reach the target (T3) from 29/60 to 42/60, a significant change,
+but the number that detects a fault (T4) rises only from 16/60 to 22/60, which is not
+significant. The prompt improves arrival, not discrimination.
+
 The target specification increases the proportion of suites that reach the target
 (29/60 to 42/60) and has a non-significant effect on the proportion of suites detecting the
-injected fault (16/60 to 22/60). On the non-zero subsets, the medians of both T3 and T4
+injected fault (16/60 to 22/60); Fig. Section: The split between the two tiers on Python. Adding the target specification lifts the
+number of suites that reach the target (T3) from 29/60 to 42/60, a significant change,
+but the number that detects a fault (T4) rises only from 16/60 to 22/60, which is not
+significant. The prompt improves arrival, not discrimination. shows the split. On the non-zero subsets, the medians of both T3 and T4
 (75.0, 84.4) are barely changed (79.2, 88.9), which suggests the effect is almost entirely in
 the number of suites passing each tier rather than their ability to perform once they do. A
 coverage-only metric would report an improvement for T3; for T4 it is not enough for the test
@@ -474,8 +485,17 @@ lPython — Pynguin
  default 22/60 2/60 0.0001, -0.96 (sig.)
  no split 22/60 2/60 0.0001, -0.96 (sig.)
 
-The languages point in opposite directions: on Python, the model overwhelmingly outperforms
-Pynguin under all settings, but on Java the baselines outperform the model in most settings.
+[t]
+
+Table: The ordering reverses by language (per-test gate; Python n=60, Java n=59). The
+model detects faults on 22 Python targets against Pynguin's 2, but on only 16 Java targets
+against EvoSuite's 23 and Randoop's 19.
+
+The languages point in opposite directions (Fig. Section: The ordering reverses by language (per-test gate; Python n=60, Java n=59). The
+model detects faults on 22 Python targets against Pynguin's 2, but on only 16 Java targets
+against EvoSuite's 23 and Randoop's 19.): on Python, the model
+overwhelmingly outperforms Pynguin under all settings, but on Java the baselines outperform
+the model in most settings.
 The reason for the difference is visible in the counts: on Python, Pynguin fails to generate a
 test suite for 39/60 targets in its default configuration, and 35 in the no-split
 configuration; disabling the split (the stated fix for the serialisation crash) leaves the

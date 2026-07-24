@@ -1,0 +1,23 @@
+% SINH TU DONG boi ms-analysis/scripts/make_figures_clean.py — dung sua tay.
+\begin{tikzpicture}
+\begin{axis}[
+  ybar, width=\linewidth, height=5cm,
+  ymin=0, ymax=60,
+  ylabel={Python functions (of 60)},
+  symbolic x coords={T3 reaches target,T4 detects fault},
+  xtick=data, x tick label style={font=\footnotesize},
+  ytick distance=10, tick label style={font=\footnotesize},
+  ylabel style={font=\footnotesize},
+  nodes near coords, nodes near coords style={font=\footnotesize},
+  bar width=17pt, enlarge x limits=0.45,
+  legend style={font=\footnotesize, at={(0.5,-0.22)}, anchor=north, legend columns=2,
+                 draw=none},
+  axis lines*=left, ymajorgrids, grid style={dashed,gray!30},
+]
+\addplot[fill=gray!30, draw=black!70] coordinates
+  {(T3 reaches target,29) (T4 detects fault,16)};
+\addplot[fill=gray!70, draw=black!70] coordinates
+  {(T3 reaches target,42) (T4 detects fault,22)};
+\legend{V1 baseline, V2 target-specified}
+\end{axis}
+\end{tikzpicture}
