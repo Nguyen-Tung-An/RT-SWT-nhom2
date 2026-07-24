@@ -80,8 +80,9 @@ with \texttt{mutmut}~2.4.4, with all lines outside the target function's range m
 considered; the score is the fraction of mutants with a non-surviving status (killed or
 timed out) over all mutants generated in the line range. The Pynguin suites are scored
 with a home-grown script using Python's standard-library \texttt{ast}: it replaces
-\texttt{+} and \texttt{-}, \texttt{>} and \texttt{>=}, \texttt{<} and \texttt{<=},
-\texttt{==}, \texttt{and}, and \texttt{or} with their opposites, negates boolean literals,
+\texttt{+} and \texttt{-}, \texttt{*} and \texttt{/}, \texttt{>} and \texttt{>=},
+\texttt{<} and \texttt{<=}, \texttt{==}, \texttt{and}, and \texttt{or} with their opposites,
+negates boolean literals,
 increments numeric literals by 1, and applies any of these changes to exactly one site in
 the target function's line range, up to 20 mutants per function. Every such mutant is
 scored by rerunning the whole test suite with a 90s timeout: the suite killed the mutant
@@ -120,12 +121,13 @@ variables. RQ1 requires one test: a one-sample Wilcoxon signed-rank test of bran
 coverage against the 80\% threshold. RQ2 requires two: a one-sample Wilcoxon signed-rank
 test of mutation scores against the 60\% threshold, and a paired Wilcoxon test (matched by
 \texttt{function\_id}) of the same against each baseline, with matched-pairs rank-biserial
-$r$ as the effect size. Finally, RQ3 requires a Spearman correlation of CC with each
-quality metric. Every statistic is reported at two levels: \emph{all} ($N = 60$ per
+$r$ as the effect size. Finally, RQ3 requires a Spearman correlation of CC with branch
+coverage. Every statistic is reported at two levels: \emph{all} ($N = 60$ per
 language, with \textsc{invalid} or non-touching test suites scored at 0\% per the
 pre-registered procedure) and \emph{effective} (test suites that successfully compiled and
 touched the target lines). The two levels are never reported separately without the other,
 since omitting the all-level would artificially inflate the statistics: an effective suite
-always has higher coverage than an invalid one (0\% versus some positive number), so the
-effective figure is always higher than the all figure by construction.
+has higher coverage than an invalid one (0\% versus some positive number), so the
+effective figure is never lower than the all figure by construction (strictly higher for
+coverage; for mutation the two can coincide at 0\%).
 Section~\ref{sec:discussion} contains more context on this point.

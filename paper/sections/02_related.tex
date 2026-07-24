@@ -89,8 +89,9 @@ them report compilation failures.
 When evaluating these tools, one of the first issues we had to address was the time
 budget. With default settings, EvoSuite's results were considerably better than Randoop's.
 The discrepancy was significant enough that we suspected a mistake at first. It turned out
-that EvoSuite's default budget was 60 seconds per class, while Randoop's was 10 seconds
-per class. We adjusted the budget to 60 seconds per class for both tools and 90 seconds
+that EvoSuite ran with its 60-second default per class while our pilot harness had given
+Randoop only 10 seconds per class --- our own misconfiguration, not a Randoop default. We
+adjusted the budget to 60 seconds per class for both tools and 90 seconds
 per module for Pynguin. We also shifted the emphasis from per-call metrics to per-class
 (Java) or per-module (Python) ones. As a result, we were able to show that, with a
 comparable time budget, EvoSuite significantly outperformed Randoop: 55.0 median branch
