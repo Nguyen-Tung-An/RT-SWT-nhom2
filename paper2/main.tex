@@ -5,7 +5,8 @@
 % =====================================================================
 % a4paper: Springer LNCS yeu cau A4 (595x842pt). Khong co option nay, pdflatex tren may
 % nay xuat ra US Letter (612x792pt) — sai chuan.
-\documentclass[runningheads,a4paper]{llncs}
+% Bo 'runningheads' theo yeu cau: khong in tieu de/tac gia chay tren dau moi trang.
+\documentclass[a4paper]{llncs}
 
 \usepackage[T5]{fontenc}   % tieng Viet cho ten tac gia (nhu bai goc)
 \usepackage[utf8]{inputenc}
@@ -27,8 +28,7 @@ Unit-Test Generation Failures at Medium Complexity}
 \author{Nguyễn Tùng Ân \and Đoàn Thị Thu Kim \and Sơn Hải \and
 Trương Hoàng Phúc \and Trần Xuân Lộc}
 
-\titlerunning{Target Specification, Not Model Capability}
-\authorrunning{Group 2 --- SE1944}
+% \titlerunning / \authorrunning khong con can khi da bo runningheads.
 
 \institute{Group 2 --- SE1944, FPT University, Vietnam\\
 \email{Supervisor: L.T.Q.Chi}}
