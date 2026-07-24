@@ -34,9 +34,10 @@ headline pointing the opposite way from the other.
 
 Finally, and least expectedly, the study's most transferable output may be a catalogue of
 ways a measurement can stop working without saying so. Six such defects surfaced --- a
-hard-coded validity constant, a flag counting execution rather than success, a crash scored
-as zero, two tool-version mismatches that discovered no tests while exiting successfully,
-and a green-test gate implemented differently in the two languages under one name. Four of
+hard-coded validity constant, a flag counting execution rather than success, reflection
+turning method names into strings the compiler never checks, two tool-version mismatches
+that discovered no tests while exiting successfully, and a green-test gate implemented
+differently in the two languages under one name. Four of
 the six were introduced by us while repairing the other two, and one of them, had we trusted
 it, would have supported a statistically significant claim in precisely the wrong direction.
 None produced an error message. We therefore report the sampling funnel in full, both

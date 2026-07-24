@@ -37,15 +37,17 @@ each justified by whether \emph{any} tool --- an LLM, a search-based generator, 
     inference is not evidence that a target can be reached at run time.
 \end{description}
 
-Table~\ref{tab:funnel} reports the full funnel. We report every stage rather than only the
-final count, because the attrition is itself a finding: of 1{,}848 functions in the
+Table~\ref{tab:funnel} reports the full funnel. We report every count-reducing stage rather
+than only the final count, because the attrition is itself a finding: of 1{,}848 functions in the
 complexity band, only 474 (26\,\%) are simultaneously public and unambiguous. Roughly three
 quarters of medium-complexity functions in these projects are not valid targets for an
 external test generator.
 
 \begin{table}[t]
 \centering
-\caption{Sampling funnel. Each row reports how many candidates survive the criterion.}
+\caption{Sampling funnel. Each row reports how many candidates survive the criterion. F4
+corrects the declaring-class attribution that F3 depends on rather than removing candidates
+in its own right, so it has no separate row.}
 \label{tab:funnel}
 \begin{tabular}{llr}
 \toprule
@@ -134,15 +136,17 @@ both reachable without testing anything:
 The two tiers are therefore not merely weaker than T4; they can be satisfied by suites that
 are, respectively, unchecked by the compiler and empty of assertions.
 
-Branch coverage is measured with \texttt{coverage.py} (Python) and by executing the
-generated JUnit suites through the JUnit Platform launcher (Java), in both cases attributed
-to the target's line range rather than to the whole file. Mutation analysis applies the
+Branch coverage is measured with \texttt{coverage.py} (Python), attributed to the target's
+line range rather than to the whole file; T3 is therefore reported for Python only. The Java
+pipeline executes the generated JUnit suites through the JUnit Platform launcher and rests
+on T4, so no Java branch-coverage figure is claimed anywhere in this paper. Mutation
+analysis applies the
 same operator set to both languages --- arithmetic ($+/-$, $\times/\div$), relational
 ($>/\ge$, $</\le$), equality ($=$\,$=$\,/\,$\neq$), boolean ($\wedge/\vee$), boolean
 constant inversion, and numeric constant increment --- restricted to the target's line
-range and capped per function (20 mutants for Java and the baseline generators, 30 for the
-LLM-generated Python suites). The cap binds a single function in the whole corpus
-(Section~\ref{sec:threats}) and does not affect T4, which asks only whether any mutant is
+range and capped per function by language (20 mutants for every Java suite, 30 for every
+Python suite). The cap binds two Java functions and no Python one
+(Section~\ref{sec:threats}); it does not affect T4, which asks only whether any mutant is
 killed.
 
 Two procedural safeguards are worth stating because their absence silently corrupts
@@ -181,10 +185,12 @@ Conditions are compared with the paired Wilcoxon signed-rank test, matching on f
 identifier, at $\alpha = 0.05$, with matched-pairs rank-biserial correlation as effect
 size. Java and Python are analysed separately throughout: the toolchains differ, and Java
 enforces access control while Python does not, so their failure modes are not commensurable.
-Every rate is reported over the 60 functions of its own language.
+Every rate is reported over the functions of its own language ($n = 59$ for Java after the
+exclusion above, $n = 60$ for Python).
 
-Results are given at two levels in parallel: \emph{all} ($n = 60$ per language, with
-unmeasurable cases scored $0$) and \emph{effective} (the subset with a non-zero value). The
+Results are given at two levels in parallel: \emph{all} ($n = 59$ for Java and $n = 60$ for
+Python, with unmeasurable cases scored $0$) and \emph{effective} (the subset with a non-zero
+value). The
 \emph{all} level is reported even where the \emph{effective} level is more favourable.
 
 All configuration decisions above --- criteria, tool versions, budgets, the two-branch
