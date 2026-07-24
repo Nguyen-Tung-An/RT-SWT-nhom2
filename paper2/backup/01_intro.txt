@@ -69,6 +69,33 @@ Three findings stand out.
  object creation that the search-based literature has already acknowledged for years. That
  is the single challenge that the model was unable to bypass.
 
+-- Contributions --
+
+
+ * A quantified testability funnel. Only 26 % of the medium-complexity
+ functions in ten real projects are addressable by an external test at all. Any benchmark
+ that samples on complexity alone charges its tools for the other three quarters. We give
+ the five criteria and the per-stage counts so the funnel can be reproduced elsewhere.
+
+ * A four-tier measurement that cannot be satisfied vacuously. We show, with
+ cases drawn from this corpus, that compilation success and a green-test criterion are both
+ satisfiable by suites that verify nothing, and we rest every claim on the one tier that is
+ not.
+
+ * Evidence that coverage and fault detection can move apart. A single, plausible
+ prompt change raises the proportion of suites reaching the target significantly while
+ leaving fault detection unchanged — far enough apart to invert the conclusion a
+ coverage-only study would draw.
+
+ * A cross-language warning. Measured with one harness, the model beats the
+ Python baseline and trails both Java baselines. A study confined to either language would
+ have reported the opposite of the other.
+
+ * A catalogue of six ways a measurement fails silently, four of them introduced
+ by us while repairing the other two, together with the defensive checks we now apply. One
+ of the six, had we trusted it, would have supported a statistically significant claim in
+ the wrong direction.
+
 We report the full sample size at all stages of the benchmarking funnel, and we discuss the
 two configurations of Pynguin at length. We describe an anomaly in the Java implementation of
 a green-test gate — the criterion requiring at least one test to pass against the unmodified
