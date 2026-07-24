@@ -43,7 +43,7 @@ SUBS = [
     (r"\\item", "\n  * "),
     (r"\\begin\{table\}\[?[a-z]*\]?|\\end\{table\}", ""),
     (r"\\begin\{tabular\}\{[^}]*\}|\\end\{tabular\}", ""),
-    (r"\\caption\{([^}]*)\}", r"\nBang: \1"),
+    (r"\\caption\{([^}]*)\}", r"\nTable: \1"),
     (r"\\centering|\\toprule|\\midrule|\\bottomrule", ""),
     (r"\\\\", ""),
     (r"&", "\t"),

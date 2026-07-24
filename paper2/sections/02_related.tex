@@ -2,84 +2,88 @@
 
 \subsection{Search-Based and Random Test Generation}
 
-Automated unit-test generation predates language models by more than a decade. Randoop
-builds test sequences incrementally and uses feedback from executing each prefix to discard
-sequences that are illegal or redundant~\cite{pacheco2007randoop}. EvoSuite treats an entire
-test suite as one individual in a genetic search and evolves it against a coverage-based
-fitness function~\cite{fraser2011evosuite}. Both have been evaluated at scale: EvoSuite
-reached high branch coverage across a large sample of open-source classes, while also
-showing that a substantial fraction of classes remain hard for reasons unrelated to the
-search itself~\cite{fraser2014largescale}. Pynguin ports the search-based approach to
-Python, where the absence of static types removes much of the information the Java
-generators depend on~\cite{lukasczyk2022pynguin,lukasczyk2023empirical}.
+Automated unit-test generation has a long prehistory preceding the advent of language
+models. Randoop creates test sequences incrementally and uses feedback from executing each
+prefix to discard sequences that are illegal or redundant~\cite{pacheco2007randoop}. EvoSuite
+treats an entire suite as an individual in a genetic algorithm and optimizes it using a
+coverage-based fitness function~\cite{fraser2011evosuite}. Both approaches have been
+intensively evaluated at scale: EvoSuite demonstrated its ability to achieve high branch
+coverage across a large sample of open-source classes, while also revealing that a
+significant proportion of classes remain hard for reasons unrelated to the search
+itself~\cite{fraser2014largescale}. Pynguin adapts the search-based approach to Python, where
+the lack of static typing decreases the information available to the test
+generator~\cite{lukasczyk2022pynguin,lukasczyk2023empirical}.
 
-Two findings from this line of work bear directly on our design. First, coverage and
-fault detection are not interchangeable: Shamshiri et al.\ found that automatically
-generated suites with high coverage detected only a minority of real
-faults~\cite{shamshiri2015realfaults}, and Inozemtseva and Holmes report that coverage
-correlates with suite effectiveness far more weakly than is commonly
-assumed~\cite{inozemtseva2014coverage}. Second, the difficulty of a target is not captured
-by its complexity alone --- constructing the receiver object is frequently the binding
-constraint. We return to both points in Sections~\ref{sec:tiers} and~\ref{sec:discussion}.
+Two findings from this line of work are directly pertinent to our own. First, coverage and
+fault detection are not interchangeable: Shamshiri et al.\ find that automatically generated
+suites with high coverage detect only a minority of real
+faults~\cite{shamshiri2015realfaults}, and Inozemtseva and Holmes find that coverage's
+correlation with suite effectiveness is significantly lower than often
+assumed~\cite{inozemtseva2014coverage}. Secondly, the difficulty of a target is not captured
+by its complexity: constructing the receiver object often proves to be the major stumbling
+block for test generation. We return to both observations in Section~\ref{sec:tiers} and
+Section~\ref{sec:discussion} respectively.
 
 \subsection{LLM-Based Test Generation}
 
-Code-trained language models made test generation a prompting problem~\cite{chen2021codex},
-and the earliest work in this direction fine-tuned transformers on method--test pairs with
-surrounding focal context~\cite{tufano2020athenatest}. Subsequent systems moved to
-prompting. TestPilot generates tests for JavaScript functions from documentation and usage
-examples, and re-prompts with the failure message when a test does not
-pass~\cite{schafer2024testpilot}. ChatTester adds an iterative repair loop driven by
-compiler and runtime errors, reporting large gains over a single-shot
-baseline~\cite{yuan2023chattester}. Siddiq et al.\ evaluate several models on JUnit
-generation and find compilation failure --- not weak assertions --- to be the dominant
-failure mode~\cite{siddiq2024junit}. A recent survey catalogues the space and notes that
-evaluation practice is uneven across the field~\cite{wang2024llmtesting}.
+Code-trained language models transformed test generation into a prompting
+task~\cite{chen2021codex}. The earliest approaches in this space involved fine-tuning a
+transformer on method--test pairs with surrounding focal context~\cite{tufano2020athenatest}.
+Later works switched to prompting. TestPilot produces JavaScript tests from documentation and
+usage examples and employs a requery mechanism triggered by test
+failures~\cite{schafer2024testpilot}. ChatTester introduces an iterative repair loop that
+capitalizes on compiler and runtime errors, yielding markedly better results than a
+single-shot approach~\cite{yuan2023chattester}. Siddiq et al.\ evaluate several LLMs' ability
+to generate JUnit tests and find compilation failures to dominate over weak assertions as a
+source of failures~\cite{siddiq2024junit}. Finally, a recent survey enumerates the space and
+reflects on evaluation practices, noting how unevenly they are
+applied~\cite{wang2024llmtesting}.
 
-Our study is deliberately narrower than these systems in one respect and stricter in
-another. We use a \emph{single} API call per function, with no repair loop and no
-retrieval, because a repair loop conflates the quality of the initial generation with the
-quality of the error signal fed back into it; when compilation failure is itself the object
-of study, that conflation is fatal. Where those systems ask how high the success rate can
-be driven, we ask what the initial generation is actually missing, and whether it is
-something a prompt can supply. The two prompt conditions of
-Section~\ref{sec:generation} differ in exactly one variable so that the answer is
-attributable to that variable.
+Our study is narrower than most of these works in one respect (a single API call per
+function) and stricter in another (no iterative repair and no retrieval). We exclude the
+repair loop deliberately, because it conflates the quality of the initial generation with the
+quality of the error signal fed back into it --- and when compilation failure is itself the
+object of study, that conflation is fatal. Where these systems ask how high the success rate
+can be driven, we ask what the initial generation is actually missing, and whether it is
+something a prompt can supply. The two prompt conditions of Section~\ref{sec:generation}
+therefore differ in exactly one variable, so that whatever difference appears is attributable
+to that variable.
 
 \subsection{Evaluation Metrics and Their Validity}
 
-Mutation analysis is the standard fault-based criterion for test-suite adequacy, and
-mutants have been shown to be a reasonable --- if imperfect --- substitute for real faults
-in controlled comparisons~\cite{just2014mutants,papadakis2019mutation}. It is
-comparatively expensive, which is why much of the LLM test-generation literature reports
-compilation success and line or branch coverage instead.
+Mutation analysis is the canonical means of assessing test-suite adequacy in fault-based
+evaluation. Mutants have been shown to be a reasonable if imperfect substitute for real
+faults in controlled experiments~\cite{just2014mutants,papadakis2019mutation}. It is also
+computationally demanding, which is why many works on LLM-based test generation focus on
+compilation success and coverage as surrogates for adequacy.
 
-This substitution is where our contribution sits. Compilation success and coverage are
-cheap because they ask less, and what they ask can be satisfied without testing anything: a
-reflective call compiles regardless of whether the named method exists, and a suite that
-constructs no object and calls nothing still passes. Neither weakness is hypothetical; both
-occur in the corpus measured here (Section~\ref{sec:tiers}). We therefore report four
-nested tiers and rest every claim on the only tier that cannot be satisfied vacuously.
+This substitution forms the theoretical basis for our own contribution. Compilation success
+and coverage are easy to measure, but they ask less than one might hope, and what they ask
+can be satisfied without testing anything: a reflective call compiles regardless of whether
+the named method exists, and a suite that constructs no object and calls nothing still
+passes. Neither case actually evaluates the code under test, yet both are recorded as
+successes by the metrics used in existing work. We observed both in our own corpus
+(Section~\ref{sec:tiers}), which is why we report four nested tiers and rest every claim on
+the only tier that cannot be satisfied vacuously.
 
-A second and less discussed threat concerns the benchmark rather than the metric. Sampling
-targets by cyclomatic complexity~\cite{mccabe1976complexity} is standard practice, but
-complexity does not imply reachability: a method may be private, may be one of several
-overloads sharing a name, or may belong to a class that cannot be instantiated from
-outside. A suite that fails on such a target tells us about the sampling, not about the
-generator. To our knowledge, the fraction of a complexity-sampled benchmark that is
-actually addressable from an external test is rarely reported. We report the full sampling
-funnel for this reason, and the attrition turns out to be the study's most transferable
-number.
+Another subtlety involves the validity of the benchmark under consideration. Selecting
+targets based on cyclomatic complexity~\cite{mccabe1976complexity} is common practice, but
+complexity is not indicative of reachability. A method can be private, can have multiple
+overloads sharing a name, or can belong to a class that cannot be instantiated from outside.
+A suite that fails on such a target tells us about the sampling, not about the generator. To
+our knowledge, the proportion of complexity-sampled methods addressable from an external test
+is rarely quantified; we report the funnel for that reason, and its attrition turns out to be
+the study's most transferable number.
 
 \subsection{Methodological Practice}
 
-Because the present work re-examines a dataset after having seen results obtained on an
+Because the current work re-examines a dataset after having seen results obtained on an
 earlier one, the distinction between repairing an instrument and selecting a favourable
-outcome is central. Kerr's account of hypothesising after the results are
-known~\cite{kerr1998harking} describes the failure mode precisely. We address it in two
-ways: the sampling criteria, tool versions, budgets and hypotheses were committed to the
-repository before any measurement was run, and the earlier study's dataset and reported
-numbers are left unchanged --- this paper stands beside it rather than replacing it. For
-the statistical comparisons we follow the guidance of Arcuri and Briand on non-parametric
-testing and effect sizes for randomised algorithms in software
+outcome is particularly crucial. Kerr's articulation of the hazards of hypothesising after
+the results are known~\cite{kerr1998harking} describes the failure mode precisely. We address
+it in two ways. We committed our sampling criteria, tool versions, budgets, and hypotheses to
+the repository before any measurement was run. And the earlier study's dataset and reported
+numbers are left unchanged: this paper stands beside it rather than replacing it. For the
+statistical evaluations we adhere to the recommendations of Arcuri and Briand regarding
+non-parametric tests and effect sizes for randomised algorithms in software
 engineering~\cite{arcuri2014hitchhiker}.

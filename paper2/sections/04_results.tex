@@ -1,18 +1,17 @@
 \section{Results}\label{sec:results}
 
-We report Python and Java separately throughout. Every rate is over the functions of its own
-language: $n = 60$ for Python and $n = 59$ for Java, the latter after excluding one
-mis-sampled target (Section~\ref{sec:threats}). The primary tier is T4, fault detection
-within the target's line range; T3, reaching the target, is reported alongside it because
-the two diverge.
+We report results per language across all metrics. Within a language, all rates are over the
+same $n$: 60 for Python, 59 for Java (after dropping the mis-sampled target in
+Section~\ref{sec:threats}). The primary tier is T4, fault detection within the target's line
+range; we report T3, reaching the target, alongside it because the two diverge.
 
 \subsection{RQ-A: Clean Versus Original Dataset}\label{sec:rqa}
 
-Table~\ref{tab:rqa} contrasts the fault-detection rate of the baseline prompt on the
-original benchmark with its rate on the rebuilt one. This is not a controlled comparison ---
-the two are different sets of functions, and the rebuilt one is easier by construction ---
-so we report only the size of the gap, and only between measurements taken with the
-\emph{same} green-test gate, since a gate mismatch alone would inflate the difference.
+Table~\ref{tab:rqa} compares the baseline prompt's fault-detection rate on the original set
+with the same prompt on the rebuilt set. This is not a fair comparison --- the two sets
+contain different target functions, and the rebuilt one is easier by construction --- so we
+report only the magnitude of the gap, and only between measurements taken under the
+\emph{same} green-test gate, since a gate mismatch on its own would inflate the difference.
 
 \begin{table}[t]
 \centering
@@ -28,18 +27,17 @@ Java   & whole-suite     & 6/60 (10.0\,\%)  & 12/59 (20.3\,\%) \\
 \end{tabular}
 \end{table}
 
-The rebuilt dataset roughly doubles the Java rate and lifts the Python rate by about a
-quarter (13/60 to 16/60).
-Because the two samples are not matched, we draw no causal conclusion; the point is only
-that a large part of the failure rate reported on a complexity-only benchmark is attributable
-to targets that were never addressable, and removing them changes the headline number
-substantially.
+The rebuilt set roughly doubles Java's rate and lifts Python's by about a quarter (13/60 to
+16/60). Because the two samples are not matched, we draw no causal conclusion; the point is
+only that much of the original set's poor performance came from targets that no external test
+could reasonably cover, and removing them changes the headline number substantially.
 
 \subsection{RQ-B: Effect of Target Specification}\label{sec:rqb}
 
-Both prompt conditions are one-shot and differ in a single block of target metadata
+Both prompt variations are one-shot; the difference is one block of target metadata
 (Section~\ref{sec:generation}). Table~\ref{tab:rqb} reports both tiers for Python, where the
-result is decisive and, more importantly, splits between the two tiers.
+effect is strongest and splits most cleanly between them. We also report the median over the
+non-zero subset, since the non-zero results sit far above the zero group.
 
 \begin{table}[t]
 \centering
@@ -56,31 +54,32 @@ T4 (detects fault)  & 16/60 & 22/60 & 0.3259 & $+0.28$ & n.s. \\
 \end{tabular}
 \end{table}
 
-The target specification raises the proportion of suites that reach the target from 29/60 to
-42/60, a significant effect ($p = 0.003$). It raises the proportion that detects an injected
-fault from 16/60 to 22/60, which is not significant ($p = 0.33$). On the non-zero subsets the
-median scores barely move --- T3 from 75.0 to 79.2, T4 from 84.4 to 88.9 --- so the effect is
-almost entirely in \emph{how many} suites clear each bar, not in how well the clearing suites
-do. A study reporting coverage alone would read this as a clear improvement; the fault-based
-tier shows the improvement does not reach the point of testing behaviour.
+The target specification increases the proportion of suites that reach the target (29/60 to
+42/60, $p = 0.003$), but its effect on the proportion detecting the injected fault is not
+significant (16/60 to 22/60, $p = 0.33$). On the non-zero subsets, the medians of T3 and T4
+barely change (75.0 to 79.2 and 84.4 to 88.9), which suggests the effect lies almost entirely
+in \emph{how many} suites clear each tier rather than in how well the clearing suites perform.
+A coverage-only study would have read this as a clear improvement; the fault-based tier shows
+the improvement stops short of testing behaviour.
 
 The pre-registered hypothesis H-B predicted that the enriched prompt would not outperform the
-baseline. It holds at T4 and fails at T3. We record it as partially refuted, since the
-significant T3 effect is in the direction H-B predicted against.
+baseline. It holds for T4 and is contradicted for T3. We report this as a partially refuted
+hypothesis, since the significant T3 effect runs in the direction H-B predicted against.
 
-On Java the same intervention changes almost nothing. Under the per-test gate, both prompts
-detect faults on 16 of 59 targets; under the whole-suite gate the counts are 12 (V1) and 10
-(V2). The compile-failure count is identical --- 38 functions under each prompt, 35 of them
-the same --- so the target block, which resolves identity, does not clear the type-level
-barrier that dominates Java compilation. Only 4 functions differ in a way the paired test
-could use, which is below the six-pair minimum for a Wilcoxon test; we report the counts and
-the mechanism (Section~\ref{sec:barriers}) rather than a $p$-value.
+On Java, the same intervention has little effect. Under the per-test gate, both prompts
+detect the fault on 16 of 59 targets; under the whole-suite gate the counts are 12 (V1) and
+10 (V2). The number of compile-failure targets is the same under both prompts, 38, and 35 of
+those are the same functions. The target block, which identifies the target uniquely, resolves
+the addressing problem but not the type-level issues that dominate Java compilation failures.
+Only 4 functions differ in a way the paired test could use, below the six-pair minimum for a
+Wilcoxon test; we report the observed counts and the mechanism (Section~\ref{sec:barriers})
+rather than a $p$-value.
 
 \subsection{RQ-C: Against Established Generators}\label{sec:rqc}
 
-Table~\ref{tab:rqc} places the model beside the search-based and random generators. Java is
-reported under both green-test gates; Python under both Pynguin configurations. No conclusion
-below depends on which setting a reader adopts.
+Table~\ref{tab:rqc} pits the model against the search-based and random generators. Java is
+reported under both green-test gates; Python under both Pynguin settings. No analysis below
+depends on adopting one setting over the other.
 
 \begin{table}[t]
 \centering
@@ -106,26 +105,26 @@ Language & Setting & GPT (V2) & Baseline & Paired test ($p$, $r_{rb}$) \\
 \end{table}
 
 The two languages disagree, and the disagreement is the result. On Python the model
-dominates Pynguin under every pairing: against either configuration, and using either prompt,
-the paired test rejects at $p \le 0.003$ with rank-biserial correlations between $-0.81$ and
-$-0.96$. The gap is driven by coverage of the benchmark rather than by score: Pynguin produced
-no suite at all for 39 of 60 targets in its default configuration, and disabling the
-master--worker split --- the documented workaround for the serialisation crash responsible ---
-reduced that to 35 while leaving T4 unchanged at 2/60. That net movement of four conceals
-considerable churn: 17 targets gained a suite and 13 lost one, and 14 of the 17 newly
-generated suites failed at collection.
+overwhelmingly outperforms Pynguin: against either Pynguin configuration, and using either
+prompt, the paired test rejects at $p \le 0.003$, with rank-biserial correlations between
+$-0.81$ and $-0.96$. The reason is visible in the failure counts rather than the scores:
+Pynguin produced no suite at all for 39 of 60 targets in its default configuration, and
+disabling the master--worker split --- the documented workaround for the serialisation crash
+responsible --- reduced that to 35 while leaving T4 unchanged at 2/60. That net movement of
+four conceals considerable churn: 17 targets gained a suite and 13 lost one, and 14 of the 17
+newly generated suites failed at collection.
 
-On Java the ordering reverses in the counts. Both baselines detect faults on more targets
-than the model in every pairing --- EvoSuite 23 or 24 versus 16 or 10, Randoop 19 or 18
-versus 16 or 10 --- but the paired Wilcoxon test reaches significance in only one of the four
-comparisons: EvoSuite under the whole-suite gate ($p = 0.028$, $r_{rb} = +0.51$). The other
-three, including both Randoop comparisons, do not reject at $\alpha = 0.05$ ($p$ from
-$0.14$ to $0.86$). So the Java evidence is a consistent count advantage for the search-based
-tools that is statistically firm only for EvoSuite once the stricter gate is applied; it is
-not the decisive reversal the raw counts might suggest. Even so, it points the opposite way
-from Python, where the model rejects against Pynguin at $p \le 0.003$ in every pairing. Java
-is the setting these tools were built for, and where static types give a search-based
-generator the call information the model was shown to lack (Section~\ref{sec:barriers}). We
-therefore report no single verdict on whether the model beats automated generators: the
-count ordering is opposite in the two languages, and a study confined to either would have
-reached the other's headline.
+On Java the count ordering reverses. Both baselines detect faults on more targets than the
+model in every pairing (EvoSuite 23 or 24 against the model's 16 or 10; Randoop 19 or 18
+against 16 or 10). The paired Wilcoxon test, however, reaches significance in only one of the
+four comparisons: EvoSuite under the whole-suite gate ($p = 0.028$, $r_{rb} = +0.51$). The
+other three, including both Randoop comparisons, do not reject at $\alpha = 0.05$, with $p$
+ranging from $0.14$ to $0.86$. The Java evidence is therefore a consistent count advantage for
+the search-based tools that is statistically firm only for EvoSuite once the stricter gate is
+applied; it is not the decisive reversal the raw counts might suggest. Even so, it points the
+opposite way from Python, where the model rejects against Pynguin at $p \le 0.003$ in every
+pairing. Java is the language these tools were designed for, and where static types give a
+search-based generator the call information the model was shown to lack
+(Section~\ref{sec:barriers}). We therefore report no single verdict on whether the model beats
+automated generators: the count ordering is opposite in the two languages, and a study limited
+to either one would have reached the other's headline.

@@ -1,58 +1,59 @@
 === Conclusion ===
 
-We set out to explain why a language model asked to generate unit tests for specific
-functions fails as often as it does, and found that a large part of the answer lies outside
-the model. Of 1,848 functions in the medium-complexity band across ten projects, only
-26 % are simultaneously public and unambiguously named — the rest cannot be addressed
-by an external test at all, and a generator evaluated on them is charged for failures that
-belong to the benchmark. Rebuilding the sample under criteria fixed in advance, and
-measuring every suite at four nested tiers, changes both the magnitude and the shape of the
-result.
+We set out to explain why a language model asked to generate tests for individual functions
+often fails at doing so, finding that an appreciable part of the cause lies outside the
+model. Of the 1,848 functions in the medium-complexity category across ten projects, only
+26 % are simultaneously public and unambiguously named. That is, the rest cannot be
+legitimately targeted by an external test suite, and a model evaluated on its ability to find
+faults in these is penalized for shortcomings unrelated to its own. Recreating the sample
+under a fixed set of constraints, and evaluating each suite at four nested levels, drastically
+alters the picture.
 
-The central finding is a split that a single metric would have concealed. Supplying the
-model with the target's fully qualified name, signature, declaring class and a verified
-constructor call raised the proportion of Python suites that reach the target from 29/60 to
-42/60 (p = 0.003), while the proportion that detects an injected fault rose from 16/60 to
-22/60 and was not significant (p = 0.33). The intervention improves arrival, not
-discrimination. Reported through branch coverage alone it would have looked like an
-unambiguous success.
+Our main finding is a discrepancy that would be masked by a summary using one metric.
+Supplying the model with the target's fully qualified name, signature, and declaring class,
+along with a verified constructor call, raises the fraction of Python suites that reach the
+target from 29/60 to 42/60 (p = 0.003), while its effect on the fraction that finds an
+injected fault is not significant (16/60 to 22/60, p = 0.33). The intervention improves
+arrival, not discrimination, and would have shown as an overwhelming success if evaluated on
+the coverage metric alone.
 
-The same asymmetry explains why the intervention helps in one language and not the other.
-The target block supplies identity, and Python resolves identity at run time, so 14 of 17
-import failures disappear. Java resolves identity and types, and the compile-failure count
-does not move at all — 38 before, 38 after, 35 of them the same functions. What remains
-in both languages is the construction of a receiver in a state that makes the behaviour
-observable, and neither prompt condition touches it, even when the constructor call handed
-to the model has been executed and verified.
+The asymmetry is what allows the same change to benefit Python and not Java. The target block
+provides identity, and Python resolves identity at run time: import and collection failures
+fall from 17 to 4. Java binds identity and type at compile time, and the count of compile
+failures does not move at all — 38 before, 38 after, 35 of them the same functions. What
+remains in both languages is the need to create a receiver in a particular state that reveals
+the behaviour, and neither prompt supplies such a state even after the constructor call has
+been executed and verified.
 
-Against established generators the result does not resolve in one direction. On Python the
-model beats Pynguin decisively under both of Pynguin's configurations (p <= 0.003 in every
-pairing); on Java both mature search-based tools detect faults on more targets than the model
-in every pairing, though the paired test reaches significance only for EvoSuite under the
-stricter gate. A study conducted in either language alone would have produced a confident
-headline pointing the opposite way from the other.
+The comparison with existing generators is not strictly favorable to one language or the
+other. On Python, our model vastly outperforms Pynguin under both of that tool's
+configurations (p <= 0.003 in all comparisons). On Java the ordering reverses: both
+EvoSuite and Randoop detect faults on more targets than the model under either gate, though
+only EvoSuite reaches statistical significance, and only under the stricter gate (p =
+0.028). A study limited to one language would have confidently concluded the opposite of what
+the other found.
 
-Finally, and least expectedly, the study's most transferable output may be a catalogue of
-ways a measurement can stop working without saying so. Six such defects surfaced — a
-hard-coded validity constant, a flag counting execution rather than success, reflection
-turning method names into strings the compiler never checks, two tool-version mismatches
-that discovered no tests while exiting successfully, and a green-test gate implemented
-differently in the two languages under one name. Four of
-the six were introduced by us while repairing the other two, and one of them, had we trusted
-it, would have supported a statistically significant claim in precisely the wrong direction.
-None produced an error message. We therefore report the sampling funnel in full, both
-configurations of every tool we ran in more than one, and both settings of the gate we
-corrected — and we advance no conclusion that does not hold under both.
+At last, and perhaps most unexpectedly, the study's most transferable output may be a
+catalogue of ways a measurement can stop working without saying so. Six such defects surfaced
+— a hard-coded validity constant, a flag counting execution rather than success, reflection
+turning method names into strings the compiler never checks, two tool-version mismatches that
+discovered no tests while exiting successfully, and a green-test gate implemented differently
+in the two languages under one name. We introduced four of the six ourselves while repairing
+the other two, and had we trusted one of them, we would have reported a statistically
+significant claim in precisely the wrong direction. None produced an error message. We
+therefore report the sampling funnel in full, both configurations of every tool we ran in more
+than one, and both settings of the gate we corrected — and we advance no conclusion that does
+not hold under both.
 
 -- Future Work --
 
-Three directions follow directly. The state barrier is the one that neither better prompting
-nor a verified constructor removed; whether supplying an executed state — a
-receiver already driven into a configuration where the target's branches are reachable —
-removes it is an open and answerable question. Second, the Java compile failures should be
-classified by the type errors that cause them, which would establish whether the typing
-barrier is genuinely distinct from the addressing barrier or merely a harder instance of it.
-Third, the funnel numbers reported here come from ten projects in two languages; whether
-roughly three quarters of medium-complexity functions being unaddressable from outside is a
-property of these projects or of software more generally is not something a sample this size
-can settle.
+Three issues deserve further immediate attention. First, the state barrier described in
+Section Section: Three Barriers, Only the First of Which a Prompt Can Remove, which neither better prompting nor a verified constructor call
+appears to address, may be removed by supplying an executed state: a receiver already driven
+into a configuration where the target's branches are reachable. Second, the Java compile
+failures should be classified according to the type errors that cause them, clarifying whether
+the typing barrier is truly distinct from the addressing barrier or merely a harder instance
+of it. Finally, the funnel numbers reported here come from ten projects in two languages;
+whether roughly three quarters of medium-complexity functions being unaddressable from outside
+is a property of these projects or of software more generally is not something a sample this
+size can settle.

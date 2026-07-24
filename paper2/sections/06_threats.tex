@@ -3,119 +3,125 @@
 \subsection{Construct Validity}
 
 \paragraph{What a validity flag measures.}
-The central construct threat in this area is that the usual ``valid suite'' indicator does
-not measure what its name suggests, and fails silently when it does not. We encountered six
-distinct instances, four of them in our own instrumentation.
+The main construct-validity concern is that our suite's ``valid suite'' marker does not
+capture what it ought to, and that we fail to detect when it does not. There were six cases,
+four of which were in our own instrumentation.
 
-First, a compilation flag inferred from a coverage report measures only whether the class
-appears in that report. Coverage tools enumerate every class in a project, including classes
-that were never loaded; such a class yields zero covered branches, which the parser then
-records as a successfully compiled function with zero coverage. Second, a criterion of ``at
-least one test executed'' counts a file in which every test fails. Third, reflection removes
-the compiler's ability to check names, so a compilation-based rate is uninformative for any
-suite that uses it. Fourth, mismatched tool versions can make a test launcher discover zero
-tests while exiting successfully.
+\begin{enumerate}
+  \item A compilation flag inferred from a coverage report only captures whether the class
+    appears in it; coverage tools list all classes (including unreachable ones), which yield
+    zero percent branch coverage, parsed as a successfully compiled function with zero
+    coverage.
+  \item A criterion of ``at least one test executed'' erroneously counts a file in which all
+    tests failed.
+  \item Reflection renders compiler-based name checking useless for any suite that uses it, so
+    a compilation-based rate is uninformative there.
+  \item A discrepancy in tool versions can cause a test launcher to report zero tests found
+    while exiting successfully.
+\end{enumerate}
 
-The fifth is worth stating in full, because believing it would have inverted a published
-conclusion. Our Java runner and the generated tests were compiled with the default JDK
-(class file version 61) and executed under the JDK~11 required by EvoSuite (which reads at
-most 55). The resulting \texttt{UnsupportedClassVersionError} was raised inside a child
-process, so the harness observed only the absence of a result line and recorded ``no tests
-ran'' --- for every target. EvoSuite scored $0/60$, and a paired test against it returned
-$p = 0.005$ with a rank-biserial correlation of $-1.000$. Had we reported it, the paper would
-have claimed a statistically significant advantage for the model over EvoSuite; the true
-figure is given in Section~\ref{sec:results}. A well-formed $p$-value made the artefact look
-more credible, not less.
+The fifth case has ramifications for the statistical test, so we describe it in detail. Our
+Java runner and the tests it generated were compiled with the default JDK (class file version
+61) and run on the JDK~11 required by EvoSuite (which reads class files up to version 55). The
+JVM therefore threw an \texttt{UnsupportedClassVersionError}. Because it was thrown inside a
+child process, the harness saw only the absence of a result line and reported ``no tests ran''
+for every target. EvoSuite scored 0/60, and the paired test against it returned $p = 0.005$
+with a rank-biserial correlation of $-1.000$; had we reported it, the paper would have
+erroneously claimed a significant advantage for the model over EvoSuite. The correct value is
+given in Section~\ref{sec:results}: a well-formed $p$-value made the artefact appear stronger
+than it was.
 
-The sixth concerns the green-test gate itself. Our Python implementation retained the
-passing tests and discarded the failing ones, as T2 specifies; our Java implementation
-rejected the entire function if any single test failed. The two languages were measuring
-different constructs under one name, and the Java side contradicted the definition we had
-registered in advance. We corrected it and report both settings throughout
-(Section~\ref{sec:results}); the correction is discussed under conclusion validity below,
-because it moves results in our own favour.
+The sixth case is the green-test gate. Our Python implementation correctly kept the passing
+tests and discarded the failing ones, as T2 specifies; the Java version rejected the whole
+function if any test in it had failed. The two languages implemented different constructs
+under the same label, and the Java version contradicted our pre-registered definition. We
+fixed it and report both settings henceforth (Section~\ref{sec:results}); the correction is
+relevant to conclusion validity (see below), as it improved our own results.
 
-None of these produce an error. Each returns a plausible number. We therefore report the four
-nested tiers of Section~\ref{sec:tiers} rather than any single flag, and treat only T4 ---
-fault detection within the target's line range --- as evidence that a suite tests its target.
+None of these issues produces a visibly incorrect result; each merely returns a plausible
+number. We therefore report the four nested tiers of Section~\ref{sec:tiers} instead of a
+single flag, and treat only T4 --- fault detection within the target's line range --- as
+evidence that a suite tests its target.
 
 \paragraph{Mutation operators.}
-Our operator set is deliberately small and identical across both languages, so that the two
-are measured with the same instrument. It is weaker than a production mutation framework, so
-absolute mutation scores are not comparable with studies using PIT or \texttt{mutmut}; only
+Our operator set was deliberately limited and identical for both languages, to give a common
+reference point, and it is weaker than a production mutation framework; absolute scores are
+therefore not directly comparable to results obtained with PIT or \texttt{mutmut}, and only
 within-study comparisons are meaningful. The per-function mutant cap differs between the two
 language pipelines (20 for Java, 30 for Python), an inconsistency inherited from separate
 implementations. It binds two Java functions --- CJ-004 and CJ-026, both sitting exactly at
-the 20-mutant ceiling under every Java condition --- and no Python function, the largest
-there being CP-025 at 24 candidate sites against a cap of 30. Since T4 asks only whether at
-least one mutant is killed, the cap bounds the resolution of the continuous score for those
-two functions rather than their tier outcome.
+the 20-mutant ceiling under every Java condition --- and no Python function, the largest there
+being CP-025 at 24 candidate sites against a cap of 30. Since T4 asks only whether at least
+one mutant is killed, the cap bounds the resolution of the continuous score for those two
+functions rather than their tier outcome.
 
 \subsection{Internal Validity}
 
 \paragraph{Sampling.}
-Our own miner mis-attributed one Java target: \texttt{LocalTime.getField} is declared
-\texttt{protected}, but the parser matched a same-named declaration in a nested class and
-recorded it as public, so it passed the public-only filter. An audit against the real
-declaration line found this to be the only such case in 60 Java functions; we exclude it from
-the analysis. We record it here because it is precisely the class-attribution error this study
-is about, reproduced in our own tooling --- knowing about a failure mode does not confer
-immunity to it.
+Our own miner incorrectly attributed one Java target's visibility: \texttt{LocalTime.getField}
+is declared \texttt{protected}, but the parser matched it against a same-name declaration in a
+nested class and recorded it as public, so it passed the public-only filter. An audit against
+the real declaration line confirmed that this was the only occurrence among the 60 Java
+functions; we exclude it from the analysis. We report the case here because it is precisely
+the class-attribution error this study is about, reproduced in our own tooling: knowing about
+a failure mode does not protect one from it.
 
 \paragraph{Concurrency.}
-Mutation analysis overwrites source files. Running it directly on a shared source tree
-corrupts any concurrent measurement reading that tree, silently. We mutate an isolated copy
-placed ahead of the original on the import path, and verify after each run that the original
-tree is unmodified.
+Mutation analysis overwrites source files, so running it on a shared source tree corrupts any
+concurrent measurement reading from that tree, silently. We mutate an isolated copy placed
+ahead of the original on the import path, and verify that the original tree was not modified
+after each run.
 
 \subsection{External Validity}
 
 \paragraph{Source exhaustion in Python.}
-After all testability criteria, only 64 Python functions in the two projects qualify, of which
-34 already appeared in our earlier dataset. A strictly held-out Python replication is therefore
-limited to roughly 30 functions without adding new repositories. Our Python sample is also
-drawn from two web-oriented libraries and may not generalise to other domains.
+After applying all testability criteria, only 64 Python functions in the two projects qualify,
+34 of which already appeared in our earlier dataset. A strictly held-out Python replication is
+therefore limited to about 30 functions unless additional repositories are added. The Python
+corpus is also drawn from two web-oriented libraries, which may limit external validity.
 
 \paragraph{Complexity distribution.}
-Although the band is $5 \le CC \le 10$, the sample concentrates at the lower end (56 of 120
-functions have $CC = 5$). Conclusions about the upper half of the band rest on fewer
-observations.
+Although the band $5 \le CC \le 10$ is broad, most of the sampled functions fall towards its
+lower end (56 of 120 have $CC = 5$, more than the 40 with $CC$ between 7 and 10 combined).
+Conclusions about the upper half of the band therefore rest on fewer observations.
 
 \paragraph{Model and configuration.}
-A single model at a single temperature was used. We do not claim the findings transfer to
-other models, and the deterministic setting means we do not estimate run-to-run variance.
+A single model at a single temperature was used; we make no claims about generalisation to
+other models, or even to other configurations of the same one, and the deterministic setting
+means we do not estimate variance across runs.
 
 \subsection{Conclusion Validity}
 
 \paragraph{Baseline configuration.}
-Three limitations constrain how far the baseline comparison can be pushed. EvoSuite was run
-with a classpath containing only the module's own compiled classes: with the full dependency
-classpath its bytecode reader aborts in a way that produces no output while reporting success,
-and we were unable to identify the specific offending artifact. EvoSuite may therefore be
-weaker here than in a fully configured environment. Seven Java targets in one multi-module
-project could not be recompiled to Java~11 bytecode and fall outside EvoSuite's coverage.
-Finally, our Randoop version differs from the one used in our earlier study, so Randoop numbers
-are compared only within this study.
+Three factors constrain the baseline comparison. First, EvoSuite was run with a classpath
+containing only the module's own compiled classes; with the full dependency classpath its
+bytecode reader aborts in a way that produces no output while still reporting success, and we
+were unable to isolate the offending artifact. EvoSuite may therefore perform below its usual
+level in this configuration. Second, seven Java targets in one multi-module project could not
+be recompiled to Java~11 bytecode (required by EvoSuite) and fall outside its coverage.
+Finally, our Randoop version differs from the one used in our earlier study, so its results are
+compared only within this study.
 
 \paragraph{Pre-registration and two deviations.}
-Research questions, hypotheses, tool versions, budgets and the two-branch Pynguin design were
-committed before any baseline was run.
+The research questions, hypotheses, tool versions, budgets, and the two-branch Pynguin design
+were committed to the pre-registration before any baseline was run.
 
-The first deviation added a condition. On inspection, the enriched prompt we had planned to
-use turned out to lack the worked exemplar, making it zero-shot rather than one-shot and
-differing from the baseline in two respects at once. We added a corrected condition that
-holds the exemplar fixed and varies only the target specification, recorded the change in the
-pre-registration with its date, and left the original hypothesis unaltered. The uncorrected
-variant is reported only as a secondary observation.
+The first deviation added a condition. On inspection, the enriched prompt we had intended to
+use did not contain the worked example, making it a zero-shot prompt rather than the intended
+one-shot one; it therefore differed from the baseline in two respects at once --- it dropped
+the worked example and it added the target metadata. We added a corrected condition that keeps
+the worked example and varies only the target specification, noted this change in the updated
+pre-registration with its date, and left the original hypothesis untouched. The uncorrected
+prompt is reported in the results only as a secondary observation.
 
-The second deviation changed the instrument after results had been seen, and it changed it in
-a direction favourable to us, so we state it plainly. The Java green-test gate described
-above was corrected to match the registered definition of T2. Six functions under the
-baseline prompt and eight under the target-specified prompt were affected, against two for
-EvoSuite and one for Randoop --- so the correction helps the model more than it helps its
-competitors. Three safeguards apply. The pre-correction results were written to the
-repository and committed \emph{before} the corrected measurement was run, so the timestamps
-preclude selecting between them afterwards. Both settings are reported side by side for every
-Java comparison. And we state no conclusion that does not hold under both; where the two
-disagree, we report the comparison as inconclusive. The Python measurements were not re-run,
-having matched the registered definition from the start.
+The second deviation changed the instrument after the results had been seen, and changed it in
+a way that favoured our method, so we state it plainly. The Java green-test gate described
+above was adjusted to comply with the pre-registered definition of T2. Eight functions were
+affected under the baseline prompt and ten under the target-specified prompt, against two for
+each of the two Java baselines; overall the correction helped the model more than it helped
+its competitors. Three safeguards apply. The pre-correction runs were committed to the
+repository before the corrected measurement was run, so their timestamps preclude selecting
+between the two afterwards. Both settings are reported side by side for every Java comparison.
+And we state no conclusion that does not hold under both; where the two disagree, we report the
+comparison as inconclusive. The Python measurements were not re-run, as they matched the
+pre-registered definition of T2 from the start.
