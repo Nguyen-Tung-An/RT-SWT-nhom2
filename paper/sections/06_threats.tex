@@ -59,16 +59,72 @@ and \texttt{commons-math} disabled JaCoCo in its own \texttt{pom.xml} via
 exit code 0 --- only the absence of artefacts on disk revealed the problem.
 
 \subsection{External Validity}
-All results are reported for the lightweight \texttt{gpt-4o-mini-2024-07-18} only and
-should not be extrapolated beyond it (amendment~v1.1). The dataset covers two worlds:
-Apache-style Java libraries and Python web libraries (\texttt{flask}, \texttt{requests}).
-The Python side leans heavily on \texttt{flask}: 48 of the 60 Python functions come from
-that package. Functions with heavy environmental requirements (GUI or network access) are
-under-represented, and coverage varies sharply between repositories --- often near-maximal
-for numeric utility code, near-minimal for parser- and formatter-style classes --- so
-RQ1's 80\% threshold should be read as repository-relative rather than a universal bar.
+
+\textbf{Single model.} All results are reported for the lightweight
+\texttt{gpt-4o-mini-2024-07-18} only and should not be extrapolated beyond it
+(amendment~v1.1). \emph{Mitigation applied:} we pinned the exact model snapshot rather than a
+floating alias, so the result is attributable to one identifiable system and can be re-run
+against it.
+
+\textbf{Corpus skew.} The dataset covers two worlds: Apache-style Java libraries and Python
+web libraries (\texttt{flask}, \texttt{requests}). The Python side leans heavily on
+\texttt{flask}: 48 of the 60 Python functions come from that package. Functions with heavy
+environmental requirements (GUI or network access) are under-represented, and coverage varies
+sharply between repositories --- often near-maximal for numeric utility code, near-minimal for
+parser- and formatter-style classes. \emph{Mitigation applied:} we report per-repository
+provenance for all 120 functions in the replication package, and we read RQ1's 80\% threshold
+as repository-relative rather than a universal bar.
+
+\textbf{Single prompt strategy and one complexity band.} The findings describe one one-shot
+prompt template at temperature~$=0$ with a single worked exemplar, on functions with
+$5 \le CC \le 10$ only. They say nothing about few-shot or chain-of-thought prompting, nor
+about functions below or above that band. \emph{Mitigation applied:} the exact prompt and the
+band boundaries are fixed and published, so any follow-up varies one factor against a known
+reference point rather than re-deriving a baseline.
+
+\textbf{Data contamination.} The ten subject repositories are long-standing open-source
+projects (\texttt{flask}, \texttt{requests}, the Apache Commons family, \texttt{gson},
+\texttt{jsoup}, \texttt{joda-time}, \texttt{jfreechart}), and their source --- along with
+their existing test suites --- was very likely present in the model's training data. Any
+apparent competence may therefore be partly recall rather than generation. \emph{Mitigation
+applied:} we score every suite by executing it against the project at a pinned commit and by
+mutation analysis on the target's own lines, so a memorised-looking test still earns nothing
+unless it actually runs and kills mutants; and the measured outcome --- a 0\% all-level median
+--- is in any case far too low to be explained by memorisation.
 
 \subsection{Conclusion Validity}
+
+\textbf{Multiple testing.} We run twelve hypothesis tests in total: three per research
+question (Python, Java, pooled) for RQ1, RQ2-A and RQ3, and three paired comparisons for
+RQ2-B. We report each at the pre-registered $\alpha=0.05$, but a Bonferroni correction for
+twelve tests gives $\alpha' = 0.05/12 = 0.0042$, and we state plainly what that does to our
+conclusions. \emph{Mitigation applied:} we re-checked every significant result against
+$\alpha'$. The two results that go against us survive --- EvoSuite ($p=0.00044$) and Randoop
+($p=0.0033$) both still beat the model. The one result that favours the model does
+\emph{not}: the win over Pynguin ($p=0.010$) exceeds $\alpha'$ and must be read as
+inconclusive once multiplicity is taken into account. No conclusion in this paper rests on
+that comparison.
+
+\textbf{Small effective samples.} The all-level analysis uses the full $N=120$, but every
+effective-level figure rests on a much smaller subset: $n=23$ (Python coverage), $n=17$
+(Python mutation), and $n=5$ (Java coverage). At $n=5$ the Java RQ1 and RQ3 estimates are
+indicative only, and the study is underpowered to detect anything but a very large effect
+there. \emph{Mitigation applied:} we report the all-level figure beside every effective-level
+figure, never the effective one alone, and we state $n$ at every point estimate so no reader
+can mistake an $n=5$ median for a population value.
+
+\textbf{Single generation per function.} With one one-shot call per function at
+temperature~$=0$, we have no per-function variance estimate and cannot separate model
+variability from target difficulty. \emph{Mitigation applied:} temperature was pinned at 0
+and the model snapshot pinned to \texttt{gpt-4o-mini-2024-07-18}, so the reported run is at
+least deterministic and exactly reproducible from the replication package.
+
+\textbf{Conditional subsets overstate ability.} The effective-level medians
+(75\%/50\%/37\%/0\%) are conditioned on suites that both compiled \emph{and} touched the
+target, so they overstate raw ability relative to the all-level 0\%. \emph{Mitigation
+applied:} both levels are reported at every RQ, and the all-level figure is the one carried
+into the conclusions.
+
 With $N=120$ functions (60 per language), we report all measurements with non-parametric
 tests where applicable (Wilcoxon, Spearman), at $\alpha=0.05$, and with effect sizes
 alongside every $p$-value. The mutation and coverage thresholds were fixed in the approved
