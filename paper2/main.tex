@@ -22,6 +22,7 @@ Unit-Test Generation Failures at Medium Complexity}
 \author{Nguyễn Tùng Ân \and Đoàn Thị Thu Kim \and Sơn Hải \and
 Trương Hoàng Phúc \and Trần Xuân Lộc}
 
+\titlerunning{Target Specification, Not Model Capability}
 \authorrunning{RT-SWT-nhom2}
 
 \institute{FPT University, Vietnam}
@@ -29,7 +30,46 @@ Trương Hoàng Phúc \and Trần Xuân Lộc}
 \maketitle
 
 \begin{abstract}
-% VIET CUOI CUNG — can N, p, effect size day du.
+<<<<<<< HEAD
+Large language models often fail to generate compilable unit tests for a named function,
+and this is commonly read as a limitation of the model. Re-examining 120 medium-complexity
+functions from ten open-source projects (60 Java, 60 Python), we find the explanation lies
+largely elsewhere. First, sampling by cyclomatic complexity selects many targets no external
+test can reach: of 1{,}848 functions in the band $5 \le CC \le 10$, only 26\,\% are
+simultaneously public and unambiguously named, so a generator is charged for failures that
+belong to the benchmark. Second, the metrics usually reported can be satisfied without
+testing anything --- a reflective call compiles regardless of whether the named method
+exists, and an assertion-free suite passes --- so we measure four nested tiers and rest every
+claim on mutation score within the target's line range. Two one-shot prompts differing in a
+single variable isolate the effect of supplying the target specification: on Python it raises
+the share of suites reaching the target from 29/60 to 42/60 ($p = 0.003$) but not the share
+detecting a fault (16/60 to 22/60, $p = 0.33$) --- it improves arrival, not discrimination.
+The model beats Pynguin decisively on Python yet trails EvoSuite and Randoop on Java, so
+neither family wins outright. We report the full sampling funnel, both settings of every
+tool run more than once, and six ways a measurement silently stopped working --- four of them
+introduced while repairing the other two.
+=======
+Failures of LLM-generated unit tests are usually recorded against the model. Examining
+them individually, we find most belong to the benchmark and the measurements instead.
+Sampling by cyclomatic complexity alone admits targets no external test can reach: of
+1{,}848 functions in the band $5 \le CC \le 10$ across ten projects, only 474 ---
+26\,\% --- are simultaneously public and unambiguously named. We rebuild the benchmark
+under five testability criteria fixed in advance, sample 60 Java and 60 Python functions
+($n = 59$ for Java after excluding one mis-sampled target), and score every suite at four
+nested tiers, resting all claims on mutation score inside the target's line range --- the
+only tier a suite that verifies nothing cannot satisfy. Two one-shot prompts differing in
+exactly one variable isolate the effect of supplying the target specification. On Python
+it raises the proportion of suites reaching the target from 29/60 to 42/60
+($p = 0.003$, rank-biserial $+0.61$), but the proportion detecting a fault only from
+16/60 to 22/60 ($p = 0.33$): the prompt improves arrival, not discrimination --- a split
+branch coverage alone would have concealed. Against established generators the ordering
+reverses by language: the model beats Pynguin decisively on Python, where Pynguin detected
+faults on 2 of 60 targets under either configuration ($p \le 0.003$ in every pairing),
+while on Java both EvoSuite and Randoop detect faults on more targets, significantly so
+only for EvoSuite under the stricter gate ($p = 0.028$). Six measurement defects surfaced,
+four introduced while repairing the other two; none produced an error message.
+
+>>>>>>> ec0122b449844440b9d98c5bc6799c417f137e56
 \keywords{Unit test generation \and Large language models \and Mutation testing
 \and Cyclomatic complexity \and Measurement validity}
 \end{abstract}

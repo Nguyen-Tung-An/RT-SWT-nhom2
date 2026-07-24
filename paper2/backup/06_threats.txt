@@ -19,13 +19,13 @@ tests while exiting successfully.
 
 The fifth is worth stating in full, because believing it would have inverted a published
 conclusion. Our Java runner and the generated tests were compiled with the default JDK
-(class file version 61) and executed under the JDK~11 required by EvoSuite (which reads at
-most 55). The resulting `UnsupportedClassVersionError` was raised inside a child
+(class file version 61) and executed under the JDK 11 required by EvoSuite (which reads at
+most 55). The resulting UnsupportedClassVersionError was raised inside a child
 process, so the harness observed only the absence of a result line and recorded "no tests
 ran" — for every target. EvoSuite scored 0/60, and a paired test against it returned
 p = 0.005 with a rank-biserial correlation of -1.000. Had we reported it, the paper would
 have claimed a statistically significant advantage for the model over EvoSuite; the true
-figure is given in Section~Section: Results. A well-formed p-value made the artefact look
+figure is given in Section Section: Results. A well-formed p-value made the artefact look
 more credible, not less.
 
 The sixth concerns the green-test gate itself. Our Python implementation retained the
@@ -33,31 +33,32 @@ passing tests and discarded the failing ones, as T2 specifies; our Java implemen
 rejected the entire function if any single test failed. The two languages were measuring
 different constructs under one name, and the Java side contradicted the definition we had
 registered in advance. We corrected it and report both settings throughout
-(Section~Section: Results); the correction is discussed under conclusion validity below,
+(Section Section: Results); the correction is discussed under conclusion validity below,
 because it moves results in our own favour.
 
 None of these produce an error. Each returns a plausible number. We therefore report the four
-nested tiers of Section~Section: Measurement: Four Tiers rather than any single flag, and treat only T4 —
+nested tiers of Section Section: Measurement: Four Tiers rather than any single flag, and treat only T4 —
 fault detection within the target's line range — as evidence that a suite tests its target.
 
 [Mutation operators.]
 
 Our operator set is deliberately small and identical across both languages, so that the two
 are measured with the same instrument. It is weaker than a production mutation framework, so
-absolute mutation scores are not comparable with studies using PIT or `mutmut`; only
+absolute mutation scores are not comparable with studies using PIT or mutmut; only
 within-study comparisons are meaningful. The per-function mutant cap differs between the two
-pipelines (20 for Java and the baseline generators, 30 for the LLM Python suites), an
-inconsistency inherited from separate implementations. It binds exactly one function in the
-whole corpus (CP-025, 24 candidate sites) and cannot affect T4, since that tier asks only
-whether at least one mutant is killed and CP-025 kills 18; it bounds only the resolution of
-the continuous score for that one function.
+language pipelines (20 for Java, 30 for Python), an inconsistency inherited from separate
+implementations. It binds two Java functions — CJ-004 and CJ-026, both sitting exactly at
+the 20-mutant ceiling under every Java condition — and no Python function, the largest
+there being CP-025 at 24 candidate sites against a cap of 30. Since T4 asks only whether at
+least one mutant is killed, the cap bounds the resolution of the continuous score for those
+two functions rather than their tier outcome.
 
 -- Internal Validity --
 
 [Sampling.]
 
-Our own miner mis-attributed one Java target: `LocalTime.getField` is declared
-`protected`, but the parser matched a same-named declaration in a nested class and
+Our own miner mis-attributed one Java target: LocalTime.getField is declared
+protected, but the parser matched a same-named declaration in a nested class and
 recorded it as public, so it passed the public-only filter. An audit against the real
 declaration line found this to be the only such case in 60 Java functions; we exclude it from
 the analysis. We record it here because it is precisely the class-attribution error this study
@@ -100,7 +101,7 @@ with a classpath containing only the module's own compiled classes: with the ful
 classpath its bytecode reader aborts in a way that produces no output while reporting success,
 and we were unable to identify the specific offending artifact. EvoSuite may therefore be
 weaker here than in a fully configured environment. Seven Java targets in one multi-module
-project could not be recompiled to Java~11 bytecode and fall outside EvoSuite's coverage.
+project could not be recompiled to Java 11 bytecode and fall outside EvoSuite's coverage.
 Finally, our Randoop version differs from the one used in our earlier study, so Randoop numbers
 are compared only within this study.
 
@@ -118,11 +119,11 @@ variant is reported only as a secondary observation.
 
 The second deviation changed the instrument after results had been seen, and it changed it in
 a direction favourable to us, so we state it plainly. The Java green-test gate described
-above was corrected to match the registered definition of T2. Eight functions under the
-baseline prompt and ten under the target-specified prompt were affected, against two for each
-of the two Java baselines — so the correction helps the model more than it helps its
+above was corrected to match the registered definition of T2. Six functions under the
+baseline prompt and eight under the target-specified prompt were affected, against two for
+EvoSuite and one for Randoop — so the correction helps the model more than it helps its
 competitors. Three safeguards apply. The pre-correction results were written to the
-repository and committed *before* the corrected measurement was run, so the timestamps
+repository and committed before the corrected measurement was run, so the timestamps
 preclude selecting between them afterwards. Both settings are reported side by side for every
 Java comparison. And we state no conclusion that does not hold under both; where the two
 disagree, we report the comparison as inconclusive. The Python measurements were not re-run,

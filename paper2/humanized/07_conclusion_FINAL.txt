@@ -1,0 +1,58 @@
+=== Conclusion ===
+
+We set out to explain why a language model asked to generate tests for individual functions
+often fails at doing so, finding that an appreciable part of the cause lies outside the model.
+Of the 1,848 functions in the medium complexity category across ten projects, only 26 % are
+simultaneously public and unambiguously named. That is, the rest cannot be legitimately
+targeted by an external test suite, and a model evaluated upon its ability to find faults in
+these is penalized for shortcomings unrelated to its own. Recreating the sample under a fixed
+set of constraints, and evaluating each suite at four nested levels, drastically alters the
+picture.
+
+Our main finding is a discrepancy that would be masked by a summary using one metric.
+Supplying the model with the target's fully qualified name, signature, and declaring class,
+along with a verified constructor call, raises the fraction of Python suites that reach the
+target from 29/60 to 42/60 (p = 0.003), while its effect on the fraction that finds an
+injected fault is not significant (16/60 to 22/60, p = 0.33). The intervention improves
+arrival, not discrimination, and would have shown as an overwhelming success if evaluated on
+the coverage metric alone.
+
+The asymmetry is what allows the same change to benefit Python and not Java. The target block
+provides identity, and Python resolves identity at run time: import and collection failures
+fall from 17 to 4. Java binds identity and type at compile time, and the count of compile
+failures does not move at all --- 38 before, 38 after, 35 of them the same functions. What
+remains in both languages is the need to create a receiver in a particular state that reveals
+the behaviour, and neither prompt supplies such a state even after the constructor call has
+been executed and verified.
+
+The comparison with existing generators is not strictly favorable to one language or the
+other. On Python, our model vastly outperforms Pynguin under both of that tool's
+configurations (p <= 0.003 in all comparisons). On Java the ordering reverses: both EvoSuite
+and Randoop detect faults on more targets than the model under either gate, though only
+EvoSuite reaches statistical significance, and only under the stricter gate (p = 0.028). A
+study limited to one language would have confidently concluded the opposite of what the other
+found.
+
+At last, and perhaps most unexpectedly, the study's most transferable output may be a
+catalogue of ways a measurement can stop working without saying so. Six such defects surfaced
+--- a hard-coded validity constant, a flag counting execution rather than success, reflection
+turning method names into strings the compiler never checks, two tool-version mismatches that
+discovered no tests while exiting successfully, and a green-test gate implemented differently
+in the two languages under one name. We introduced four of the six ourselves while repairing
+the other two, and had we trusted one of them, we would have reported a statistically
+significant claim in precisely the wrong direction. None produced an error message. We
+therefore report the sampling funnel in full, both configurations of every tool we ran in more
+than one, and both settings of the gate we corrected --- and we advance no conclusion that
+does not hold under both.
+
+== Future Work ==
+
+Three issues deserve further immediate attention. First, the state barrier described in the
+Discussion, which neither better prompting nor a verified constructor call appears to address,
+may be removed by supplying an executed state: a receiver already driven into a configuration
+where the target's branches are reachable. Second, the Java compile failures should be
+classified according to the type errors that cause them, clarifying whether the typing barrier
+is truly distinct from the addressing barrier or merely a harder instance of it. Finally, the
+funnel numbers reported here come from ten projects in two languages; whether roughly three
+quarters of medium-complexity functions being unaddressable from outside is a property of
+these projects or of software more generally is not something a sample this size can settle.
