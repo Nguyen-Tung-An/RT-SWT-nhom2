@@ -822,7 +822,9 @@ Of the 1,848 functions in the medium complexity category across ten projects, on
 simultaneously public and unambiguously named. That is, the rest cannot be legitimately targeted
 by an external test suite, and a model evaluated upon its ability to find faults in these is
 penalized for shortcomings unrelated to its own. Recreating the sample under a fixed set of
-constraints, and evaluating each suite at four nested levels, drastically alters the picture.
+constraints, and evaluating each suite at four nested levels, drastically alters the picture:
+on the rebuilt sample the same baseline prompt detects faults on 16/60 Python targets instead
+of 13/60, and on 12/59 Java targets instead of 6/60.
 
 Our main finding is a discrepancy that would be masked by a summary using one metric. Supplying
 the model with the target's fully qualified name, signature, and declaring class, along with a
@@ -833,11 +835,11 @@ overwhelming success if evaluated on the coverage metric alone.
 
 The asymmetry is what allows the same change to benefit Python and not Java. The target block
 provides identity, and Python uses dynamic binding: fourteen of seventeen import failures vanish.
-Java binds identity and type at compile time, and the count of compile failures remains identical
-(38 before, 38 after, 35 of them the same functions) with no obvious intervention. What remains
-in both languages is the opportunity to create a receiver in a particular state that reveals
-behavior, and neither prompt contains such a condition even after the constructor call has been
-demonstrated.
+Java binds identity and type at compile time, so supplying the name changes nothing there: the
+count of compile failures remains identical (38 before, 38 after, 35 of them the same
+functions). What remains in both languages is the difficulty of creating a receiver in a
+particular state that reveals the behaviour, and neither prompt supplies such a state — not
+even the one that hands the model a constructor call we had executed and verified.
 
 The comparison with existing generators is not strictly favorable to one language or the other.
 On Python, our model vastly outperforms Pynguin under both of that suite's configurations
@@ -846,18 +848,19 @@ more targets than our model under either configuration, with only EvoSuite showi
 improvement, and only under the stricter gate (p = 0.028). A study limited to one language
 would have confidently concluded the opposite of what it found.
 
-At last, and perhaps most unexpectedly, the study that produced these results may be most useful
-in its ability to reproduce itself. We identified six ways in which a measurement process can
-fail unnoticed, and we offer this paper as a caution to future work. A hard-coded validity
-constant, a flag miscounting executions as test cases, reflection turning method names into
-strings the compiler never checks, two tool-version mismatches that discovered no tests while
-reporting success, and a green-test gate implemented differently in the two languages account
-for the six. We introduced four of these defects and fixed the other two when we noticed them;
-had we trusted one of them to behave as documented, we would have reported a statistically
-significant improvement in the exact opposite direction. We describe the full funnel and
-configurations in greater detail for both runs of every tool we tested more than once, and for
-every changed setting in the gate we repaired, reporting no discovery that did not appear in
-both.
+At last, and perhaps most unexpectedly, the part of this study most likely to be reused is not
+a result at all, but the catalogue of ways a measurement can fail without saying so. We
+identified six, and we offer them as a caution to future work: a hard-coded validity constant,
+a flag miscounting executions as test cases, reflection turning method names into strings the
+compiler never checks, two tool-version mismatches that discovered no tests while reporting
+success, and a green-test gate implemented differently in the two languages. We introduced four
+of these defects ourselves while repairing the other two. Had we trusted one of them to behave
+as documented, we would have reported a statistically significant result in exactly the wrong
+direction. None of the six raised an error.
+
+Because of this, we report the full sampling funnel, both runs of every tool we ran more than
+once, and both settings of the gate we repaired — and we state no conclusion unless it holds
+under both.
 
 -- Future Work --
 
