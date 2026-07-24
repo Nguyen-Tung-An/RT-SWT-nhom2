@@ -126,8 +126,8 @@ uncorrected prompt is reported in the results only as a secondary observation.
 
 The second deviation changed the instrument after the results had been seen, and changed it
 in a way that favoured our method, so we state it plainly. The Java green-test gate described
-above was adjusted to comply with the pre-registered definition of T2. Eight functions were
-affected under the baseline prompt and ten under the target-specified prompt, against two for
+above was adjusted to comply with the pre-registered definition of T2. Six functions became
+measurable under the baseline prompt and eight under the target-specified prompt, against one for
 each of the two Java baselines; overall the correction helped the model more than it helped
 its competitors. Three safeguards apply. The pre-correction runs were committed to the
 repository before the corrected measurement was run, so their timestamps preclude selecting

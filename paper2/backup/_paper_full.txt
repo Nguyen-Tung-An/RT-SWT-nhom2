@@ -765,8 +765,8 @@ mentioned in the paper to justify the additional condition.
 
 The second deviation changed the instrument after seeing the results, and it changed the
 instrument in a way that favoured our method: the Java green-test gate (described above) was
-updated to comply with the T2 definition. Eight functions were affected under the baseline
-prompt and ten under the enriched prompt, against two for each of the two Java baselines.
+updated to comply with the T2 definition. Six functions became measurable under the baseline
+prompt and eight under the enriched prompt, against one for each of the two Java baselines.
 Therefore, it improved our results more than those of our competitors. Three safeguards applied:
 first, the timestamps of the uncorrected version committed to the repository preceded the
 corrected measurement runs. Second, both settings were reported alongside each other for all

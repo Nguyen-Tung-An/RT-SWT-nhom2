@@ -184,7 +184,10 @@ lớp, các test vốn đã đỏ sẽ làm **mọi** mutant trông như bị gi
 
 ### Hướng thay đổi
 
-Số ca "RED trên bản gốc" được cứu: GPT v1 8, GPT v2 10, EvoSuite 2, Randoop 2. Nghĩa là
+Số ca "RED trên bản gốc" được cứu: GPT v1 **6**, GPT v2 **8**, EvoSuite **1**, Randoop **1**
+(đếm lại từ CSV: hàm bị cổng nghiêm ngặt loại nhưng cổng per-test đo được. Con số 8/10/2/2
+ghi ban đầu ở đây là **sai** — đó là số ca có nhãn `RED trên bản gốc` ở bản strict, 7/9/2/1,
+và tôi còn cộng nhầm. Phúc bắt được; đã sửa cả trong bài). Nghĩa là
 sửa này **có lợi cho GPT** ở RQ-C (so với baseline) và **có lợi nhẹ cho v2** ở RQ-B. Vì
 hướng thay đổi thuận theo phía chúng tôi, mọi kết luận RQ-C chỉ được phát biểu nếu **đúng
 ở cả hai cổng**. Nếu hai cổng cho kết luận trái nhau, báo cáo là **không kết luận được**.
