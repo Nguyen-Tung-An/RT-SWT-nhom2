@@ -50,11 +50,12 @@ Our operator set was deliberately limited and identical for both languages, to g
 reference point, and it is weaker than a production mutation framework; absolute scores are
 therefore not directly comparable to results obtained with PIT or `mutmut`, and only
 within-study comparisons are meaningful. The per-function mutant cap differs between the two
-pipelines -- 20 for Java and the baseline generators, 30 for the LLM-generated Python suites
--- an inconsistency inherited from separate implementations. It binds exactly one function in
-the whole corpus (CP-025, 24 candidate sites) and cannot affect T4, which asks only whether
-at least one mutant is killed; it bounds only the resolution of the continuous score for that
-one function.
+language pipelines (20 for Java, 30 for Python), an inconsistency inherited from separate
+implementations. It binds two Java functions -- CJ-004 and CJ-026, both sitting exactly at the
+20-mutant ceiling under every Java condition -- and no Python function, the largest there
+being CP-025 at 24 candidate sites against a cap of 30. Since T4 asks only whether at least one
+mutant is killed, the cap bounds the resolution of the continuous score for those two functions
+rather than their tier outcome.
 
 -- Internal validity --
 

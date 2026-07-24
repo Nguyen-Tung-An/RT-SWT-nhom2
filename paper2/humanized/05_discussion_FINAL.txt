@@ -78,8 +78,8 @@ The comparison with existing generators also fails to reveal a clear winner, and
 rank oppositely.
 
 On Python, both prompt conditions substantially outperformed Pynguin: 16/60 and 22/60 suites
-passing compared to 2/60, p<=0.003 in all pairs, with rank-biserial correlations ranging from
--0.81 to -0.96. The reason for the gap was apparent in the numbers of failed suites: Pynguin
+detecting a fault compared to 2/60, p<=0.003 in all pairs, with rank-biserial correlations
+ranging from -0.81 to -0.96. The reason for the gap was apparent in the numbers of failed suites: Pynguin
 failed to generate any suite for 39/60 targets in its default configuration. The documented
 workaround for the reported serialisation crash (disabling the master-worker split) reduced
 this to 35, a net movement of four that conceals considerable churn: 17 targets gained a suite
@@ -108,8 +108,8 @@ Three practices follow from what went wrong rather than from what worked.
 
 [Report the sampling funnel.]
 Only 26 % of medium-complexity functions in these ten projects are both public and
-unambiguously named. A benchmark that does not consider name ambiguity will spend most of its
-effort on targets that no external tool can possibly invoke, and every tool evaluated on it is
+unambiguously named. A benchmark that samples on complexity alone will therefore spend most of
+its mass on targets that no external generator can address, and every tool evaluated on it is
 charged for failures that belong to the sampling rather than to the tool. The funnel costs
 nothing to report, and it bounds how much of a measured failure rate can be attributed to the
 tool at all.

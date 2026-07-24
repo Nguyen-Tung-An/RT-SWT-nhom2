@@ -45,8 +45,8 @@ T4 (detects fault) 16/60 22/60 0.3259 +0.28 n.s.
 The target specification increases the proportion of suites that reach the target (29/60 ->
 42/60, p = 0.003), but its effect on the proportion detecting the injected fault is not
 significant (16/60 -> 22/60, p = 0.33). On the non-zero subsets, the medians of T3 and T4
-barely change (75.0 -> 79.2 and 84.4 -> 88.9), which suggests the effect lies entirely in how
-many suites clear each tier rather than in how well the clearing suites perform. A
+barely change (75.0 -> 79.2 and 84.4 -> 88.9), which suggests the effect lies almost entirely
+in how many suites clear each tier rather than in how well the clearing suites perform. A
 coverage-only study would have read this as a clear improvement; the fault-based tier shows
 the improvement stops short of testing behaviour.
 
@@ -87,8 +87,9 @@ default 22/60 2/60 0.0001, -0.96 (sig.)
 no split 22/60 2/60 0.0001, -0.96 (sig.)
 
 The two languages disagree, and the disagreement is the result. On Python the model
-overwhelmingly outperforms Pynguin under both settings: the paired test rejects at p <= 0.003
-in every pairing, with rank-biserial correlations between -0.81 and -0.96. The reason is
+overwhelmingly outperforms Pynguin: against either Pynguin configuration, and using either
+prompt, the paired test rejects at p <= 0.003, with rank-biserial correlations between -0.81
+and -0.96. The reason is
 visible in the failure counts rather than the scores: Pynguin produced no suite at all for
 39/60 targets in its default configuration, and disabling the master-worker split -- the
 documented workaround for the serialisation crash responsible -- reduced that to 35 while

@@ -8,8 +8,8 @@ discard sequences that are illegal or redundant [pacheco2007randoop]. EvoSuite t
 entire suite as an individual in a genetic algorithm and optimizes it using a coverage-based
 fitness function [fraser2011evosuite]. Both approaches have been intensively evaluated at
 scale: EvoSuite demonstrated its ability to achieve high branch coverage across a large sample
-of open-source classes, while also revealing that a significant proportion of classes are
-intrinsically challenging [fraser2014largescale]. Pynguin adapts the search-based approach to
+of open-source classes, while also revealing that a significant proportion of classes remain
+hard for reasons unrelated to the search itself [fraser2014largescale]. Pynguin adapts the search-based approach to
 Python, where the lack of static typing decreases the information available to the test
 generator [lukasczyk2022pynguin, lukasczyk2023empirical].
 
@@ -41,7 +41,8 @@ and stricter in another (no iterative repair and no retrieval). We exclude the r
 deliberately, because it conflates the quality of the initial generation with the quality of
 the error signal fed back into it --- and when compilation failure is itself the object of
 study, that conflation is fatal. Where these systems ask how high the success rate can be
-driven, we ask what the initial generation is actually missing. The two prompt conditions of
+driven, we ask what the initial generation is actually missing, and whether it is something a
+prompt can supply. The two prompt conditions of
 Section (Test Generation) therefore differ in exactly one variable, so that whatever
 difference appears is attributable to that variable.
 

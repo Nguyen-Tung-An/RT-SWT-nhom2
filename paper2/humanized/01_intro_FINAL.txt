@@ -1,8 +1,8 @@
 === Introduction ===
 
-A large language model asked to write a unit test for a particular function rarely produces
-compilable code. It is tempting to blame the model, and we read it the same way in an earlier
-analysis of `gpt-4o-mini` on 120 medium-complexity functions. This paper reports on the
+A large language model asked to write a unit test for a particular function will often produce
+something that does not compile. It is tempting to blame the model, and we read it the same way
+in an earlier analysis of `gpt-4o-mini` on 120 medium-complexity functions. This paper reports on the
 investigation that followed, and explains why the answer is mostly about a benchmarking
 artifact rather than the model itself.
 

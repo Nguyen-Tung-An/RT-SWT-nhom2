@@ -115,15 +115,16 @@ green-test criterion records this as a success.
 The two tiers are therefore not merely weaker measures than T4; they can be satisfied by
 suites that are, respectively, unchecked by the compiler and empty of assertions.
 
-Branch coverage is measured with coverage.py (python) and by executing the generated suites
-through the JUnit platform launcher (java); in both cases we attribute the coverage to the
-line range of the target rather than to the whole file. Mutation analysis uses the same
+Branch coverage is measured with coverage.py (python), attributed to the target's line range
+rather than to the whole file; T3 is therefore reported for Python only. The Java pipeline
+executes the generated suites through the JUnit platform launcher and rests on T4, so no Java
+branch-coverage figure is claimed anywhere in this paper. Mutation analysis uses the same
 operator set for both languages: arithmetic (+ and -, x and /), relational (>/>=, </<=),
 equality (= = / !=), boolean (AND/OR), boolean constant inversion, and numeric constant
-increment, restricted to the target's line range and capped per function (20 mutants for Java
-and the baseline generators, 30 for the LLM-generated Python suites). The cap binds a single
-function in the whole corpus (Section: Threats to Validity) and does not affect T4, which asks
-only whether any mutant is killed.
+increment, restricted to the target's line range and capped per function by language (20
+mutants for every Java suite, 30 for every Python suite). The cap binds two Java functions and
+no Python one (Section: Threats to Validity); it does not affect T4, which asks only whether
+any mutant is killed.
 
 Two procedural notes apply to all measurements and should be considered part of the
 methodology. First, mutation testing requires rewriting the source under test; run directly on
@@ -162,9 +163,9 @@ throughout: the toolchains are different, and Python has no access control while
 the two languages have different failure modes. Within each language, rates are reported over
 the functions of that language alone.
 
-Results are reported at two levels in parallel: all (n=60 per language, with unmeasurable
-cases scored zero) and effective (the subset with a non-zero value). The all level is reported
-even where the effective level is more favourable.
+Results are reported at two levels in parallel: all (n = 59 for Java after excluding CJ-048,
+n = 60 for Python, with unmeasurable cases scored zero) and effective (the subset with a
+non-zero value). The all level is reported even where the effective level is more favourable.
 
 All the choices about the prompt format, criteria, tool versions, timing budgets, the Pynguin
 two-branch design, and the hypotheses to evaluate were committed in a pre-registration before
