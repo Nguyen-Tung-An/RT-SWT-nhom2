@@ -96,6 +96,39 @@ def to_text(tex: str) -> str:
     return "\n".join(l.rstrip() for l in t.splitlines()).strip()
 
 
+def front_matter() -> str:
+    """Tieu de, tac gia, Abstract va Keywords — nam trong main.tex, KHONG nam trong sections/.
+
+    Thieu ham nay thi ban .txt dan sang Word bi mat hoan toan phan Abstract.
+    """
+    p = os.path.join(HERE, "main.tex")
+    if not os.path.exists(p):
+        return ""
+    raw = open(p, encoding="utf-8", errors="replace").read()
+    out = []
+    m = re.search(r"\\title\{(.*?)\}\s*\n", raw, re.DOTALL)
+    if m:
+        out.append("=== " + to_text(m.group(1)).replace("\n", " ").strip() + " ===\n")
+    m = re.search(r"\\author\{((?:[^{}]|\{[^}]*\})*)\}", raw, re.DOTALL)
+    if m:
+        # \and phai doi thanh dau phay TRUOC to_text(), vi to_text xoa moi lenh \...
+        au = to_text(re.sub(r"\\and\b", ",", m.group(1))).replace("\n", " ")
+        au = re.sub(r"\s+([,;])", r"\1", re.sub(r"\s+", " ", au))
+        out.append(au.strip(" ,") + "\n")
+    m = re.search(r"\\institute\{((?:[^{}]|\{[^}]*\})*)\}", raw, re.DOTALL)
+    if m:
+        out.append(re.sub(r"\s+", " ", to_text(m.group(1))).strip() + "\n")
+    m = re.search(r"\\begin\{abstract\}(.*?)\\keywords\{(.*?)\}", raw, re.DOTALL)
+    if m:
+        body = to_text(m.group(1)).strip()
+        if body:
+            out.append("\n-- Abstract --\n" + body)
+        kw = to_text(re.sub(r"\\and\b", ";", m.group(2))).replace("\n", " ")
+        kw = re.sub(r"\s+([,;])", r"\1", re.sub(r"\s+", " ", kw))
+        out.append("\nKeywords: " + kw.strip(" ;"))
+    return "\n".join(out).strip()
+
+
 def main() -> int:
     os.makedirs(OUT, exist_ok=True)
     build_label_map()
@@ -103,8 +136,16 @@ def main() -> int:
     stamp = datetime.now().strftime("%Y-%m-%d %H:%M")
 
     full = [f"Backup noi dung paper — {stamp}\n"
-            f"Nguon: paper2/sections/*.tex (Springer LNCS)\n" + "=" * 66 + "\n"]
+            f"Nguon: paper2/main.tex (tieu de + abstract) + paper2/sections/*.tex "
+            f"(Springer LNCS)\n" + "=" * 66 + "\n"]
     made = []
+
+    fm = front_matter()
+    if fm:
+        full.append(fm + "\n")
+        p_fm = os.path.join(OUT, "00_abstract.txt")
+        open(p_fm, "w", encoding="utf-8", newline="\n").write(fm + "\n")
+        made.append(("00_abstract", p_fm, len(fm.split())))
 
     for f in files:
         raw = open(os.path.join(SECT, f), encoding="utf-8", errors="replace").read()

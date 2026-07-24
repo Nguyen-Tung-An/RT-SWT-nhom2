@@ -80,8 +80,9 @@ On Python, both prompt conditions beat Pynguin by a wide margin — 16/60 and 22
 and -0.96. This holds under both Pynguin configurations. The reason is visible in the
 failure counts rather than the scores: Pynguin produced no suite at all for 39 of 60 targets
 in its default configuration. Disabling the master--worker split, which is the documented
-workaround for the serialisation crash responsible, reduced that to 35 — and every one of
-the four newly generated suites failed at collection, leaving T4 unchanged at 2/60. We
+workaround for the serialisation crash responsible, reduced that to 35 — a net movement of
+four that conceals 17 targets gaining a suite and 13 losing one, with 14 of the 17 new suites
+failing at collection, leaving T4 unchanged at 2/60. We
 report this because it is the kind of result that disappears when a study reports only the
 configuration that worked better. Here, neither configuration worked.
 
@@ -125,10 +126,11 @@ Neither observation requires an adversary; both arose from ordinary tool output.
 
 The failure mode that cost the most effort in this study was not a tool performing badly.
 It was a measurement returning a plausible number after it had stopped measuring: a
-hard-coded constant, a validity flag counting execution rather than success, a crash scored
-as a zero, a version mismatch discovering no tests while exiting successfully, a JDK
-mismatch doing the same. Six such defects surfaced, four of them introduced by us while
-repairing the other two. None raised an error. The practical implication is that a harness
+hard-coded constant, a validity flag counting execution rather than success, reflection
+turning every method name into a string the compiler never checks, a version mismatch
+discovering no tests while exiting successfully, a JDK mismatch doing the same, and a
+green-test gate implemented differently in the two languages under one name. Six such
+defects surfaced, four of them introduced by us while repairing the other two. None raised an error. The practical implication is that a harness
 needs a test that fails: if the pipeline below a metric is broken completely and the metric
 does not change, the metric is not measuring that pipeline. We now apply that check before
 reporting any rate, and it is the single cheapest safeguard we found.

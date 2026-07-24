@@ -1,6 +1,36 @@
-Backup noi dung paper — 2026-07-24 01:00
-Nguon: paper2/sections/*.tex (Springer LNCS)
+Backup noi dung paper — 2026-07-24 10:01
+Nguon: paper2/main.tex (tieu de + abstract) + paper2/sections/*.tex (Springer LNCS)
 ==================================================================
+
+=== Target Specification, Not Model Capability, Explains Most Unit-Test Generation Failures at Medium Complexity ===
+
+Nguyễn Tùng Ân, Đoàn Thị Thu Kim, Sơn Hải, Trương Hoàng Phúc, Trần Xuân Lộc
+
+FPT University, Vietnam
+
+
+-- Abstract --
+Failures of LLM-generated unit tests are usually recorded against the model. Examining
+them individually, we find most belong to the benchmark and the measurements instead.
+Sampling by cyclomatic complexity alone admits targets no external test can reach: of
+1,848 functions in the band 5 <= CC <= 10 across ten projects, only 474 —
+26 % — are simultaneously public and unambiguously named. We rebuild the benchmark
+under five testability criteria fixed in advance, sample 60 Java and 60 Python functions
+(n = 59 for Java after excluding one mis-sampled target), and score every suite at four
+nested tiers, resting all claims on mutation score inside the target's line range — the
+only tier a suite that verifies nothing cannot satisfy. Two one-shot prompts differing in
+exactly one variable isolate the effect of supplying the target specification. On Python
+it raises the proportion of suites reaching the target from 29/60 to 42/60
+(p = 0.003, rank-biserial +0.61), but the proportion detecting a fault only from
+16/60 to 22/60 (p = 0.33): the prompt improves arrival, not discrimination — a split
+branch coverage alone would have concealed. Against established generators the ordering
+reverses by language: the model beats Pynguin decisively on Python, where Pynguin detected
+faults on 2 of 60 targets under either configuration (p <= 0.003 in every pairing),
+while on Java both EvoSuite and Randoop detect faults on more targets, significantly so
+only for EvoSuite under the stricter gate (p = 0.028). Six measurement defects surfaced,
+four introduced while repairing the other two; none produced an error message.
+
+Keywords: Unit test generation; Large language models; Mutation testing; Cyclomatic complexity; Measurement validity
 
 === Introduction ===
 
@@ -205,13 +235,15 @@ each justified by whether *any* tool — an LLM, a search-based generator, or a 
  is walked with `getattr`, and the result is confirmed callable. Syntactic
  inference is not evidence that a target can be reached at run time.
 
-Table~1 reports the full funnel. We report every stage rather than only the
-final count, because the attrition is itself a finding: of 1,848 functions in the
+Table~1 reports the full funnel. We report every count-reducing stage rather
+than only the final count, because the attrition is itself a finding: of 1,848 functions in the
 complexity band, only 474 (26 %) are simultaneously public and unambiguous. Roughly three
 quarters of medium-complexity functions in these projects are not valid targets for an
 external test generator.
 
-Bang: Sampling funnel. Each row reports how many candidates survive the criterion.
+Bang: Sampling funnel. Each row reports how many candidates survive the criterion. F4
+corrects the declaring-class attribution that F3 depends on rather than removing candidates
+in its own right, so it has no separate row.
 
 Stage Criterion Remaining
 
@@ -297,15 +329,17 @@ both reachable without testing anything:
 The two tiers are therefore not merely weaker than T4; they can be satisfied by suites that
 are, respectively, unchecked by the compiler and empty of assertions.
 
-Branch coverage is measured with `coverage.py` (Python) and by executing the
-generated JUnit suites through the JUnit Platform launcher (Java), in both cases attributed
-to the target's line range rather than to the whole file. Mutation analysis applies the
+Branch coverage is measured with `coverage.py` (Python), attributed to the target's
+line range rather than to the whole file; T3 is therefore reported for Python only. The Java
+pipeline executes the generated JUnit suites through the JUnit Platform launcher and rests
+on T4, so no Java branch-coverage figure is claimed anywhere in this paper. Mutation
+analysis applies the
 same operator set to both languages — arithmetic (+/-, x//), relational
 (>/>=, </<=), equality (= = / !=), boolean (AND/OR), boolean
 constant inversion, and numeric constant increment — restricted to the target's line
-range and capped per function (20 mutants for Java and the baseline generators, 30 for the
-LLM-generated Python suites). The cap binds a single function in the whole corpus
-(Section~Section: Threats to Validity) and does not affect T4, which asks only whether any mutant is
+range and capped per function by language (20 mutants for every Java suite, 30 for every
+Python suite). The cap binds two Java functions and no Python one
+(Section~Section: Threats to Validity); it does not affect T4, which asks only whether any mutant is
 killed.
 
 Two procedural safeguards are worth stating because their absence silently corrupts
@@ -345,10 +379,12 @@ Conditions are compared with the paired Wilcoxon signed-rank test, matching on f
 identifier, at alpha = 0.05, with matched-pairs rank-biserial correlation as effect
 size. Java and Python are analysed separately throughout: the toolchains differ, and Java
 enforces access control while Python does not, so their failure modes are not commensurable.
-Every rate is reported over the 60 functions of its own language.
+Every rate is reported over the functions of its own language (n = 59 for Java after the
+exclusion above, n = 60 for Python).
 
-Results are given at two levels in parallel: *all* (n = 60 per language, with
-unmeasurable cases scored 0) and *effective* (the subset with a non-zero value). The
+Results are given at two levels in parallel: *all* (n = 59 for Java and n = 60 for
+Python, with unmeasurable cases scored 0) and *effective* (the subset with a non-zero
+value). The
 *all* level is reported even where the *effective* level is more favourable.
 
 All configuration decisions above — criteria, tool versions, budgets, the two-branch
@@ -391,8 +427,8 @@ Both prompt conditions are one-shot and differ in a single block of target metad
 (Section~Section: Test Generation). Table~3 reports both tiers for Python, where the
 result is decisive and, more importantly, splits between the two tiers.
 
-Bang: Python, V1 versus V2. "eff." is the median over the non-zero subset. Paired
-Wilcoxon signed-rank, alpha = 0.05; r_rb is matched-pairs rank-biserial.
+Bang: Python, V1 versus V2. Paired Wilcoxon signed-rank, alpha = 0.05; r_rb is
+matched-pairs rank-biserial.
 
 Tier V1 V2 p r_rb
 
@@ -447,8 +483,9 @@ the paired test rejects at p <= 0.003 with rank-biserial correlations between -0
 -0.96. The gap is driven by coverage of the benchmark rather than by score: Pynguin produced
 no suite at all for 39 of 60 targets in its default configuration, and disabling the
 master--worker split — the documented workaround for the serialisation crash responsible —
-reduced that to 35 while leaving T4 unchanged, because all four newly generated suites failed
-at collection.
+reduced that to 35 while leaving T4 unchanged at 2/60. That net movement of four conceals
+considerable churn: 17 targets gained a suite and 13 lost one, and 14 of the 17 newly
+generated suites failed at collection.
 
 On Java the ordering reverses in the counts. Both baselines detect faults on more targets
 than the model in every pairing — EvoSuite 23 or 24 versus 16 or 10, Randoop 19 or 18
@@ -547,8 +584,9 @@ On Python, both prompt conditions beat Pynguin by a wide margin — 16/60 and 22
 and -0.96. This holds under both Pynguin configurations. The reason is visible in the
 failure counts rather than the scores: Pynguin produced no suite at all for 39 of 60 targets
 in its default configuration. Disabling the master--worker split, which is the documented
-workaround for the serialisation crash responsible, reduced that to 35 — and every one of
-the four newly generated suites failed at collection, leaving T4 unchanged at 2/60. We
+workaround for the serialisation crash responsible, reduced that to 35 — a net movement of
+four that conceals 17 targets gaining a suite and 13 losing one, with 14 of the 17 new suites
+failing at collection, leaving T4 unchanged at 2/60. We
 report this because it is the kind of result that disappears when a study reports only the
 configuration that worked better. Here, neither configuration worked.
 
@@ -592,10 +630,11 @@ Neither observation requires an adversary; both arose from ordinary tool output.
 
 The failure mode that cost the most effort in this study was not a tool performing badly.
 It was a measurement returning a plausible number after it had stopped measuring: a
-hard-coded constant, a validity flag counting execution rather than success, a crash scored
-as a zero, a version mismatch discovering no tests while exiting successfully, a JDK
-mismatch doing the same. Six such defects surfaced, four of them introduced by us while
-repairing the other two. None raised an error. The practical implication is that a harness
+hard-coded constant, a validity flag counting execution rather than success, reflection
+turning every method name into a string the compiler never checks, a version mismatch
+discovering no tests while exiting successfully, a JDK mismatch doing the same, and a
+green-test gate implemented differently in the two languages under one name. Six such
+defects surfaced, four of them introduced by us while repairing the other two. None raised an error. The practical implication is that a harness
 needs a test that fails: if the pipeline below a metric is broken completely and the metric
 does not change, the metric is not measuring that pipeline. We now apply that check before
 reporting any rate, and it is the single cheapest safeguard we found.
@@ -648,11 +687,12 @@ Our operator set is deliberately small and identical across both languages, so t
 are measured with the same instrument. It is weaker than a production mutation framework, so
 absolute mutation scores are not comparable with studies using PIT or `mutmut`; only
 within-study comparisons are meaningful. The per-function mutant cap differs between the two
-pipelines (20 for Java and the baseline generators, 30 for the LLM Python suites), an
-inconsistency inherited from separate implementations. It binds exactly one function in the
-whole corpus (CP-025, 24 candidate sites) and cannot affect T4, since that tier asks only
-whether at least one mutant is killed and CP-025 kills 18; it bounds only the resolution of
-the continuous score for that one function.
+language pipelines (20 for Java, 30 for Python), an inconsistency inherited from separate
+implementations. It binds two Java functions — CJ-004 and CJ-026, both sitting exactly at
+the 20-mutant ceiling under every Java condition — and no Python function, the largest
+there being CP-025 at 24 candidate sites against a cap of 30. Since T4 asks only whether at
+least one mutant is killed, the cap bounds the resolution of the continuous score for those
+two functions rather than their tier outcome.
 
 -- Internal Validity --
 
@@ -720,9 +760,9 @@ variant is reported only as a secondary observation.
 
 The second deviation changed the instrument after results had been seen, and it changed it in
 a direction favourable to us, so we state it plainly. The Java green-test gate described
-above was corrected to match the registered definition of T2. Eight functions under the
-baseline prompt and ten under the target-specified prompt were affected, against two for each
-of the two Java baselines — so the correction helps the model more than it helps its
+above was corrected to match the registered definition of T2. Six functions under the
+baseline prompt and eight under the target-specified prompt were affected, against two for
+EvoSuite and one for Randoop — so the correction helps the model more than it helps its
 competitors. Three safeguards apply. The pre-correction results were written to the
 repository and committed *before* the corrected measurement was run, so the timestamps
 preclude selecting between them afterwards. Both settings are reported side by side for every
@@ -766,9 +806,10 @@ headline pointing the opposite way from the other.
 
 Finally, and least expectedly, the study's most transferable output may be a catalogue of
 ways a measurement can stop working without saying so. Six such defects surfaced — a
-hard-coded validity constant, a flag counting execution rather than success, a crash scored
-as zero, two tool-version mismatches that discovered no tests while exiting successfully,
-and a green-test gate implemented differently in the two languages under one name. Four of
+hard-coded validity constant, a flag counting execution rather than success, reflection
+turning method names into strings the compiler never checks, two tool-version mismatches
+that discovered no tests while exiting successfully, and a green-test gate implemented
+differently in the two languages under one name. Four of
 the six were introduced by us while repairing the other two, and one of them, had we trusted
 it, would have supported a statistically significant claim in precisely the wrong direction.
 None produced an error message. We therefore report the sampling funnel in full, both

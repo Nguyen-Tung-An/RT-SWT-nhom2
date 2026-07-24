@@ -34,8 +34,8 @@ Both prompt conditions are one-shot and differ in a single block of target metad
 (Section~Section: Test Generation). Table~3 reports both tiers for Python, where the
 result is decisive and, more importantly, splits between the two tiers.
 
-Bang: Python, V1 versus V2. "eff." is the median over the non-zero subset. Paired
-Wilcoxon signed-rank, alpha = 0.05; r_rb is matched-pairs rank-biserial.
+Bang: Python, V1 versus V2. Paired Wilcoxon signed-rank, alpha = 0.05; r_rb is
+matched-pairs rank-biserial.
 
 Tier V1 V2 p r_rb
 
@@ -90,8 +90,9 @@ the paired test rejects at p <= 0.003 with rank-biserial correlations between -0
 -0.96. The gap is driven by coverage of the benchmark rather than by score: Pynguin produced
 no suite at all for 39 of 60 targets in its default configuration, and disabling the
 master--worker split — the documented workaround for the serialisation crash responsible —
-reduced that to 35 while leaving T4 unchanged, because all four newly generated suites failed
-at collection.
+reduced that to 35 while leaving T4 unchanged at 2/60. That net movement of four conceals
+considerable churn: 17 targets gained a suite and 13 lost one, and 14 of the 17 newly
+generated suites failed at collection.
 
 On Java the ordering reverses in the counts. Both baselines detect faults on more targets
 than the model in every pairing — EvoSuite 23 or 24 versus 16 or 10, Randoop 19 or 18
