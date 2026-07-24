@@ -29,7 +29,26 @@ Trương Hoàng Phúc \and Trần Xuân Lộc}
 \maketitle
 
 \begin{abstract}
-% VIET CUOI CUNG — can N, p, effect size day du.
+Failures of LLM-generated unit tests are usually recorded against the model. Examining
+them individually, we find most belong to the benchmark and the measurements instead.
+Sampling by cyclomatic complexity alone admits targets no external test can reach: of
+1{,}848 functions in the band $5 \le CC \le 10$ across ten projects, only 474 ---
+26\,\% --- are simultaneously public and unambiguously named. We rebuild the benchmark
+under five testability criteria fixed in advance, sample 60 Java and 60 Python functions
+($n = 59$ for Java after excluding one mis-sampled target), and score every suite at four
+nested tiers, resting all claims on mutation score inside the target's line range --- the
+only tier a suite that verifies nothing cannot satisfy. Two one-shot prompts differing in
+exactly one variable isolate the effect of supplying the target specification. On Python
+it raises the proportion of suites reaching the target from 29/60 to 42/60
+($p = 0.003$, rank-biserial $+0.61$), but the proportion detecting a fault only from
+16/60 to 22/60 ($p = 0.33$): the prompt improves arrival, not discrimination --- a split
+branch coverage alone would have concealed. Against established generators the ordering
+reverses by language: the model beats Pynguin decisively on Python, where Pynguin detected
+faults on 2 of 60 targets under either configuration ($p \le 0.003$ in every pairing),
+while on Java both EvoSuite and Randoop detect faults on more targets, significantly so
+only for EvoSuite under the stricter gate ($p = 0.028$). Six measurement defects surfaced,
+four introduced while repairing the other two; none produced an error message.
+
 \keywords{Unit test generation \and Large language models \and Mutation testing
 \and Cyclomatic complexity \and Measurement validity}
 \end{abstract}
